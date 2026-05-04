@@ -1,0 +1,70 @@
+# =============================================================================
+# Docker 构建排除文件
+# =============================================================================
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python 虚拟环境
+.venv/
+venv/
+env/
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# 测试与调试（不进入生产镜像）
+tests/
+tools/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 文档（仅保留必要文档）
+docs/
+docs_backup_20260501/
+
+# 脚本（仅保留 docker 相关）
+scripts/*
+!scripts/docker/
+!scripts/docker/**
+
+# 本地数据（通过 volume 挂载）
+uploads/
+logs/
+database/
+*.db
+*.sqlite
+*.sqlite3
+
+# 环境文件（通过 volume 或环境变量注入）
+.env
+.env.*
+!.env.example
+
+# 操作系统文件
+Thumbs.db
+.DS_Store
+
+# 其他
+*.md
+!README.md
+*.zip
+*.tar.gz
+*.log

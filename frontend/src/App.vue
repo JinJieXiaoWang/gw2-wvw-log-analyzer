@@ -1,0 +1,125 @@
+<template>
+  <div
+    id="app"
+    class="min-h-screen bg-neutral-bg"
+  >
+    <router-view v-slot="{ Component, route }">
+      <transition
+        name="page"
+        mode="out-in"
+      >
+        <component
+          :is="Component"
+          :key="route.path"
+        />
+      </transition>
+    </router-view>
+    
+      <!-- 全局页面水印 -->
+    <AppWatermark />
+
+    <!-- 页面加载进度条 -->
+    <transition name="fade">
+      <div
+        v-if="isLoading"
+        class="fixed top-0 left-0 right-0 h-1 z-[100] bg-neutral-border"
+      >
+        <div
+          class="h-full bg-gradient-to-r from-primary via-secondary to-primary animate-progress"
+        />
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import AppWatermark from '@/components/system/AppWatermark.vue'
+
+const isLoading = ref(false)
+
+onMounted(() => {
+  console.log('GW2 WVW Log Analyzer initialized')
+  
+  // 使用setTimeout确保DOM已渲染
+  setTimeout(() => {
+    const event = new Event('pageTransitionStart')
+    window.dispatchEvent(event)
+  }, 100)
+})
+</script>
+
+<style>
+#app {
+  min-height: 100vh;
+}
+
+/* 页面过渡动画 */
+.page-enter-active {
+  transition: all 0.4s ease-out;
+}
+
+.page-leave-active {
+  transition: all 0.3s ease-in;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.98);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.99);
+}
+
+/* 进度条动画 */
+.animate-progress {
+  animation: progressMove 1s ease-in-out infinite;
+}
+
+@keyframes progressMove {
+  0% {
+    width: 0%;
+    margin-left: 0%;
+  }
+  50% {
+    width: 60%;
+    margin-left: 20%;
+  }
+  100% {
+    width: 0%;
+    margin-left: 100%;
+  }
+}
+
+/* 淡入淡出过渡 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 无障碍：减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
+  
+  .page-enter-from,
+  .page-leave-to {
+    opacity: 1;
+    transform: none;
+  }
+  
+  .animate-progress {
+    animation: none;
+    width: 50%;
+  }
+}
+</style>

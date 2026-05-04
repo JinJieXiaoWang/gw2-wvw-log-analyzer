@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GW2 WVW - AI集成测试控制台</title>
+  <style>
+    /* ===== CSS变量系统（与项目一致） ===== */
+    :root {
+      --color-primary: #165DFF;
+      --color-primary-light: #4080FF;
+      --color-primary-dark: #0E42D2;
+      --color-primary-alpha-10: rgba(22, 93, 255, 0.1);
+      --color-primary-alpha-20: rgba(22, 93, 255, 0.2);
+
+      --color-secondary: #FF7D00;
+      --color-secondary-light: #FF9A2E;
+
+      --color-ai: #00E5C0;
+      --color-ai-light: #33FFE0;
+      --color-ai-dark: #00B894;
+      --color-ai-alpha-10: rgba(0, 229, 192, 0.1);
+      --color-ai-alpha-20: rgba(0, 229, 192, 0.2);
+      --color-ai-alpha-30: rgba(0, 229, 192, 0.3);
+
+      --color-success: #00D68F;
+      --color-success-alpha-10: rgba(0, 214, 143, 0.1);
+      --color-warning: #FFAA00;
+      --color-warning-alpha-10: rgba(255, 170, 0, 0.1);
+      --color-error: #FF4D6A;
+      --color-error-alpha-10: rgba(255, 77, 106, 0.1);
+      --color-info: #00B4FF;
+      --color-info-alpha-10: rgba(0, 180, 255, 0.1);
+
+      --color-bg: #0D0D0F;
+      --color-bg-secondary: #141417;
+      --color-bg-tertiary: #0A0A0C;
+      --color-card: #1A1A1F;
+      --color-card-hover: #222228;
+      --color-card-active: #2D2D35;
+      --color-border: #2D2D35;
+      --color-border-light: #3D3D48;
+
+      --color-text: #F0F0F5;
+      --color-text-secondary: #A0A0B0;
+      --color-text-tertiary: #707080;
+      --color-text-disabled: #505060;
+
+      --radius-sm: 6px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+      --shadow-glow-ai: 0 0 20px rgba(0, 229, 192, 0.15);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ===== 布局框架 ===== */
+    .app-container { display: flex; min-height: 100vh; }
+
+    /* 侧边栏 */
+    .sidebar {
+      width: 240px;
+      background: var(--color-bg-secondary);
+      border-right: 1px solid var(--color-border);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 12px 20px;
+      border-bottom: 1px solid var(--color-border);
+      margin-bottom: 12px;
+    }
+
+    .sidebar-logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--color-primary), var(--color-ai));
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: bold;
+    }
+
+    .sidebar-logo-text { font-size: 16px; font-weight: 700; }
+
+    .sidebar-logo-sub { font-size: 11px; color: var(--color-text-tertiary); }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+    }
+
+    .nav-item:hover { background: var(--color-card-hover); color: var(--color-text); }
+
+    .nav-item.active {
+      background: var(--color-primary-alpha-10);
+      color: var(--color-primary-light);
+      border-left: 3px solid var(--color-primary);
+    }
+
+    .nav-icon { width: 20px; text-align: center; font-size: 16px; }
+
+    /* ===== 主内容区 ===== */
+    .main-content { flex: 1; padding: 24px 32px; overflow-y: auto; }
+
+    .page-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title { font-size: 24px; font-weight: 700; }
+
+    .page-subtitle { font-size: 14px; color: var(--color-text-secondary); margin-top: 4px; }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 12px; border-radius: 20px;
+      font-size: 12px; font-weight: 500;
+    }
+
+    .badge-ai {
+      background: var(--color-ai-alpha-20);
+      color: var(--color-ai);
+      border: 1px solid rgba(0, 229, 192, 0.3);
+    }
+
+    .badge-online {
+      background: var(--color-success-alpha-10);
+      color: var(--color-success);
+    }
+
+    /* ===== 卡片组件 ===== */
+    .card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover { border-color: var(--color-border-light); }
+
+    .card-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .card-title { font-size: 16px; font-weight: 600; }
+
+    .card-subtitle { font-size: 12px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+    /* ===== 网格布局 ===== */
+    .grid { display: grid; gap: 20px; }
+    .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+
+    @media (max-width: 1200px) {
+      .grid-cols-4 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .grid-cols-2, .grid-cols-3, .grid-cols-4 { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+    }
+
+    /* ===== 指标卡片 ===== */
+    .metric-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--color-primary), var(--color-ai));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .metric-card:hover::before { opacity: 1; }
+
+    .metric-label {
+      font-size: 13px; color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 28px; font-weight: 700;
+      background: linear-gradient(135deg, var(--color-text), var(--color-text-secondary));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metric-change {
+      font-size: 12px; margin-top: 8px;
+      display: flex; align-items: center; gap: 4px;
+    }
+
+    .metric-change.up { color: var(--color-success); }
+    .metric-change.down { color: var(--color-error); }
+
+    /* ===== 提供商选择器 ===== */
+    .provider-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+    }
+
+    .provider-card {
+      background: var(--color-bg-secondary);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .provider-card:hover { border-color: var(--color-border-light); }
+
+    .provider-card.active {
+      border-color: var(--color-ai);
+      background: var(--color-ai-alpha-10);
+      box-shadow: var(--shadow-glow-ai);
+    }
+
+    .provider-card.active::after {
+      content: '✓';
+      position: absolute; top: 8px; right: 8px;
+      width: 20px; height: 20px;
+      background: var(--color-ai);
+      color: var(--color-bg);
+      border-radius: 50%;
+      font-size: 12px; font-weight: bold;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .provider-icon {
+      width: 48px; height: 48px;
+      margin: 0 auto 10px;
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+
+    .provider-name { font-size: 14px; font-weight: 600; }
+
+    .provider-status {
+      font-size: 11px; margin-top: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
+
+    .status-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-dot.online { background: var(--color-success); box-shadow: 0 0 4px var(--color-success); }
+    .status-dot.offline { background: var(--color-error); }
+    .status-dot.standby { background: var(--color-warning); }
+
+    /* ===== 开关组件 ===== */
+    .toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .toggle-row:last-child { border-bottom: none; }
+
+    .toggle-info { flex: 1; }
+
+    .toggle-label { font-size: 14px; font-weight: 500; }
+
+    .toggle-desc { font-size: 12px; color: var(--color-text-tertiary); margin-top: 2px; }
+
+    .toggle-switch {
+      position: relative; width: 44px; height: 24px;
+      background: var(--color-border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .toggle-switch.active { background: var(--color-ai); }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute; top: 2px; left: 2px;
+      width: 20px; height: 20px;
+      background: var(--color-text);
+      border-radius: 50%;
+      transition: transform 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .toggle-switch.active::after { transform: translateX(20px); }
+
+    /* ===== 模板卡片 ===== */
+    .template-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .template-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .template-item:hover { border-color: var(--color-primary); background: var(--color-primary-alpha-10); }
+
+    .template-item.selected {
+      border-color: var(--color-ai);
+      background: var(--color-ai-alpha-10);
+    }
+
+    .template-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--color-primary-alpha-20), var(--color-ai-alpha-20));
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    .template-info { flex: 1; }
+
+    .template-name { font-size: 14px; font-weight: 500; }
+
+    .template-desc { font-size: 12px; color: var(--color-text-secondary); }
+
+    .template-tag {
+      font-size: 11px; padding: 2px 8px;
+      background: var(--color-ai-alpha-20);
+      color: var(--color-ai);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ===== 分析工具面板 ===== */
+    .tool-panel {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+
+    .tool-panel-title { font-size: 14px; font-weight: 600; margin-bottom: 12px; }
+
+    .input-field {
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .input-field:focus { border-color: var(--color-primary); }
+
+    .input-field::placeholder { color: var(--color-text-disabled); }
+
+    .btn {
+      padding: 10px 20px;
+      border: none; border-radius: var(--radius-md);
+      font-size: 14px; font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+      color: white;
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(22, 93, 255, 0.3); }
+
+    .btn-ai {
+      background: linear-gradient(135deg, var(--color-ai), var(--color-ai-dark));
+      color: var(--color-bg);
+    }
+
+    .btn-ai:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0, 229, 192, 0.3); }
+
+    .btn-block { width: 100%; margin-top: 12px; }
+
+    /* ===== 质量仪表盘 ===== */
+    .quality-ring {
+      position: relative;
+      width: 120px; height: 120px;
+      margin: 0 auto;
+    }
+
+    .quality-ring svg { transform: rotate(-90deg); }
+
+    .quality-ring-bg { fill: none; stroke: var(--color-border); stroke-width: 8; }
+
+    .quality-ring-progress {
+      fill: none;
+      stroke: url(#gradient-ai);
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1s ease;
+    }
+
+    .quality-value {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 28px; font-weight: 700;
+      color: var(--color-ai);
+    }
+
+    .quality-label {
+      text-align: center;
+      font-size: 13px; color: var(--color-text-secondary);
+      margin-top: 8px;
+    }
+
+    /* ===== 进度条 ===== */
+    .progress-row { margin-bottom: 14px; }
+
+    .progress-header {
+      display: flex; justify-content: space-between;
+      font-size: 13px; margin-bottom: 6px;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--color-bg-secondary);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 1s ease;
+    }
+
+    .progress-fill.accuracy { background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light)); }
+    .progress-fill.relevance { background: linear-gradient(90deg, var(--color-ai), var(--color-ai-light)); }
+    .progress-fill.completeness { background: linear-gradient(90deg, var(--color-secondary), var(--color-secondary-light)); }
+    .progress-fill.consistency { background: linear-gradient(90deg, var(--color-info), var(--color-info)); }
+    .progress-fill.response { background: linear-gradient(90deg, var(--color-success), var(--color-success)); }
+
+    /* ===== 结果展示 ===== */
+    .result-panel {
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .result-panel::-webkit-scrollbar { width: 6px; }
+
+    .result-panel::-webkit-scrollbar-thumb {
+      background: var(--color-border-light);
+      border-radius: 3px;
+    }
+
+    .result-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .result-title { font-size: 14px; font-weight: 600; }
+
+    .result-meta { font-size: 11px; color: var(--color-text-tertiary); }
+
+    .result-content {
+      font-size: 13px; line-height: 1.8;
+      color: var(--color-text-secondary);
+    }
+
+    .result-content p { margin-bottom: 10px; }
+
+    .result-content strong { color: var(--color-text); }
+
+    .result-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      background: var(--color-primary-alpha-10);
+      color: var(--color-primary-light);
+      border-radius: 4px;
+      font-size: 11px;
+      margin-right: 6px;
+    }
+
+    /* ===== 降级策略标签 ===== */
+    .fallback-chain {
+      display: flex; align-items: center; gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .fallback-step {
+      display: flex; align-items: center; gap: 8px;
+      padding: 8px 12px;
+      background: var(--color-bg-secondary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      font-size: 12px;
+    }
+
+    .fallback-step.active {
+      border-color: var(--color-ai);
+      background: var(--color-ai-alpha-10);
+      color: var(--color-ai);
+    }
+
+    .fallback-arrow { color: var(--color-text-tertiary); font-size: 12px; }
+
+    /* ===== 加载动画 ===== */
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--color-border);
+      border-top-color: var(--color-ai);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .thinking-dots {
+      display: flex; gap: 4px;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .thinking-dots span {
+      width: 8px; height: 8px;
+      background: var(--color-ai);
+      border-radius: 50%;
+      animation: dotPulse 1.4s ease-in-out infinite;
+    }
+
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ===== 日志流 ===== */
+    .log-stream {
+      background: var(--color-bg-tertiary);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      padding: 3px 0;
+      color: var(--color-text-secondary);
+    }
+
+    .log-time { color: var(--color-text-tertiary); margin-right: 8px; }
+
+    .log-level-info { color: var(--color-info); }
+    .log-level-success { color: var(--color-success); }
+    .log-level-warning { color: var(--color-warning); }
+    .log-level-error { color: var(--color-error); }
+
+    /* ===== 滑块 ===== */
+    .slider-row { margin-bottom: 16px; }
+
+    .slider-header {
+      display: flex; justify-content: space-between;
+      font-size: 13px; margin-bottom: 8px;
+    }
+
+    .slider {
+      width: 100%; height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: var(--color-bg-secondary);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px; height: 18px;
+      background: linear-gradient(135deg, var(--color-ai), var(--color-ai-dark));
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 229, 192, 0.3);
+    }
+
+    /* ===== Tab切换 ===== */
+    .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+
+    .tab {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab:hover { border-color: var(--color-border-light); color: var(--color-text); }
+
+    .tab.active {
+      background: var(--color-primary-alpha-10);
+      border-color: var(--color-primary);
+      color: var(--color-primary-light);
+    }
+
+    /* ===== 隐藏/显示 ===== */
+    .hidden { display: none !important; }
+
+    /* ===== 动画 ===== */
+    .fade-in { animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section { margin-bottom: 24px; }
+
+    .section-title {
+      font-size: 18px; font-weight: 600;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+
+    .section-title .icon { font-size: 20px; }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- 侧边栏导航 -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">GW2</div>
+        <div>
+          <div class="sidebar-logo-text">WVW日志分析</div>
+          <div class="sidebar-logo-sub">AI集成测试控制台</div>
+        </div>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('dashboard')">
+        <span class="nav-icon">📊</span>
+        <span>系统概览</span>
+      </div>
+      <div class="nav-item active" onclick="switchTab('analysis')">
+        <span class="nav-icon">🤖</span>
+        <span>AI分析中心</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('templates')">
+        <span class="nav-icon">📝</span>
+        <span>提示词模板</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('config')">
+        <span class="nav-icon">⚙️</span>
+        <span>配置管理</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('quality')">
+        <span class="nav-icon">📈</span>
+        <span>质量监控</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('logs')">
+        <span class="nav-icon">📋</span>
+        <span>运行日志</span>
+      </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="main-content">
+      <!-- 页面头部 -->
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">🤖 AI分析中心</h1>
+          <p class="page-subtitle">基于大语言模型的智能战场数据分析系统</p>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <span class="badge badge-ai">● AI引擎运行中</span>
+          <span class="badge badge-online">● 系统正常</span>
+        </div>
+      </div>
+
+      <!-- 指标卡片 -->
+      <div class="grid grid-cols-4 section">
+        <div class="metric-card">
+          <div class="metric-label">今日分析请求</div>
+          <div class="metric-value">1,284</div>
+          <div class="metric-change up">↑ 23.5% 较昨日</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">平均响应时间</div>
+          <div class="metric-value">2.4s</div>
+          <div class="metric-change up">↑ 15% 优于目标</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">缓存命中率</div>
+          <div class="metric-value">68.3%</div>
+          <div class="metric-change up">↑ 8.2% 较上周</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">质量评分</div>
+          <div class="metric-value" style="background:linear-gradient(135deg,#00E5C0,#33FFE0);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">8.7</div>
+          <div class="metric-change up">↑ 0.3 持续优化</div>
+        </div>
+      </div>
+
+      <!-- Tab切换 -->
+      <div class="tabs">
+        <button class="tab active" onclick="switchSubTab('analyze')" data-tab="analyze">智能分析</button>
+        <button class="tab" onclick="switchSubTab('results')" data-tab="results">分析结果</button>
+        <button class="tab" onclick="switchSubTab('providers')" data-tab="providers">模型配置</button>
+      </div>
+
+      <!-- 智能分析面板 -->
+      <div id="panel-analyze" class="sub-panel">
+        <div class="grid grid-cols-3 section">
+          <!-- 战斗分析 -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">⚔️ 战斗分析</div>
+            <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:12px;">输入战斗ID，AI将分析战斗数据并生成详细报告</p>
+            <input type="text" class="input-field" id="fightId" placeholder="输入战斗ID (如: fight_20260501_001)">
+            <button class="btn btn-ai btn-block" onclick="startAnalyze('fight')">
+              <span>🚀</span> 开始分析
+            </button>
+          </div>
+
+          <!-- 成员分析 -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">👤 成员技能循环分析</div>
+            <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:12px;">分析特定成员的技能使用效率与优化建议</p>
+            <input type="text" class="input-field" id="memberId" placeholder="输入成员ID (如: member_12345)">
+            <button class="btn btn-ai btn-block" onclick="startAnalyze('member')">
+              <span>🚀</span> 开始分析
+            </button>
+          </div>
+
+          <!-- Build分析 -->
+          <div class="tool-panel">
+            <div class="tool-panel-title">🛡️ Build配置优化</div>
+            <p style="font-size:12px;color:var(--color-text-tertiary);margin-bottom:12px;">评估Build配置并给出优化建议</p>
+            <input type="text" class="input-field" id="buildId" placeholder="输入Build ID (如: build_vindicator_01)">
+            <button class="btn btn-ai btn-block" onclick="startAnalyze('build')">
+              <span>🚀</span> 开始分析
+            </button>
+          </div>
+        </div>
+
+        <!-- 提示词模板选择 -->
+        <div class="section">
+          <h2 class="section-title"><span class="icon">📝</span> 选择分析模板</h2>
+          <div class="template-list">
+            <div class="template-item selected" onclick="selectTemplate(this, 'fight_analysis_v1')">
+              <div class="template-icon">⚔️</div>
+              <div class="template-info">
+                <div class="template-name">战斗深度分析</div>
+                <div class="template-desc">全面分析战斗数据，包括伤害分布、承伤比例、团队协作评分</div>
+              </div>
+              <span class="template-tag">推荐</span>
+            </div>
+            <div class="template-item" onclick="selectTemplate(this, 'skill_rotation_v1')">
+              <div class="template-icon">⚡</div>
+              <div class="template-info">
+                <div class="template-name">技能循环优化</div>
+                <div class="template-desc">分析技能释放顺序与时机，识别效率瓶颈，提供循环优化方案</div>
+              </div>
+              <span class="template-tag">热门</span>
+            </div>
+            <div class="template-item" onclick="selectTemplate(this, 'build_optimization_v1')">
+              <div class="template-icon">🛡️</div>
+              <div class="template-info">
+                <div class="template-name">Build配置优化</div>
+                <div class="template-desc">基于当前Meta与战斗数据，给出装备、符文、法印调整建议</div>
+              </div>
+            </div>
+            <div class="template-item" onclick="selectTemplate(this, 'trend_analysis_v1')">
+              <div class="template-icon">📈</div>
+              <div class="template-info">
+                <div class="template-name">战力趋势分析</div>
+                <div class="template-desc">追踪多场次战斗数据，分析个人/团队战力变化趋势</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 分析结果面板 -->
+      <div id="panel-results" class="sub-panel hidden">
+        <div class="grid grid-cols-2 section">
+          <!-- 质量评分 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📊 响应质量评估</div>
+                <div class="card-subtitle">多维度AI输出质量评分</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:24px;">
+              <div>
+                <div class="quality-ring">
+                  <svg width="120" height="120" viewBox="0 0 120 120">
+                    <defs>
+                      <linearGradient id="gradient-ai" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00E5C0"/>
+                        <stop offset="100%" style="stop-color:#33FFE0"/>
+                      </linearGradient>
+                    </defs>
+                    <circle class="quality-ring-bg" cx="60" cy="60" r="52"/>
+                    <circle class="quality-ring-progress" cx="60" cy="60" r="52"
+                      stroke-dasharray="327" stroke-dashoffset="49"/>
+                  </svg>
+                  <div class="quality-value">8.5</div>
+                </div>
+                <div class="quality-label">综合质量评分</div>
+              </div>
+              <div style="flex:1;">
+                <div class="progress-row">
+                  <div class="progress-header">
+                    <span>准确性 (Accuracy)</span>
+                    <span style="color:var(--color-primary-light)">92%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill accuracy" style="width:92%"></div>
+                  </div>
+                </div>
+                <div class="progress-row">
+                  <div class="progress-header">
+                    <span>相关性 (Relevance)</span>
+                    <span style="color:var(--color-ai)">88%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill relevance" style="width:88%"></div>
+                  </div>
+                </div>
+                <div class="progress-row">
+                  <div class="progress-header">
+                    <span>完整性 (Completeness)</span>
+                    <span style="color:var(--color-secondary-light)">85%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill completeness" style="width:85%"></div>
+                  </div>
+                </div>
+                <div class="progress-row">
+                  <div class="progress-header">
+                    <span>一致性 (Consistency)</span>
+                    <span style="color:var(--color-info)">90%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill consistency" style="width:90%"></div>
+                  </div>
+                </div>
+                <div class="progress-row">
+                  <div class="progress-header">
+                    <span>响应时间 (Response Time)</span>
+                    <span style="color:var(--color-success)">95%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill response" style="width:95%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 分析结果内容 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📋 最新分析报告</div>
+                <div class="card-subtitle">战斗 #fight_20260501_001 - 2026-05-01 14:32:18</div>
+              </div>
+              <span class="badge badge-ai">AI生成</span>
+            </div>
+            <div class="result-panel" style="max-height:300px;">
+              <div class="result-content">
+                <p><span class="result-tag">战斗概况</span></p>
+                <p>本次战斗时长 <strong>6分07秒</strong>，共 <strong>50名</strong> 玩家参与。团队总输出 <strong>456.8M</strong>，击杀 <strong>45</strong> 人次，战损比 <strong>1.96:1</strong>，整体表现 <strong>优秀</strong>。</p>
+
+                <p><span class="result-tag">关键发现</span></p>
+                <p>1. <strong>输出集中度偏高</strong>：前10名玩家贡献了团队62%的总伤害，建议关注中下游成员的技能循环优化。</p>
+                <p>2. <strong>增益覆盖良好</strong>：Might平均覆盖率95.3%，Quickness 85.5%，但Alacrity仅72.1%，存在提升空间。</p>
+                <p>3. <strong>生存数据</strong>：平均死亡次数2.3次，倒地和复活效率处于中上水平。</p>
+
+                <p><span class="result-tag">优化建议</span></p>
+                <p>• 建议团队配置至少 <strong>2名</strong> 专注提供Alacrity的职业（如Mech、Chrono）<br>
+                • 鼓励使用 <strong>Vindicator</strong> 和 <strong>Willbender</strong> 等高爆发职业补充前排压力<br>
+                • 后排输出职业注意保持 <strong>600-900</strong> 码的最佳输出距离</p>
+
+                <p><span class="result-tag">成员亮点</span></p>
+                <p>🏆 <strong>帅妹妹丶.8297</strong> (Vindicator) - DPS 33,614，伤害转化率91.2%，表现极为出色</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 降级策略展示 -->
+        <div class="section">
+          <h2 class="section-title"><span class="icon">🛡️</span> 降级保护链</h2>
+          <div class="fallback-chain">
+            <div class="fallback-step active">
+              <span class="status-dot online"></span>
+              DeepSeek (主提供商)
+            </div>
+            <span class="fallback-arrow">→</span>
+            <div class="fallback-step">
+              <span class="status-dot standby"></span>
+              Qwen (备用)
+            </div>
+            <span class="fallback-arrow">→</span>
+            <div class="fallback-step">
+              <span class="status-dot standby"></span>
+              缓存降级
+            </div>
+            <span class="fallback-arrow">→</span>
+            <div class="fallback-step">
+              <span class="status-dot standby"></span>
+              规则引擎
+            </div>
+            <span class="fallback-arrow">→</span>
+            <div class="fallback-step">
+              <span class="status-dot standby"></span>
+              简化响应
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 模型配置面板 -->
+      <div id="panel-providers" class="sub-panel hidden">
+        <div class="grid grid-cols-2 section">
+          <!-- 提供商选择 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🌐 模型提供商</div>
+                <div class="card-subtitle">选择当前使用的AI模型提供商</div>
+              </div>
+            </div>
+            <div class="provider-grid">
+              <div class="provider-card active" onclick="selectProvider(this, 'deepseek')">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#1a5fb4,#3584e4);">🐋</div>
+                <div class="provider-name">DeepSeek</div>
+                <div class="provider-status">
+                  <span class="status-dot online"></span> 在线
+                </div>
+              </div>
+              <div class="provider-card" onclick="selectProvider(this, 'openai')">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#10a37f,#19c59f);">🅾️</div>
+                <div class="provider-name">OpenAI</div>
+                <div class="provider-status">
+                  <span class="status-dot standby"></span> 备用
+                </div>
+              </div>
+              <div class="provider-card" onclick="selectProvider(this, 'qwen')">
+                <div class="provider-icon" style="background:linear-gradient(135deg,#7c3aed,#a78bfa);">🔮</div>
+                <div class="provider-name">Qwen</div>
+                <div class="provider-status">
+                  <span class="status-dot standby"></span> 备用
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 功能开关 -->
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">⚙️ 功能开关</div>
+                <div class="card-subtitle">配置AI系统运行参数</div>
+              </div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">AI功能总开关</div>
+                <div class="toggle-desc">启用或禁用所有AI分析功能</div>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">响应缓存</div>
+                <div class="toggle-desc">缓存相似请求结果以提升响应速度</div>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">自动降级</div>
+                <div class="toggle-desc">主提供商失败时自动切换备用方案</div>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+            <div class="toggle-row">
+              <div class="toggle-info">
+                <div class="toggle-label">质量评估</div>
+                <div class="toggle-desc">对AI输出进行自动质量评分</div>
+              </div>
+              <div class="toggle-switch active" onclick="toggleSwitch(this)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 高级配置 -->
+        <div class="grid grid-cols-2 section">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">🔧 模型参数</div>
+                <div class="card-subtitle">调整AI模型的生成行为</div>
+              </div>
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span>Temperature (创造性)</span>
+                <span id="temp-value" style="color:var(--color-ai)">0.7</span>
+              </div>
+              <input type="range" class="slider" min="0" max="20" value="7" oninput="updateSlider(this, 'temp-value', 0, 2, 0.1)">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span>Max Tokens (最大长度)</span>
+                <span id="tokens-value" style="color:var(--color-ai)">4000</span>
+              </div>
+              <input type="range" class="slider" min="1000" max="8000" value="4000" step="500" oninput="updateSlider(this, 'tokens-value', 1000, 8000, 500)">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span>请求超时 (秒)</span>
+                <span id="timeout-value" style="color:var(--color-ai)">60</span>
+              </div>
+              <input type="range" class="slider" min="10" max="120" value="60" step="5" oninput="updateSlider(this, 'timeout-value', 10, 120, 5)">
+            </div>
+            <div class="slider-row">
+              <div class="slider-header">
+                <span>最大重试次数</span>
+                <span id="retry-value" style="color:var(--color-ai)">3</span>
+              </div>
+              <input type="range" class="slider" min="1" max="10" value="3" oninput="updateSlider(this, 'retry-value', 1, 10, 1)">
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <div class="card-title">📋 系统状态</div>
+                <div class="card-subtitle">实时运行指标监控</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+              <div style="text-align:center;padding:16px;background:var(--color-bg-secondary);border-radius:var(--radius-md);">
+                <div style="font-size:32px;font-weight:700;color:var(--color-success);">99.2%</div>
+                <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">服务可用率</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--color-bg-secondary);border-radius:var(--radius-md);">
+                <div style="font-size:32px;font-weight:700;color:var(--color-ai);">2.1s</div>
+                <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">平均延迟</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--color-bg-secondary);border-radius:var(--radius-md);">
+                <div style="font-size:32px;font-weight:700;color:var(--color-primary-light);">0</div>
+                <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">降级次数(今日)</div>
+              </div>
+              <div style="text-align:center;padding:16px;background:var(--color-bg-secondary);border-radius:var(--radius-md);">
+                <div style="font-size:32px;font-weight:700;color:var(--color-secondary-light);">¥12.5</div>
+                <div style="font-size:12px;color:var(--color-text-secondary);margin-top:4px;">今日API成本</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部日志 -->
+      <div class="section">
+        <h2 class="section-title"><span class="icon">📋</span> 系统运行日志</h2>
+        <div class="log-stream" id="logStream">
+          <div class="log-entry"><span class="log-time">14:35:22</span><span class="log-level-success">[SUCCESS]</span> 战斗分析任务完成 - fight_20260501_001，耗时 2.3s，质量评分 8.5</div>
+          <div class="log-entry"><span class="log-time">14:34:18</span><span class="log-level-info">[INFO]</span> 质量评估通过 - 准确性: 92%, 相关性: 88%</div>
+          <div class="log-entry"><span class="log-time">14:34:15</span><span class="log-level-info">[INFO]</span> 调用 DeepSeek API - model: deepseek-chat, tokens: 2048</div>
+          <div class="log-entry"><span class="log-time">14:34:14</span><span class="log-level-info">[INFO]</span> 提示词模板已加载 - fight_analysis_v1，上下文: 50 名玩家</div>
+          <div class="log-entry"><span class="log-time">14:32:01</span><span class="log-level-success">[SUCCESS]</span> 成员分析任务完成 - member_8297，技能循环评分 91.2</div>
+          <div class="log-entry"><span class="log-time">14:30:45</span><span class="log-level-warning">[WARN]</span> 缓存未命中 - 请求 hash: a3f7d2e1，已写入新缓存</div>
+          <div class="log-entry"><span class="log-time">14:28:12</span><span class="log-level-success">[SUCCESS]</span> Build优化分析完成 - build_vindicator_01，建议替换 Superior Rune of the Scholar</div>
+          <div class="log-entry"><span class="log-time">14:25:33</span><span class="log-level-info">[INFO]</span> 系统自检完成 - 所有提供商连接正常，缓存状态: 68.3% 命中率</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ===== 子Tab切换 =====
+    function switchSubTab(tabName) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+
+      document.querySelectorAll('.sub-panel').forEach(p => p.classList.add('hidden'));
+      document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+    }
+
+    // ===== 侧边栏导航 =====
+    function switchTab(tabName) {
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+    }
+
+    // ===== 模板选择 =====
+    function selectTemplate(el, templateId) {
+      document.querySelectorAll('.template-item').forEach(t => t.classList.remove('selected'));
+      el.classList.add('selected');
+      console.log('选中模板:', templateId);
+    }
+
+    // ===== 提供商选择 =====
+    function selectProvider(el, provider) {
+      document.querySelectorAll('.provider-card').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      console.log('选中提供商:', provider);
+    }
+
+    // ===== 开关切换 =====
+    function toggleSwitch(el) {
+      el.classList.toggle('active');
+    }
+
+    // ===== 滑块更新 =====
+    function updateSlider(slider, labelId, min, max, step) {
+      const value = parseInt(slider.value) * (step >= 1 ? 1 : step) + (step >= 1 ? 0 : 0);
+      let displayValue = slider.value;
+      if (step < 1) displayValue = (slider.value * step).toFixed(1);
+      document.getElementById(labelId).textContent = displayValue;
+    }
+
+    // ===== 开始分析 =====
+    function startAnalyze(type) {
+      const idMap = { fight: 'fightId', member: 'memberId', build: 'buildId' };
+      const input = document.getElementById(idMap[type]);
+      if (!input.value.trim()) {
+        input.style.borderColor = 'var(--color-error)';
+        setTimeout(() => input.style.borderColor = '', 1000);
+        return;
+      }
+
+      // 切换到结果面板并显示加载状态
+      switchSubTab('results');
+
+      // 模拟加载动画
+      const resultPanel = document.querySelector('#panel-results .result-content');
+      resultPanel.innerHTML = `
+        <div class="thinking-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <p style="text-align:center;color:var(--color-ai);font-size:14px;">
+          AI正在分析${type === 'fight' ? '战斗' : type === 'member' ? '成员技能循环' : 'Build配置'}数据...
+        </p>
+      `;
+
+      // 2秒后显示模拟结果
+      setTimeout(() => {
+        const mockResults = {
+          fight: `
+            <p><span class="result-tag">分析完成</span></p>
+            <p>战斗 <strong>#${input.value}</strong> 分析已完成。AI通过深度学习模型对战斗数据进行了多维度解析。</p>
+            <p><span class="result-tag">关键指标</span></p>
+            <p>• 团队DPS: <strong>156,782</strong> | 团队HPS: <strong>12,450</strong><br>
+            • 最高伤害职业: <strong>Vindicator</strong> (42.3M)<br>
+            • Buff覆盖率: Might 94.2% | Quickness 81.5% | Alacrity 68.3%</p>
+            <p><span class="result-tag">AI建议</span></p>
+            <p>1. 建议增加1名提供Alacrity的职业，可提升整体输出约8-12%<br>
+            2. 前排职业注意保持稳固(Stability)覆盖，当前存在3.2秒空窗期<br>
+            3. 推荐尝试双Vindicator配置以最大化爆发输出</p>
+          `,
+          member: `
+            <p><span class="result-tag">成员分析</span></p>
+            <p>成员 <strong>#${input.value}</strong> 技能循环分析完成。</p>
+            <p><span class="result-tag">循环效率</span></p>
+            <p>• 技能施法效率: <strong>87.3%</strong> (优秀)<br>
+            • 平均技能间隔: <strong>0.82s</strong><br>
+            • 增益利用率: <strong>91.5%</strong></p>
+            <p><span class="result-tag">改进建议</span></p>
+            <p>1. 在急速(Quickness)期间多使用长读条技能<br>
+            2. 翻滚(dodge)后及时补Buff，存在0.5s延迟<br>
+            3. 建议练习武器切换时机，当前切换间隔偏长</p>
+          `,
+          build: `
+            <p><span class="result-tag">Build评估</span></p>
+            <p>Build <strong>#${input.value}</strong> 配置分析完成。</p>
+            <p><span class="result-tag">配置评分</span></p>
+            <p>• 综合评分: <strong>8.2/10</strong> (良好)<br>
+            • 输出潜力: <strong>9.1/10</strong><br>
+            • 生存能力: <strong>7.5/10</strong></p>
+            <p><span class="result-tag">优化建议</span></p>
+            <p>1. 符文建议更换为 <strong>Superior Rune of the Dragonhunter</strong><br>
+            2. 法印推荐: <strong>Force + Impact</strong> 组合<br>
+            3. 特质线第三列建议点出 <strong>Inspiring Virtue</strong></p>
+          `
+        };
+        resultPanel.innerHTML = mockResults[type];
+        resultPanel.classList.add('fade-in');
+
+        // 添加日志
+        addLog(`[SUCCESS] ${type === 'fight' ? '战斗' : type === 'member' ? '成员' : 'Build'}分析任务完成 - ${input.value}，质量评分 8.7`);
+      }, 2000);
+    }
+
+    // ===== 添加日志 =====
+    function addLog(message) {
+      const now = new Date();
+      const time = now.toTimeString().slice(0, 8);
+      const stream = document.getElementById('logStream');
+      const entry = document.createElement('div');
+      entry.className = 'log-entry';
+      entry.innerHTML = `<span class="log-time">${time}</span><span class="log-level-success">[SUCCESS]</span> ${message}`;
+      stream.insertBefore(entry, stream.firstChild);
+    }
+
+    // ===== 质量环动画 =====
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const ring = document.querySelector('.quality-ring-progress');
+        if (ring) ring.style.strokeDashoffset = '49';
+      }, 500);
+    });
+  </script>
+</body>
+</html>

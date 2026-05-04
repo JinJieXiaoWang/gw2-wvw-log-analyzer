@@ -1,0 +1,252 @@
+/* === 按钮系统 === */
+@import '../variablesUnified.css';
+
+@layer components {
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 font-medium rounded-lg;
+    @apply px-5 py-2.5 text-sm;
+    @apply transition-all duration-200 ease-out;
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-bg;
+    @apply disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+    overflow: hidden;
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+  }
+
+  .btn:hover::before {
+    opacity: 1;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* 主要按钮 */
+  .btn-primary {
+    @apply btn bg-primary text-white shadow-sm;
+    box-shadow: 0 0 20px var(--color-primary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .btn-primary:hover {
+    @apply bg-primary-light;
+    box-shadow: 0 0 30px var(--color-primary-alpha-50), inset 0 1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  /* 次要按钮 */
+  .btn-secondary {
+    @apply btn bg-secondary text-white shadow-sm;
+    box-shadow: 0 0 20px var(--color-secondary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+
+  .btn-secondary:hover {
+    @apply bg-secondary-light;
+    box-shadow: 0 0 30px var(--color-secondary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.15);
+    transform: translateY(-2px);
+  }
+
+  /* AI功能按钮 */
+  .btn-ai {
+    @apply btn text-neutral-bg font-semibold;
+    background: linear-gradient(135deg, var(--color-ai) 0%, var(--color-ai-dark) 100%);
+    box-shadow: 0 0 25px var(--color-ai-alpha-30), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .btn-ai:hover {
+    background: linear-gradient(135deg, var(--color-ai-light) 0%, var(--color-ai) 100%);
+    box-shadow: 0 0 40px var(--color-ai-alpha-30), inset 0 1px 0 rgba(255,255,255,0.25);
+    transform: translateY(-2px);
+  }
+
+  /* 轮廓按钮 */
+  .btn-outline {
+    @apply btn border-2 bg-transparent;
+    @apply border-primary text-primary;
+  }
+
+  .btn-outline:hover {
+    @apply bg-primary text-white;
+    box-shadow: 0 0 25px var(--color-primary-alpha-30);
+    transform: translateY(-2px);
+  }
+
+  /* 幽灵按钮 */
+  .btn-ghost {
+    @apply btn bg-transparent text-neutral-text-secondary;
+  }
+
+  .btn-ghost:hover {
+    @apply bg-neutral-card text-neutral-text;
+  }
+
+  /* 危险按钮 */
+  .btn-danger {
+    background: var(--color-error);
+    color: white;
+    box-shadow: 0 0 20px var(--color-error-alpha-10);
+  }
+
+  .btn-danger:hover {
+    background: #ff667a;
+    box-shadow: 0 0 30px var(--color-error-alpha-10);
+    transform: translateY(-2px);
+  }
+
+  /* === 操作列按钮 === */
+  .action-btn {
+    @apply relative inline-flex items-center justify-center;
+    @apply w-8 h-8 rounded-lg;
+    @apply transition-all duration-200 ease-out;
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    background: rgba(26, 26, 31, 0.6);
+  }
+
+  /* 确保只有图标的按钮也能正常显示 */
+  .action-btn.p-button.p-button-text {
+    @apply w-8 h-8;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--color-border);
+    background: rgba(26, 26, 31, 0.6);
+  }
+
+  .action-btn.p-button.p-button-text .p-button-icon {
+    font-size: 1rem;
+  }
+
+  .action-btn-view {
+    color: var(--color-primary);
+  }
+
+  .action-btn-view:hover {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary-light);
+    border-color: var(--color-primary-alpha-30);
+  }
+
+  .action-btn-edit {
+    color: var(--color-secondary);
+  }
+
+  .action-btn-edit:hover {
+    background: var(--color-secondary-alpha-10);
+    color: var(--color-secondary-light);
+    border-color: var(--color-secondary-alpha-30);
+  }
+
+  .action-btn-download {
+    color: var(--color-success);
+  }
+
+  .action-btn-download:hover {
+    background: var(--color-success-alpha-10);
+    color: var(--color-success);
+    border-color: var(--color-success-alpha-30);
+  }
+
+  .action-btn-parse {
+    color: var(--color-secondary);
+  }
+
+  .action-btn-parse:hover {
+    background: var(--color-secondary-alpha-10);
+    color: var(--color-secondary-light);
+    border-color: var(--color-secondary-alpha-30);
+  }
+
+  .action-btn-delete {
+    color: var(--color-error);
+  }
+
+  .action-btn-delete:hover {
+    background: var(--color-error-alpha-10);
+    color: var(--color-error);
+    border-color: var(--color-error-alpha-30);
+  }
+
+  .action-btn:disabled {
+    @apply opacity-40 cursor-not-allowed hover:bg-transparent hover:text-neutral-text-secondary;
+  }
+
+  /* 小型按钮 */
+  .action-btn-sm {
+    @apply w-7 h-7 text-sm;
+  }
+
+  .action-btn-lg {
+    @apply w-10 h-10 text-base;
+  }
+
+  /* 成功按钮 */
+  .btn-success {
+    background: var(--color-success);
+    color: white;
+    box-shadow: 0 0 20px var(--color-success-alpha-10);
+  }
+
+  .btn-success:hover {
+    background: #33e0a5;
+    box-shadow: 0 0 30px var(--color-success-alpha-10);
+    transform: translateY(-2px);
+  }
+
+  /* 按钮尺寸 */
+  .btn-sm {
+    @apply px-3.5 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-7 py-3.5 text-base;
+  }
+
+  /* 游戏化按钮 */
+  .btn-game {
+    @apply btn text-white font-semibold rounded-xl;
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+    box-shadow: 0 0 20px var(--color-primary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.15);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-game::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .btn-game:hover::before {
+    opacity: 1;
+  }
+
+  .btn-game:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 35px var(--color-primary-alpha-50), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  .btn-game:active {
+    transform: translateY(-1px) scale(0.98);
+  }
+
+  .btn-game-legendary {
+    @apply btn-game;
+    background: linear-gradient(135deg, var(--rarity-legendary) 0%, var(--color-primary) 100%);
+    box-shadow: 0 0 25px rgba(76, 19, 157, 0.4), inset 0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  .btn-game-legendary:hover {
+    box-shadow: 0 0 45px rgba(76, 19, 157, 0.6), inset 0 1px 0 rgba(255,255,255,0.2);
+  }
+}

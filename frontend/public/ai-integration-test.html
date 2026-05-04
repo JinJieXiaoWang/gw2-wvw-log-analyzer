@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI模型集成测试页面</title>
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 主题变量 */
+        :root {
+            --color-primary: #165DFF;
+            --color-primary-light: #4080FF;
+            --color-primary-dark: #0D47A1;
+            --color-secondary: #FF7D00;
+            --color-secondary-light: #FFA726;
+            --color-secondary-dark: #E65100;
+            --color-bg: #141414;
+            --color-bg-secondary: #1E1E1E;
+            --color-card: #2A2A2A;
+            --color-card-hover: #323232;
+            --color-border: #3A3A3A;
+            --color-border-light: #4A4A4A;
+            --color-text: #E5E5E5;
+            --color-text-secondary: #909399;
+            --color-text-disabled: #666666;
+            --color-success: #52C41A;
+            --color-warning: #FAAD14;
+            --color-error: #FF4D4F;
+            --color-info: #1890FF;
+            --color-ai: #7C4DFF;
+            
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --font-size-xs: 12px;
+            --font-size-sm: 14px;
+            --font-size-base: 16px;
+            --font-size-lg: 18px;
+            --font-size-xl: 24px;
+            --font-size-2xl: 32px;
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 20px rgba(22, 93, 255, 0.3);
+        }
+
+        body {
+            font-family: var(--font-family);
+            font-size: var(--font-size-base);
+            line-height: 1.5;
+            color: var(--color-text);
+            background-color: var(--color-bg);
+            min-height: 100vh;
+        }
+
+        /* 导航栏 */
+        .navbar {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-bg) 100%);
+            border-bottom: 1px solid var(--color-border);
+            padding: var(--spacing-md) var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .navbar-brand .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-ai) 100%);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .navbar-brand-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--radius-md);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .btn-secondary {
+            background: var(--color-card);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-card-hover);
+        }
+
+        /* 主内容区 */
+        .main-container {
+            padding: var(--spacing-xl);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .page-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .page-subtitle {
+            font-size: var(--font-size-base);
+            color: var(--color-text-secondary);
+        }
+
+        /* 统计卡片 */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-card {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--color-border);
+            transition: all 0.2s ease;
+        }
+
+        .stat-card:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: var(--spacing-md);
+            font-size: 24px;
+        }
+
+        .stat-icon.primary { background: rgba(22, 93, 255, 0.2); color: var(--color-primary); }
+        .stat-icon.success { background: rgba(82, 196, 26, 0.2); color: var(--color-success); }
+        .stat-icon.warning { background: rgba(250, 173, 20, 0.2); color: var(--color-warning); }
+        .stat-icon.error { background: rgba(255, 77, 79, 0.2); color: var(--color-error); }
+        .stat-icon.ai { background: rgba(124, 77, 255, 0.2); color: var(--color-ai); }
+
+        .stat-value {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .stat-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* 系统架构图 */
+        .architecture-section {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--color-border);
+        }
+
+        .section-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .architecture-diagram {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-lg);
+            position: relative;
+        }
+
+        .arch-layer {
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .arch-box {
+            background: linear-gradient(135deg, var(--color-bg-secondary) 0%, var(--color-card) 100%);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+            text-align: center;
+            position: relative;
+        }
+
+        .arch-box.header {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 20px rgba(22, 93, 255, 0.2);
+        }
+
+        .arch-box.title {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .arch-box.desc {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            margin-top: var(--spacing-xs);
+        }
+
+        .arch-arrow {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid var(--color-border);
+            margin: 0 auto;
+        }
+
+        .arch-middle-boxes {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+        }
+
+        .arch-middle-box {
+            flex: 1;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .arch-middle-box.active {
+            border-color: var(--color-primary);
+            background: rgba(22, 93, 255, 0.1);
+        }
+
+        .arch-middle-title {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .arch-middle-desc {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        /* 配置面板 */
+        .config-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .config-card {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .config-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .config-header-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .config-header-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .config-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+        }
+
+        .config-item-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .config-item-value {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--color-card);
+            border-radius: var(--radius-sm);
+        }
+
+        .config-item-value.primary { color: var(--color-primary); }
+        .config-item-value.success { color: var(--color-success); }
+        .config-item-value.warning { color: var(--color-warning); }
+
+        /* 提供商选择器 */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .provider-card {
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .provider-card:hover {
+            border-color: var(--color-primary);
+        }
+
+        .provider-card.active {
+            border-color: var(--color-primary);
+            background: rgba(22, 93, 255, 0.1);
+        }
+
+        .provider-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto var(--spacing-sm);
+            font-size: 24px;
+        }
+
+        .provider-name {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .provider-status {
+            font-size: var(--font-size-xs);
+            color: var(--color-success);
+        }
+
+        .provider-status.offline {
+            color: var(--color-error);
+        }
+
+        /* 提示词模板 */
+        .template-section {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--color-border);
+        }
+
+        .template-tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .template-tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            background: none;
+            color: var(--color-text-secondary);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .template-tab.active {
+            color: var(--color-primary);
+        }
+
+        .template-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--color-primary);
+            border-radius: 1px;
+        }
+
+        .template-content {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-lg);
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .template-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .template-version {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--color-card);
+            border-radius: var(--radius-sm);
+        }
+
+        .template-description {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .template-prompt {
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: var(--font-size-xs);
+            color: var(--color-text);
+            line-height: 1.6;
+            border: 1px solid var(--color-border);
+            overflow-x: auto;
+        }
+
+        /* 质量评估 */
+        .quality-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .quality-card {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-lg);
+            border: 1px solid var(--color-border);
+        }
+
+        .quality-metric {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .quality-metric-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .quality-metric-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .quality-metric-value {
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .quality-bar {
+            height: 8px;
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        .quality-bar-fill {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            transition: width 0.5s ease;
+        }
+
+        .quality-bar-fill.high { background: var(--color-success); }
+        .quality-bar-fill.medium { background: var(--color-warning); }
+        .quality-bar-fill.low { background: var(--color-error); }
+
+        /* 降级策略 */
+        .fallback-section {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            border: 1px solid var(--color-border);
+        }
+
+        .fallback-chain {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .fallback-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .fallback-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: var(--color-bg-secondary);
+            border: 2px solid var(--color-border);
+            transition: all 0.2s ease;
+        }
+
+        .fallback-circle.active {
+            border-color: var(--color-success);
+            background: rgba(82, 196, 26, 0.2);
+            box-shadow: 0 0 15px rgba(82, 196, 26, 0.4);
+        }
+
+        .fallback-circle.primary {
+            border-color: var(--color-primary);
+            background: rgba(22, 93, 255, 0.2);
+        }
+
+        .fallback-label {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+
+        .fallback-arrow {
+            font-size: 20px;
+            color: var(--color-border);
+        }
+
+        /* API测试面板 */
+        .api-section {
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: var(--spacing-xl);
+            border: 1px solid var(--color-border);
+        }
+
+        .api-request-panel {
+            background: var(--color-bg-secondary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .api-url {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: var(--font-size-sm);
+            color: var(--color-text);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .api-method {
+            display: inline-block;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--color-success);
+            color: white;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            border-radius: var(--radius-sm);
+            margin-right: var(--spacing-sm);
+        }
+
+        .api-response-panel {
+            background: var(--color-bg);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-md);
+            border: 1px solid var(--color-border);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .api-response-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .api-response-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .api-response-time {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .api-response-body {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: var(--font-size-xs);
+            color: var(--color-text);
+            line-height: 1.6;
+        }
+
+        /* 页脚 */
+        .footer {
+            background: var(--color-bg-secondary);
+            border-top: 1px solid var(--color-border);
+            padding: var(--spacing-xl);
+            margin-top: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .footer-text {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+
+            .main-container {
+                padding: var(--spacing-md);
+            }
+
+            .config-section,
+            .quality-section {
+                grid-template-columns: 1fr;
+            }
+
+            .arch-middle-boxes {
+                flex-direction: column;
+            }
+
+            .fallback-chain {
+                flex-direction: column;
+            }
+
+            .fallback-arrow {
+                transform: rotate(90deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-brand">
+            <div class="logo">AI</div>
+            <span class="navbar-brand-title">AI模型集成系统</span>
+        </div>
+        <div class="navbar-actions">
+            <button class="btn btn-secondary" onclick="clearCache()">
+                <span>清除缓存</span>
+            </button>
+            <button class="btn btn-primary" onclick="testConfig()">
+                <span>测试配置</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="main-container">
+        <!-- 页面标题 -->
+        <header class="page-header">
+            <h1 class="page-title">AI模型集成测试</h1>
+            <p class="page-subtitle">多模型提供商支持 · 智能提示词管理 · 响应质量评估 · 多级降级策略</p>
+        </header>
+
+        <!-- 统计卡片 -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">⚡</div>
+                <div class="stat-value">98.5%</div>
+                <div class="stat-label">成功率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon success">⏱️</div>
+                <div class="stat-value">12.3s</div>
+                <div class="stat-label">平均响应时间</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon warning">📊</div>
+                <div class="stat-value">0.85</div>
+                <div class="stat-label">质量评分</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon error">🔄</div>
+                <div class="stat-value">2.3%</div>
+                <div class="stat-label">降级率</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon ai">💾</div>
+                <div class="stat-value">68%</div>
+                <div class="stat-label">缓存命中率</div>
+            </div>
+        </div>
+
+        <!-- 系统架构图 -->
+        <section class="architecture-section">
+            <h2 class="section-title">🏗️ 系统架构</h2>
+            <div class="architecture-diagram">
+                <div class="arch-layer">
+                    <div class="arch-box header">
+                        <div class="arch-box title">API路由层</div>
+                        <div class="arch-box desc">app/routers/ai.py - HTTP接口</div>
+                    </div>
+                </div>
+                <div class="arch-arrow"></div>
+                <div class="arch-layer">
+                    <div class="arch-box">
+                        <div class="arch-box title">业务服务层</div>
+                        <div class="arch-box desc">app/services/ai_service.py - AIOrchestrator</div>
+                    </div>
+                </div>
+                <div class="arch-arrow"></div>
+                <div class="arch-middle-boxes">
+                    <div class="arch-middle-box active">
+                        <div class="arch-middle-title">模型客户端</div>
+                        <div class="arch-middle-desc">统一接口 / 重试机制</div>
+                    </div>
+                    <div class="arch-middle-box">
+                        <div class="arch-middle-title">提示词模板</div>
+                        <div class="arch-middle-desc">预定义分析模板</div>
+                    </div>
+                    <div class="arch-middle-box">
+                        <div class="arch-middle-title">质量评估</div>
+                        <div class="arch-middle-desc">降级处理</div>
+                    </div>
+                </div>
+                <div class="arch-arrow"></div>
+                <div class="arch-layer">
+                    <div class="arch-box">
+                        <div class="arch-box title">模型配置层</div>
+                        <div class="arch-box desc">app/config/ai_config.py - 统一配置管理</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 配置面板 -->
+        <div class="config-section">
+            <div class="config-card">
+                <div class="config-header">
+                    <div class="config-header-icon" style="background: rgba(22, 93, 255, 0.2); color: var(--color-primary);">⚙️</div>
+                    <div class="config-header-title">系统配置</div>
+                </div>
+                <div class="config-list">
+                    <div class="config-item">
+                        <span class="config-item-label">AI功能</span>
+                        <span class="config-item-value success">已启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">默认提供商</span>
+                        <span class="config-item-value primary">DeepSeek</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">请求超时</span>
+                        <span class="config-item-value">60s</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">缓存功能</span>
+                        <span class="config-item-value success">已启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">降级策略</span>
+                        <span class="config-item-value warning">已启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">最大重试</span>
+                        <span class="config-item-value">3次</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="config-card">
+                <div class="config-header">
+                    <div class="config-header-icon" style="background: rgba(124, 77, 255, 0.2); color: var(--color-ai);">🤖</div>
+                    <div class="config-header-title">模型提供商</div>
+                </div>
+                <div class="provider-grid">
+                    <div class="provider-card active" onclick="selectProvider('deepseek')">
+                        <div class="provider-icon" style="background: rgba(255, 125, 0, 0.2); color: var(--color-secondary);">🔥</div>
+                        <div class="provider-name">DeepSeek</div>
+                        <div class="provider-status">在线</div>
+                    </div>
+                    <div class="provider-card" onclick="selectProvider('qwen')">
+                        <div class="provider-icon" style="background: rgba(22, 93, 255, 0.2); color: var(--color-primary);">🌊</div>
+                        <div class="provider-name">Qwen</div>
+                        <div class="provider-status">在线</div>
+                    </div>
+                    <div class="provider-card" onclick="selectProvider('openai')">
+                        <div class="provider-icon" style="background: rgba(82, 196, 26, 0.2); color: var(--color-success);">✨</div>
+                        <div class="provider-name">OpenAI</div>
+                        <div class="provider-status">在线</div>
+                    </div>
+                    <div class="provider-card" onclick="selectProvider('local')">
+                        <div class="provider-icon" style="background: rgba(150, 150, 150, 0.2); color: var(--color-text-secondary);">🖥️</div>
+                        <div class="provider-name">Local</div>
+                        <div class="provider-status offline">离线</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 提示词模板 -->
+        <section class="template-section">
+            <h2 class="section-title">📝 提示词模板</h2>
+            <div class="template-tabs">
+                <button class="template-tab active" onclick="selectTemplate('fight')">战斗分析</button>
+                <button class="template-tab" onclick="selectTemplate('rotation')">技能循环</button>
+                <button class="template-tab" onclick="selectTemplate('build')">Build优化</button>
+                <button class="template-tab" onclick="selectTemplate('trend')">趋势分析</button>
+            </div>
+            <div class="template-content" id="templateContent">
+                <div class="template-header">
+                    <span class="template-title">fight_analysis_v1</span>
+                    <span class="template-version">v1.0</span>
+                </div>
+                <div class="template-description">分析战斗日志数据，生成详细的战斗报告，包括伤害统计、击杀分析、治疗效率等。</div>
+                <div class="template-prompt">
+                    你是一位专业的激战2 WvW战场分析师。请分析以下战斗数据：
+
+战斗时长: {duration}秒
+总伤害: {total_damage}
+击杀数: {kills}
+死亡数: {deaths}
+参战人数: {player_count}
+
+数据摘要: {data_summary}
+
+请提供：
+1. 整体战斗评估
+2. 伤害输出分析
+3. 关键击杀时刻
+4. 团队协作评价
+5. 改进建议
+
+输出格式：JSON
+                </div>
+            </div>
+        </section>
+
+        <!-- 质量评估 -->
+        <div class="quality-section">
+            <div class="quality-card">
+                <div class="config-header">
+                    <div class="config-header-icon" style="background: rgba(250, 173, 20, 0.2); color: var(--color-warning);">📈</div>
+                    <div class="config-header-title">质量评估指标</div>
+                </div>
+                <div class="quality-metric">
+                    <div class="quality-metric-header">
+                        <span class="quality-metric-label">准确性</span>
+                        <span class="quality-metric-value">0.88</span>
+                    </div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill high" style="width: 88%"></div>
+                    </div>
+                </div>
+                <div class="quality-metric">
+                    <div class="quality-metric-header">
+                        <span class="quality-metric-label">相关性</span>
+                        <span class="quality-metric-value">0.92</span>
+                    </div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill high" style="width: 92%"></div>
+                    </div>
+                </div>
+                <div class="quality-metric">
+                    <div class="quality-metric-header">
+                        <span class="quality-metric-label">完整性</span>
+                        <span class="quality-metric-value">0.75</span>
+                    </div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill medium" style="width: 75%"></div>
+                    </div>
+                </div>
+                <div class="quality-metric">
+                    <div class="quality-metric-header">
+                        <span class="quality-metric-label">一致性</span>
+                        <span class="quality-metric-value">0.85</span>
+                    </div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill high" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="quality-metric">
+                    <div class="quality-metric-header">
+                        <span class="quality-metric-label">响应时间</span>
+                        <span class="quality-metric-value">0.90</span>
+                    </div>
+                    <div class="quality-bar">
+                        <div class="quality-bar-fill high" style="width: 90%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quality-card">
+                <div class="config-header">
+                    <div class="config-header-icon" style="background: rgba(255, 77, 79, 0.2); color: var(--color-error);">🛡️</div>
+                    <div class="config-header-title">降级策略配置</div>
+                </div>
+                <div class="config-list">
+                    <div class="config-item">
+                        <span class="config-item-label">缓存降级</span>
+                        <span class="config-item-value success">启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">提供商切换</span>
+                        <span class="config-item-value success">启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">规则化方案</span>
+                        <span class="config-item-value success">启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">简化响应</span>
+                        <span class="config-item-value warning">启用</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">质量阈值</span>
+                        <span class="config-item-value">0.6</span>
+                    </div>
+                    <div class="config-item">
+                        <span class="config-item-label">超时阈值</span>
+                        <span class="config-item-value">30s</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 降级策略流程图 -->
+        <section class="fallback-section">
+            <h2 class="section-title">🔄 降级链路</h2>
+            <div class="fallback-chain">
+                <div class="fallback-node">
+                    <div class="fallback-circle primary">🏠</div>
+                    <div class="fallback-label">主提供商</div>
+                </div>
+                <div class="fallback-arrow">→</div>
+                <div class="fallback-node">
+                    <div class="fallback-circle">🔄</div>
+                    <div class="fallback-label">备用提供商</div>
+                </div>
+                <div class="fallback-arrow">→</div>
+                <div class="fallback-node">
+                    <div class="fallback-circle">💾</div>
+                    <div class="fallback-label">缓存</div>
+                </div>
+                <div class="fallback-arrow">→</div>
+                <div class="fallback-node">
+                    <div class="fallback-circle">⚙️</div>
+                    <div class="fallback-label">规则引擎</div>
+                </div>
+                <div class="fallback-arrow">→</div>
+                <div class="fallback-node">
+                    <div class="fallback-circle active">📝</div>
+                    <div class="fallback-label">简化响应</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- API测试面板 -->
+        <section class="api-section">
+            <h2 class="section-title">🔌 API接口测试</h2>
+            <div class="api-request-panel">
+                <div class="api-url">
+                    <span class="api-method">GET</span>
+                    /api/v1/ai/analyze/fight
+                </div>
+            </div>
+            <button class="btn btn-primary" style="margin-bottom: var(--spacing-md);" onclick="testApi()">
+                <span>发起请求</span>
+            </button>
+            <div class="api-response-panel">
+                <div class="api-response-header">
+                    <div class="api-response-status">
+                        <div class="status-dot"></div>
+                        <span style="font-size: var(--font-size-sm); color: var(--color-text);">响应成功</span>
+                    </div>
+                    <span class="api-response-time">响应时间: 8.2s</span>
+                </div>
+                <div class="api-response-body">
+{
+  "success": true,
+  "code": 200,
+  "message": "分析成功",
+  "data": {
+    "analysis_type": "fight_analysis",
+    "template_id": "fight_analysis_v1",
+    "provider": "deepseek",
+    "quality_score": 0.85,
+    "summary": "战斗整体表现优秀，团队协作良好",
+    "details": {
+      "damage_efficiency": 0.88,
+      "kill_efficiency": 0.92,
+      "survival_rate": 0.78,
+      "key_moments": [...]
+    },
+    "suggestions": [
+      "建议增加治疗职业配置",
+      "优化技能循环配合"
+    ]
+  },
+  "meta": {
+    "response_time_ms": 8234,
+    "tokens_used": 2341,
+    "cache_hit": false
+  }
+}
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p class="footer-text">AI模型集成系统 v1.0 | 激战2 WvW战场日志分析平台</p>
+    </footer>
+
+    <script>
+        // 提供商选择
+        function selectProvider(provider) {
+            const cards = document.querySelectorAll('.provider-card');
+            cards.forEach(card => card.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            console.log('选择提供商:', provider);
+        }
+
+        // 模板选择
+        function selectTemplate(template) {
+            const tabs = document.querySelectorAll('.template-tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            
+            const content = document.getElementById('templateContent');
+            const templates = {
+                fight: {
+                    title: 'fight_analysis_v1',
+                    version: 'v1.0',
+                    desc: '分析战斗日志数据，生成详细的战斗报告，包括伤害统计、击杀分析、治疗效率等。',
+                    prompt: `你是一位专业的激战2 WvW战场分析师。请分析以下战斗数据：
+
+战斗时长: {duration}秒
+总伤害: {total_damage}
+击杀数: {kills}
+死亡数: {deaths}
+参战人数: {player_count}
+
+数据摘要: {data_summary}
+
+请提供：
+1. 整体战斗评估
+2. 伤害输出分析
+3. 关键击杀时刻
+4. 团队协作评价
+5. 改进建议
+
+输出格式：JSON`
+                },
+                rotation: {
+                    title: 'skill_rotation_v1',
+                    version: 'v1.0',
+                    desc: '分析职业技能释放时序，对比理想循环，识别失误和优化空间。',
+                    prompt: `你是一位专业的激战2技能循环分析师。请分析以下技能数据：
+
+职业: {profession}
+精英特长: {specialization}
+技能列表: {skills}
+循环时长: {rotation_duration}
+
+请提供：
+1. 技能循环评估
+2. 技能占比分析
+3. 失误识别
+4. 优化建议
+
+输出格式：JSON`
+                },
+                build: {
+                    title: 'build_optimization_v1',
+                    version: 'v1.0',
+                    desc: '分析Build配置，提供优化建议和替代方案。',
+                    prompt: `你是一位专业的激战2 Build设计师。请分析以下Build配置：
+
+职业: {profession}
+精英特长: {specialization}
+天赋配置: {traits}
+装备配置: {gear}
+符文/法印: {runes_sigils}
+
+请提供：
+1. Build评估
+2. 优化建议
+3. 替代方案
+4. 适用场景分析
+
+输出格式：JSON`
+                },
+                trend: {
+                    title: 'trend_analysis_v1',
+                    version: 'v1.0',
+                    desc: '分析历史数据趋势，预测未来表现。',
+                    prompt: `你是一位专业的数据分析师。请分析以下趋势数据：
+
+时间范围: {time_range}
+数据点数量: {data_points}
+关键指标: {metrics}
+
+请提供：
+1. 趋势分析
+2. 异常识别
+3. 预测结果
+4. 建议措施
+
+输出格式：JSON`
+                }
+            };
+            
+            const templateData = templates[template];
+            content.innerHTML = `
+                <div class="template-header">
+                    <span class="template-title">${templateData.title}</span>
+                    <span class="template-version">${templateData.version}</span>
+                </div>
+                <div class="template-description">${templateData.desc}</div>
+                <div class="template-prompt">${templateData.prompt}</div>
+            `;
+        }
+
+        // 测试配置
+        function testConfig() {
+            alert('配置测试完成！\n\n✓ AI服务连接正常\n✓ 模型提供商可用\n✓ 提示词模板已加载\n✓ 降级策略已配置');
+        }
+
+        // 清除缓存
+        function clearCache() {
+            alert('缓存已清除！');
+        }
+
+        // 测试API
+        function testApi() {
+            const responsePanel = document.querySelector('.api-response-panel');
+            responsePanel.style.opacity = '0.5';
+            setTimeout(() => {
+                responsePanel.style.opacity = '1';
+            }, 500);
+        }
+    </script>
+</body>
+</html>

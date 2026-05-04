@@ -1,0 +1,138 @@
+/* === 样式入口文件 === */
+
+/* 统一CSS变量系统（包含PrimeVue/Aura桥接） */
+@import './variablesUnified.css';
+
+/* 基础样式 */
+@import './base.css';
+
+/* 布局样式 */
+@import './layouts/main.css';
+
+/* 组件样式 */
+@import './components/buttons.css';
+@import './components/badges.css';
+@import './components/cards.css';
+@import './components/tables.css';
+@import './components/forms.css';
+@import './components/gameMenu.css';
+
+/* 工具类 */
+@import './utilities/utilities.css';
+@import './utilities/animations.css';
+@import './utilities/gameUtilities.css';
+
+/* PrimeVue 样式覆盖 */
+@import './primevue/index.css';
+
+/* 响应式断点 */
+@media (max-width: 640px) {
+  .sm\:hidden {
+    display: none;
+  }
+
+  .sm\:block {
+    display: block;
+  }
+
+  .sm\:flex {
+    display: flex;
+  }
+
+  .sm\:grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+
+  .sm\:flex-col {
+    flex-direction: column;
+  }
+
+  .sm\:text-center {
+    text-align: center;
+  }
+
+  .sm\:w-full {
+    width: 100%;
+  }
+
+  .sm\:p-4 {
+    padding: 1rem;
+  }
+}
+
+/* 平板 */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .md\:hidden {
+    display: none;
+  }
+
+  .md\:block {
+    display: block;
+  }
+
+  .md\:flex {
+    display: flex;
+  }
+
+  .md\:grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:p-6 {
+    padding: 1.5rem;
+  }
+}
+
+/* 桌面 */
+@media (min-width: 1025px) {
+  .lg\:hidden {
+    display: none;
+  }
+
+  .lg\:block {
+    display: block;
+  }
+
+  .lg\:flex {
+    display: flex;
+  }
+
+  .lg\:grid-cols-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* 无障碍 - 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 暗色主题滚动条 */
+@media (prefers-color-scheme: dark) {
+  .scrollbar-thin {
+    scrollbar-color: var(--color-border) transparent;
+  }
+}
+
+/* 打印样式 */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white;
+    color: black;
+  }
+}

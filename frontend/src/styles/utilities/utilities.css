@@ -1,0 +1,189 @@
+/* === 工具类样式 === */
+
+
+@layer utilities {
+  /* 文本截断 */
+  .text-truncate {
+    @apply overflow-hidden whitespace-nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* 多行文本截断 */
+  .text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* 玻璃态 */
+  .glass {
+    background: rgba(26, 26, 31, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  /* 玻璃态边框 */
+  .glass-border {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* 发光效果 */
+  .glow-primary {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .glow-secondary {
+    box-shadow: var(--shadow-glow-secondary);
+  }
+
+  .glow-ai {
+    box-shadow: var(--shadow-glow-ai);
+  }
+
+  /* 渐变文本 */
+  .text-gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-ai {
+    background: linear-gradient(135deg, var(--color-ai) 0%, var(--color-ai-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* 渐变背景 */
+  .bg-gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  }
+
+  .bg-gradient-ai {
+    background: linear-gradient(135deg, var(--color-ai) 0%, var(--color-ai-dark) 100%);
+  }
+
+  /* 网格背景 */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(22, 93, 255, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 93, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* 网格点背景 */
+  .dot-bg {
+    background-image: radial-gradient(circle, var(--color-border) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* 自定义滚动条 */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border) transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: var(--color-border);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-border-light);
+  }
+
+  /* 滚动条隐藏 */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* 动画延迟 */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+
+  /* 动画持续时间 */
+  .duration-fast { animation-duration: 150ms; }
+  .duration-base { animation-duration: 250ms; }
+  .duration-slow { animation-duration: 350ms; }
+
+  /* 游戏化统计数字 */
+  .game-number {
+    @apply font-bold;
+    background: linear-gradient(135deg, var(--color-text) 0%, var(--color-primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .game-number-legendary {
+    @apply game-number;
+    background: linear-gradient(135deg, var(--rarity-legendary) 0%, var(--rarity-exotic) 50%, var(--color-primary-light) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: number-shine 3s ease-in-out infinite;
+    background-size: 200% 200%;
+  }
+
+  @keyframes number-shine {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* 职业图标容器 */
+  .profession-icon {
+    @apply w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  }
+
+  .profession-warrior { background: var(--profession-warrior); }
+  .profession-guardian { background: var(--profession-guardian); }
+  .profession-revenant { background: var(--profession-revenant); }
+  .profession-ranger { background: var(--profession-ranger); }
+  .profession-thief { background: var(--profession-thief); }
+  .profession-engineer { background: var(--profession-engineer); }
+  .profession-elementalist { background: var(--profession-elementalist); }
+  .profession-mesmer { background: var(--profession-mesmer); }
+  .profession-necromancer { background: var(--profession-necromancer); }
+
+  /* 浮动动画元素 */
+  .float-element {
+    animation: float 4s ease-in-out infinite;
+  }
+
+  .float-element-delayed {
+    animation: float 4s ease-in-out infinite;
+    animation-delay: 2s;
+  }
+
+  /* 发光效果文字 */
+  .glow-text {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+  }
+}

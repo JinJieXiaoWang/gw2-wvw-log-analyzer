@@ -1,0 +1,724 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-27",
+  "base_professions": {
+    "Guardian": {
+      "name": "Guardian",
+      "name_cn": "守护者",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support", "tank"],
+      "elite_specs": ["Dragonhunter", "Firebrand", "Willbender", "Luminary"],
+      "icon": "",
+      "description": ""
+    },
+    "Warrior": {
+      "name": "Warrior",
+      "name_cn": "战士",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support", "tank"],
+      "elite_specs": ["Berserker", "Spellbreaker", "Bladesworn", "Paragon"],
+      "icon": "",
+      "description": ""
+    },
+    "Engineer": {
+      "name": "Engineer",
+      "name_cn": "工程师",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "elite_specs": ["Scrapper", "Holosmith", "Mechanist", "Amalgam"],
+      "icon": "",
+      "description": ""
+    },
+    "Ranger": {
+      "name": "Ranger",
+      "name_cn": "游侠",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "elite_specs": ["Druid", "Soulbeast", "Untamed", "Galeshot"],
+      "icon": "",
+      "description": ""
+    },
+    "Thief": {
+      "name": "Thief",
+      "name_cn": "潜行者",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "elite_specs": ["Daredevil", "Deadeye", "Specter", "Antiquary"],
+      "icon": "",
+      "description": ""
+    },
+    "Elementalist": {
+      "name": "Elementalist",
+      "name_cn": "元素使",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "elite_specs": ["Tempest", "Weaver", "Catalyst", "Evoker"],
+      "icon": "",
+      "description": ""
+    },
+    "Mesmer": {
+      "name": "Mesmer",
+      "name_cn": "幻术师",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "elite_specs": ["Chronomancer", "Mirage", "Virtuoso", "Troubadour"],
+      "icon": "",
+      "description": ""
+    },
+    "Necromancer": {
+      "name": "Necromancer",
+      "name_cn": "唤灵师",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "elite_specs": ["Reaper", "Scourge", "Harbinger", "Ritualist"],
+      "icon": "",
+      "description": ""
+    },
+    "Revenant": {
+      "name": "Revenant",
+      "name_cn": "魂武者",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support", "tank"],
+      "elite_specs": ["Herald", "Renegade", "Vindicator", "Conduit"],
+      "icon": "",
+      "description": ""
+    }
+  },
+  "elite_specs": {
+    "Dragonhunter": {
+      "name": "Dragonhunter",
+      "name_cn": "猎龙者",
+      "base_profession": "Guardian",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Firebrand": {
+      "name": "Firebrand",
+      "name_cn": "燃火者",
+      "base_profession": "Guardian",
+      "default_role": "support",
+      "possible_roles": ["support", "dps", "tank"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 20,
+        "alacrity": 0,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 15,
+        "healing": 20
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Willbender": {
+      "name": "Willbender",
+      "name_cn": "破锋者",
+      "base_profession": "Guardian",
+      "default_role": "dps",
+      "possible_roles": ["dps", "tank"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 15
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Berserker": {
+      "name": "Berserker",
+      "name_cn": "狂战士",
+      "base_profession": "Warrior",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 50,
+        "breakbar": 25,
+        "kills": 15,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Spellbreaker": {
+      "name": "Spellbreaker",
+      "name_cn": "破法者",
+      "base_profession": "Warrior",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support", "tank"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 35,
+        "breakbar": 20,
+        "strips": 20,
+        "kills": 15,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Bladesworn": {
+      "name": "Bladesworn",
+      "name_cn": "誓剑士",
+      "base_profession": "Warrior",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 55,
+        "breakbar": 20,
+        "kills": 15,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Scrapper": {
+      "name": "Scrapper",
+      "name_cn": "机械师",
+      "base_profession": "Engineer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Holosmith": {
+      "name": "Holosmith",
+      "name_cn": "全息师",
+      "base_profession": "Engineer",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Mechanist": {
+      "name": "Mechanist",
+      "name_cn": "玉偃师",
+      "base_profession": "Engineer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 10,
+        "alacrity": 20,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Druid": {
+      "name": "Druid",
+      "name_cn": "德鲁伊",
+      "base_profession": "Ranger",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 45
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Soulbeast": {
+      "name": "Soulbeast",
+      "name_cn": "魂兽师",
+      "base_profession": "Ranger",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Untamed": {
+      "name": "Untamed",
+      "name_cn": "狂兽师",
+      "base_profession": "Ranger",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 15
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Daredevil": {
+      "name": "Daredevil",
+      "name_cn": "独行侠",
+      "base_profession": "Thief",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Deadeye": {
+      "name": "Deadeye",
+      "name_cn": "神枪手",
+      "base_profession": "Thief",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Specter": {
+      "name": "Specter",
+      "name_cn": "缚影者",
+      "base_profession": "Thief",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 20,
+        "kills": 20,
+        "cleanses": 10,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Tempest": {
+      "name": "Tempest",
+      "name_cn": "暴风使",
+      "base_profession": "Elementalist",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 20,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 40
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Weaver": {
+      "name": "Weaver",
+      "name_cn": "编织者",
+      "base_profession": "Elementalist",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Catalyst": {
+      "name": "Catalyst",
+      "name_cn": "元晶师",
+      "base_profession": "Elementalist",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Chronomancer": {
+      "name": "Chronomancer",
+      "name_cn": "时空术士",
+      "base_profession": "Mesmer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps", "tank"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 20,
+        "alacrity": 20,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 10,
+        "healing": 10
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Mirage": {
+      "name": "Mirage",
+      "name_cn": "幻象术士",
+      "base_profession": "Mesmer",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Virtuoso": {
+      "name": "Virtuoso",
+      "name_cn": "灵刃术士",
+      "base_profession": "Mesmer",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Reaper": {
+      "name": "Reaper",
+      "name_cn": "夺魂者",
+      "base_profession": "Necromancer",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Scourge": {
+      "name": "Scourge",
+      "name_cn": "灾厄师",
+      "base_profession": "Necromancer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 10,
+        "strips": 20,
+        "cleanses": 20,
+        "survival": 15,
+        "healing": 35
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Harbinger": {
+      "name": "Harbinger",
+      "name_cn": "先驱者",
+      "base_profession": "Necromancer",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Herald": {
+      "name": "Herald",
+      "name_cn": "预告者",
+      "base_profession": "Revenant",
+      "default_role": "support",
+      "possible_roles": ["support", "dps", "tank"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 25,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 20,
+        "healing": 30
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Renegade": {
+      "name": "Renegade",
+      "name_cn": "龙魂使",
+      "base_profession": "Revenant",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "strips": 15,
+        "kills": 10,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Vindicator": {
+      "name": "Vindicator",
+      "name_cn": "裁决者",
+      "base_profession": "Revenant",
+      "default_role": "dps",
+      "possible_roles": ["dps", "tank"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Luminary": {
+      "name": "Luminary",
+      "name_cn": "圣辉者",
+      "base_profession": "Guardian",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Paragon": {
+      "name": "Paragon",
+      "name_cn": "圣言士",
+      "base_profession": "Warrior",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 10,
+        "boons": 20,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Amalgam": {
+      "name": "Amalgam",
+      "name_cn": "流金师",
+      "base_profession": "Engineer",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "cleanses": 5,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Galeshot": {
+      "name": "Galeshot",
+      "name_cn": "风冲击",
+      "base_profession": "Ranger",
+      "default_role": "dps",
+      "possible_roles": ["dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Antiquary": {
+      "name": "Antiquary",
+      "name_cn": "彩戏师",
+      "base_profession": "Thief",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 35,
+        "breakbar": 15,
+        "strips": 15,
+        "kills": 15,
+        "cleanses": 10,
+        "survival": 10
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Evoker": {
+      "name": "Evoker",
+      "name_cn": "唤元师",
+      "base_profession": "Elementalist",
+      "default_role": "dps",
+      "possible_roles": ["dps", "support"],
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "icon": "",
+      "description": ""
+    },
+    "Troubadour": {
+      "name": "Troubadour",
+      "name_cn": "吟游诗人",
+      "base_profession": "Mesmer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Ritualist": {
+      "name": "Ritualist",
+      "name_cn": "祭祀者",
+      "base_profession": "Necromancer",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "condi",
+      "scoring_config": {
+        "quickness": 10,
+        "alacrity": 10,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 15,
+        "healing": 20
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    },
+    "Conduit": {
+      "name": "Conduit",
+      "name_cn": "契灵使",
+      "base_profession": "Revenant",
+      "default_role": "support",
+      "possible_roles": ["support", "dps"],
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": true,
+      "icon": "",
+      "description": ""
+    }
+  }
+}

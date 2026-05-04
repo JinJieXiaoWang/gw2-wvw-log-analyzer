@@ -1,0 +1,245 @@
+/**
+ * 游戏风格工具类
+ * 功能：提供Tailwind与游戏风格UI的桥接工具
+ * 作者：System
+ * 创建日期：2026-04-29
+ */
+
+@layer utilities {
+  /* 游戏风格卡片 */
+  .game-card {
+    @apply bg-neutral-card border border-neutral-border rounded-xl shadow-lg;
+    @apply transition-all duration-300;
+  }
+
+  .game-card:hover {
+    background: var(--color-card-hover);
+    border-color: var(--color-primary-alpha-30);
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  /* 游戏风格按钮 */
+  .game-btn-primary {
+    @apply bg-primary hover:bg-primary-light text-white font-semibold rounded-lg px-6 py-3;
+    @apply transition-all duration-300 shadow-lg;
+  }
+
+  .game-btn-primary:hover {
+    box-shadow: var(--shadow-glow-primary);
+    transform: translateY(-2px);
+  }
+
+  .game-btn-secondary {
+    @apply bg-neutral-card border border-neutral-border text-neutral-text hover:border-primary;
+    @apply font-semibold rounded-lg px-6 py-3 transition-all duration-300;
+  }
+
+  .game-btn-secondary:hover {
+    border-color: var(--color-primary-alpha-50);
+    box-shadow: var(--shadow-glow-primary-alpha-50);
+  }
+
+  /* 游戏风格输入框 */
+  .game-input {
+    @apply bg-neutral-bg border border-neutral-border text-neutral-text;
+    @apply rounded-lg px-4 py-3 w-full transition-all duration-300;
+  }
+
+  .game-input:focus {
+    @apply border-primary outline-none;
+    box-shadow: 0 0 0 2px var(--color-primary-alpha-20), var(--shadow-glow-primary-alpha-30);
+  }
+
+  /* 游戏风格标签 */
+  .game-tag {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+    @apply transition-all duration-300;
+  }
+
+  .game-tag-primary {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary-alpha-30);
+  }
+
+  .game-tag-secondary {
+    background: var(--color-secondary-alpha-20);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-secondary-alpha-30);
+  }
+
+  .game-tag-success {
+    background: var(--color-success-alpha-10);
+    color: var(--color-success);
+    border: 1px solid var(--color-success-alpha-10);
+  }
+
+  .game-tag-warning {
+    background: var(--color-warning-alpha-10);
+    color: var(--color-warning);
+    border: 1px solid var(--color-warning-alpha-10);
+  }
+
+  .game-tag-error {
+    background: var(--color-error-alpha-10);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-alpha-10);
+  }
+
+  .game-tag-ai {
+    background: var(--color-ai-alpha-20);
+    color: var(--color-ai);
+    border: 1px solid var(--color-ai-alpha-30);
+  }
+
+  /* 游戏风格头部 */
+  .game-header {
+    @apply bg-neutral-bg-secondary border-b border-neutral-border;
+    @apply px-6 py-4 flex items-center justify-between;
+  }
+
+  /* 游戏风格侧边栏 */
+  .game-sidebar {
+    @apply bg-neutral-bg-secondary border-r border-neutral-border;
+    @apply w-64 min-h-screen flex flex-col;
+  }
+
+  .game-sidebar-nav {
+    @apply flex-1 py-4 px-2;
+  }
+
+  .game-sidebar-nav-item {
+    @apply flex items-center gap-3 px-4 py-3 rounded-lg mb-1;
+    @apply text-neutral-text-secondary hover:text-neutral-text;
+    @apply hover:bg-neutral-card transition-all duration-200 cursor-pointer;
+  }
+
+  .game-sidebar-nav-item.active {
+    background: var(--color-primary-alpha-10);
+    color: var(--color-primary);
+    border-left: 4px solid var(--color-primary);
+  }
+
+  /* 游戏风格分隔线 */
+  .game-divider {
+    @apply h-px bg-neutral-border my-6;
+  }
+
+  /* 游戏风格徽章 */
+  .counter-badge {
+    @apply inline-flex items-center justify-center rounded-full text-xs font-bold;
+    @apply min-w-[20px] h-[20px] px-1.5;
+  }
+
+  .counter-badge-primary {
+    @apply bg-primary text-white;
+  }
+
+  .counter-badge-secondary {
+    @apply bg-secondary text-white;
+  }
+
+  .counter-badge-success {
+    background: var(--color-success);
+    color: white;
+  }
+
+  .counter-badge-error {
+    background: var(--color-error);
+    color: white;
+  }
+
+  /* 游戏风格表格 */
+  .game-table {
+    @apply w-full border-collapse;
+  }
+
+  .game-table th {
+    @apply bg-neutral-bg-secondary text-neutral-text-secondary font-semibold;
+    @apply px-6 py-4 text-left border-b border-neutral-border;
+  }
+
+  .game-table td {
+    @apply px-6 py-4 border-b border-neutral-border text-neutral-text;
+  }
+
+  .game-table tr:hover td {
+    @apply bg-neutral-card;
+  }
+
+  /* 游戏风格分页 */
+  .game-pagination {
+    @apply flex items-center justify-center gap-2 my-6;
+  }
+
+  .game-pagination-btn {
+    @apply w-10 h-10 flex items-center justify-center rounded-lg;
+    @apply bg-neutral-card border border-neutral-border text-neutral-text;
+    @apply hover:border-primary hover:text-primary transition-all duration-200;
+  }
+
+  .game-pagination-btn.active {
+    @apply bg-primary text-white border-primary;
+  }
+
+  /* 游戏风格模态框头部 */
+  .game-modal-header {
+    @apply flex items-center justify-between px-6 py-4 border-b border-neutral-border;
+    @apply bg-neutral-card;
+  }
+
+  .game-modal-title {
+    @apply text-xl font-semibold text-neutral-text;
+  }
+
+  /* 游戏风格发光效果 */
+  .game-glow {
+    box-shadow: var(--shadow-glow-primary);
+  }
+
+  .game-glow-secondary {
+    box-shadow: var(--shadow-glow-secondary);
+  }
+
+  .game-glow-ai {
+    box-shadow: var(--shadow-glow-ai);
+  }
+
+  /* 游戏风格悬浮提升 */
+  .game-lift {
+    transition: all 0.3s ease;
+  }
+
+  .game-lift:hover {
+    transform: translateY(-4px);
+  }
+
+  /* 游戏风格脉冲动画 */
+  .game-pulse {
+    animation: glow-pulse 2s ease-in-out infinite;
+  }
+
+  /* 游戏风格过渡动画 */
+  .game-transition {
+    @apply transition-all duration-300 ease-in-out;
+  }
+
+  /* 游戏风格滚动条 */
+  .game-scrollbar::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .game-scrollbar::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+    border-radius: 4px;
+  }
+
+  .game-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: 4px;
+  }
+
+  .game-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--color-border-light);
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "bd_code": "[&DQYfHSk7UBpiHXQAdx0AAHIdAABPAQAAah0AAAAAAAAAAAAAAAAAAAAAAAADVgAvAFkAAA==]",
+  "profession_id": 6,
+  "profession": "Elementalist",
+  "profession_cn": "元素使",
+  "specializations": [
+    {
+      "id": 31,
+      "name": "火焰",
+      "name_cn": "火焰",
+      "is_elite": false,
+      "traits": [
+        {"id": 296, "name": "燃烧精准", "is_selected": true},
+        {"id": 334, "name": "威力满溢", "is_selected": true},
+        {"id": 1510, "name": "长效怒火", "is_selected": true}
+      ]
+    },
+    {
+      "id": 41,
+      "name": "空气",
+      "name_cn": "空气",
+      "is_elite": false,
+      "traits": [
+        {"id": 232, "name": "狂风巨作", "is_selected": true},
+        {"id": 214, "name": "狂怒风暴", "is_selected": true},
+        {"id": 1672, "name": "导雷神针", "is_selected": true}
+      ]
+    },
+    {
+      "id": 80,
+      "name": "唤元师",
+      "name_cn": "唤元师",
+      "is_elite": true,
+      "traits": [
+        {"id": 2415, "name": "利他倾向", "is_selected": true},
+        {"id": 2380, "name": "魔宠祝福", "is_selected": true},
+        {"id": 2335, "name": "电流附魔", "is_selected": true}
+      ]
+    }
+  ],
+  "skills": {
+    "heal": {
+      "id": 76634,
+      "palette_id": 7522,
+      "name": "Rejuvenate",
+      "name_cn": "复苏回春",
+      "slot": "Heal"
+    },
+    "utility": [
+      {
+        "id": 76711,
+        "palette_id": 7543,
+        "name": "Fox's Fury",
+        "name_cn": "狐狸怒火",
+        "slot": "Utility"
+      },
+      {
+        "id": 77320,
+        "palette_id": 7538,
+        "name": "Toad's Fortitude",
+        "name_cn": "蟾蜍坚韧",
+        "slot": "Utility"
+      },
+      {
+        "id": 5639,
+        "palette_id": 335,
+        "name": "Armor of Earth",
+        "name_cn": "大地护甲",
+        "slot": "Utility"
+      }
+    ],
+    "elite": {
+      "id": 76841,
+      "palette_id": 7530,
+      "name": "Elemental Procession",
+      "name_cn": "元素巡游",
+      "slot": "Elite"
+    }
+  }
+}
