@@ -24,7 +24,7 @@ const DataDashboardView = () => import('@/views/data/DataDashboardView.vue')
 const CombatLogListView = () => import('@/views/combat/CombatLogListView.vue')
 const CombatLogDetailView = () => import('@/views/combat/CombatLogDetailView.vue')
 const CombatFightDataView = () => import('@/views/combat/CombatFightDataView.vue')
-const CombatWvwReportView = () => import('@/views/combat/CombatWvwReportView.vue')
+
 
 // build: Build配置模块
 const BuildLibraryView = () => import('@/views/build/BuildLibraryView.vue')
@@ -177,15 +177,6 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '字典管理',
           permissions: ['write']
-        }
-      },
-      {
-        path: 'wvw-report/:id',
-        name: 'wvw-report',
-        component: CombatWvwReportView,
-        meta: {
-          requiresAuth: false,
-          title: 'WvW 战斗报告'
         }
       }
     ]
