@@ -641,16 +641,34 @@ class LogImportService:
                 if profession and ac.profession != profession:
                     ac.profession = profession
             else:
-                self.db.add(
-                    AccountCharacter(
-                        account_name=account,
-                        character_name=character_name,
-                        profession=profession,
-                        first_seen_date=today,
-                        last_seen_date=today,
-                        seen_count=1,
+                # 使用 savepoint 尝试插入，避免重复键污染外层事务
+                try:
+                    with self.db.begin_nested():
+                        new_ac = AccountCharacter(
+                            account_name=account,
+                            character_name=character_name,
+                            profession=profession,
+                            first_seen_date=today,
+                            last_seen_date=today,
+                            seen_count=1,
+                        )
+                        self.db.add(new_ac)
+                        self.db.flush()
+                except IntegrityError:
+                    # savepoint 已回滚，查询已存在的记录并更新
+                    ac = (
+                        self.db.query(AccountCharacter)
+                        .filter(
+                            AccountCharacter.account_name == account,
+                            AccountCharacter.character_name == character_name,
+                        )
+                        .first()
                     )
-                )
+                    if ac:
+                        ac.last_seen_date = today
+                        ac.seen_count += 1
+                        if profession and ac.profession != profession:
+                            ac.profession = profession
 
             # Member：只存 account_name，角色信息去 account_characters 查
             member = self.db.query(Member).filter(Member.account_name == account).first()
