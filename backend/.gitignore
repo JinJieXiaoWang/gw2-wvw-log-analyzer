@@ -7,9 +7,9 @@ env/
 __pycache__/
 *.pyc
 
-# 数据库文件
+# 数据库文件（仅忽略根目录下的运行时数据库目录，不匹配 app/database 包）
 *.db
-database/
+/database/
 
 # 日志文件
 logs/
