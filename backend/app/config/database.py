@@ -402,59 +402,406 @@ def _log_initialization_summary(stats: Dict[str, Any]):
     logger.info("=" * 60)
 
 
-def _check_and_add_columns(engine) -> Dict[str, List[str]]:
+def _format_mysql_default(default_value: Any) -> str:
     """
-    检查并添加缺失的列到已存在的表
+    将 MySQL INFORMATION_SCHEMA.COLUMNS.COLUMN_DEFAULT 格式化为 SQL DEFAULT 子句。
+    
+    关键处理：
+    - CURRENT_TIMESTAMP / NULL → 不加引号
+    - 数字 → 不加引号
+    - 字符串 → 加单引号并转义
+    
+    返回空字符串表示没有 DEFAULT。
+    """
+    if default_value is None:
+        return ""
+    
+    s = str(default_value).strip()
+    if not s:
+        return ""
+    
+    upper = s.upper()
+    # MySQL 关键字型默认值（不加引号）
+    if upper in ("CURRENT_TIMESTAMP", "NULL", "CURRENT_TIMESTAMP(6)"):
+        return f"DEFAULT {upper}"
+    
+    # 数字型（不加引号）
+    try:
+        float(s)
+        return f"DEFAULT {s}"
+    except ValueError:
+        pass
+    
+    # 字符串型（加单引号并转义）
+    escaped = s.replace("'", "''")
+    return f"DEFAULT '{escaped}'"
+
+
+def _sync_table_columns(engine) -> Dict[str, Any]:
+    """
+    同步表列结构：添加缺失列、检查字段一致性、同步中文描述(MySQL)
 
     Returns:
-        {表名: [添加的列名, ...]}
+        {
+            "added": {表名: [添加的列名, ...]},
+            "type_mismatch": [(表名, 列名, 期望类型, 实际类型), ...],
+            "nullable_mismatch": [(表名, 列名, 期望nullable, 实际nullable), ...],
+            "comments_synced": [(表名, 列名), ...],
+        }
     """
-    added: Dict[str, List[str]] = {}
+    result = {
+        "added": {},
+        "type_mismatch": [],
+        "nullable_mismatch": [],
+        "comments_synced": [],
+        "skipped_comment": [],
+    }
     inspector = inspect(engine)
     metadata = _Base.metadata
+    dialect_name = engine.dialect.name
 
     for table_name, table in metadata.tables.items():
         if table_name not in inspector.get_table_names():
-            continue  # 新表会在 _check_and_create_tables 中创建
+            continue
 
-        existing_columns = {col["name"] for col in inspector.get_columns(table_name)}
+        existing_cols = {col["name"]: col for col in inspector.get_columns(table_name)}
 
         for column in table.columns:
-            if column.name in existing_columns:
+            col_name = column.name
+
+            # === 1. 新增列 ===
+            if col_name not in existing_cols:
+                col_type = column.type.compile(dialect=engine.dialect)
+                quoted_col = engine.dialect.identifier_preparer.quote(col_name)
+                quoted_tbl = engine.dialect.identifier_preparer.quote(table_name)
+                nullable = "NOT NULL" if not column.nullable else "NULL"
+
+                default = ""
+                if column.default is not None and hasattr(column.default, "arg"):
+                    default_arg = column.default.arg
+                    if isinstance(default_arg, str):
+                        default = f" DEFAULT '{default_arg}'"
+                    elif hasattr(default_arg, "compile"):
+                        # SQLAlchemy 表达式（如 func.now()）
+                        compiled = str(default_arg.compile(dialect=engine.dialect))
+                        if compiled.upper() == "NOW()":
+                            compiled = "CURRENT_TIMESTAMP"
+                        default = f" DEFAULT {compiled}"
+                    else:
+                        default = f" DEFAULT {default_arg}"
+
+                if not column.nullable and not default:
+                    default = " DEFAULT 0"
+
+                # MySQL/PostgreSQL 支持 COMMENT
+                comment = ""
+                if dialect_name == "mysql" and column.comment:
+                    comment = f" COMMENT '{column.comment}'"
+
+                alter_stmt = (
+                    f"ALTER TABLE {quoted_tbl} ADD COLUMN {quoted_col} "
+                    f"{col_type} {nullable}{default}{comment}"
+                )
+
+                try:
+                    with engine.begin() as conn:
+                        conn.execute(text(alter_stmt))
+                    result["added"].setdefault(table_name, []).append(col_name)
+                    logger.info(f"为表 {table_name} 添加列: {col_name}")
+                except Exception as e:
+                    logger.warning(f"为表 {table_name} 添加列 {col_name} 失败: {e}")
                 continue
 
-            # 使用 SQLAlchemy dialect 编译类型和列名
-            col_type = column.type.compile(dialect=engine.dialect)
-            col_name = engine.dialect.identifier_preparer.quote(column.name)
-            tbl_name = engine.dialect.identifier_preparer.quote(table_name)
-            nullable = "NOT NULL" if not column.nullable else "NULL"
+            # === 2. 字段一致性检查 ===
+            existing = existing_cols[col_name]
+            expected_type_str = str(column.type)
+            actual_type_str = str(existing.get("type", ""))
 
-            default = ""
-            if column.default is not None and hasattr(column.default, "arg"):
-                default_arg = column.default.arg
-                if isinstance(default_arg, str):
-                    default = f" DEFAULT '{default_arg}'"
-                else:
-                    default = f" DEFAULT {default_arg}"
+            # 清理类型字符串中的 COLLATE 等噪声（MySQL 会返回 "TEXT COLLATE 'utf8mb4_unicode_ci'"）
+            import re
+            def _clean_type_str(t: str) -> str:
+                t = t.lower().strip()
+                # 去除 COLLATE "..." 或 COLLATE '...'
+                t = re.sub(r'\s+collate\s+["\']?[^"\'\s]+["\']?', '', t)
+                # 去除 CHARACTER SET ...
+                t = re.sub(r'\s+character\s+set\s+\S+', '', t)
+                return t.strip()
 
-            # 对于新增非空列必须有默认值（SQLite 限制）
-            if not column.nullable and not default:
-                default = " DEFAULT 0"
+            # 简化类型比较（只比较类型名，不比较长度等细节）
+            expected_type_name = _clean_type_str(expected_type_str).split("(")[0]
+            actual_type_name = _clean_type_str(actual_type_str).split("(")[0]
 
-            alter_stmt = (
-                f"ALTER TABLE {tbl_name} ADD COLUMN {col_name} "
-                f"{col_type} {nullable}{default}"
-            )
+            # 数据库类型映射标准化
+            type_mapping = {
+                "integer": ["int", "integer", "bigint", "smallint"],
+                "string": ["varchar", "char", "text", "string"],
+                "float": ["float", "double", "real", "decimal", "numeric"],
+                "boolean": ["bool", "boolean", "tinyint"],
+                "datetime": ["datetime", "timestamp", "date"],
+            }
 
+            def _normalize_type(t: str) -> str:
+                t = t.lower().strip()
+                for canonical, aliases in type_mapping.items():
+                    if t in aliases:
+                        return canonical
+                return t
+
+            if _normalize_type(expected_type_name) != _normalize_type(actual_type_name):
+                result["type_mismatch"].append(
+                    (table_name, col_name, expected_type_str, actual_type_str)
+                )
+                logger.warning(
+                    f"字段类型不一致: {table_name}.{col_name} "
+                    f"期望={expected_type_str}, 实际={actual_type_str}"
+                )
+
+            # === 3. nullable 一致性检查 ===
+            expected_nullable = column.nullable
+            actual_nullable = existing.get("nullable", True)
+            if expected_nullable != actual_nullable:
+                result["nullable_mismatch"].append(
+                    (table_name, col_name, expected_nullable, actual_nullable)
+                )
+                logger.warning(
+                    f"nullable不一致: {table_name}.{col_name} "
+                    f"期望={expected_nullable}, 实际={actual_nullable}"
+                )
+
+            # === 4. 中文描述同步 (MySQL) ===
+            # 策略：通过 INFORMATION_SCHEMA 读取当前列的完整定义，
+            # 重建 ALTER TABLE ... MODIFY COLUMN ... 语句，确保不丢失 DEFAULT/EXTRA/UNSIGNED 等属性
+            if dialect_name == "mysql" and column.comment:
+                try:
+                    with engine.begin() as conn:
+                        row = conn.execute(
+                            text(
+                                "SELECT COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA "
+                                "FROM INFORMATION_SCHEMA.COLUMNS "
+                                "WHERE TABLE_NAME = :table AND COLUMN_NAME = :col AND TABLE_SCHEMA = DATABASE()"
+                            ),
+                            {"table": table_name, "col": col_name}
+                        ).fetchone()
+                        
+                        if not row:
+                            continue
+                        
+                        col_type = row[0]          # e.g. "datetime" / "varchar(255)"
+                        is_nullable = row[1]       # "YES" / "NO"
+                        current_default = row[2]   # DEFAULT 值或 None
+                        extra = row[3] or ""       # e.g. "auto_increment" / "on update CURRENT_TIMESTAMP"
+                        
+                        # 重建列定义（保留所有现有属性）
+                        nullable_clause = "NULL" if is_nullable == "YES" else "NOT NULL"
+                        default_clause = _format_mysql_default(current_default)
+                        extra_clause = extra.strip()
+                        
+                        # 组装 MODIFY COLUMN 语句
+                        parts = [col_type, nullable_clause]
+                        if default_clause:
+                            parts.append(default_clause)
+                        if extra_clause:
+                            parts.append(extra_clause)
+                        # COMMENT 中的单引号转义
+                        comment_escaped = column.comment.replace("'", "''")
+                        parts.append(f"COMMENT '{comment_escaped}'")
+                        
+                        quoted_tbl = engine.dialect.identifier_preparer.quote(table_name)
+                        quoted_col = engine.dialect.identifier_preparer.quote(col_name)
+                        full_def = " ".join(parts)
+                        
+                        comment_stmt = f"ALTER TABLE {quoted_tbl} MODIFY COLUMN {quoted_col} {full_def}"
+                        conn.execute(text(comment_stmt))
+                    
+                    result["comments_synced"].append((table_name, col_name))
+                except Exception as e:
+                    result["skipped_comment"].append((table_name, col_name, str(e)))
+
+    return result
+
+
+def _fix_server_defaults(engine):
+    """
+    修复被 MODIFY COLUMN 覆盖掉的 server_default（MySQL）
+    
+    策略：通过 INFORMATION_SCHEMA 读取当前列的完整定义，
+    重建 ALTER TABLE ... MODIFY COLUMN ... 语句，确保不丢失任何现有属性。
+    """
+    if engine.dialect.name != "mysql":
+        return
+    
+    inspector = inspect(engine)
+    metadata = _Base.metadata
+    fixed = 0
+    
+    for table_name, table in metadata.tables.items():
+        if table_name not in inspector.get_table_names():
+            continue
+        
+        for column in table.columns:
+            if column.server_default is None:
+                continue
+            
             try:
                 with engine.begin() as conn:
-                    conn.execute(text(alter_stmt))
-                added.setdefault(table_name, []).append(column.name)
-                logger.info(f"为表 {table_name} 添加列: {column.name}")
+                    row = conn.execute(
+                        text(
+                            "SELECT COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA "
+                            "FROM INFORMATION_SCHEMA.COLUMNS "
+                            "WHERE TABLE_NAME = :table AND COLUMN_NAME = :col AND TABLE_SCHEMA = DATABASE()"
+                        ),
+                        {"table": table_name, "col": column.name}
+                    ).fetchone()
+                    
+                    if not row:
+                        continue
+                    
+                    col_type = row[0]
+                    is_nullable = row[1]
+                    current_default = row[2]
+                    extra = (row[3] or "").strip()
+                    
+                    # 判断是否需要修复：模型要求有 DEFAULT，但数据库当前没有
+                    has_db_default = current_default is not None or "auto_increment" in extra.lower()
+                    if has_db_default:
+                        continue
+                    
+                    # 编译 server_default 为 SQL 字符串（使用 dialect 确保正确性）
+                    sd_arg = getattr(column.server_default, "arg", None)
+                    if sd_arg is None:
+                        continue
+                    
+                    # 对 SQLAlchemy 表达式使用 dialect 编译
+                    if hasattr(sd_arg, "compile"):
+                        default_sql = str(sd_arg.compile(dialect=engine.dialect))
+                    else:
+                        default_sql = str(sd_arg)
+                    
+                    # MySQL 列定义中 DEFAULT 不接受 NOW()，必须转换为 CURRENT_TIMESTAMP
+                    if default_sql.upper() == "NOW()":
+                        default_sql = "CURRENT_TIMESTAMP"
+                    
+                    # 重建完整列定义
+                    nullable_clause = "NULL" if is_nullable == "YES" else "NOT NULL"
+                    extra_clause = extra if extra else ""
+                    
+                    parts = [col_type, nullable_clause, f"DEFAULT {default_sql}"]
+                    if extra_clause:
+                        parts.append(extra_clause)
+                    
+                    # 保留现有 COMMENT（如果有）
+                    comment_row = conn.execute(
+                        text(
+                            "SELECT COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS "
+                            "WHERE TABLE_NAME = :table AND COLUMN_NAME = :col AND TABLE_SCHEMA = DATABASE()"
+                        ),
+                        {"table": table_name, "col": column.name}
+                    ).fetchone()
+                    if comment_row and comment_row[0]:
+                        parts.append(f"COMMENT '{comment_row[0]}'")
+                    
+                    quoted_tbl = engine.dialect.identifier_preparer.quote(table_name)
+                    quoted_col = engine.dialect.identifier_preparer.quote(column.name)
+                    full_def = " ".join(parts)
+                    
+                    alter = f"ALTER TABLE {quoted_tbl} MODIFY COLUMN {quoted_col} {full_def}"
+                    conn.execute(text(alter))
+                    fixed += 1
+                    logger.warning(
+                        f"修复表 {table_name} 列 {column.name} 的 DEFAULT: {default_sql}"
+                    )
             except Exception as e:
-                logger.warning(f"为表 {table_name} 添加列 {column.name} 失败: {e}")
+                logger.debug(f"检查 {table_name}.{column.name} 的 DEFAULT 失败: {e}")
+    
+    if fixed > 0:
+        logger.info(f"共修复 {fixed} 个列的 server_default")
 
-    return added
+
+def _fix_auto_increment(engine):
+    """
+    修复主键列缺失 AUTO_INCREMENT 的问题（MySQL 专用）
+    
+    策略：通过 INFORMATION_SCHEMA 读取当前列的完整定义，
+    重建 ALTER TABLE ... MODIFY COLUMN ... 语句，确保不丢失 DEFAULT/UNSIGNED/COMMENT 等属性。
+    """
+    if engine.dialect.name != "mysql":
+        return
+    
+    inspector = inspect(engine)
+    fixed_count = 0
+    
+    for table_name in inspector.get_table_names():
+        pk_constraint = inspector.get_pk_constraint(table_name)
+        pk_cols = pk_constraint.get("constrained_columns", []) if pk_constraint else []
+        
+        if not pk_cols:
+            continue
+            
+        for col_info in inspector.get_columns(table_name):
+            col_name = col_info["name"]
+            if col_name not in pk_cols:
+                continue
+            
+            # 只处理 INTEGER 类型的单列主键
+            type_str = str(col_info.get("type", "")).lower()
+            if "int" not in type_str:
+                continue
+            
+            # 检查是否已有 AUTO_INCREMENT
+            try:
+                with engine.begin() as conn:
+                    row = conn.execute(
+                        text(
+                            "SELECT COLUMN_TYPE, IS_NULLABLE, COLUMN_DEFAULT, EXTRA, COLUMN_COMMENT "
+                            "FROM INFORMATION_SCHEMA.COLUMNS "
+                            "WHERE TABLE_NAME = :table AND COLUMN_NAME = :col AND TABLE_SCHEMA = DATABASE()"
+                        ),
+                        {"table": table_name, "col": col_name}
+                    ).fetchone()
+                    
+                    if not row:
+                        continue
+                    
+                    col_type = row[0]          # e.g. "int(11)" / "bigint(20) unsigned"
+                    is_nullable = row[1]
+                    current_default = row[2]
+                    extra = (row[3] or "").strip()
+                    comment = row[4] or ""
+                    
+                    if "auto_increment" in extra.lower():
+                        continue
+                    
+                    # 重建完整列定义（保留所有现有属性）
+                    nullable_clause = "NULL" if is_nullable == "YES" else "NOT NULL"
+                    default_clause = _format_mysql_default(current_default)
+                    extra_clause = extra if extra else ""
+                    comment_escaped = comment.replace("'", "''")
+                    comment_clause = f"COMMENT '{comment_escaped}'" if comment else ""
+                    
+                    parts = [col_type, nullable_clause]
+                    if default_clause:
+                        parts.append(default_clause)
+                    if extra_clause:
+                        parts.append(extra_clause)
+                    parts.append("AUTO_INCREMENT")
+                    if comment_clause:
+                        parts.append(comment_clause)
+                    
+                    quoted_tbl = engine.dialect.identifier_preparer.quote(table_name)
+                    quoted_col = engine.dialect.identifier_preparer.quote(col_name)
+                    full_def = " ".join(parts)
+                    
+                    alter_stmt = f"ALTER TABLE {quoted_tbl} MODIFY COLUMN {quoted_col} {full_def}"
+                    conn.execute(text(alter_stmt))
+                    fixed_count += 1
+                    logger.warning(
+                        f"为表 {table_name} 的主键 {col_name} 添加 AUTO_INCREMENT"
+                    )
+            except Exception as e:
+                logger.warning(f"修复 {table_name}.{col_name} 的 AUTO_INCREMENT 失败: {e}")
+    
+    if fixed_count > 0:
+        logger.info(f"共修复 {fixed_count} 个表的主键 AUTO_INCREMENT")
 
 
 def init_db(force_recreate: bool = False) -> bool:
@@ -490,11 +837,36 @@ def init_db(force_recreate: bool = False) -> bool:
     try:
         if db_settings.AUTO_CREATE_TABLES:
             stats = _check_and_create_tables(engine)
-            # 补充缺失列
-            added_cols = _check_and_add_columns(engine)
-            if added_cols:
-                stats["added_columns"] = added_cols
+            # 同步列结构（添加缺失列 + 一致性检查 + 中文描述同步）
+            sync_result = _sync_table_columns(engine)
+            if sync_result["added"]:
+                stats["added_columns"] = sync_result["added"]
+            if sync_result["type_mismatch"]:
+                stats["type_mismatches"] = sync_result["type_mismatch"]
+            if sync_result["nullable_mismatch"]:
+                stats["nullable_mismatches"] = sync_result["nullable_mismatch"]
+            if sync_result["comments_synced"]:
+                stats["comments_synced"] = sync_result["comments_synced"]
+            
+            # 修复主键 AUTO_INCREMENT（MySQL）
+            _fix_auto_increment(engine)
+            # 修复被覆盖的 server_default（MySQL）
+            _fix_server_defaults(engine)
+            
             _log_initialization_summary(stats)
+
+            # 初始化系统默认配置（sys_config 表）
+            try:
+                from app.services.sys_config_service import SysConfigService
+                from app.config.database import SessionLocal
+
+                db = SessionLocal()
+                try:
+                    SysConfigService.init_default_configs(db)
+                finally:
+                    db.close()
+            except Exception as e:
+                logger.warning(f"初始化系统默认配置失败: {e}")
         else:
             logger.info("跳过自动建表（AUTO_CREATE_TABLES=False）")
 

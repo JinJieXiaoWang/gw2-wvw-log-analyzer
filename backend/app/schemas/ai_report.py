@@ -35,7 +35,7 @@ class AIReportResponse(AIReportBase):
     summary: Optional[str] = None
     ai_score: Optional[float] = None
     created_by: Optional[int] = None
-    created_at: datetime
+    created_at: Optional[datetime] = None
     is_public: bool
 
 

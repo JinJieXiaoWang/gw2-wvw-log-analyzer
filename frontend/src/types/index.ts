@@ -18,6 +18,14 @@ export interface LogFile {
   statusText?: string
   fileSize: number
   parsedData?: ParsedLogData
+  errorMessage?: string | null
+  compressedSize?: number
+  fileSha256?: string
+  logUuid?: string
+  parseTime?: string
+  parsedAt?: string
+  uploadIp?: string
+  dpsReportPermalink?: string | null
 }
 
 export interface ParsedLogData {

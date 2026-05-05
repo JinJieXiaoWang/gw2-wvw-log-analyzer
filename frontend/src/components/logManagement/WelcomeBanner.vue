@@ -23,7 +23,7 @@
             class="btn-game"
             @click="showUploadDialog"
           />
-           <Button
+          <Button
             v-permission="'admin'"
             label="批量解析"
             icon="pi pi-play"

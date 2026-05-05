@@ -1,24 +1,44 @@
 <template>
-  <div class="card animate-slide-in-up" style="animation-delay: 0.6s">
+  <div
+    class="card animate-slide-in-up"
+    style="animation-delay: 0.6s"
+  >
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary/30 to-status-success/30 flex items-center justify-center">
           <i class="pi pi-chart-pie text-secondary" />
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-neutral-text">职业分布</h3>
-          <p class="text-xs text-neutral-text-secondary">按最新出场职业统计</p>
+          <h3 class="text-lg font-semibold text-neutral-text">
+            职业分布
+          </h3>
+          <p class="text-xs text-neutral-text-secondary">
+            按最新出场职业统计
+          </p>
         </div>
       </div>
     </div>
-    <div v-if="isLoading" class="h-80 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-if="isLoading"
+      class="h-80 flex items-center justify-center text-neutral-text-disabled"
+    >
       <i class="pi pi-spin pi-spinner text-3xl" />
     </div>
-    <div v-else-if="!items?.length" class="h-80 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-else-if="!items?.length"
+      class="h-80 flex items-center justify-center text-neutral-text-disabled"
+    >
       <span>暂无数据</span>
     </div>
-    <div v-else class="flex flex-col lg:flex-row items-start gap-5 min-w-0">
-      <v-chart class="h-72 sm:h-80 w-full lg:flex-1 min-w-0" :option="chartOption" autoresize />
+    <div
+      v-else
+      class="flex flex-col lg:flex-row items-start gap-5 min-w-0"
+    >
+      <v-chart
+        class="h-72 sm:h-80 w-full lg:flex-1 min-w-0"
+        :option="chartOption"
+        autoresize
+      />
       <div
         class="w-full lg:w-auto lg:max-w-[16rem] lg:shrink-0 lg:h-80
                grid grid-cols-2 sm:grid-cols-3
@@ -31,7 +51,10 @@
           class="flex items-center justify-between text-xs py-0.5 gap-2 min-w-0"
         >
           <div class="flex items-center gap-2 min-w-0">
-            <span class="w-2 h-2 rounded-full shrink-0" :style="{ backgroundColor: chartColors[idx % chartColors.length] }" />
+            <span
+              class="w-2 h-2 rounded-full shrink-0"
+              :style="{ backgroundColor: chartColors[idx % chartColors.length] }"
+            />
             <span class="text-neutral-text truncate">{{ getProfessionName(item.profession) }}</span>
           </div>
           <span class="text-neutral-text-secondary shrink-0 tabular-nums text-[11px]">{{ item.count }}</span>

@@ -46,11 +46,10 @@ class _LazyLogger:
         file_handler.setFormatter(log_format)
         self._logger.addHandler(file_handler)
 
-        # 控制台handler（调试模式）
-        if settings.DEBUG:
-            console_handler = logging.StreamHandler()
-            console_handler.setFormatter(log_format)
-            self._logger.addHandler(console_handler)
+        # 控制台handler（始终输出到stdout，确保Docker能捕获日志）
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(log_format)
+        self._logger.addHandler(console_handler)
 
     def debug(self, msg, *args, **kwargs):
         self._get_logger().debug(msg, *args, **kwargs)

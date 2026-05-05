@@ -17,6 +17,13 @@
         </div>
         <div class="flex gap-3">
           <Button
+            label="评分规则"
+            icon="pi pi-chart-line"
+            class="btn-ghost"
+            size="small"
+            @click="emit('view-scoring-rules')"
+          />
+          <Button
             label="导出Excel"
             icon="pi pi-file-excel"
             class="btn-game"
@@ -49,6 +56,7 @@ import Button from 'primevue/button'
 const emit = defineEmits<{
   'export-excel': []
   'export-csv': []
+  'view-scoring-rules': []
 }>()
 
 // 事件处理

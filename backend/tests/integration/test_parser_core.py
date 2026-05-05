@@ -248,6 +248,8 @@ class TestAgentParsing(unittest.TestCase):
 
         data += self._make_agent(12345, 1, 0, "Hero", ":Account.1234")
 
+        data += struct.pack("<I", 0)  # skill_count (必须添加)
+
         result = EvtcParser.parse_memory(data)
         ag = result.agents[0]
         self.assertEqual(ag.address, 12345)
@@ -273,6 +275,8 @@ class TestAgentParsing(unittest.TestCase):
         agent += name_raw.ljust(68, b"\x00")
         data += agent
 
+        data += struct.pack("<I", 0)  # skill_count (必须添加)
+
         result = EvtcParser.parse_memory(data)
         ag = result.agents[0]
         self.assertTrue(ag.is_npc)
@@ -291,6 +295,8 @@ class TestAgentParsing(unittest.TestCase):
         agent += struct.pack("<hhhhhh", 0, 0, 0, 0, 0, 0)
         agent += b"\x80\x81\x82\x00".ljust(68, b"\x00")
         data += agent
+
+        data += struct.pack("<I", 0)  # skill_count (必须添加)
 
         result = EvtcParser.parse_memory(data)
         # 应包含替换字符 \ufffd

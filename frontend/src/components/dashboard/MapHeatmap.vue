@@ -1,21 +1,39 @@
 <template>
-  <div class="card animate-slide-in-up" style="animation-delay: 0.7s">
+  <div
+    class="card animate-slide-in-up"
+    style="animation-delay: 0.7s"
+  >
     <div class="flex items-center gap-3 mb-4">
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-status-success/30 to-status-warning/30 flex items-center justify-center">
         <i class="pi pi-map-marker text-status-success" />
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-neutral-text">地图热度</h3>
-        <p class="text-xs text-neutral-text-secondary">各战场出场频次</p>
+        <h3 class="text-lg font-semibold text-neutral-text">
+          地图热度
+        </h3>
+        <p class="text-xs text-neutral-text-secondary">
+          各战场出场频次
+        </p>
       </div>
     </div>
-    <div v-if="isLoading" class="h-64 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-if="isLoading"
+      class="h-64 flex items-center justify-center text-neutral-text-disabled"
+    >
       <i class="pi pi-spin pi-spinner text-3xl" />
     </div>
-    <div v-else-if="!items?.length" class="h-64 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-else-if="!items?.length"
+      class="h-64 flex items-center justify-center text-neutral-text-disabled"
+    >
       <span>暂无数据</span>
     </div>
-    <v-chart v-else class="h-64" :option="chartOption" autoresize />
+    <v-chart
+      v-else
+      class="h-64"
+      :option="chartOption"
+      autoresize
+    />
   </div>
 </template>
 

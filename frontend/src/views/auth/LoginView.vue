@@ -10,8 +10,12 @@
           <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30 animate-pulse">
             <span class="text-5xl">⚔️</span>
           </div>
-          <h2 class="text-2xl font-bold text-white mb-2">登录成功</h2>
-          <p class="text-gray-400">正在跳转至首页...</p>
+          <h2 class="text-2xl font-bold text-white mb-2">
+            登录成功
+          </h2>
+          <p class="text-gray-400">
+            正在跳转至首页...
+          </p>
           <div class="mt-6 flex justify-center">
             <div class="w-64 h-2 bg-slate-700 rounded-full overflow-hidden">
               <div
@@ -38,7 +42,11 @@
       <!-- 品牌区域 -->
       <div class="text-center mb-8 sm:mb-10">
         <div class="inline-flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 bg-slate-800/80 backdrop-blur-xl rounded-2xl mb-4 sm:mb-6 shadow-lg shadow-blue-500/25 border border-slate-700/50">
-          <img src="@/assets/fonts/logo.png" alt="GW2 Logo" class="w-16 h-16 sm:w-20 sm:h-20 object-contain" />
+          <img
+            src="@/assets/fonts/logo.png"
+            alt="GW2 Logo"
+            class="w-16 h-16 sm:w-20 sm:h-20 object-contain"
+          >
         </div>
         <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-3">
           WVW战场日志

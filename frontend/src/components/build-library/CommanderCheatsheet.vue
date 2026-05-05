@@ -1,6 +1,9 @@
 <template>
   <div class="commander-cheatsheet">
-    <div v-if="commands && commands.length > 0" class="overflow-hidden rounded-xl border border-neutral-border">
+    <div
+      v-if="commands && commands.length > 0"
+      class="overflow-hidden rounded-xl border border-neutral-border"
+    >
       <table class="w-full">
         <thead>
           <tr class="bg-neutral-bg/80">
@@ -26,15 +29,22 @@
                 {{ cmd.callout }}
               </span>
             </td>
-            <td class="px-4 py-3 text-neutral-text text-base">{{ cmd.action }}</td>
+            <td class="px-4 py-3 text-neutral-text text-base">
+              {{ cmd.action }}
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div v-else class="text-center py-8 text-neutral-text-secondary">
+    <div
+      v-else
+      class="text-center py-8 text-neutral-text-secondary"
+    >
       <i class="pi pi-microphone-slash text-3xl mb-2 opacity-40" />
-      <p class="text-sm">暂无指挥口令</p>
+      <p class="text-sm">
+        暂无指挥口令
+      </p>
     </div>
   </div>
 </template>

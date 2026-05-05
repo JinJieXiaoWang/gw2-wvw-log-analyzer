@@ -551,3 +551,72 @@ def get_distinct_professions(db: Session) -> List[str]:
         .all()
     )
     return [r[0] for r in results if r[0]]
+
+
+def get_account_score_breakdown(
+    db: Session,
+    account_name: str,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+) -> Optional[Dict[str, Any]]:
+    """获取账号的评分维度明细（用于前端模态框展示）
+
+    严格依据 scoring_rule 表中当前启用的维度配置进行展示，
+    将该账号在统计周期内所有 fight_stats 的 score_breakdown 按维度求平均值。
+    """
+    from app.services.scoring_rule_service import DIMENSION_LABELS
+    from app.services.wvw.scoring_service import ScoringService
+
+    # 查询该账号的所有 FightStats（带日期筛选）
+    query = (
+        db.query(FightStats)
+        .join(Fight, FightStats.fight_id == Fight.id)
+        .filter(FightStats.account == account_name)
+    )
+    if start_date:
+        query = query.filter(Fight.start_time >= start_date)
+    if end_date:
+        query = query.filter(Fight.start_time < end_date)
+
+    stats_list = query.all()
+    if not stats_list:
+        return None
+
+    # 获取当前评分规则配置（默认 dps）
+    rules = ScoringService.get_scoring_rules(db, "dps")
+
+    # 按维度聚合
+    total_score_sum = 0.0
+    dimension_values: Dict[str, List[float]] = {}
+
+    for stat in stats_list:
+        total_score_sum += float(stat.ai_score or 0)
+        if stat.score_breakdown:
+            for dim, score in stat.score_breakdown.items():
+                dimension_values.setdefault(dim, []).append(float(score))
+
+    if not dimension_values:
+        return None
+
+    # 构建维度详情
+    dimensions = {}
+    for dim, values in sorted(dimension_values.items()):
+        avg_score = round(sum(values) / len(values), 2)
+        weight = rules.get(f"{dim}_weight", 0)
+        dimensions[dim] = {
+            "score": avg_score,
+            "weight": weight,
+            "label": DIMENSION_LABELS.get(dim, dim),
+            "weighted_score": round(avg_score * weight, 2),
+        }
+
+    total_fights = len(stats_list)
+    avg_total_score = round(total_score_sum / total_fights, 2) if total_fights > 0 else 0
+
+    return {
+        "account": account_name,
+        "total_fights": total_fights,
+        "avg_total_score": avg_total_score,
+        "avg_grade": ScoringService.get_grade(avg_total_score),
+        "dimensions": dimensions,
+    }

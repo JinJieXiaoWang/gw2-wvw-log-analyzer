@@ -2,12 +2,11 @@
 # 模块功能：设置管理API路由
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-04-27
+# 更新日期：2026-05-05 - 持久化层从 app_config.json 迁移到 sys_config 表
 # 依赖说明：FastAPI
 
-import json
-import os
 from datetime import datetime
-from typing import Any, Dict, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -17,11 +16,9 @@ from app.config.database import get_db
 from app.models.sys_user import SysUser
 from app.schemas.common import ApiResponse
 from app.services.auth_service import get_current_admin
-from app.utils.logger import logger
+from app.services.sys_config_service import SysConfigService
 
 router = APIRouter(prefix="/settings", tags=["设置管理"])
-
-SETTINGS_FILE = "./app_config.json"
 
 
 # Pydantic模型
@@ -32,6 +29,9 @@ class SettingsUpdate(BaseModel):
     export_format: Optional[str] = None
     auto_backup: Optional[bool] = None
     retention_days: Optional[int] = None
+    watermark_enabled: Optional[bool] = None
+    watermark_text: Optional[str] = None
+    watermark_screenshot_enabled: Optional[bool] = None
 
 
 class SettingsResponse(BaseModel):
@@ -41,60 +41,31 @@ class SettingsResponse(BaseModel):
     export_format: str
     auto_backup: bool
     retention_days: int
+    watermark_enabled: bool
+    watermark_text: str
+    watermark_screenshot_enabled: bool
     updated_at: str
 
 
-# 默认设置
-DEFAULT_SETTINGS = {
-    "theme": "light",
-    "default_server": "Tarnished Coast",
-    "parse_parallel": 1,
-    "export_format": "json",
-    "auto_backup": True,
-    "retention_days": 365,
-}
-
-
-def load_settings() -> Dict[str, Any]:
-    # 功能：加载设置
-    if os.path.exists(SETTINGS_FILE):
-        try:
-            with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
-                settings = json.load(f)
-            result = DEFAULT_SETTINGS.copy()
-            result.update(settings)
-            return result
-        except Exception as e:
-            logger.error(f"加载设置失败: {e}")
-            return DEFAULT_SETTINGS.copy()
-    return DEFAULT_SETTINGS.copy()
-
-
-def save_settings(settings: Dict[str, Any]):
-    # 功能：保存设置
-    try:
-        with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
-            json.dump(settings, f, ensure_ascii=False, indent=2)
-        return True
-    except Exception as e:
-        logger.error(f"保存设置失败: {e}")
-        return False
-
-
 @router.get("", response_model=ApiResponse, summary="获取系统设置")
-async def get_settings():
-    # 功能：获取系统设置
-    settings = load_settings()
+async def get_settings(db: Session = Depends(get_db)):
+    """获取系统设置（从 sys_config 表读取）"""
+    service = SysConfigService(db)
+    settings = service.get_all_settings()
+
     return ApiResponse.success_response(
         code=200,
         message="获取设置成功",
         data={
-            "theme": settings["theme"],
-            "default_server": settings["default_server"],
-            "parse_parallel": settings["parse_parallel"],
-            "export_format": settings["export_format"],
-            "auto_backup": settings["auto_backup"],
-            "retention_days": settings["retention_days"],
+            "theme": settings.get("theme", "light"),
+            "default_server": settings.get("default_server", "Tarnished Coast"),
+            "parse_parallel": settings.get("parse_parallel", 1),
+            "export_format": settings.get("export_format", "json"),
+            "auto_backup": settings.get("auto_backup", True),
+            "retention_days": settings.get("retention_days", 365),
+            "watermark_enabled": settings.get("watermark_enabled", False),
+            "watermark_text": settings.get("watermark_text", ""),
+            "watermark_screenshot_enabled": settings.get("watermark_screenshot_enabled", True),
             "updated_at": datetime.now().isoformat(),
         },
     )
@@ -104,23 +75,26 @@ async def get_settings():
 async def update_settings(
     settings_update: SettingsUpdate,
     current_admin: SysUser = Depends(get_current_admin),
+    db: Session = Depends(get_db),
 ):
-    # 功能：更新系统设置
-    settings = load_settings()
-
+    """更新系统设置（写入 sys_config 表）"""
+    service = SysConfigService(db)
     update_data = settings_update.model_dump(exclude_unset=True)
-    settings.update(update_data)
 
-    if save_settings(settings):
+    if service.update_settings(update_data):
+        settings = service.get_all_settings()
         return ApiResponse.success_response(
             message="更新设置成功",
             data={
-                "theme": settings["theme"],
-                "default_server": settings["default_server"],
-                "parse_parallel": settings["parse_parallel"],
-                "export_format": settings["export_format"],
-                "auto_backup": settings["auto_backup"],
-                "retention_days": settings["retention_days"],
+                "theme": settings.get("theme", "light"),
+                "default_server": settings.get("default_server", "Tarnished Coast"),
+                "parse_parallel": settings.get("parse_parallel", 1),
+                "export_format": settings.get("export_format", "json"),
+                "auto_backup": settings.get("auto_backup", True),
+                "retention_days": settings.get("retention_days", 365),
+                "watermark_enabled": settings.get("watermark_enabled", False),
+                "watermark_text": settings.get("watermark_text", ""),
+                "watermark_screenshot_enabled": settings.get("watermark_screenshot_enabled", True),
                 "updated_at": datetime.now().isoformat(),
             },
         )
@@ -129,18 +103,29 @@ async def update_settings(
 
 
 @router.post("/reset", response_model=ApiResponse, summary="重置系统设置")
-async def reset_settings(current_admin: SysUser = Depends(get_current_admin)):
-    # 功能：重置为默认设置
-    if save_settings(DEFAULT_SETTINGS):
+async def reset_settings(
+    current_admin: SysUser = Depends(get_current_admin),
+    db: Session = Depends(get_db),
+):
+    """重置为默认设置"""
+    from app.services.sys_config_service import DEFAULT_CONFIGS
+
+    service = SysConfigService(db)
+    defaults = {cfg["config_key"]: cfg["config_value"] for cfg in DEFAULT_CONFIGS}
+
+    if service.update_settings(defaults):
         return ApiResponse.success_response(
             message="重置设置成功",
             data={
-                "theme": DEFAULT_SETTINGS["theme"],
-                "default_server": DEFAULT_SETTINGS["default_server"],
-                "parse_parallel": DEFAULT_SETTINGS["parse_parallel"],
-                "export_format": DEFAULT_SETTINGS["export_format"],
-                "auto_backup": DEFAULT_SETTINGS["auto_backup"],
-                "retention_days": DEFAULT_SETTINGS["retention_days"],
+                "theme": defaults.get("theme", "light"),
+                "default_server": defaults.get("default_server", "Tarnished Coast"),
+                "parse_parallel": int(defaults.get("parse_parallel", 1)),
+                "export_format": defaults.get("export_format", "json"),
+                "auto_backup": defaults.get("auto_backup", "true").lower() == "true",
+                "retention_days": int(defaults.get("retention_days", 365)),
+                "watermark_enabled": defaults.get("watermark_enabled", "false").lower() == "true",
+                "watermark_text": defaults.get("watermark_text", ""),
+                "watermark_screenshot_enabled": defaults.get("watermark_screenshot_enabled", "true").lower() == "true",
                 "updated_at": datetime.now().isoformat(),
             },
         )

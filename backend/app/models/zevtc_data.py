@@ -28,9 +28,9 @@ class EiPlayer(Base):
 
     __tablename__ = "ei_player"
 
-    player_id = Column(BigInteger, primary_key=True, autoincrement=True, comment="主键ID")
+    player_id = Column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
     log_id = Column(
-        BigInteger, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
+        Integer, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
         comment="关联日志ID"
     )
     agent_index = Column(Integer, comment="关联evtc_agent索引")
@@ -61,9 +61,9 @@ class EiTarget(Base):
 
     __tablename__ = "ei_target"
 
-    target_id = Column(BigInteger, primary_key=True, autoincrement=True, comment="主键ID")
+    target_id = Column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
     log_id = Column(
-        BigInteger, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
+        Integer, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
         comment="关联日志ID"
     )
     agent_index = Column(Integer, comment="关联evtc_agent索引")
@@ -85,9 +85,9 @@ class EiSkillMap(Base):
 
     __tablename__ = "ei_skill_map"
 
-    map_id = Column(BigInteger, primary_key=True, autoincrement=True, comment="主键ID")
+    map_id = Column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
     log_id = Column(
-        BigInteger, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
+        Integer, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
         comment="关联日志ID"
     )
     skill_key = Column(String(20), nullable=False, comment="JSON中的技能键(s12345)")
@@ -108,9 +108,9 @@ class EiPhase(Base):
 
     __tablename__ = "ei_phase"
 
-    phase_id = Column(BigInteger, primary_key=True, autoincrement=True, comment="主键ID")
+    phase_id = Column(Integer, primary_key=True, autoincrement=True, comment="主键ID")
     log_id = Column(
-        BigInteger, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
+        Integer, ForeignKey("evtc_log.log_id", ondelete="CASCADE"), nullable=False,
         comment="关联日志ID"
     )
     phase_index = Column(Integer, nullable=False, comment="阶段索引")

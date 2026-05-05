@@ -10,9 +10,8 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.dictionary import SysDictData
 from app.models.fight_stats import FightStats
-from app.utils.dict_utils import get_dict_label
+from app.services.scoring_rule_service import ScoringRuleService
 from app.utils.logger import logger
 
 
@@ -20,25 +19,20 @@ class ScoringService:
     """评分计算服务类（基于 FightStats）"""
 
     @staticmethod
-    def get_scoring_rules(db: Session) -> Dict[str, float]:
-        """从字典获取评分规则"""
-        rules = {}
-        rule_items = (
-            db.query(SysDictData)
-            .filter(SysDictData.dict_type == "scoring_rule", SysDictData.status == 0)
-            .all()
-        )
+    def get_scoring_rules(db: Session, role_type: str = "dps") -> Dict[str, float]:
+        """从评分规则表获取规则（按角色类型）
+        
+        Args:
+            db: 数据库会话
+            role_type: 角色类型 dps/support/tank，默认 dps
+        """
+        service = ScoringRuleService(db)
+        rules = service.get_rules_for_scoring(role_type)
 
-        for item in rule_items:
-            try:
-                value_str = item.remark if item.remark else "0.0"
-                rules[item.dict_value] = float(value_str)
-            except (ValueError, TypeError):
-                rules[item.dict_value] = 0.0
-
-        # 默认规则
-        if not rules:
-            rules = {
+        # 如果表为空，使用默认规则并提示
+        if not rules or len(rules) <= 2:  # 只有 min/max 阈值
+            logger.warning(f"评分规则表为空或数据不足，使用默认规则 (role_type={role_type})")
+            default_fallback = {
                 "damage_weight": 0.35,
                 "power_damage_weight": 0.15,
                 "condition_damage_weight": 0.15,
@@ -54,6 +48,7 @@ class ScoringService:
                 "min_score_threshold": 0.0,
                 "max_score_cap": 100.0,
             }
+            return default_fallback
 
         return rules
 
@@ -122,7 +117,7 @@ class ScoringService:
             "total_score": round(final_score, 2),
             "breakdown": scores,
             "grade": grade,
-            "grade_label": get_dict_label("scoring_dimension", grade),
+            "grade_label": ScoringService.get_grade_label(grade),
         }
 
     @staticmethod
@@ -142,18 +137,37 @@ class ScoringService:
             return "f"
 
     @staticmethod
-    def calculate_all_scores(fight_id: int, db: Session) -> Dict[str, Any]:
-        """计算一场战斗中所有玩家的评分"""
+    def get_grade_label(grade: str) -> str:
+        """根据等级获取中文标签"""
+        labels = {
+            "s": "S级",
+            "a": "A级",
+            "b": "B级",
+            "c": "C级",
+            "d": "D级",
+            "f": "F级",
+        }
+        return labels.get(grade.lower(), grade.upper())
+
+    @staticmethod
+    def calculate_all_scores(fight_id: int, db: Session, role_type: str = "dps") -> Dict[str, Any]:
+        """计算一场战斗中所有玩家的评分
+        
+        Args:
+            fight_id: 战斗ID
+            db: 数据库会话
+            role_type: 角色类型 dps/support/tank，默认 dps
+        """
         stats_list = db.query(FightStats).filter(FightStats.fight_id == fight_id).all()
         if not stats_list:
             return {
                 "fight_id": fight_id,
                 "total_players": 0,
                 "scores": [],
-                "scoring_rules": ScoringService.get_scoring_rules(db),
+                "scoring_rules": ScoringService.get_scoring_rules(db, role_type),
             }
 
-        rules = ScoringService.get_scoring_rules(db)
+        rules = ScoringService.get_scoring_rules(db, role_type)
 
         # 计算最大值用于归一化
         max_values = {

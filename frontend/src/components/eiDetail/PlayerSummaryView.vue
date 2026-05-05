@@ -65,7 +65,8 @@
           <div class="stat-items">
             <div class="stat-item">
               <span class="stat-label">总伤�?/span>
-              <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).damage) }}</span>
+                <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).damage) }}</span>
+              </span>
             </div>
             <div class="stat-item">
               <span class="stat-label">DPS</span>
@@ -123,19 +124,23 @@
           <div class="stat-items">
             <div class="stat-item">
               <span class="stat-label">暴击�?/span>
-              <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).criticalRate) }}</span>
+                <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).criticalRate) }}</span>
+              </span>
             </div>
             <div class="stat-item">
               <span class="stat-label">侧身�?/span>
-              <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).flankingRate) }}</span>
+                <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).flankingRate) }}</span>
+              </span>
             </div>
             <div class="stat-item">
               <span class="stat-label">技能浪�?/span>
-              <span class="stat-value">{{ getStats(selectedPlayer).wasted }}</span>
+                <span class="stat-value">{{ getStats(selectedPlayer).wasted }}</span>
+              </span>
             </div>
             <div class="stat-item">
               <span class="stat-label">技能节�?/span>
-              <span class="stat-value">{{ getStats(selectedPlayer).saved }}</span>
+                <span class="stat-value">{{ getStats(selectedPlayer).saved }}</span>
+              </span>
             </div>
             <div class="stat-item">
               <span class="stat-label">武器切换</span>

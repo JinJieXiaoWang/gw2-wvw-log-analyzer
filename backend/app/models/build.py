@@ -85,10 +85,11 @@ class Build(Base):
         Boolean, default=False, comment="是否推荐配置"
     )
     created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="创建时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="创建时间"
     )
     updated_at = Column(
         DateTime(timezone=True),
+        default=func.now(),
         server_default=func.now(),
         onupdate=func.now(),
         comment="更新时间",

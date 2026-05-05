@@ -16,7 +16,7 @@ class SysDictType(Base):
 
     __tablename__ = "sys_dict_type"
 
-    dict_id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    dict_id = Column(Integer, primary_key=True, index=True, autoincrement=True, comment="字典类型ID")
     dict_type = Column(
         String(100), nullable=False, unique=True, index=True, comment="字典类型编码"
     )
@@ -36,7 +36,7 @@ class SysDictData(Base):
 
     __tablename__ = "sys_dict_data"
 
-    dict_code = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    dict_code = Column(Integer, primary_key=True, index=True, autoincrement=True, comment="字典项编码")
     dict_sort = Column(Integer, nullable=False, default=0, comment="排序顺序")
     dict_label = Column(String(200), nullable=False, comment="字典标签")
     dict_value = Column(String(200), nullable=False, comment="字典值")

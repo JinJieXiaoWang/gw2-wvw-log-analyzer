@@ -16,6 +16,7 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Index,
+    Integer,
     String,
     Text,
 )
@@ -30,10 +31,10 @@ class EiReport(Base):
     __tablename__ = "ei_report"
 
     report_id = Column(
-        BigInteger, primary_key=True, autoincrement=True, comment="自增主键"
+        Integer, primary_key=True, autoincrement=True, comment="自增主键"
     )
     log_id = Column(
-        BigInteger,
+        Integer,
         ForeignKey("evtc_log.log_id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
@@ -45,7 +46,7 @@ class EiReport(Base):
         default="detailed_wvw",
         comment="报告类型: detailed_wvw, raid, fractal",
     )
-    ei_version = Column(String(50), comment="EI 解析器版本，如 3.21.1.0")
+    ei_version = Column(String(50), nullable=True, comment="EI 解析器版本，如 3.21.1.0")
 
     # 摘要 JSON：存储 players/targets/phases 基础信息 + 元数据 + 定义表
     # 体积约 1-5MB，可直接从数据库读取
@@ -70,10 +71,11 @@ class EiReport(Base):
 
     # 时间戳
     created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="记录创建时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="记录创建时间"
     )
     updated_at = Column(
         DateTime(timezone=True),
+        default=func.now(),
         server_default=func.now(),
         onupdate=func.now(),
         comment="记录更新时间",

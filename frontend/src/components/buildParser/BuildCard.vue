@@ -23,7 +23,9 @@
 
     <!-- 标题和描述 -->
     <div class="build-card-content">
-      <h3 class="build-title">{{ build.title }}</h3>
+      <h3 class="build-title">
+        {{ build.title }}
+      </h3>
       <p class="build-subtitle">
         {{ professionLabel }}
         <span v-if="build.eliteSpec"> · {{ build.eliteSpec }}</span>
@@ -31,16 +33,25 @@
 
       <!-- 快速信息 -->
       <div class="build-info">
-        <div v-if="build.armorType" class="info-item">
-          <i class="pi pi-shield"></i>
+        <div
+          v-if="build.armorType"
+          class="info-item"
+        >
+          <i class="pi pi-shield" />
           <span>{{ armorTypeLabel }}</span>
         </div>
-        <div v-if="build.rune" class="info-item">
-          <i class="pi pi-star"></i>
+        <div
+          v-if="build.rune"
+          class="info-item"
+        >
+          <i class="pi pi-star" />
           <span>{{ build.rune }}</span>
         </div>
-        <div v-if="build.weapons && build.weapons.length > 0" class="info-item">
-          <i class="pi pi-swords"></i>
+        <div
+          v-if="build.weapons && build.weapons.length > 0"
+          class="info-item"
+        >
+          <i class="pi pi-swords" />
           <span>{{ build.weapons.length }}套武器</span>
         </div>
       </div>
@@ -49,7 +60,7 @@
     <!-- 底部：操作按钮 -->
     <div class="build-card-footer">
       <div class="build-date">
-        <i class="pi pi-calendar"></i>
+        <i class="pi pi-calendar" />
         <span>{{ formatDate(build.updatedAt) }}</span>
       </div>
       <div class="flex gap-2">

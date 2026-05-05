@@ -6,6 +6,7 @@ export interface LogListParams {
   page?: number
   page_size?: number
   parse_status?: string | null
+  search?: string | null
   server?: string | null
   map_name?: string | null
 }

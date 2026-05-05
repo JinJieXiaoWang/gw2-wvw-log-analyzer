@@ -80,11 +80,21 @@ class AIResponse:
 
 
 class AICache:
-    """AI响应缓存管理器"""
+    """AI响应缓存管理器（带LRU + TTL双重驱逐）"""
 
-    def __init__(self):
+    def __init__(self, max_size: int = 5000):
         self._cache: Dict[str, Dict[str, Any]] = {}
         self._timestamps: Dict[str, float] = {}
+        self._access_order: Dict[str, float] = {}  # 用于LRU：记录最后访问时间
+        self._max_size = max_size
+
+    def _evict_lru(self) -> None:
+        """LRU驱逐：当缓存达到上限时，删除最久未访问的条目"""
+        if len(self._cache) >= self._max_size:
+            # 找到最久未访问的键
+            oldest_key = min(self._access_order, key=lambda k: self._access_order[k])
+            self.delete(oldest_key)
+            logger.debug(f"AI缓存LRU驱逐: {oldest_key[:50]}...")
 
     def get(self, cache_key: str) -> Optional[AIResponse]:
         """获取缓存的响应"""
@@ -94,6 +104,7 @@ class AICache:
         if cache_key in self._cache:
             entry = self._cache[cache_key]
             if time.time() - self._timestamps[cache_key] < ai_config.AI_CACHE_TTL:
+                self._access_order[cache_key] = time.time()
                 logger.debug(f"缓存命中: {cache_key[:50]}...")
                 return entry["response"]
             else:
@@ -105,25 +116,35 @@ class AICache:
         if not ai_config.AI_CACHE_ENABLED:
             return
 
+        # 如果键已存在，直接更新；否则检查是否需要LRU驱逐
+        if cache_key not in self._cache:
+            self._evict_lru()
+
         self._cache[cache_key] = {"response": response}
         self._timestamps[cache_key] = time.time()
+        self._access_order[cache_key] = time.time()
         logger.debug(f"缓存设置: {cache_key[:50]}...")
 
     def delete(self, cache_key: str) -> None:
         """删除缓存"""
-        if cache_key in self._cache:
-            del self._cache[cache_key]
-            del self._timestamps[cache_key]
+        self._cache.pop(cache_key, None)
+        self._timestamps.pop(cache_key, None)
+        self._access_order.pop(cache_key, None)
 
     def clear(self) -> None:
         """清空所有缓存"""
         self._cache.clear()
         self._timestamps.clear()
+        self._access_order.clear()
         logger.info("AI缓存已清空")
 
     def get_cache_stats(self) -> Dict[str, Any]:
         """获取缓存统计"""
-        return {"total_entries": len(self._cache), "keys": list(self._cache.keys())}
+        return {
+            "total_entries": len(self._cache),
+            "max_size": self._max_size,
+            "hit_rate": None,  # 可在未来扩展命中率统计
+        }
 
 
 _ai_cache = AICache()

@@ -9,6 +9,7 @@ import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { ThemeService } from '@/services/system/themeService'
 import { DEFAULT_THEME_ID } from '@/constants/themes'
+import { settingsService } from '@/services'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 
@@ -124,6 +125,32 @@ export const useSettingsStore = defineStore('settings', () => {
     ThemeService.resetToDefault()
   }
 
+  // 从后端同步全局设置（优先使用服务器配置，特别是水印等全局策略）
+  async function syncFromServer() {
+    try {
+      const result = await settingsService.getSettings()
+      if (result.success && result.data) {
+        const server = result.data
+        // 水印配置：服务器全局优先
+        if (typeof server.watermark_enabled === 'boolean') {
+          settings.value.watermarkEnabled = server.watermark_enabled
+        }
+        if (typeof server.watermark_text === 'string') {
+          settings.value.watermarkText = server.watermark_text
+        }
+        if (typeof server.watermark_screenshot_enabled === 'boolean') {
+          settings.value.watermarkScreenshotEnabled = server.watermark_screenshot_enabled
+        }
+        // 其他配置也同步
+        if (server.theme) settings.value.theme = server.theme
+        if (server.default_server) settings.value.defaultServer = server.default_server
+        console.info('[SettingsStore] Synced from server:', server)
+      }
+    } catch (e) {
+      console.warn('[SettingsStore] Failed to sync from server:', e)
+    }
+  }
+
   // 初始化主题
   applyThemeMode(settings.value.theme)
 
@@ -134,6 +161,7 @@ export const useSettingsStore = defineStore('settings', () => {
     getCurrentGameTheme,
     updateSetting,
     updateSettings,
-    resetSettings
+    resetSettings,
+    syncFromServer
   }
 })

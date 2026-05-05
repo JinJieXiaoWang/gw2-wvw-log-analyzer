@@ -34,3 +34,7 @@ build/
 # Git backup
 .git.bak/
 
+
+# 构建产物压缩包
+frontend/dist.zip
+

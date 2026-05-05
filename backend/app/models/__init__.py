@@ -14,4 +14,6 @@ from app.models.log import Log
 from app.models.member import Member
 from app.models.storage import StorageCleanupRecord, StorageMonitorRecord
 from app.models.sys_user import SysUser
+from app.models.scoring_rule import ScoringRule, ScoringRulePreset
+from app.models.sys_config import SysConfig
 from app.models.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget

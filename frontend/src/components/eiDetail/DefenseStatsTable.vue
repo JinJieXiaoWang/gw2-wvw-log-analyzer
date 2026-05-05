@@ -29,7 +29,8 @@
               无敌
             </th>
             <th class="col-miss">
-              未命�?            </th>
+              未命�?
+            </th>
             <th class="col-barrier">
               屏障
             </th>

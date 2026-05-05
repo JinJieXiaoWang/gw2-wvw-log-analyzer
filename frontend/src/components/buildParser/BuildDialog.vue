@@ -6,7 +6,9 @@
     :modal="true"
   >
     <div class="p-4">
-      <p class="text-neutral-text-secondary">Build对话框功能开发中...</p>
+      <p class="text-neutral-text-secondary">
+        Build对话框功能开发中...
+      </p>
     </div>
   </Dialog>
 </template>

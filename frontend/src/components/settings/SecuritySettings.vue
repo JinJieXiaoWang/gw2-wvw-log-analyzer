@@ -1,11 +1,12 @@
 <template>
-  <div class="card">
+  <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
-    <div class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
+    <div
+      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-error-alpha-10) 0%, transparent 70%)"
     />
 
-    <div class="relative">
+    <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-error/20 to-primary/10 flex items-center justify-center border border-error/20">
@@ -125,6 +126,7 @@
     :closable="!isChangingPassword"
     :close-on-escape="!isChangingPassword"
     class="w-full max-w-md"
+    :destroy-on-hide="true"
   >
     <div class="space-y-4 pt-2">
       <!-- 旧密码 -->
@@ -179,14 +181,22 @@
           :class="{ 'p-invalid': confirmPasswordError }"
           @keydown.enter="handleChangePassword"
         />
-        <small v-if="confirmPasswordError" class="text-status-error block mt-1">
+        <small
+          v-if="confirmPasswordError"
+          class="text-status-error block mt-1"
+        >
           {{ confirmPasswordError }}
         </small>
       </div>
 
       <!-- 密码强度提示 -->
-      <div v-if="passwordValidation.errors.length > 0" class="p-3 bg-warning/5 rounded-lg border border-warning/10">
-        <p class="text-xs font-medium text-status-warning mb-1">密码要求：</p>
+      <div
+        v-if="passwordValidation.errors.length > 0"
+        class="p-3 bg-warning/5 rounded-lg border border-warning/10"
+      >
+        <p class="text-xs font-medium text-status-warning mb-1">
+          密码要求：
+        </p>
         <ul class="space-y-0.5">
           <li
             v-for="error in passwordValidation.errors"
@@ -220,23 +230,20 @@
       </div>
     </template>
   </Dialog>
-
-  <Toast />
 </template>
 
 <script setup lang="ts">
 /**
  * 安全设置组件
  * 功能：显示和编辑安全设置，对接更改密码、登出接口
- * 更新日期：2026-05-05
+ * 更新日期：2026-05-06
  */
 
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, computed, onUnmounted } from 'vue'
 import Button from 'primevue/button'
 import InputSwitch from 'primevue/inputswitch'
 import Dialog from 'primevue/dialog'
 import Password from 'primevue/password'
-import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import SettingItem from './SettingItem.vue'
 import { authService } from '@/services/auth/authService'
@@ -378,4 +385,12 @@ const handleChangePassword = async () => {
     isChangingPassword.value = false
   }
 }
+
+// 组件卸载时清理状态，防止影响其他页面
+onUnmounted(() => {
+  showChangePasswordDialog.value = false
+  isChangingPassword.value = false
+  isLoggingOut.value = false
+  resetPasswordForm()
+})
 </script>

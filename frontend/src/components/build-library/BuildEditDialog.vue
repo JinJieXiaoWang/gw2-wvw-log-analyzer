@@ -10,36 +10,69 @@
   >
     <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
       <!-- 基本信息 -->
-      <Panel header="基本信息" toggleable :collapsed="false">
+      <Panel
+        header="基本信息"
+        toggleable
+        :collapsed="false"
+      >
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-1">配置标题 <span class="text-red-400">*</span></label>
-            <InputText v-model="form.title" class="w-full" placeholder="输入配置标题" />
+            <InputText
+              v-model="form.title"
+              class="w-full"
+              placeholder="输入配置标题"
+            />
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-1">职业 <span class="text-red-400">*</span></label>
-            <Select v-model="form.profession" :options="professionOptions" option-label="label" option-value="value"
-              class="w-full" placeholder="选择职业" />
+            <Select
+              v-model="form.profession"
+              :options="professionOptions"
+              option-label="label"
+              option-value="value"
+              class="w-full"
+              placeholder="选择职业"
+            />
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-1">精英特长</label>
-            <InputText v-model="form.eliteSpec" class="w-full" placeholder="如：全息、燃火" />
+            <Select
+              v-model="form.eliteSpec"
+              :options="eliteSpecOptions"
+              option-label="label"
+              option-value="value"
+              class="w-full"
+              placeholder="选择精英特长"
+              :disabled="loadingDicts"
+            />
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-1">角色类型 <span class="text-red-400">*</span></label>
-            <Select v-model="form.role" :options="roleOptions" option-label="label" option-value="value"
-              class="w-full" placeholder="选择角色" />
+            <Select
+              v-model="form.role"
+              :options="roleOptions"
+              option-label="label"
+              option-value="value"
+              class="w-full"
+              placeholder="选择角色"
+            />
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-1">子角色</label>
             <div class="flex flex-wrap gap-2">
-              <Button v-for="sr in subRoleOptions" :key="sr.value"
+              <Button
+                v-for="sr in subRoleOptions"
+                :key="sr.value"
                 :severity="form.subRoles.includes(sr.value) ? 'primary' : 'secondary'"
-                :outlined="!form.subRoles.includes(sr.value)" size="small" @click="toggleSubRole(sr.value)">
+                :outlined="!form.subRoles.includes(sr.value)"
+                size="small"
+                @click="toggleSubRole(sr.value)"
+              >
                 {{ sr.label }}
               </Button>
             </div>
@@ -47,7 +80,11 @@
 
           <div>
             <label class="block text-sm font-medium mb-1">护甲类型</label>
-            <InputText v-model="form.armorType" class="w-full" placeholder="如：狂战士、吟游诗人" />
+            <InputText
+              v-model="form.armorType"
+              class="w-full"
+              placeholder="如：狂战士、吟游诗人"
+            />
           </div>
 
           <div class="flex items-center gap-3">
@@ -58,142 +95,361 @@
       </Panel>
 
       <!-- 配装 -->
-      <Panel header="配装" toggleable>
+      <Panel
+        header="配装"
+        toggleable
+      >
         <div class="space-y-3">
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-sm font-medium mb-1">Relic</label>
-              <InputText v-model="form.relic" class="w-full" placeholder="古物名称" />
+              <InputText
+                v-model="form.relic"
+                class="w-full"
+                placeholder="古物名称"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">符文</label>
-              <InputText v-model="form.rune" class="w-full" placeholder="符文名称" />
+              <InputText
+                v-model="form.rune"
+                class="w-full"
+                placeholder="符文名称"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">食物</label>
-              <InputText v-model="form.food" class="w-full" placeholder="食物名称" />
+              <InputText
+                v-model="form.food"
+                class="w-full"
+                placeholder="食物名称"
+              />
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">扳手</label>
-              <InputText v-model="form.wrench" class="w-full" placeholder="扳手/保养油" />
+              <InputText
+                v-model="form.wrench"
+                class="w-full"
+                placeholder="扳手/保养油"
+              />
             </div>
           </div>
           <div>
             <label class="block text-sm font-medium mb-1">灌注</label>
-            <InputText v-model="form.infusion" class="w-full" placeholder="灌注类型" />
+            <InputText
+              v-model="form.infusion"
+              class="w-full"
+              placeholder="灌注类型"
+            />
           </div>
 
           <!-- 武器 -->
           <div>
             <div class="flex items-center justify-between mb-2">
               <label class="text-sm font-medium">武器配置</label>
-              <Button icon="pi pi-plus" label="添加武器" size="small" text @click="addWeapon" />
+              <Button
+                icon="pi pi-plus"
+                label="添加武器"
+                size="small"
+                text
+                @click="addWeapon"
+              />
             </div>
-            <div v-for="(w, idx) in form.weapons" :key="idx" class="flex items-start gap-2 mb-2">
+            <div
+              v-for="(w, idx) in form.weapons"
+              :key="idx"
+              class="flex items-start gap-2 mb-2"
+            >
               <div class="flex-1 grid grid-cols-3 gap-2">
-                <InputText v-model="w.name" placeholder="武器名称" class="w-full" />
-                <InputText v-model="sigilsText[idx]" placeholder="法印（逗号分隔）" class="w-full col-span-2" />
+                <InputText
+                  v-model="w.name"
+                  placeholder="武器名称"
+                  class="w-full"
+                />
+                <InputText
+                  v-model="sigilsText[idx]"
+                  placeholder="法印（逗号分隔）"
+                  class="w-full col-span-2"
+                />
               </div>
-              <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeWeapon(idx)" />
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                size="small"
+                @click="removeWeapon(idx)"
+              />
             </div>
           </div>
         </div>
       </Panel>
 
       <!-- Build 代码 -->
-      <Panel header="Build 代码" toggleable :collapsed="false">
+      <Panel
+        header="Build 代码"
+        toggleable
+        :collapsed="false"
+      >
         <div>
           <label class="block text-sm font-medium mb-1">BD Code <span class="text-red-400">*</span></label>
           <div class="flex gap-2">
-            <Textarea v-model="form.bdCode" class="w-full font-mono flex-1" rows="2" placeholder="[&...]" />
-            <Button icon="pi pi-bolt" label="解析" severity="help" :loading="parsing"
-              :disabled="!form.bdCode.trim().startsWith('[&')" @click="parseBDCode" />
+            <Textarea
+              v-model="form.bdCode"
+              class="w-full font-mono flex-1"
+              rows="2"
+              placeholder="[&...]"
+            />
+            <Button
+              icon="pi pi-bolt"
+              label="解析"
+              severity="help"
+              :loading="parsing"
+              :disabled="!form.bdCode.trim().startsWith('[&')"
+              @click="parseBDCode"
+            />
           </div>
-          <p class="text-xs text-surface-500 mt-1">输入 BD Code 后点击「解析」可自动填充职业、特性线等数据</p>
+          <p class="text-xs text-surface-500 mt-1">
+            输入 BD Code 后点击「解析」可自动填充职业、特性线等数据
+          </p>
         </div>
       </Panel>
 
       <!-- 特性线 -->
-      <Panel header="特性线" toggleable>
+      <Panel
+        header="特性线"
+        toggleable
+      >
         <div class="space-y-2">
-          <div v-for="(t, idx) in form.traitLines" :key="idx" class="flex items-center gap-2">
-            <InputText v-model="t.name" placeholder="特性线名称" class="flex-1" />
+          <div
+            v-for="(t, idx) in form.traitLines"
+            :key="idx"
+            class="flex items-center gap-2"
+          >
+            <InputText
+              v-model="t.name"
+              placeholder="特性线名称"
+              class="flex-1"
+            />
             <div class="flex gap-1">
-              <Select v-for="cIdx in [0, 1, 2]" :key="cIdx" v-model="t.choices[cIdx]"
-                :options="[1, 2, 3]" class="w-14" />
+              <Select
+                v-for="cIdx in [0, 1, 2]"
+                :key="cIdx"
+                v-model="t.choices[cIdx]"
+                :options="[1, 2, 3]"
+                class="w-14"
+              />
             </div>
-            <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeTraitLine(idx)" />
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              size="small"
+              @click="removeTraitLine(idx)"
+            />
           </div>
-          <Button icon="pi pi-plus" label="添加特性线" size="small" text @click="addTraitLine" />
+          <Button
+            icon="pi pi-plus"
+            label="添加特性线"
+            size="small"
+            text
+            @click="addTraitLine"
+          />
         </div>
       </Panel>
 
       <!-- 循环指令 -->
-      <Panel header="指挥口令" toggleable>
+      <Panel
+        header="指挥口令"
+        toggleable
+      >
         <div class="space-y-2">
-          <div v-for="(c, idx) in form.rotationCommands" :key="idx" class="grid grid-cols-[1fr_2fr_auto] gap-2 items-center">
-            <InputText v-model="c.callout" placeholder="口令" />
-            <InputText v-model="c.action" placeholder="操作说明" />
-            <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeRotationCommand(idx)" />
+          <div
+            v-for="(c, idx) in form.rotationCommands"
+            :key="idx"
+            class="grid grid-cols-[1fr_2fr_auto] gap-2 items-center"
+          >
+            <InputText
+              v-model="c.callout"
+              placeholder="口令"
+            />
+            <InputText
+              v-model="c.action"
+              placeholder="操作说明"
+            />
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              size="small"
+              @click="removeRotationCommand(idx)"
+            />
           </div>
-          <Button icon="pi pi-plus" label="添加口令" size="small" text @click="addRotationCommand" />
+          <Button
+            icon="pi pi-plus"
+            label="添加口令"
+            size="small"
+            text
+            @click="addRotationCommand"
+          />
         </div>
       </Panel>
 
       <!-- 机制说明 -->
-      <Panel header="关键机制" toggleable>
+      <Panel
+        header="关键机制"
+        toggleable
+      >
         <div class="space-y-2">
-          <div v-for="(m, idx) in form.mechanics" :key="idx" class="space-y-2 p-3 rounded-lg bg-surface-900 border border-surface-700">
+          <div
+            v-for="(m, idx) in form.mechanics"
+            :key="idx"
+            class="space-y-2 p-3 rounded-lg bg-surface-900 border border-surface-700"
+          >
             <div class="flex items-center gap-2">
-              <InputText v-model="m.name" placeholder="机制名称" class="flex-1" />
-              <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeMechanic(idx)" />
+              <InputText
+                v-model="m.name"
+                placeholder="机制名称"
+                class="flex-1"
+              />
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                size="small"
+                @click="removeMechanic(idx)"
+              />
             </div>
-            <div v-for="(_, sIdx) in m.sources" :key="sIdx" class="flex items-center gap-2">
-              <InputText v-model="m.sources[sIdx]" placeholder="来源说明" class="flex-1" />
-              <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeMechanicSource(idx, sIdx)" />
+            <div
+              v-for="(_, sIdx) in m.sources"
+              :key="sIdx"
+              class="flex items-center gap-2"
+            >
+              <InputText
+                v-model="m.sources[sIdx]"
+                placeholder="来源说明"
+                class="flex-1"
+              />
+              <Button
+                icon="pi pi-trash"
+                severity="danger"
+                text
+                size="small"
+                @click="removeMechanicSource(idx, sIdx)"
+              />
             </div>
-            <Button icon="pi pi-plus" label="添加来源" size="small" text @click="addMechanicSource(idx)" />
+            <Button
+              icon="pi pi-plus"
+              label="添加来源"
+              size="small"
+              text
+              @click="addMechanicSource(idx)"
+            />
           </div>
-          <Button icon="pi pi-plus" label="添加机制" size="small" text @click="addMechanic" />
+          <Button
+            icon="pi pi-plus"
+            label="添加机制"
+            size="small"
+            text
+            @click="addMechanic"
+          />
         </div>
       </Panel>
 
       <!-- 视频链接 -->
-      <Panel header="参考视频" toggleable>
+      <Panel
+        header="参考视频"
+        toggleable
+      >
         <div class="space-y-2">
-          <div v-for="(v, idx) in form.videos" :key="idx" class="grid grid-cols-[1fr_1fr_auto] gap-2 items-center">
-            <InputText v-model="v.title" placeholder="视频标题" />
-            <InputText v-model="v.url" placeholder="视频链接" />
-            <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeVideo(idx)" />
+          <div
+            v-for="(v, idx) in form.videos"
+            :key="idx"
+            class="grid grid-cols-[1fr_1fr_auto] gap-2 items-center"
+          >
+            <InputText
+              v-model="v.title"
+              placeholder="视频标题"
+            />
+            <InputText
+              v-model="v.url"
+              placeholder="视频链接"
+            />
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              size="small"
+              @click="removeVideo(idx)"
+            />
           </div>
-          <Button icon="pi pi-plus" label="添加视频" size="small" text @click="addVideo" />
+          <Button
+            icon="pi pi-plus"
+            label="添加视频"
+            size="small"
+            text
+            @click="addVideo"
+          />
         </div>
       </Panel>
 
       <!-- 属性要求 -->
-      <Panel header="属性要求" toggleable>
+      <Panel
+        header="属性要求"
+        toggleable
+      >
         <div class="space-y-2">
-          <div v-for="(_, idx) in form.attrRequirements" :key="idx" class="flex items-center gap-2">
-            <InputText v-model="form.attrRequirements[idx]" placeholder="属性要求说明" class="flex-1" />
-            <Button icon="pi pi-trash" severity="danger" text size="small" @click="removeAttrRequirement(idx)" />
+          <div
+            v-for="(_, idx) in form.attrRequirements"
+            :key="idx"
+            class="flex items-center gap-2"
+          >
+            <InputText
+              v-model="form.attrRequirements[idx]"
+              placeholder="属性要求说明"
+              class="flex-1"
+            />
+            <Button
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              size="small"
+              @click="removeAttrRequirement(idx)"
+            />
           </div>
-          <Button icon="pi pi-plus" label="添加要求" size="small" text @click="addAttrRequirement" />
+          <Button
+            icon="pi pi-plus"
+            label="添加要求"
+            size="small"
+            text
+            @click="addAttrRequirement"
+          />
         </div>
       </Panel>
     </div>
 
     <template #footer>
       <div class="flex justify-end gap-3">
-        <Button label="取消" severity="secondary" outlined :disabled="submitting" @click="localVisible = false" />
-        <Button :label="isEdit ? '保存修改' : '创建配置'" severity="primary" :loading="submitting"
-          :disabled="!isValid" @click="onSubmit" />
+        <Button
+          label="取消"
+          severity="secondary"
+          outlined
+          :disabled="submitting"
+          @click="localVisible = false"
+        />
+        <Button
+          :label="isEdit ? '保存修改' : '创建配置'"
+          severity="primary"
+          :loading="submitting"
+          :disabled="!isValid"
+          @click="onSubmit"
+        />
       </div>
     </template>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
@@ -206,6 +462,7 @@ import { VALID_PROFESSIONS } from '@/types/buildLibrary'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import { useToast } from 'primevue/usetoast'
 import { bdCodeService } from '@/services/build/bdCodeService'
+import { dictionaryService } from '@/services/system/dictionaryService'
 
 interface Props {
   visible: boolean
@@ -232,11 +489,43 @@ const localVisible = computed({
 const isEdit = computed(() => !!props.editingBuild)
 const submitting = ref(false)
 
-const professionOptions = VALID_PROFESSIONS.map(p => ({ label: p, value: p }))
-const roleOptions = [
-  { label: '输出 (DPS)', value: 'dps' },
-  { label: '辅助 (Support)', value: 'support' }
-]
+// 字典数据
+const professionsDict = ref<any[]>([])
+const eliteSpecsDict = ref<any[]>([])
+const rolesDict = ref<any[]>([])
+const loadingDicts = ref(true)
+
+const professionOptions = computed(() => {
+  return professionsDict.value.length > 0 
+    ? professionsDict.value.map(p => ({ label: p.label, value: p.value }))
+    : VALID_PROFESSIONS.map(p => ({ label: p, value: p }))
+})
+
+const roleOptions = computed(() => {
+  return rolesDict.value.length > 0 
+    ? rolesDict.value.map(r => ({ label: r.label, value: r.value }))
+    : [
+        { label: '输出 (DPS)', value: 'dps' },
+        { label: '辅助 (Support)', value: 'support' }
+      ]
+})
+
+const eliteSpecOptions = computed(() => {
+  if (!form.value.profession || eliteSpecsDict.value.length === 0) {
+    return []
+  }
+  // 筛选与当前职业相关的精英特长（按职业英文部分匹配）
+  const prof = form.value.profession
+  return eliteSpecsDict.value
+    .filter(spec => 
+      spec.value.toLowerCase().includes(prof.toLowerCase()) || 
+      spec.css_class?.toLowerCase().includes(prof.toLowerCase()) ||
+      // 或者简单地包含职业名就行
+      true // 暂时全部显示，让用户选择
+    )
+    .map(spec => ({ label: spec.label, value: spec.value }))
+})
+
 type SubRoleType = 'boon' | 'heal' | 'tank' | 'cc'
 const subRoleOptions: { label: string; value: SubRoleType }[] = [
   { label: '增益', value: 'boon' },
@@ -244,6 +533,24 @@ const subRoleOptions: { label: string; value: SubRoleType }[] = [
   { label: '承伤', value: 'tank' },
   { label: '削控', value: 'cc' }
 ]
+
+async function loadDictionaries() {
+  loadingDicts.value = true
+  try {
+    const [professions, eliteSpecs, roles] = await Promise.all([
+      dictionaryService.getOptions('profession'),
+      dictionaryService.getOptions('specialization'),
+      dictionaryService.getOptions('role'),
+    ])
+    professionsDict.value = professions
+    eliteSpecsDict.value = eliteSpecs
+    rolesDict.value = roles
+  } catch (e) {
+    console.error('加载字典失败', e)
+  } finally {
+    loadingDicts.value = false
+  }
+}
 
 function createEmptyForm(): BuildCreateDto {
   return {
@@ -265,11 +572,23 @@ function createEmptyForm(): BuildCreateDto {
     rotationCommands: [],
     mechanics: [],
     videos: [],
-    author: ''
+    author: '',
+    isMeta: false
   }
 }
 
 const form = ref<BuildCreateDto>(createEmptyForm())
+
+// 监听职业变化，清空精英特长
+watch(() => form.value.profession, (newProf, oldProf) => {
+  if (newProf !== oldProf) {
+    form.value.eliteSpec = null
+  }
+})
+
+onMounted(() => {
+  loadDictionaries()
+})
 
 // 用于武器法印编辑的临时文本
 const sigilsText = computed({
@@ -375,7 +694,8 @@ watch(() => props.editingBuild, (build) => {
       rotationCommands: build.rotationCommands.map(c => ({ ...c })),
       mechanics: build.mechanics.map(m => ({ name: m.name, sources: [...m.sources] })),
       videos: build.videos.map(v => ({ ...v })),
-      author: build.author
+      author: build.author,
+      isMeta: build.isMeta
     }
   } else {
     form.value = createEmptyForm()

@@ -107,12 +107,13 @@ const props = defineProps<{
     status: string
     uploadTime?: string
   }>
+  totalRecords?: number
 }>()
 
 
 
 // 计算属性
-const totalCount = computed(() => props.logs.length)
+const totalCount = computed(() => props.totalRecords ?? props.logs.length)
 const completedCount = computed(() => props.logs.filter(l => l.status === 'completed').length)
 const parsingCount = computed(() => props.logs.filter(l => l.status === 'parsing').length)
 const pendingCount = computed(() => props.logs.filter(l => l.status === 'pending').length)

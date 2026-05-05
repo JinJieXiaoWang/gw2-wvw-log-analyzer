@@ -12,17 +12,25 @@
           :key="cmd.instanceID"
           class="flex items-center gap-3 px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30"
         >
-          <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+          <div
+            class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
             :style="{ backgroundColor: getProfessionColor(cmd.profession) }"
           >
             {{ cmd.name.charAt(0) }}
           </div>
           <div>
-            <p class="font-medium text-neutral-text">{{ cmd.name }}</p>
-            <p class="text-xs text-neutral-text-secondary">{{ cmd.profession }}</p>
+            <p class="font-medium text-neutral-text">
+              {{ cmd.name }}
+            </p>
+            <p class="text-xs text-neutral-text-secondary">
+              {{ cmd.profession }}
+            </p>
           </div>
         </div>
-        <div v-if="commanders.length === 0" class="text-neutral-text-secondary text-sm">
+        <div
+          v-if="commanders.length === 0"
+          class="text-neutral-text-secondary text-sm"
+        >
           未检测到指挥官标记
         </div>
       </div>
@@ -42,18 +50,21 @@
           :style="{ borderColor: getGroupColor(group.id), backgroundColor: getGroupColor(group.id) + '10' }"
         >
           <!-- 小队标题 -->
-          <div class="flex items-center justify-between mb-3 pb-2 border-b"
+          <div
+            class="flex items-center justify-between mb-3 pb-2 border-b"
             :style="{ borderColor: getGroupColor(group.id) + '40' }"
           >
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
+              <span
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
                 :style="{ backgroundColor: getGroupColor(group.id) }"
               >
                 {{ group.id }}
               </span>
               <span class="font-semibold text-neutral-text">小队 {{ group.id }}</span>
             </div>
-            <span class="text-xs px-2 py-0.5 rounded-full font-medium"
+            <span
+              class="text-xs px-2 py-0.5 rounded-full font-medium"
               :style="{ backgroundColor: getGroupColor(group.id) + '30', color: getGroupColor(group.id) }"
             >
               {{ group.players.length }}人
@@ -68,7 +79,8 @@
               :class="player.hasCommanderTag ? 'bg-yellow-500/10 hover:bg-yellow-500/20' : 'bg-white/5 hover:bg-white/10'"
               @click="$emit('select-player', player.instanceID)"
             >
-              <div class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
+              <div
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
                 :style="{ backgroundColor: getProfessionColor(player.profession) }"
               >
                 {{ player.name.charAt(0) }}
@@ -76,7 +88,11 @@
               <div class="text-center w-full">
                 <div class="flex items-center justify-center gap-0.5">
                   <span class="text-xs text-neutral-text truncate max-w-[80px]">{{ player.name }}</span>
-                  <i v-if="player.hasCommanderTag" class="pi pi-star-fill text-yellow-500 text-[10px]" title="指挥官" />
+                  <i
+                    v-if="player.hasCommanderTag"
+                    class="pi pi-star-fill text-yellow-500 text-[10px]"
+                    title="指挥官"
+                  />
                 </div>
                 <span class="text-[10px] text-neutral-text-secondary">{{ player.profession }}</span>
               </div>

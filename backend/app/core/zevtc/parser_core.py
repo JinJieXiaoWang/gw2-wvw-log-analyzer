@@ -293,13 +293,11 @@ class EvtcParser:
         # 直接读取文件（裸 EVTC）
         try:
             if file_size > 10 * 1024 * 1024:
-                # 大文件使用 mmap
+                # 大文件使用 mmap，返回 memoryview 避免数据复制
                 f = open(self.path, "rb")
                 self._mmap_obj = mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)
                 logger.info(f"mmap 加载大文件: {file_size / (1024*1024):.2f} MB")
-                return bytes(
-                    self._mmap_obj
-                )  # 需要完整 bytes；若内存受限可优化为 memoryview
+                return memoryview(self._mmap_obj)
             else:
                 with open(self.path, "rb") as f:
                     data = f.read()
@@ -541,6 +539,15 @@ class EvtcParser:
         if n_events <= 0:
             logger.warning("未找到 Event 数据")
             return []
+
+        # 内存安全保护：超大文件的事件数上限，防止 OOM
+        # 30 分钟 WvW 日志约 2-5M 事件，5M 是一个安全的上限
+        MAX_SAFE_EVENTS = 5_000_000
+        if n_events > MAX_SAFE_EVENTS:
+            raise FileCorruptedError(
+                f"事件数超过安全上限: {n_events} > {MAX_SAFE_EVENTS}。"
+                f"该文件可能损坏或战斗时间过长，建议手动检查。"
+            )
 
         logger.info(f"发现 {n_events} 个 Event (size={ev_size})")
 

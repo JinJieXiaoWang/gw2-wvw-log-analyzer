@@ -129,7 +129,7 @@ install_system_deps() {
         python3-openssl \
         git \
         pkg-config \
-        libmysqlclient-dev \
+        default-libmysqlclient-dev \
         libpq-dev
 
     success "系统依赖安装完成"

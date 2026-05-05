@@ -39,7 +39,7 @@ class BatchParseTask(Base):
     success_count = Column(Integer, default=0, comment="成功数量")
     failed_count = Column(Integer, default=0, comment="失败数量")
     created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="创建时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="创建时间"
     )
     started_at = Column(DateTime(timezone=True), nullable=True, comment="开始时间")
     completed_at = Column(DateTime(timezone=True), nullable=True, comment="完成时间")
@@ -77,7 +77,7 @@ class BatchParseTaskItem(Base):
         comment="关联任务ID",
     )
     log_id = Column(
-        BigInteger, ForeignKey("evtc_log.log_id"), nullable=False, comment="关联日志ID"
+        Integer, ForeignKey("evtc_log.log_id"), nullable=False, comment="关联日志ID"
     )
     status = Column(
         String(20),

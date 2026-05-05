@@ -26,7 +26,7 @@ class Fight(Base):
     __tablename__ = "fights"
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="战斗记录ID")
-    log_id = Column(BigInteger, ForeignKey("evtc_log.log_id"), nullable=False, comment="关联日志ID")
+    log_id = Column(Integer, ForeignKey("evtc_log.log_id"), nullable=False, comment="关联日志ID")
     start_time = Column(DateTime(timezone=True), nullable=False, comment="战斗开始时间")
     end_time = Column(DateTime(timezone=True), nullable=True, comment="战斗结束时间")
     duration_sec = Column(Integer, default=0, comment="战斗时长(秒)")
@@ -41,7 +41,7 @@ class Fight(Base):
     death_count = Column(Integer, default=0, comment="死亡数")
     player_count = Column(Integer, default=0, comment="玩家数量")
     is_ai_analyzed = Column(Boolean, default=False, comment="是否已完成AI分析")
-    created_at = Column(DateTime(timezone=True), server_default=func.now(), comment="记录创建时间")
+    created_at = Column(DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="记录创建时间")
 
     # 关联关系
     log = relationship("Log", back_populates="fights")

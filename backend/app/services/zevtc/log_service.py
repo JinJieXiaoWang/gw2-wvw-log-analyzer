@@ -36,11 +36,13 @@ def get_logs(
     parse_status: Optional[str] = None,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
+    search: Optional[str] = None,
 ) -> Tuple[List[Log], int]:
     # 功能：获取日志列表（支持筛选和分页）
     # 参数：db - 数据库会话；skip - 跳过数量；limit - 限制数量
     #       parse_status - 解析状态
     #       start_date - 开始日期；end_date - 结束日期
+    #       search - 文件名模糊搜索
     # 返回：日志列表, 总数
     query = db.query(Log)
 
@@ -50,6 +52,8 @@ def get_logs(
         query = query.filter(Log.upload_time >= start_date)
     if end_date:
         query = query.filter(Log.upload_time <= end_date)
+    if search:
+        query = query.filter(Log.filename.ilike(f"%{search}%"))
 
     total = query.count()
     logs = query.order_by(Log.upload_time.desc()).offset(skip).limit(limit).all()

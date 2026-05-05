@@ -38,7 +38,7 @@ class AIReport(Base):
         Integer, ForeignKey("sys_user.id"), nullable=True, comment="创建者ID"
     )
     created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="创建时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="创建时间"
     )
     is_public = Column(Integer, default=1, comment="是否公开")
     is_deleted = Column(Integer, default=0, comment="是否删除")

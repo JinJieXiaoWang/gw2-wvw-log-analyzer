@@ -8,8 +8,12 @@
           <div class="header-info">
             <i class="pi pi-book header-icon" />
             <div class="header-text">
-              <h2 class="header-title">字典管理</h2>
-              <p class="header-subtitle">系统枚举数据配置和管理中心</p>
+              <h2 class="header-title">
+                字典管理
+              </h2>
+              <p class="header-subtitle">
+                系统枚举数据配置和管理中心
+              </p>
             </div>
           </div>
           <Button
@@ -62,25 +66,42 @@
 
         <!-- 快速操作 -->
         <div class="quick-actions">
-          <h3 class="section-title">常用操作</h3>
+          <h3 class="section-title">
+            常用操作
+          </h3>
           <div class="action-grid">
-            <div class="action-card" @click="viewMode = 'management'">
+            <div
+              class="action-card"
+              @click="viewMode = 'management'"
+            >
               <i class="pi pi-cog action-icon" />
               <span class="action-label">分类管理</span>
-              <p class="action-desc">管理字典分类和属性配置</p>
+              <p class="action-desc">
+                管理字典分类和属性配置
+              </p>
             </div>
-            <div class="action-card" @click="handleQuickReload">
+            <div
+              class="action-card"
+              @click="handleQuickReload"
+            >
               <i class="pi pi-refresh action-icon" />
               <span class="action-label">刷新缓存</span>
-              <p class="action-desc">立即刷新系统字典缓存</p>
+              <p class="action-desc">
+                立即刷新系统字典缓存
+              </p>
             </div>
           </div>
         </div>
 
         <!-- 分类预览 -->
-        <div class="types-preview" v-if="dictTypes.length > 0">
+        <div
+          v-if="dictTypes.length > 0"
+          class="types-preview"
+        >
           <div class="preview-header">
-            <h3 class="section-title">分类预览</h3>
+            <h3 class="section-title">
+              分类预览
+            </h3>
             <Button
               label="查看全部"
               size="small"
@@ -122,8 +143,12 @@
               @click="viewMode = 'overview'"
             />
             <div class="header-text">
-              <h2 class="header-title">字典管理</h2>
-              <p class="header-subtitle">管理系统中的枚举数据和配置项</p>
+              <h2 class="header-title">
+                字典管理
+              </h2>
+              <p class="header-subtitle">
+                管理系统中的枚举数据和配置项
+              </p>
             </div>
           </div>
           <div class="header-right">
@@ -174,7 +199,9 @@
     >
       <div class="init-dialog-content">
         <i class="pi pi-exclamation-triangle warning-icon" />
-        <p class="warning-text">此操作将重新初始化所有字典数据，可能会覆盖现有数据，是否继续？</p>
+        <p class="warning-text">
+          此操作将重新初始化所有字典数据，可能会覆盖现有数据，是否继续？
+        </p>
       </div>
       <template #footer>
         <Button

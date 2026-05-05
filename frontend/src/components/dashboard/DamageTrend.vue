@@ -1,13 +1,20 @@
 <template>
-  <div class="card animate-slide-in-up" style="animation-delay: 0.5s">
+  <div
+    class="card animate-slide-in-up"
+    style="animation-delay: 0.5s"
+  >
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
           <i class="pi pi-chart-line text-primary" />
         </div>
         <div>
-          <h3 class="text-lg font-semibold text-neutral-text">趋势分析</h3>
-          <p class="text-xs text-neutral-text-secondary">时间序列数据</p>
+          <h3 class="text-lg font-semibold text-neutral-text">
+            趋势分析
+          </h3>
+          <p class="text-xs text-neutral-text-secondary">
+            时间序列数据
+          </p>
         </div>
       </div>
       <div class="flex gap-2">
@@ -21,13 +28,24 @@
         />
       </div>
     </div>
-    <div v-if="isLoading" class="h-72 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-if="isLoading"
+      class="h-72 flex items-center justify-center text-neutral-text-disabled"
+    >
       <i class="pi pi-spin pi-spinner text-3xl" />
     </div>
-    <div v-else-if="!chartData?.dates?.length" class="h-72 flex items-center justify-center text-neutral-text-disabled">
+    <div
+      v-else-if="!chartData?.dates?.length"
+      class="h-72 flex items-center justify-center text-neutral-text-disabled"
+    >
       <span>暂无数据</span>
     </div>
-    <v-chart v-else class="h-72" :option="chartOption" autoresize />
+    <v-chart
+      v-else
+      class="h-72"
+      :option="chartOption"
+      autoresize
+    />
   </div>
 </template>
 

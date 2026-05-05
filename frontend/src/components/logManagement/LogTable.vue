@@ -31,8 +31,11 @@
       :value="filteredLogs"
       data-key="id"
       :paginator="true"
-      :rows="10"
+      :rows="pageSize || 10"
       :rows-per-page-options="[10, 20, 50]"
+      :total-records="totalRecords"
+      :first="first || 0"
+      :lazy="true"
       striped-rows
       :loading="isLoading"
       removable-sort
@@ -74,7 +77,10 @@
               <i class="pi pi-file text-white text-lg" />
             </div>
             <div class="min-w-0">
-              <p class="text-neutral-text font-medium truncate" :title="data.fileName">
+              <p
+                class="text-neutral-text font-medium truncate"
+                :title="data.fileName"
+              >
                 {{ data.fileName }}
               </p>
               <p class="text-xs text-neutral-text-secondary">
@@ -243,6 +249,9 @@ const props = defineProps<{
   logs: LogFile[]
   filteredLogs: LogFile[]
   isLoading: boolean
+  totalRecords?: number
+  pageSize?: number
+  first?: number
 }>()
 
 // Emits
@@ -252,7 +261,8 @@ const emit = defineEmits([
   'parse-log',
   'confirm-delete-log',
   'row-select',
-  'row-unselect'
+  'row-unselect',
+  'page-change'
 ])
 
 // defineModel 和父组件双向同步选中项
@@ -265,11 +275,9 @@ const selectedLogs = defineModel('selectedLogs', {
 const dtFirst = ref(0)
 const dtRows = ref(10)
 
-// 获取当前页显示的数据
+// 获取当前页显示的数据（服务端分页模式下，传入的就是当前页数据）
 const getCurrentPageData = (): LogFile[] => {
-  const start = dtFirst.value
-  const end = start + dtRows.value
-  return props.filteredLogs.slice(start, end)
+  return props.filteredLogs
 }
 
 // 表头复选框状态：当前页是否全部选中
@@ -338,10 +346,11 @@ const onRowUnselect = () => {
   emit('row-unselect')
 }
 
-// 分页变化时更新状态
+// 分页变化时通知父组件
 const onPage = (event: any) => {
   dtFirst.value = event.first
   dtRows.value = event.rows
+  emit('page-change', { page: event.page, rows: event.rows })
 }
 
 /**

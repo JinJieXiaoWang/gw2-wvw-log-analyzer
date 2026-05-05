@@ -4,9 +4,11 @@
 # 创建日期：2026-05-04
 # 依赖说明：Python 3.8+
 
+import re
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
 
+from app.core.zevtc.constants import INVALID_ACCOUNT_PATTERNS
 from app.utils.logger import logger
 
 
@@ -37,6 +39,63 @@ class EIJsonValidator:
         "group": ["group"],
         "has_commander_tag": ["isCommander", "hasCommanderTag"],
     }
+
+    # 预编译正则表达式
+    _invalid_account_regexes = [re.compile(pattern, re.IGNORECASE) for pattern in INVALID_ACCOUNT_PATTERNS]
+
+    @classmethod
+    def is_valid_account_name(cls, account_name: Optional[str]) -> bool:
+        """验证账号名称是否有效。
+        
+        只过滤明确的黑名单账号（如 "Non Squad Player"），其他账号都允许通过。
+        
+        Args:
+            account_name: 账号名称
+            
+        Returns:
+            True 表示有效，False 表示无效（在黑名单中）
+        """
+        # 检查是否为空
+        if not account_name or not isinstance(account_name, str):
+            return False
+        
+        # 去除首尾空格后检查是否为空
+        account_name_stripped = account_name.strip()
+        if not account_name_stripped:
+            return False
+        
+        # 检查黑名单，只有在黑名单中的才拒绝
+        for regex in cls._invalid_account_regexes:
+            if regex.match(account_name_stripped):
+                return False
+        
+        # 其他所有账号都允许通过
+        return True
+
+    @classmethod
+    def validate_account_name(cls, account_name: Optional[str]) -> Tuple[bool, str]:
+        """验证账号名称并返回详细结果。
+        
+        Args:
+            account_name: 账号名称
+            
+        Returns:
+            (is_valid: bool, reason: str)
+        """
+        if not account_name or not isinstance(account_name, str):
+            return False, "账号名称为空或不是字符串"
+        
+        account_name_stripped = account_name.strip()
+        if not account_name_stripped:
+            return False, "账号名称为空"
+        
+        # 检查黑名单
+        for regex in cls._invalid_account_regexes:
+            if regex.match(account_name_stripped):
+                return False, f"账号名称在黑名单中（匹配模式: {regex.pattern}）"
+        
+        # 其他所有情况都通过
+        return True, "验证通过"
 
     # Encounter 数据必需字段（降低要求，不强制要求）
     ENCOUNTER_REQUIRED_FIELDS = []

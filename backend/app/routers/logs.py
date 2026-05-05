@@ -6,11 +6,16 @@
 import hashlib
 import json
 import os
+import threading
 import uuid
 import zipfile
 from datetime import datetime
 from io import BytesIO
 from typing import Any, Dict, Optional
+
+# 全局解析并发限制：最多同时解析 3 个日志，防止线程池被占满导致服务器卡死
+MAX_CONCURRENT_PARSE = 3
+_parse_semaphore = threading.Semaphore(MAX_CONCURRENT_PARSE)
 
 from fastapi import (
     APIRouter,
@@ -54,6 +59,7 @@ from app.schemas.log import (
     ValidationReportResponse,
 )
 from app.services.zevtc import batch_parse_service, log_service, parser_service
+from app.utils.cache import Cache
 from app.utils.exceptions import (
     BadRequestException,
     InternalServerErrorException,
@@ -66,8 +72,51 @@ router = APIRouter(prefix="/logs", tags=["日志管理"])
 UPLOAD_DIR = "./uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# 存储解析进度的全局字典
-parse_progress_store: Dict[int, Dict[str, Any]] = {}
+
+class _ProgressStore:
+    """解析进度存储包装器，基于TTL Cache防止无界增长
+    
+    原实现使用普通 dict，解析崩溃或重启后条目永久残留，导致内存泄漏。
+    改用 Cache（LRU + TTL）后，条目会在 24 小时后自动过期，
+    且最大保留 1000 条，超出时淘汰最早的条目。
+    """
+    def __init__(self):
+        self._cache = Cache(max_size=1000, default_ttl=86400)
+
+    def _key(self, log_id: int) -> str:
+        return f"parse_progress:{log_id}"
+
+    def __setitem__(self, log_id: int, value: Dict[str, Any]) -> None:
+        self._cache.set(self._key(log_id), value, ttl=86400)
+
+    def __getitem__(self, log_id: int) -> Dict[str, Any]:
+        val = self._cache.get(self._key(log_id))
+        if val is None:
+            # 自动创建默认条目，避免 KeyError 导致解析任务崩溃
+            val = {
+                "stage": "未开始",
+                "progress": 0,
+                "current_file": "",
+                "players_found": 0,
+                "events_processed": 0,
+                "errors": [],
+                "warnings": [],
+            }
+            self._cache.set(self._key(log_id), val, ttl=86400)
+        return val
+
+    def __contains__(self, log_id: int) -> bool:
+        return self._cache.get(self._key(log_id)) is not None
+
+    def __delitem__(self, log_id: int) -> None:
+        self._cache.delete(self._key(log_id))
+
+    def get(self, log_id: int, default: Any = None) -> Any:
+        val = self._cache.get(self._key(log_id))
+        return val if val is not None else default
+
+
+parse_progress_store = _ProgressStore()
 
 
 @router.get("", response_model=ApiResponse, summary="获取日志列表")
@@ -75,12 +124,13 @@ async def get_logs(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
     parse_status: Optional[str] = Query(None, description="解析状态"),
+    search: Optional[str] = Query(None, description="文件名搜索"),
     db: Session = Depends(get_db),
 ):
     # 功能：获取日志列表
     skip = (page - 1) * page_size
     logs, total = log_service.get_logs(
-        db, skip=skip, limit=page_size, parse_status=parse_status
+        db, skip=skip, limit=page_size, parse_status=parse_status, search=search
     )
 
     return ApiResponse.success_response(
@@ -108,9 +158,6 @@ async def create_batch_parse_task(
     # 功能：创建批量解析任务并立即开始执行
     if not task_data.log_ids:
         raise BadRequestException("日志ID列表不能为空")
-
-    if len(task_data.log_ids) > 20:
-        raise BadRequestException("最多支持同时解析20个日志文件")
 
     try:
         # 创建任务
@@ -198,34 +245,6 @@ async def get_batch_parse_task(
             **BatchParseTaskResponse.model_validate(task).model_dump(), items=items
         ),
     )
-
-
-@router.get(
-    "/batch-parse/{task_id}/progress",
-    response_model=ApiResponse,
-    summary="获取批量解析任务进度",
-)
-async def get_batch_parse_progress(
-    task_id: int,
-    db: Session = Depends(get_db),
-    current_admin: SysUser = Depends(get_current_admin),
-):
-    # 功能：获取批量解析任务进度
-    task = batch_parse_service.BatchParseService.get_task_by_id(db, task_id)
-    if not task:
-        raise NotFoundException(f"批量解析任务不存在: {task_id}")
-
-    # 检查权限
-    if task.created_by != current_admin.id and current_admin.role != "super_admin":
-        raise BadRequestException("无权访问此任务")
-
-    try:
-        progress = batch_parse_service.BatchParseService.get_task_progress(db, task_id)
-        return ApiResponse(
-            success=True, message="获取批量解析任务进度成功", data=progress
-        )
-    except ValueError as e:
-        raise BadRequestException(str(e))
 
 
 @router.get(
@@ -479,8 +498,8 @@ async def parse_log(
     return ApiResponse(success=True, message="开始解析日志", data={"log_id": log_id})
 
 
-async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True):
-    # 功能：后台解析任务（使用新 ZEVTC Pipeline）
+def _do_parse_log(log_id: int, db_url: str, overwrite: bool = True):
+    """实际执行解析（供信号量包装调用）"""
     from app.config.database import SessionLocal
 
     db = SessionLocal()
@@ -495,7 +514,6 @@ async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True)
         parse_progress_store[log_id]["progress"] = 10
 
         # v2.0: 使用 LogImportService 提取标量数据写入 fights/fight_stats/members
-        # 废弃 evtc_* / ei_* 原始数据写入
         from app.services.zevtc.log_import_service import LogImportService
 
         importer = LogImportService(db)
@@ -545,6 +563,13 @@ async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True)
             parse_progress_store[log_id]["stage"] = "错误"
     finally:
         db.close()
+
+
+async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True):
+    """后台解析任务（带全局并发限制，防止服务器卡死）"""
+    # 使用信号量限制全局并发数，超过限制则排队等待
+    with _parse_semaphore:
+        _do_parse_log(log_id, db_url, overwrite)
 
 
 @router.get(

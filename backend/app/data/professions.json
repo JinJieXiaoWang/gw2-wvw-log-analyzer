@@ -611,7 +611,7 @@
     },
     "Galeshot": {
       "name": "Galeshot",
-      "name_cn": "风冲击",
+      "name_cn": "风行者",
       "base_profession": "Ranger",
       "default_role": "dps",
       "possible_roles": ["dps"],

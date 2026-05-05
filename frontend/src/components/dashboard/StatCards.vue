@@ -1,16 +1,27 @@
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
     <!-- 总战斗数 -->
-    <div class="card-legendary animate-slide-in-up min-w-0" style="animation-delay: 0.1s">
+    <div
+      class="card-legendary animate-slide-in-up min-w-0"
+      style="animation-delay: 0.1s"
+    >
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
-          <p class="text-neutral-text-secondary text-sm mb-1">总战斗数</p>
+          <p class="text-neutral-text-secondary text-sm mb-1">
+            总战斗数
+          </p>
           <p class="text-3xl font-bold game-number-legendary truncate">
             {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_fights || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
-            <i :class="changeIconClass(dashboardStats?.change?.fights)" class="text-sm" />
-            <span :class="changeTextClass(dashboardStats?.change?.fights)" class="text-sm">
+            <i
+              :class="changeIconClass(dashboardStats?.change?.fights)"
+              class="text-sm"
+            />
+            <span
+              :class="changeTextClass(dashboardStats?.change?.fights)"
+              class="text-sm"
+            >
               {{ Math.abs(dashboardStats?.change?.fights || 0) }}% 较上期
             </span>
           </div>
@@ -22,16 +33,27 @@
     </div>
 
     <!-- 活跃账号 -->
-    <div class="card-exotic animate-slide-in-up min-w-0" style="animation-delay: 0.2s">
+    <div
+      class="card-exotic animate-slide-in-up min-w-0"
+      style="animation-delay: 0.2s"
+    >
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
-          <p class="text-neutral-text-secondary text-sm mb-1">活跃账号</p>
+          <p class="text-neutral-text-secondary text-sm mb-1">
+            活跃账号
+          </p>
           <p class="text-3xl font-bold game-number-exotic truncate">
             {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.active_accounts || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
-            <i :class="changeIconClass(dashboardStats?.change?.accounts)" class="text-sm" />
-            <span :class="changeTextClass(dashboardStats?.change?.accounts)" class="text-sm">
+            <i
+              :class="changeIconClass(dashboardStats?.change?.accounts)"
+              class="text-sm"
+            />
+            <span
+              :class="changeTextClass(dashboardStats?.change?.accounts)"
+              class="text-sm"
+            >
               {{ Math.abs(dashboardStats?.change?.accounts || 0) }}% 较上期
             </span>
           </div>
@@ -43,16 +65,27 @@
     </div>
 
     <!-- 总伤害 -->
-    <div class="card-rare animate-slide-in-up min-w-0" style="animation-delay: 0.3s">
+    <div
+      class="card-rare animate-slide-in-up min-w-0"
+      style="animation-delay: 0.3s"
+    >
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
-          <p class="text-neutral-text-secondary text-sm mb-1">总伤害</p>
+          <p class="text-neutral-text-secondary text-sm mb-1">
+            总伤害
+          </p>
           <p class="text-3xl font-bold game-number-rare truncate">
             {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_damage || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
-            <i :class="changeIconClass(dashboardStats?.change?.damage)" class="text-sm" />
-            <span :class="changeTextClass(dashboardStats?.change?.damage)" class="text-sm">
+            <i
+              :class="changeIconClass(dashboardStats?.change?.damage)"
+              class="text-sm"
+            />
+            <span
+              :class="changeTextClass(dashboardStats?.change?.damage)"
+              class="text-sm"
+            >
               {{ Math.abs(dashboardStats?.change?.damage || 0) }}% 较上期
             </span>
           </div>
@@ -64,16 +97,27 @@
     </div>
 
     <!-- 总治疗 -->
-    <div class="card-mythic animate-slide-in-up min-w-0" style="animation-delay: 0.4s">
+    <div
+      class="card-mythic animate-slide-in-up min-w-0"
+      style="animation-delay: 0.4s"
+    >
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
-          <p class="text-neutral-text-secondary text-sm mb-1">总治疗</p>
+          <p class="text-neutral-text-secondary text-sm mb-1">
+            总治疗
+          </p>
           <p class="text-3xl font-bold game-number-mythic truncate">
             {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_healing || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
-            <i :class="changeIconClass(dashboardStats?.change?.healing)" class="text-sm" />
-            <span :class="changeTextClass(dashboardStats?.change?.healing)" class="text-sm">
+            <i
+              :class="changeIconClass(dashboardStats?.change?.healing)"
+              class="text-sm"
+            />
+            <span
+              :class="changeTextClass(dashboardStats?.change?.healing)"
+              class="text-sm"
+            >
               {{ Math.abs(dashboardStats?.change?.healing || 0) }}% 较上期
             </span>
           </div>

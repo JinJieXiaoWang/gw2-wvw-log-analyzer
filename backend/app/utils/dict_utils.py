@@ -3,6 +3,7 @@
 # 创建日期：2026-04-29
 # 依赖说明：SQLAlchemy, typing
 
+from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -14,7 +15,24 @@ from app.utils.logger import logger
 _dict_cache: Dict[str, List[Dict]] = {}
 _dict_label_cache: Dict[str, Dict[str, str]] = {}  # type -> {value: label}
 _dict_value_cache: Dict[str, Dict[str, str]] = {}  # type -> {label: value}
-_db_session: Optional[Session] = None
+
+
+@contextmanager
+def _get_dict_session(db: Optional[Session] = None):
+    """获取字典查询用的数据库会话
+    
+    优先使用调用方传入的 session，否则创建新的 SessionLocal()。
+    新创建的 session 在上下文退出时自动关闭。
+    """
+    if db is not None:
+        yield db
+    else:
+        from app.config.database import SessionLocal
+        session = SessionLocal()
+        try:
+            yield session
+        finally:
+            session.close()
 
 
 def clear_dict_cache() -> None:
@@ -116,9 +134,6 @@ def load_all_dictionaries(db: Session) -> None:
     # 功能：加载所有字典数据到缓存
     # 参数：db - 数据库会话
     # 返回：无
-    global _db_session
-    _db_session = db
-
     # 获取所有启用的字典类型
     dict_types = (
         db.query(SysDictType)
@@ -145,8 +160,7 @@ def get_dict_datas(dict_type: str, db: Optional[Session] = None) -> List[Dict]:
         return cached_data
 
     # 如果没有缓存，尝试从数据库加载
-    session = db or _db_session
-    if session:
+    with _get_dict_session(db) as session:
         dict_data_list = load_dict_from_db(session, dict_type)
         set_dict_cache(dict_type, dict_data_list)
         return dict_data_list
@@ -246,30 +260,27 @@ def get_dict_categories(db: Optional[Session] = None) -> List[Dict]:
     # 参数：db - 数据库会话（可选）
     # 返回：字典类型列表
     try:
-        session = db or _db_session
-        if not session:
-            return []
+        with _get_dict_session(db) as session:
+            query = (
+                session.query(SysDictType)
+                .filter(SysDictType.status == 0)
+                .order_by(SysDictType.sort_order)
+            )
 
-        query = (
-            session.query(SysDictType)
-            .filter(SysDictType.status == 0)
-            .order_by(SysDictType.sort_order)
-        )
-
-        result = []
-        for item in query.all():
-            data = {
-                "dict_id": item.dict_id,
-                "dict_type": item.dict_type,
-                "dict_name": item.dict_name,
-                "status": item.status,
-                "sort_order": item.sort_order,
-                "remark": item.remark,
-            }
-            if hasattr(item, "is_system"):
-                data["is_system"] = item.is_system
-            result.append(data)
-        return result
+            result = []
+            for item in query.all():
+                data = {
+                    "dict_id": item.dict_id,
+                    "dict_type": item.dict_type,
+                    "dict_name": item.dict_name,
+                    "status": item.status,
+                    "sort_order": item.sort_order,
+                    "remark": item.remark,
+                }
+                if hasattr(item, "is_system"):
+                    data["is_system"] = item.is_system
+                result.append(data)
+            return result
     except Exception as e:
         logger.error(f"获取字典分类失败: {str(e)}", exc_info=True)
         return []
@@ -298,30 +309,27 @@ def get_dict_item_by_code(
     #       db - 数据库会话（可选）
     # 返回：字典项详情或None
     try:
-        session = db or _db_session
-        if not session:
+        with _get_dict_session(db) as session:
+            item = (
+                session.query(SysDictData)
+                .filter(SysDictData.dict_code == dict_code)
+                .first()
+            )
+            if item:
+                return {
+                    "dict_code": item.dict_code,
+                    "dict_sort": item.dict_sort,
+                    "dict_label": item.dict_label,
+                    "dict_value": item.dict_value,
+                    "dict_type": item.dict_type,
+                    "data_type": item.data_type,
+                    "css_class": item.css_class,
+                    "list_class": item.list_class,
+                    "is_default": item.is_default,
+                    "status": item.status,
+                    "remark": item.remark,
+                }
             return None
-
-        item = (
-            session.query(SysDictData)
-            .filter(SysDictData.dict_code == dict_code)
-            .first()
-        )
-        if item:
-            return {
-                "dict_code": item.dict_code,
-                "dict_sort": item.dict_sort,
-                "dict_label": item.dict_label,
-                "dict_value": item.dict_value,
-                "dict_type": item.dict_type,
-                "data_type": item.data_type,
-                "css_class": item.css_class,
-                "list_class": item.list_class,
-                "is_default": item.is_default,
-                "status": item.status,
-                "remark": item.remark,
-            }
-        return None
     except Exception as e:
         logger.error(f"通过编码获取字典项失败: {str(e)}", exc_info=True)
         return None

@@ -94,33 +94,38 @@ class FileCleanupService:
         cutoff_date = datetime.now() - timedelta(days=days)
         files_deleted = 0
         space_freed = 0
+        batch_size = 100
 
         try:
-            # 查询需要清理的日志记录
-            logs_to_cleanup = (
-                db.query(Log)
-                .filter(
-                    and_(Log.upload_time < cutoff_date, Log.parse_status == "completed")
+            # 分批查询和清理，避免一次性加载大量日志到内存
+            while True:
+                logs_batch = (
+                    db.query(Log)
+                    .filter(
+                        and_(Log.upload_time < cutoff_date, Log.parse_status == "completed")
+                    )
+                    .limit(batch_size)
+                    .all()
                 )
-                .all()
-            )
+                if not logs_batch:
+                    break
 
-            for log in logs_to_cleanup:
-                # 删除物理文件
-                if log.file_path and os.path.exists(log.file_path):
-                    try:
-                        file_size = os.path.getsize(log.file_path)
-                        os.remove(log.file_path)
-                        space_freed += file_size
-                        logger.info(f"已删除文件: {log.file_path}")
-                    except Exception as e:
-                        logger.warning(f"删除文件失败 {log.file_path}: {e}")
+                for log in logs_batch:
+                    # 删除物理文件
+                    if log.file_path and os.path.exists(log.file_path):
+                        try:
+                            file_size = os.path.getsize(log.file_path)
+                            os.remove(log.file_path)
+                            space_freed += file_size
+                            logger.info(f"已删除文件: {log.file_path}")
+                        except Exception as e:
+                            logger.warning(f"删除文件失败 {log.file_path}: {e}")
 
-                # 删除数据库记录（级联删除相关数据）
-                from app.services.zevtc.log_service import delete_log
+                    # 删除数据库记录（级联删除相关数据）
+                    from app.services.zevtc.log_service import delete_log
 
-                if delete_log(db, log.id):
-                    files_deleted += 1
+                    if delete_log(db, log.id):
+                        files_deleted += 1
 
             FileCleanupService._update_cleanup_record(
                 db, record.id, files_deleted, space_freed, "completed"
@@ -173,34 +178,39 @@ class FileCleanupService:
         target_size = max_size * 0.9  # 清理到限制的90%
 
         try:
-            # 从最旧的已解析日志开始清理
-            logs_to_cleanup = (
-                db.query(Log)
-                .filter(Log.parse_status == "completed")
-                .order_by(Log.upload_time)
-                .all()
-            )
-
-            for log in logs_to_cleanup:
-                if total_size - space_freed <= target_size:
+            # 从最旧的已解析日志开始清理，分批处理避免大内存占用
+            batch_size = 100
+            while total_size - space_freed > target_size:
+                logs_batch = (
+                    db.query(Log)
+                    .filter(Log.parse_status == "completed")
+                    .order_by(Log.upload_time)
+                    .limit(batch_size)
+                    .all()
+                )
+                if not logs_batch:
                     break
 
-                # 删除物理文件
-                if log.file_path and os.path.exists(log.file_path):
-                    try:
-                        file_size = os.path.getsize(log.file_path)
-                        os.remove(log.file_path)
-                        space_freed += file_size
-                        logger.info(f"已删除文件: {log.file_path}")
-                    except Exception as e:
-                        logger.warning(f"删除文件失败 {log.file_path}: {e}")
-                        continue
+                for log in logs_batch:
+                    if total_size - space_freed <= target_size:
+                        break
 
-                # 删除数据库记录
-                from app.services.zevtc.log_service import delete_log
+                    # 删除物理文件
+                    if log.file_path and os.path.exists(log.file_path):
+                        try:
+                            file_size = os.path.getsize(log.file_path)
+                            os.remove(log.file_path)
+                            space_freed += file_size
+                            logger.info(f"已删除文件: {log.file_path}")
+                        except Exception as e:
+                            logger.warning(f"删除文件失败 {log.file_path}: {e}")
+                            continue
 
-                if delete_log(db, log.id):
-                    files_deleted += 1
+                    # 删除数据库记录
+                    from app.services.zevtc.log_service import delete_log
+
+                    if delete_log(db, log.id):
+                        files_deleted += 1
 
             FileCleanupService._update_cleanup_record(
                 db, record.id, files_deleted, space_freed, "completed"
@@ -235,27 +245,34 @@ class FileCleanupService:
         space_freed = 0
 
         try:
-            logs_to_cleanup = (
-                db.query(Log)
-                .filter(
-                    and_(Log.parse_status == "completed", Log.file_path.isnot(None))
+            # 分批处理，避免一次性加载大量日志到内存
+            batch_size = 100
+            while True:
+                logs_batch = (
+                    db.query(Log)
+                    .filter(
+                        and_(Log.parse_status == "completed", Log.file_path.isnot(None))
+                    )
+                    .limit(batch_size)
+                    .all()
                 )
-                .all()
-            )
+                if not logs_batch:
+                    break
 
-            for log in logs_to_cleanup:
-                if log.file_path and os.path.exists(log.file_path):
-                    try:
-                        file_size = os.path.getsize(log.file_path)
-                        os.remove(log.file_path)
-                        log.file_path = None
-                        space_freed += file_size
-                        files_deleted += 1
-                        logger.info(f"已删除原始文件: {log.filename}")
-                    except Exception as e:
-                        logger.warning(f"删除文件失败 {log.file_path}: {e}")
+                for log in logs_batch:
+                    if log.file_path and os.path.exists(log.file_path):
+                        try:
+                            file_size = os.path.getsize(log.file_path)
+                            os.remove(log.file_path)
+                            log.file_path = None
+                            space_freed += file_size
+                            files_deleted += 1
+                            logger.info(f"已删除原始文件: {log.filename}")
+                        except Exception as e:
+                            logger.warning(f"删除文件失败 {log.file_path}: {e}")
 
-            db.commit()
+                db.commit()
+
             FileCleanupService._update_cleanup_record(
                 db, record.id, files_deleted, space_freed, "completed"
             )

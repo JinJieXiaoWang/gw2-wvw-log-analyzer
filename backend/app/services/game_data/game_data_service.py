@@ -64,15 +64,41 @@ class CacheEntry:
 # =============================================================================
 class MultiLevelCache:
     # 功能：多级缓存管理器（内存缓存 + 持久化缓存）
+    # 增强：添加内存上限和过期条目主动清理，防止无界增长
 
-    def __init__(self, cache_dir: Optional[Path] = None):
+    def __init__(self, cache_dir: Optional[Path] = None, max_memory_entries: int = 2000):
         self._memory_cache: Dict[str, CacheEntry] = {}
         self._cache_dir = cache_dir or (DATA_DIR / ".cache")
         self._cache_dir.mkdir(parents=True, exist_ok=True)
+        self._max_memory_entries = max_memory_entries
         self._lock = threading.RLock()
         self._hit_count = 0
         self._miss_count = 0
         self._stats_lock = threading.Lock()
+
+    def _evict_oldest(self) -> None:
+        """LRU驱逐：删除最久未访问的内存缓存条目"""
+        if not self._memory_cache:
+            return
+        oldest_key = min(
+            self._memory_cache,
+            key=lambda k: self._memory_cache[k].last_accessed
+        )
+        del self._memory_cache[oldest_key]
+        logger.debug(f"MultiLevelCache LRU驱逐: {oldest_key}")
+
+    def clear_expired(self) -> int:
+        """主动清理所有过期的内存缓存条目，返回清理数量"""
+        with self._lock:
+            expired_keys = [
+                k for k, entry in self._memory_cache.items()
+                if entry.is_expired()
+            ]
+            for k in expired_keys:
+                del self._memory_cache[k]
+            if expired_keys:
+                logger.info(f"MultiLevelCache 清理 {len(expired_keys)} 个过期条目")
+            return len(expired_keys)
 
     def get(
         self, key: str, loader: Optional[Callable[[], Any]] = None
@@ -83,10 +109,14 @@ class MultiLevelCache:
         with self._lock:
             memory_entry = self._memory_cache.get(key)
 
-            if memory_entry and not memory_entry.is_expired():
-                with self._stats_lock:
-                    self._hit_count += 1
-                return memory_entry.get_value()
+            if memory_entry:
+                if not memory_entry.is_expired():
+                    with self._stats_lock:
+                        self._hit_count += 1
+                    return memory_entry.get_value()
+                else:
+                    # 过期条目立即清理
+                    del self._memory_cache[key]
 
             persistent_value = self._load_from_persistent(key)
             if persistent_value is not None:
@@ -113,6 +143,10 @@ class MultiLevelCache:
     ) -> None:
         # 功能：设置缓存值
         with self._lock:
+            # 如果达到内存上限，先LRU驱逐最久未访问的条目
+            if len(self._memory_cache) >= self._max_memory_entries and key not in self._memory_cache:
+                self._evict_oldest()
+
             entry = CacheEntry(key, copy.deepcopy(value), expire_seconds)
             self._memory_cache[key] = entry
             self._save_to_persistent(key, value)
@@ -140,6 +174,7 @@ class MultiLevelCache:
                 "total_requests": total,
                 "hit_rate_percent": round(hit_rate, 2),
                 "memory_cache_size": len(self._memory_cache),
+                "max_memory_entries": self._max_memory_entries,
             }
 
     def _get_persistent_path(self, key: str) -> Path:

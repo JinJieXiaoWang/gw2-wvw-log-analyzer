@@ -6,7 +6,10 @@
     :style="{ width: '500px' }"
     @update:visible="emit('update:visible', $event)"
   >
-    <form @submit.prevent="handleSubmit" class="space-y-4">
+    <form
+      class="space-y-4"
+      @submit.prevent="handleSubmit"
+    >
       <!-- Build名称 -->
       <div>
         <label class="block text-sm font-medium text-neutral-text mb-2">
@@ -18,7 +21,10 @@
           placeholder="输入Build名称"
           :class="{ 'p-invalid': errors.title }"
         />
-        <p v-if="errors.title" class="mt-1 text-sm text-red-500">
+        <p
+          v-if="errors.title"
+          class="mt-1 text-sm text-red-500"
+        >
           {{ errors.title }}
         </p>
       </div>
@@ -37,7 +43,10 @@
           placeholder="选择职业"
           :class="{ 'p-invalid': errors.profession }"
         />
-        <p v-if="errors.profession" class="mt-1 text-sm text-red-500">
+        <p
+          v-if="errors.profession"
+          class="mt-1 text-sm text-red-500"
+        >
           {{ errors.profession }}
         </p>
       </div>
@@ -56,7 +65,10 @@
           placeholder="选择职责"
           :class="{ 'p-invalid': errors.role }"
         />
-        <p v-if="errors.role" class="mt-1 text-sm text-red-500">
+        <p
+          v-if="errors.role"
+          class="mt-1 text-sm text-red-500"
+        >
           {{ errors.role }}
         </p>
       </div>
@@ -80,7 +92,10 @@
           v-model="formData.isMeta"
           input-id="isMeta"
         />
-        <label for="isMeta" class="text-sm text-neutral-text">
+        <label
+          for="isMeta"
+          class="text-sm text-neutral-text"
+        >
           标记为Meta Build
         </label>
       </div>

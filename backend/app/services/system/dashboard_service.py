@@ -183,7 +183,7 @@ def get_trends(db: Session, days: int = 30, metric: str = "damage") -> Dict[str,
         )
         query = _apply_time_filter(query, start_date, end_date)
         query = query.group_by(func.date(Fight.start_time))
-        results = {str(r.date): int(r.value) for r in query.all()}
+        results = {str(r.date): int(r.value) for r in query.limit(10000).all()}
 
     elif metric == "fights":
         # 每日战斗场次
@@ -195,7 +195,7 @@ def get_trends(db: Session, days: int = 30, metric: str = "damage") -> Dict[str,
         )
         query = _apply_time_filter(query, start_date, end_date)
         query = query.group_by(func.date(Fight.start_time))
-        results = {str(r.date): int(r.value) for r in query.all()}
+        results = {str(r.date): int(r.value) for r in query.limit(10000).all()}
 
     elif metric == "healing":
         query = (
@@ -206,7 +206,7 @@ def get_trends(db: Session, days: int = 30, metric: str = "damage") -> Dict[str,
         )
         query = _apply_time_filter(query, start_date, end_date)
         query = query.group_by(func.date(Fight.start_time))
-        results = {str(r.date): int(r.value or 0) for r in query.all()}
+        results = {str(r.date): int(r.value or 0) for r in query.limit(10000).all()}
 
     elif metric == "kills":
         query = (
@@ -217,7 +217,7 @@ def get_trends(db: Session, days: int = 30, metric: str = "damage") -> Dict[str,
         )
         query = _apply_time_filter(query, start_date, end_date)
         query = query.group_by(func.date(Fight.start_time))
-        results = {str(r.date): int(r.value or 0) for r in query.all()}
+        results = {str(r.date): int(r.value or 0) for r in query.limit(10000).all()}
 
     else:
         # 默认 damage
@@ -229,7 +229,7 @@ def get_trends(db: Session, days: int = 30, metric: str = "damage") -> Dict[str,
         )
         query = _apply_time_filter(query, start_date, end_date)
         query = query.group_by(func.date(Fight.start_time))
-        results = {str(r.date): int(r.value or 0) for r in query.all()}
+        results = {str(r.date): int(r.value or 0) for r in query.limit(10000).all()}
 
     # 补零
     values = [results.get(d, 0) for d in date_list]
@@ -283,7 +283,7 @@ def get_profession_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     query = query.order_by(func.count(distinct(latest_profession_subq.c.character_name)).desc())
 
     items = []
-    for r in query.all():
+    for r in query.limit(10000).all():
         items.append({
             "profession": r.profession or "Unknown",
             "count": int(r.count or 0),
@@ -294,6 +294,7 @@ def get_profession_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
         "period_days": days,
         "items": items,
         "total": len(items),
+        "truncated": len(items) >= 10000,
     }
 
 
@@ -321,7 +322,7 @@ def get_map_stats(db: Session, days: int = 30) -> Dict[str, Any]:
     query = query.order_by(func.count(Fight.id).desc())
 
     items = []
-    for r in query.all():
+    for r in query.limit(10000).all():
         items.append({
             "map_name": r.map_name or "未知地图",
             "fight_count": int(r.fight_count or 0),
@@ -334,6 +335,7 @@ def get_map_stats(db: Session, days: int = 30) -> Dict[str, Any]:
         "period_days": days,
         "items": items,
         "total": len(items),
+        "truncated": len(items) >= 10000,
     }
 
 
@@ -509,7 +511,7 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     )
     query = _apply_time_filter(query, start_date, end_date)
 
-    scores = [float(s.ai_score) for s in query.all()]
+    scores = [float(s.ai_score) for s in query.limit(10000).all()]
     total = len(scores)
 
     items = []

@@ -15,7 +15,9 @@
 
     <!-- 职业筛选 -->
     <div class="mb-6">
-      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">职业</h4>
+      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">
+        职业
+      </h4>
       <div class="grid grid-cols-1 gap-2">
         <button
           v-for="prof in professionList"
@@ -39,7 +41,9 @@
             <div class="text-sm font-semibold text-neutral-text truncate leading-tight">
               {{ prof.label }}
             </div>
-            <div class="text-xs text-neutral-text-secondary mt-0.5">{{ prof.count }} 个配置</div>
+            <div class="text-xs text-neutral-text-secondary mt-0.5">
+              {{ prof.count }} 个配置
+            </div>
           </div>
         </button>
       </div>
@@ -47,7 +51,9 @@
 
     <!-- 职责筛选 -->
     <div class="mb-6">
-      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">职责</h4>
+      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">
+        职责
+      </h4>
       <div class="flex gap-2">
         <button
           v-for="role in roleOptions"
@@ -64,7 +70,9 @@
 
     <!-- 子职责筛选 -->
     <div class="mb-6">
-      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">细分职责</h4>
+      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">
+        细分职责
+      </h4>
       <div class="flex flex-wrap gap-2">
         <button
           v-for="sub in subRoleOptions"
@@ -74,7 +82,10 @@
           @click="toggleSubRole(sub.value)"
         >
           {{ sub.label }}
-          <span v-if="(subRoleCounts[sub.value] || 0) > 0" class="opacity-50 ml-1 text-xs">
+          <span
+            v-if="(subRoleCounts[sub.value] || 0) > 0"
+            class="opacity-50 ml-1 text-xs"
+          >
             ({{ subRoleCounts[sub.value] }})
           </span>
         </button>
@@ -83,7 +94,9 @@
 
     <!-- 排序 -->
     <div class="mb-6">
-      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">排序</h4>
+      <h4 class="text-sm font-bold text-neutral-text-secondary mb-3 uppercase tracking-wider">
+        排序
+      </h4>
       <Dropdown
         v-model="localSort"
         :options="sortOptions"
@@ -114,6 +127,7 @@ import type { RoleFilter, SubRoleFilter } from '@/types/buildLibrary'
 
 interface Props {
   professions: string[]
+  professionsDict: { value: string, label: string, css_class?: string, is_default: number }[]
   activeProfession: string
   activeRole: RoleFilter
   activeSubRoles: SubRoleFilter[]
@@ -121,6 +135,7 @@ interface Props {
   sortBy: string
   roleCounts: Record<string, number>
   subRoleCounts: Record<string, number>
+  professionCounts: Record<string, number>
 }
 
 const props = defineProps<Props>()
@@ -169,11 +184,27 @@ const professionData: Record<string, { label: string; initial: string; color: st
 }
 
 const professionList = computed(() => {
-  return props.professions.map((key) => ({
-    key,
-    ...professionData[key],
-    count: props.roleCounts[key] || 0
-  }))
+  const result = props.professions.map((key) => {
+    // 尝试从字典数据找职业信息，找不到就用硬编码的 fallback
+    const dictProf = props.professionsDict.find(p => p.value === key)
+    const fallbackProf = professionData[key] || { label: key, initial: key.charAt(0), color: '#6B7280' }
+    return {
+      key,
+      label: dictProf?.label || fallbackProf.label,
+      initial: fallbackProf.initial,
+      color: dictProf?.css_class || fallbackProf.color,
+      count: props.professionCounts[key] || 0
+    }
+  })
+  // 添加 "全部" 选项
+  result.unshift({
+    key: 'all',
+    label: '全部',
+    initial: '全',
+    color: '#165DFF',
+    count: props.roleCounts.all || 0
+  })
+  return result
 })
 
 const roleOptions = [
@@ -217,61 +248,89 @@ const clearFilters = () => {
 </script>
 
 <style scoped>
+.build-filter-sidebar {
+  background: linear-gradient(to bottom, rgba(15, 15, 25, 0.95), rgba(20, 20, 35, 0.98));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+}
+
 .profession-btn {
   border: 1.5px solid transparent;
-  background: var(--color-bg-alpha-60, rgba(30, 30, 30, 0.5));
+  background: rgba(30, 35, 50, 0.5);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
 }
 .profession-btn:hover {
-  background: var(--color-bg-hover, rgba(42, 42, 42, 0.8));
-  border-color: var(--color-border);
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 .profession-btn-active {
   border-width: 1.5px;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .role-btn {
-  background: var(--color-bg-alpha-60, rgba(30, 30, 30, 0.5));
+  background: rgba(30, 35, 50, 0.5);
   color: var(--neutral-text-secondary);
   border: 1.5px solid transparent;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .role-btn:hover {
-  background: var(--color-bg);
-  border-color: var(--color-border);
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
 }
 .role-btn-active {
   background: rgba(22, 93, 255, 0.15);
   color: var(--primary);
-  border-color: rgba(22, 93, 255, 0.3);
+  border-color: rgba(22, 93, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.15);
 }
 
 .subrole-chip-inactive {
-  background: var(--color-bg-alpha-60, rgba(30, 30, 30, 0.5));
+  background: rgba(30, 35, 50, 0.5);
   color: var(--neutral-text-secondary);
-  border-color: var(--color-border);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .subrole-chip-inactive:hover {
-  background: var(--color-bg);
-  border-color: var(--neutral-text-disabled);
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
 }
 .subrole-chip-active {
   background: rgba(255, 125, 0, 0.15);
   color: var(--secondary);
-  border-color: rgba(255, 125, 0, 0.35);
+  border: 1.5px solid rgba(255, 125, 0, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(255, 125, 0, 0.15);
 }
 
 .clear-btn {
   background: rgba(245, 63, 63, 0.08);
   color: var(--status-error);
   border: 1px solid rgba(245, 63, 63, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .clear-btn:hover {
-  background: rgba(245, 63, 63, 0.15);
-  border-color: rgba(245, 63, 63, 0.35);
+  background: rgba(245, 63, 63, 0.18);
+  border-color: rgba(245, 63, 63, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 63, 63, 0.15);
 }
 
 :deep(.p-dropdown) {
-  background: var(--color-bg);
-  border-color: var(--color-border);
+  background: rgba(30, 35, 50, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
 }
 :deep(.p-dropdown .p-dropdown-label) {
   color: var(--neutral-text);
@@ -279,5 +338,13 @@ const clearFilters = () => {
 }
 :deep(.p-dropdown .p-dropdown-trigger) {
   color: var(--neutral-text-secondary);
+}
+:deep(.p-inputtext) {
+  background: rgba(30, 35, 50, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.35);
 }
 </style>

@@ -7,8 +7,13 @@
     </div>
 
     <!-- 武器 -->
-    <div v-if="build.weapons && build.weapons.length > 0" class="mb-5">
-      <h4 class="text-sm font-bold text-neutral-text-secondary mb-2 uppercase tracking-wider">武器</h4>
+    <div
+      v-if="build.weapons && build.weapons.length > 0"
+      class="mb-5"
+    >
+      <h4 class="text-sm font-bold text-neutral-text-secondary mb-2 uppercase tracking-wider">
+        武器
+      </h4>
       <div class="space-y-2">
         <div
           v-for="weapon in build.weapons"
@@ -22,7 +27,10 @@
             {{ weapon.set }}
           </span>
           <span class="text-base font-medium text-neutral-text flex-1">{{ weapon.name }}</span>
-          <div v-if="weapon.sigils && weapon.sigils.length > 0" class="flex gap-2 flex-shrink-0">
+          <div
+            v-if="weapon.sigils && weapon.sigils.length > 0"
+            class="flex gap-2 flex-shrink-0"
+          >
             <span
               v-for="sigil in weapon.sigils"
               :key="sigil"
@@ -42,28 +50,36 @@
           <i class="pi pi-gem text-status-warning" />
           <span class="text-xs font-bold text-neutral-text-secondary uppercase tracking-wide">古物</span>
         </div>
-        <div class="text-base font-semibold text-neutral-text">{{ build.relic }}</div>
+        <div class="text-base font-semibold text-neutral-text">
+          {{ build.relic }}
+        </div>
       </div>
       <div class="p-4 rounded-xl bg-neutral-bg border border-neutral-border">
         <div class="flex items-center gap-2 mb-2">
           <i class="pi pi-sparkles text-rarity-legendary" />
           <span class="text-xs font-bold text-neutral-text-secondary uppercase tracking-wide">符文</span>
         </div>
-        <div class="text-base font-semibold text-neutral-text">{{ build.rune }}</div>
+        <div class="text-base font-semibold text-neutral-text">
+          {{ build.rune }}
+        </div>
       </div>
       <div class="p-4 rounded-xl bg-neutral-bg border border-neutral-border">
         <div class="flex items-center gap-2 mb-2">
           <i class="pi pi-apple text-status-warning" />
           <span class="text-xs font-bold text-neutral-text-secondary uppercase tracking-wide">食物</span>
         </div>
-        <div class="text-base font-semibold text-neutral-text">{{ build.food }}</div>
+        <div class="text-base font-semibold text-neutral-text">
+          {{ build.food }}
+        </div>
       </div>
       <div class="p-4 rounded-xl bg-neutral-bg border border-neutral-border">
         <div class="flex items-center gap-2 mb-2">
           <i class="pi pi-wrench text-primary" />
           <span class="text-xs font-bold text-neutral-text-secondary uppercase tracking-wide">扳手</span>
         </div>
-        <div class="text-base font-semibold text-neutral-text">{{ build.wrench }}</div>
+        <div class="text-base font-semibold text-neutral-text">
+          {{ build.wrench }}
+        </div>
       </div>
     </div>
 
@@ -75,7 +91,10 @@
     </div>
 
     <!-- 属性要求 -->
-    <div v-if="build.attrRequirements && build.attrRequirements.length > 0" class="space-y-2">
+    <div
+      v-if="build.attrRequirements && build.attrRequirements.length > 0"
+      class="space-y-2"
+    >
       <div
         v-for="req in build.attrRequirements"
         :key="req"

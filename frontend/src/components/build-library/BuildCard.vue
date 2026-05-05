@@ -13,7 +13,10 @@
     @click="$emit('select', build)"
   >
     <!-- META 角标 -->
-    <div v-if="build.isMeta" class="absolute top-0 right-0 z-10">
+    <div
+      v-if="build.isMeta"
+      class="absolute top-0 right-0 z-10"
+    >
       <div
         class="text-xs font-bold px-3 py-1 rounded-bl-xl"
         :style="{ backgroundColor: build.professionColor + '25', color: build.professionColor }"
@@ -39,7 +42,7 @@
           </h3>
           <p class="text-sm text-neutral-text-secondary mt-1 truncate">
             {{ professionLabel }}
-            <span v-if="build.eliteSpec"> · {{ build.eliteSpec }}</span>
+            <span v-if="build.eliteSpec"> · {{ getProfessionName(build.eliteSpec) }}</span>
           </p>
         </div>
       </div>
@@ -93,7 +96,15 @@
           </button>
           <button
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
+            title="编辑配置"
+            @click.stop="$emit('edit', build)"
+          >
+            <i class="pi pi-pencil text-xs" />
+          </button>
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
             title="查看详情"
+            @click.stop="$emit('select', build)"
           >
             <i class="pi pi-eye text-xs" />
           </button>
@@ -106,6 +117,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { BuildEntry } from '@/types/buildLibrary'
+import { getProfessionName } from '@/utils/profession/professionUtils'
 
 interface Props {
   build: BuildEntry
@@ -115,6 +127,7 @@ const props = defineProps<Props>()
 defineEmits<{
   'copy-code': [build: BuildEntry]
   'select': [build: BuildEntry]
+  'edit': [build: BuildEntry]
 }>()
 
 const professionInitial = computed(() => {

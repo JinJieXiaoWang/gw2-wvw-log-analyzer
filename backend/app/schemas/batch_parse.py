@@ -46,7 +46,7 @@ class BatchParseTaskResponse(BaseModel):
     processed_count: int
     success_count: int
     failed_count: int
-    created_at: datetime
+    created_at: Optional[datetime] = None
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
     created_by: Optional[int] = None

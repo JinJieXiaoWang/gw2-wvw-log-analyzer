@@ -25,6 +25,13 @@
           不同角色类型（输出/辅助/承伤）使用不同的评分维度和权重
         </p>
       </div>
+       <Button
+            label="评分规则"
+            icon="pi pi-chart-line"
+            class="btn-ghost"
+            size="small"
+            @click="openScoringRulesDialog"
+          />
     </div>
 
     <!-- 统计卡片 -->

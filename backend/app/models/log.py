@@ -8,10 +8,8 @@
 
 from sqlalchemy import (
     CHAR,
-    BigInteger,
     Column,
     DateTime,
-    Enum,
     ForeignKey,
     Index,
     Integer,
@@ -32,7 +30,7 @@ class Log(Base):
     # === 核心标识 ===
     id = Column(
         "log_id",
-        BigInteger,
+        Integer,
         primary_key=True,
         autoincrement=True,
         comment="日志实例主键",
@@ -54,14 +52,7 @@ class Log(Base):
 
     # === 解析生命周期（轻量级状态机） ===
     parse_status = Column(
-        Enum(
-            "pending",
-            "parsing",
-            "completed",
-            "failed",
-            "partial",
-            name="parse_status_enum",
-        ),
+        String(20),
         nullable=False,
         default="pending",
         comment="解析状态",
@@ -75,7 +66,7 @@ class Log(Base):
 
     # === 上传审计 ===
     upload_time = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="上传时间，毫秒精度"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="上传时间，毫秒精度"
     )
     upload_ip = Column(String(50), nullable=True, comment="上传者IP地址")
     uploaded_by = Column(

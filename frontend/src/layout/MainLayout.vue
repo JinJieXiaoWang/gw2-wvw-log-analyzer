@@ -1,5 +1,8 @@
 <template>
-  <div class="main-layout" :class="{ 'theme-transition': isTransitioning }">
+  <div
+    class="main-layout"
+    :class="{ 'theme-transition': isTransitioning }"
+  >
     <!-- 主题背景动画层 -->
     <div class="theme-background" />
     
@@ -9,8 +12,14 @@
     <!-- 主内容区域 -->
     <main class="main-content">
       <router-view v-slot="{ Component }">
-        <transition name="page" mode="out-in">
-          <component :is="Component" :key="$route.fullPath" />
+        <transition
+          name="page"
+          mode="out-in"
+        >
+          <component
+            :is="Component"
+            :key="$route.fullPath"
+          />
         </transition>
       </router-view>
     </main>

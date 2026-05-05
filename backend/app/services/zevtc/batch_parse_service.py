@@ -9,6 +9,8 @@
 #   - 失败重试机制（HTTP 429 按响应等待，其他错误指数退避）
 #   - 任务状态精细跟踪（pending/processing/completed/failed/retrying）
 
+import concurrent.futures
+import gc
 import threading
 import time
 from datetime import datetime, timedelta, timezone
@@ -43,14 +45,20 @@ class BatchParseService:
         task_name: Optional[str] = None,
         created_by: Optional[int] = None,
     ) -> BatchParseTask:
+        # 过滤：只包含存在且当前未在解析中的日志
         valid_log_ids = []
+        skipped_count = 0
         for log_id in log_ids:
             log = log_service.get_log_by_id(db, log_id)
-            if log:
-                valid_log_ids.append(log_id)
+            if not log:
+                continue
+            if log.parse_status == "parsing":
+                skipped_count += 1
+                continue
+            valid_log_ids.append(log_id)
 
         if not valid_log_ids:
-            raise ValueError("没有有效的日志ID")
+            raise ValueError("没有有效的日志ID（所有日志已在解析中或不存在）")
 
         task = BatchParseTask(
             task_name=task_name,
@@ -65,9 +73,19 @@ class BatchParseService:
             task_item = BatchParseTaskItem(task_id=task.id, log_id=log_id, max_retries=3)
             db.add(task_item)
 
+        # 立即将所有有效日志标记为解析中，让用户在列表中立即看到"解析中"状态
+        for log_id in valid_log_ids:
+            log_service.update_parse_status(db, log_id, "parsing")
+
         db.commit()
         db.refresh(task)
-        logger.info(f"创建批量解析任务成功，任务ID: {task.id}，包含 {len(valid_log_ids)} 个日志")
+        if skipped_count > 0:
+            logger.info(
+                f"创建批量解析任务成功，任务ID: {task.id}，"
+                f"包含 {len(valid_log_ids)} 个日志（跳过 {skipped_count} 个已在解析中的日志）"
+            )
+        else:
+            logger.info(f"创建批量解析任务成功，任务ID: {task.id}，包含 {len(valid_log_ids)} 个日志")
         return task
 
     @staticmethod
@@ -91,51 +109,6 @@ class BatchParseService:
         total = query.count()
         tasks = query.order_by(BatchParseTask.created_at.desc()).offset(skip).limit(limit).all()
         return tasks, total
-
-    @staticmethod
-    def get_task_progress(db: Session, task_id: int) -> Dict[str, Any]:
-        task = BatchParseService.get_task_by_id(db, task_id)
-        if not task:
-            raise ValueError(f"任务不存在: {task_id}")
-
-        progress_percent = 0.0
-        if task.total_count > 0:
-            progress_percent = (task.processed_count / task.total_count) * 100
-
-        elapsed_seconds = None
-        estimated_remaining_seconds = None
-        if task.started_at:
-            end_time = task.completed_at or datetime.now(task.started_at.tzinfo)
-            elapsed_seconds = (end_time - task.started_at).total_seconds()
-            if task.processed_count > 0 and task.status != "completed":
-                avg_time_per_item = elapsed_seconds / task.processed_count
-                remaining_items = task.total_count - task.processed_count
-                estimated_remaining_seconds = avg_time_per_item * remaining_items
-
-        items = db.query(BatchParseTaskItem).filter(BatchParseTaskItem.task_id == task_id).all()
-        item_statuses = [
-            {
-                "log_id": item.log_id,
-                "status": item.status,
-                "retry_count": item.retry_count,
-                "error_code": item.error_code,
-                "error_message": item.error_message,
-            }
-            for item in items
-        ]
-
-        return {
-            "task_id": task.id,
-            "status": task.status,
-            "total_count": task.total_count,
-            "processed_count": task.processed_count,
-            "success_count": task.success_count,
-            "failed_count": task.failed_count,
-            "progress_percent": round(progress_percent, 2),
-            "elapsed_seconds": round(elapsed_seconds, 2) if elapsed_seconds else None,
-            "estimated_remaining_seconds": round(estimated_remaining_seconds, 2) if estimated_remaining_seconds else None,
-            "items": item_statuses,
-        }
 
     @staticmethod
     def update_task_status(
@@ -270,34 +243,40 @@ class BatchParseService:
 # 核心：限流控制下的单日志解析
 # =====================================================================
 
-def parse_single_log_with_rate_limit(
-    task_id: int, log_id: int, db_url: str, overwrite: bool = True
-):
-    """解析单个日志（在限流保护下执行）
+# 单日志解析超时（秒），防止损坏文件导致解析永久挂起
+# 10 分钟：正常大文件解析可能需要几分钟，损坏文件则会被强制终止
+SINGLE_LOG_PARSE_TIMEOUT = 600
 
-    流程：
-        1. 执行解析（upload_and_parse 内部已做限流等待）
-        2. 处理失败：根据错误类型决定重试或放弃
-    """
+# 复用的 ThreadPoolExecutor，避免每次解析都创建/销毁线程池
+_batch_parse_executor: Optional[concurrent.futures.ThreadPoolExecutor] = None
+
+
+def _get_batch_executor() -> concurrent.futures.ThreadPoolExecutor:
+    """获取复用的 ThreadPoolExecutor"""
+    global _batch_parse_executor
+    if _batch_parse_executor is None:
+        _batch_parse_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    return _batch_parse_executor
+
+
+def _do_parse_single_log(task_id: int, log_id: int) -> None:
+    """实际执行解析（不含超时保护）"""
     from app.config.database import SessionLocal
     from app.services.zevtc.log_import_service import LogImportService
 
     db = SessionLocal()
 
     try:
-        # dps.report 限流由 dps_report_service.upload_and_parse() 内部统一处理
         logger.info(f"[batch] 开始解析日志，任务ID: {task_id}，日志ID: {log_id}")
 
-        # === 步骤 1: 执行解析 ===
         BatchParseService.update_task_item_status(db, task_id, log_id, "processing")
 
         log = log_service.get_log_by_id(db, log_id)
         if not log:
             raise ValueError(f"日志不存在: {log_id}")
 
-        if log.parse_status == "parsing":
-            raise ValueError(f"日志正在解析中: {log_id}")
-
+        # 注意：Log.parse_status 在 create_task 时已被设为 "parsing"
+        # 此处不再检查，因为 BatchParseTaskItem.status 已经防止了重复处理
         log_service.update_parse_status(db, log_id, "parsing")
 
         importer = LogImportService(db)
@@ -310,56 +289,78 @@ def parse_single_log_with_rate_limit(
         BatchParseService.update_task_item_status(db, task_id, log_id, "completed")
         db.commit()
 
+    except Exception:
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
+
+def parse_single_log_with_rate_limit(
+    task_id: int, log_id: int, db_url: str, overwrite: bool = True
+):
+    """解析单个日志（在限流保护 + 超时保护下执行）
+
+    流程：
+        1. 执行解析（upload_and_parse 内部已做限流等待）
+        2. 处理失败：根据错误类型决定重试或放弃
+    """
+    try:
+        # 使用复用的线程池 + 超时，防止损坏文件导致解析永久挂起
+        executor = _get_batch_executor()
+        future = executor.submit(_do_parse_single_log, task_id, log_id)
+        future.result(timeout=SINGLE_LOG_PARSE_TIMEOUT)
+
+    except concurrent.futures.TimeoutError:
+        logger.error(f"[batch] log_id={log_id} 解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒），强制终止")
+        _handle_parse_error(task_id, log_id, f"解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒）", "timeout")
+
     except Exception as e:
         error_str = str(e)
         logger.error(f"[batch] log_id={log_id} 解析异常: {error_str}")
+        _handle_parse_error(task_id, log_id, error_str)
 
-        try:
-            db.rollback()
-        except Exception:
-            pass
+    finally:
+        with active_workers_lock:
+            active_workers.discard((task_id, log_id))
 
-        # === 步骤 3: 错误分类与重试决策 ===
-        error_code = "unknown"
+
+def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error_code: str = "unknown"):
+    """统一处理解析错误：分类 + 重试决策"""
+    from app.config.database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        error_code = default_error_code
         retry_after = None
 
         if "RATE_LIMITED" in error_str or "429" in error_str:
             error_code = "429"
-            retry_after = 60  # dps.report 已在上层调用 record_rejection，此处仅标记重试时间
-        elif "timeout" in error_str.lower() or "连接" in error_str:
+            retry_after = 60
+        elif "timeout" in error_str.lower() or "超时" in error_str or "连接" in error_str:
             error_code = "timeout"
         elif "parse" in error_str.lower() or "解析" in error_str:
             error_code = "parse_error"
         elif "日志不存在" in error_str or "正在解析中" in error_str:
             error_code = "invalid_state"
 
-        # parse_error 和 invalid_state 不重试
         if error_code in ("parse_error", "invalid_state"):
-            try:
-                log_service.update_parse_status(db, log_id, "failed", error_str)
-                BatchParseService.update_task_item_status(
-                    db, task_id, log_id, "failed", error_str, error_code
-                )
-                db.commit()
-            except Exception as inner_e:
-                logger.error(f"[batch] 更新失败状态也失败了: {inner_e}")
+            log_service.update_parse_status(db, log_id, "failed", error_str)
+            BatchParseService.update_task_item_status(
+                db, task_id, log_id, "failed", error_str, error_code
+            )
+            db.commit()
         else:
-            # 其他错误：标记为 retrying
             should_retry = BatchParseService.mark_item_for_retry(
                 db, task_id, log_id, error_str, error_code, retry_after
             )
             if not should_retry:
-                # 超过最大重试次数，确保日志状态为 failed
-                try:
-                    log_service.update_parse_status(db, log_id, "failed", error_str)
-                    db.commit()
-                except Exception:
-                    pass
-
+                log_service.update_parse_status(db, log_id, "failed", error_str)
+                db.commit()
+    except Exception as inner_e:
+        logger.error(f"[batch] 更新失败状态也失败了: {inner_e}")
     finally:
         db.close()
-        with active_workers_lock:
-            active_workers.discard((task_id, log_id))
 
 
 # =====================================================================
@@ -431,6 +432,9 @@ def worker():
                 item.task_id, item.log_id, "", overwrite=True
             )
 
+            # 每个任务完成后触发 GC，加速大对象回收
+            gc.collect()
+
             # 任务间延迟
             if TASK_DELAY_SECONDS > 0:
                 time.sleep(TASK_DELAY_SECONDS)
@@ -480,13 +484,17 @@ def _reset_stuck_processing_items():
 
 
 def stop_workers():
-    global is_running, worker_threads
+    global is_running, worker_threads, _batch_parse_executor
     if not is_running:
         return
     is_running = False
     for t in worker_threads:
         t.join(timeout=5)
     worker_threads = []
+    # 关闭复用的 ThreadPoolExecutor
+    if _batch_parse_executor is not None:
+        _batch_parse_executor.shutdown(wait=False)
+        _batch_parse_executor = None
     logger.info("[batch] 停止轮询调度器")
 
 

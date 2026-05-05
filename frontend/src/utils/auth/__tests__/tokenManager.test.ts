@@ -238,7 +238,7 @@ describe('TokenManager', () => {
       saveToken(shortExpiryResponse)
 
       // 立即获取应该还有时间
-      let remaining = getTokenRemainingSeconds()
+      const remaining = getTokenRemainingSeconds()
       expect(remaining).toBeGreaterThanOrEqual(0)
       expect(remaining).toBeLessThanOrEqual(1)
 

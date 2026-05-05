@@ -20,7 +20,7 @@ class StorageCleanupRecord(Base):
         String(50), nullable=False, comment="清理类型：manual/auto/scheduled"
     )
     start_time = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="开始时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="开始时间"
     )
     end_time = Column(DateTime(timezone=True), nullable=True, comment="结束时间")
     files_deleted = Column(Integer, default=0, comment="删除文件数")
@@ -45,7 +45,7 @@ class StorageMonitorRecord(Base):
         Integer, primary_key=True, index=True, autoincrement=True, comment="自增主键"
     )
     record_time = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="记录时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="记录时间"
     )
     total_size = Column(Float, nullable=False, comment="总存储使用量（字节）")
     file_count = Column(Integer, nullable=False, comment="文件总数")

@@ -8,25 +8,44 @@
       </h3>
       <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <div class="p-4 rounded-lg bg-neutral-bg/50 text-center">
-          <p class="text-3xl font-bold text-status-error">{{ targets.length }}</p>
-          <p class="text-sm text-neutral-text-secondary mt-1">总目标数</p>
+          <p class="text-3xl font-bold text-status-error">
+            {{ targets.length }}
+          </p>
+          <p class="text-sm text-neutral-text-secondary mt-1">
+            总目标数
+          </p>
         </div>
         <div class="p-4 rounded-lg bg-neutral-bg/50 text-center">
-          <p class="text-3xl font-bold text-primary">{{ enemyPlayerCount }}</p>
-          <p class="text-sm text-neutral-text-secondary mt-1">敌方玩家</p>
+          <p class="text-3xl font-bold text-primary">
+            {{ enemyPlayerCount }}
+          </p>
+          <p class="text-sm text-neutral-text-secondary mt-1">
+            敌方玩家
+          </p>
         </div>
         <div class="p-4 rounded-lg bg-neutral-bg/50 text-center">
-          <p class="text-3xl font-bold text-secondary">{{ npcCount }}</p>
-          <p class="text-sm text-neutral-text-secondary mt-1">NPC</p>
+          <p class="text-3xl font-bold text-secondary">
+            {{ npcCount }}
+          </p>
+          <p class="text-sm text-neutral-text-secondary mt-1">
+            NPC
+          </p>
         </div>
         <div class="p-4 rounded-lg bg-neutral-bg/50 text-center">
-          <p class="text-3xl font-bold text-status-warning">{{ professionCounts.length }}</p>
-          <p class="text-sm text-neutral-text-secondary mt-1">职业种类</p>
+          <p class="text-3xl font-bold text-status-warning">
+            {{ professionCounts.length }}
+          </p>
+          <p class="text-sm text-neutral-text-secondary mt-1">
+            职业种类
+          </p>
         </div>
       </div>
 
       <!-- 敌方玩家列表 -->
-      <div v-if="enemyPlayers.length > 0" class="mb-6">
+      <div
+        v-if="enemyPlayers.length > 0"
+        class="mb-6"
+      >
         <h4 class="text-base font-medium text-neutral-text mb-3">
           <i class="pi pi-users text-status-error mr-1" />
           敌方玩家 ({{ enemyPlayers.length }})
@@ -44,9 +63,17 @@
               :alt="target.name"
               @error="handleImgError"
             >
-            <i v-else class="pi pi-user text-status-error" />
+            <i
+              v-else
+              class="pi pi-user text-status-error"
+            />
             <span class="text-sm text-neutral-text">{{ target.name || '未知' }}</span>
-            <Tag v-if="target.enemyPlayer" value="玩家" severity="danger" class="text-xs" />
+            <Tag
+              v-if="target.enemyPlayer"
+              value="玩家"
+              severity="danger"
+              class="text-xs"
+            />
           </div>
         </div>
       </div>
@@ -63,14 +90,20 @@
             :key="pc.profession"
             class="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-bg"
           >
-            <span class="w-3 h-3 rounded-full" :style="{ backgroundColor: getProfessionColor(pc.profession) }" />
+            <span
+              class="w-3 h-3 rounded-full"
+              :style="{ backgroundColor: getProfessionColor(pc.profession) }"
+            />
             <span class="text-sm text-neutral-text">{{ pc.profession }}</span>
             <span class="text-sm font-semibold text-primary">{{ pc.count }}</span>
           </div>
         </div>
       </div>
 
-      <div v-if="targets.length === 0" class="text-center py-8 text-neutral-text-secondary">
+      <div
+        v-if="targets.length === 0"
+        class="text-center py-8 text-neutral-text-secondary"
+      >
         <i class="pi pi-inbox text-4xl mb-2" />
         <p>暂无敌方目标数据</p>
       </div>

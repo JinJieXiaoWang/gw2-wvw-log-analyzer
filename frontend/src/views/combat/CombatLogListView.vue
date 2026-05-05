@@ -20,19 +20,13 @@
               已选择 <span class="text-primary font-bold">{{ selectedLogs.length }}</span> 项
             </span>
           </div>
-          <!-- 批量解析进度 -->
-          <div v-if="isBatchParsing" class="flex items-center gap-3">
-            <div class="w-32 h-2 bg-neutral-border rounded-full overflow-hidden">
-              <div
-                class="h-full bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"
-                :style="{ width: batchParsePercent + '%' }"
-              />
-            </div>
-            <span class="text-xs text-neutral-text-secondary">
-              {{ batchParseCompleted + batchParseFailed }} / {{ batchParseTotal }}
-              <span v-if="batchParseCompleted > 0" class="text-status-success ml-1">({{ batchParseCompleted }} 完成)</span>
-              <span v-if="batchParseFailed > 0" class="text-status-error ml-1">({{ batchParseFailed }} 失败)</span>
-            </span>
+          <!-- 批量解析状态 -->
+          <div
+            v-if="isBatchParsing"
+            class="flex items-center gap-2"
+          >
+            <i class="pi pi-spin pi-spinner text-primary text-xs" />
+            <span class="text-xs text-neutral-text-secondary">批量解析进行中，请稍后刷新页面查看结果</span>
           </div>
         </div>
         <div class="flex items-center gap-2">
@@ -58,7 +52,10 @@
     </div>
 
     <!-- 统计卡片 -->
-    <StatCards :logs="logs" />
+    <StatCards
+      :logs="logs"
+      :total-records="totalRecords"
+    />
 
     <!-- 筛选和搜索 -->
     <LogFilters
@@ -70,13 +67,17 @@
       ref="logTableRef"
       v-model:selected-logs="selectedLogs"
       :logs="logs"
-      :filtered-logs="filteredLogs"
+      :filtered-logs="logs"
       :is-loading="isLoading"
+      :total-records="totalRecords"
+      :page-size="pageSize"
+      :first="(currentPage - 1) * pageSize"
       @view-log-detail="viewLogDetail"
       @parse-log="parseLog"
       @confirm-delete-log="confirmDeleteLog"
       @row-select="onRowSelect"
       @row-unselect="onRowUnselect"
+      @page-change="handlePageChange"
     />
   </div>
 
@@ -130,10 +131,22 @@
           <span class="text-sm text-neutral-text truncate">{{ item.fileName }}</span>
         </div>
         <span class="text-xs font-medium flex-shrink-0 ml-2">
-          <span v-if="item.status === 'completed'" class="text-status-success">完成</span>
-          <span v-else-if="item.status === 'failed'" class="text-status-error">失败</span>
-          <span v-else-if="item.status === 'timeout'" class="text-status-error">超时</span>
-          <span v-else class="text-primary">{{ item.progress }}%</span>
+          <span
+            v-if="item.status === 'completed'"
+            class="text-status-success"
+          >完成</span>
+          <span
+            v-else-if="item.status === 'failed'"
+            class="text-status-error"
+          >失败</span>
+          <span
+            v-else-if="item.status === 'timeout'"
+            class="text-status-error"
+          >超时</span>
+          <span
+            v-else
+            class="text-primary"
+          >{{ item.progress }}%</span>
         </span>
       </div>
     </div>
@@ -152,7 +165,7 @@
  * 更新日期：2026-04-27
  */
 
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import Toast from 'primevue/toast'
@@ -202,8 +215,17 @@ const logToDelete = ref<LogFile | null>(null)
 // 表格引用
 const logTableRef = ref<InstanceType<typeof LogTable> | null>(null)
 
+// 分页状态
+const currentPage = ref(1)
+const pageSize = ref(10)
+const totalRecords = ref(0)
+
 // 活跃的解析进度轮询器（用于组件卸载时清理，防止内存泄漏）
 const activePollIntervals = ref<Set<number>>(new Set())
+
+// 批量解析任务相关状态
+const batchTaskId = ref<number | null>(null)
+const batchTaskLogNameMap = ref<Map<number, string>>(new Map())
 
 // 批量解析进度追踪
 const parseProgressMap = ref<Map<number, ParseProgressItem>>(new Map())
@@ -214,12 +236,6 @@ const batchParseFailed = ref(0)
 // 是否在批量解析中
 const isBatchParsing = computed(() => {
   return batchParseTotal.value > 0 && (batchParseCompleted.value + batchParseFailed.value) < batchParseTotal.value
-})
-
-// 批量解析进度百分比
-const batchParsePercent = computed(() => {
-  if (batchParseTotal.value === 0) return 0
-  return Math.round(((batchParseCompleted.value + batchParseFailed.value) / batchParseTotal.value) * 100)
 })
 
 // 解析进度列表（用于弹窗显示）
@@ -234,6 +250,12 @@ const filters = ref({
   search: '',
   status: null as string | null
 })
+
+// 监听筛选条件变化，重置到第一页并重新获取数据
+watch(filters, () => {
+  currentPage.value = 1
+  fetchLogs()
+}, { deep: true })
 
 // ============================================
 // 模拟数据（初始为空，从API获取）
@@ -253,8 +275,10 @@ const fetchLogs = async (): Promise<void> => {
   try {
     const result = await ApiResponseWrapper.wrap(
       logsService.getLogs({
-        page: 1,
-        page_size: 100
+        page: currentPage.value,
+        page_size: pageSize.value,
+        parse_status: filters.value.status,
+        search: filters.value.search || null
       }),
       {
         showErrorMessage: false,
@@ -266,7 +290,8 @@ const fetchLogs = async (): Promise<void> => {
 
     if (result.success && result.data) {
       const responseData = result.data as any
-      logs.value = ((responseData.data && responseData.data.items) || (responseData.items || [])).map((log: any) => ({
+      const dataWrapper = responseData.data || responseData
+      logs.value = (dataWrapper.items || []).map((log: any) => ({
         id: String(log.id),
         fileName: log.filename,
         uploadTime: formatDate(log.upload_time, 'YYYY-MM-DD HH:mm'),
@@ -282,6 +307,7 @@ const fetchLogs = async (): Promise<void> => {
         dpsReportPermalink: log.dps_report_permalink || null,
         uploadIp: log.upload_ip || '-'
       }))
+      totalRecords.value = dataWrapper.total || 0
     }
   } catch (error) {
     console.error('获取日志列表异常:', error)
@@ -320,19 +346,13 @@ onMounted(() => {
 })
 
 // ============================================
-// 计算属性
+// 分页事件
 // ============================================
-const filteredLogs = computed(() => {
-  return logs.value.filter(log => {
-    if (filters.value.search) {
-      const searchLower = filters.value.search.toLowerCase()
-      const matchSearch = log.fileName.toLowerCase().includes(searchLower)
-      if (!matchSearch) return false
-    }
-    if (filters.value.status && log.status !== filters.value.status) return false
-    return true
-  })
-})
+const handlePageChange = (event: { page: number; rows: number }) => {
+  currentPage.value = event.page + 1  // PrimeVue 分页从 0 开始
+  pageSize.value = event.rows
+  fetchLogs()
+}
 
 // ============================================
 // 事件处理
@@ -366,8 +386,14 @@ const startBatchParse = async (): Promise<void> => {
   batchParseFailed.value = 0
   parseProgressMap.value.clear()
 
-  // 设置所有选中日志为解析中状态
+  // 立即将选中日志在前端表格中标记为解析中（乐观更新）
+  // 这样用户无需等待后端 worker 开始处理就能看到"解析中"状态
   selectedLogs.value.forEach(log => {
+    const targetLog = logs.value.find(l => l.id === log.id)
+    if (targetLog) {
+      targetLog.status = 'parsing'
+      targetLog.statusText = '解析中'
+    }
     logTableRef.value?.setParsing(log.id, true)
     parseProgressMap.value.set(Number(log.id), {
       logId: Number(log.id),
@@ -393,25 +419,45 @@ const startBatchParse = async (): Promise<void> => {
 
   if (result.success) {
     showBatchParseDialog.value = false
-    // 只显示一次批量开始提示，避免信息过载
-    toast.add({
-      severity: 'info',
-      summary: '批量解析已启动',
-      detail: `正在后台解析 ${selectedLogs.value.length} 个日志文件，完成后将汇总提示`,
-      life: 4000
-    })
 
-    // 为每个选中的日志启动进度轮询（标记为批量模式）
-    selectedLogs.value.forEach(log => {
-      pollParseProgress(Number(log.id), log.fileName, true)
-    })
+    // 保存批量任务ID和文件名映射，启动批量任务轮询
+    const taskData = result.data as any
+    const taskId = taskData?.id || taskData?.data?.id
+    // 用后端实际处理数量更新总数（可能有部分日志已在解析中被跳过）
+    const actualTotal = taskData?.total_count ?? taskData?.data?.total_count ?? selectedLogs.value.length
+    if (actualTotal < selectedLogs.value.length) {
+      batchParseTotal.value = actualTotal
+      const skipped = selectedLogs.value.length - actualTotal
+      toast.add({
+        severity: 'warn',
+        summary: '批量解析已启动',
+        detail: `已启动 ${actualTotal} 个日志的解析，${skipped} 个日志已在解析中被跳过`,
+        life: 5000
+      })
+    } else {
+      toast.add({
+        severity: 'info',
+        summary: '批量解析已提交',
+        detail: `已提交 ${selectedLogs.value.length} 个日志文件到后台解析，请稍后刷新页面查看结果`,
+        life: 4000
+      })
+    }
+
+    if (taskId) {
+      batchTaskId.value = taskId
+      selectedLogs.value.forEach(log => {
+        batchTaskLogNameMap.value.set(Number(log.id), log.fileName)
+      })
+      // 不再轮询进度，用户自行刷新页面查看结果
+    }
   } else {
-    // 请求失败后解除解析中状态
+    // 请求失败后解除解析中状态并刷新列表恢复真实状态
     selectedLogs.value.forEach(log => {
       logTableRef.value?.setParsing(log.id, false)
     })
     batchParseTotal.value = 0
     parseProgressMap.value.clear()
+    fetchLogs() // 刷新列表恢复真实状态
     const errorMessage = result.error?.message || '批量解析失败，请重试'
     toast.add({
       severity: 'error',
@@ -461,6 +507,8 @@ const showBatchParseSummaryToast = (): void => {
     batchParseTotal.value = 0
     batchParseCompleted.value = 0
     batchParseFailed.value = 0
+    batchTaskId.value = null
+    batchTaskLogNameMap.value.clear()
   }, 5000)
 }
 

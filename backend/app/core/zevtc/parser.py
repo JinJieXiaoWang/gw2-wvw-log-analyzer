@@ -477,12 +477,20 @@ class EnhancedZevtcParser:
 
             self.progress.update("解析技能信息", 30)
             self._build_skills_from_core()
+            
+            # 清理不需要的skill数据
+            if hasattr(self._core_result, 'skills'):
+                del self._core_result.skills
 
             self.progress.update("第一轮事件扫描", 40)
             self._first_pass_events()
 
             self.progress.update("第二轮事件扫描", 60)
             self._second_pass_events()
+            
+            # 清理事件数据（占用最大的部分）
+            if hasattr(self._core_result, 'events'):
+                del self._core_result.events
 
             self.progress.update("计算BUFF覆盖率", 75)
             self._calculate_buff_uptimes()
@@ -495,14 +503,39 @@ class EnhancedZevtcParser:
             self.progress.finish()
 
             logger.info(f"解析完成，找到{len(self.player_stats)}个玩家")
+            
+            # 主动清理大对象以降低内存峰值
+            self._cleanup()
+            
             return result
 
         except _ZevtcError as e:
+            self._cleanup()
             raise _map_exception(e)
         except Exception as e:
+            self._cleanup()
             logger.exception(f"解析异常: {e}")
             self.progress.add_error(str(e))
             raise ZevtcParseError(f"解析过程出错: {e}", {"path": self.path}) from e
+    
+    def _cleanup(self):
+        """清理大对象以释放内存"""
+        import gc
+        
+        # 清理核心结果
+        self._core_result = None
+        
+        # 清空不需要的大列表
+        self.all_events = []
+        self.buff_trackers = {}
+        
+        # 清理agents（player_stats已包含需要的信息）
+        self.agents = []
+        self.agents_by_addr = {}
+        self.skills = {}
+        
+        gc.collect()
+        logger.debug(f"解析器清理完成")
 
     def _build_meta_from_core(self):
         h = self._core_result.header
@@ -757,7 +790,8 @@ class EnhancedZevtcParser:
                 if tag_type == 208:
                     self.player_stats[src_addr].has_commander_tag = True
 
-        if is_buff == 1 and dst_is_player and sc == SC_NONE:
+        # 只追踪关心的 buff（BUFF_IDS 中定义的），大幅减少内存占用
+        if is_buff == 1 and dst_is_player and sc == SC_NONE and skill_id in _BUFF_ID_SET:
             if dst_addr not in buff_states:
                 buff_states[dst_addr] = {}
             if skill_id not in buff_states[dst_addr]:

@@ -1,5 +1,8 @@
 <template>
-  <div ref="pickerRef" class="color-picker-input">
+  <div
+    ref="pickerRef"
+    class="color-picker-input"
+  >
     <!-- 输入区域 -->
     <div class="input-wrapper">
       <InputText
@@ -16,8 +19,14 @@
         :style="previewStyle"
         @click="togglePanel"
       >
-        <i v-if="isClassName" class="pi pi-palette text-xs" />
-        <i v-else-if="!modelValue" class="pi pi-palette text-xs text-neutral-text-disabled" />
+        <i
+          v-if="isClassName"
+          class="pi pi-palette text-xs"
+        />
+        <i
+          v-else-if="!modelValue"
+          class="pi pi-palette text-xs text-neutral-text-disabled"
+        />
       </button>
     </div>
 
@@ -31,7 +40,10 @@
         <!-- 面板头部 -->
         <div class="panel-header">
           <span class="panel-title">选择颜色</span>
-          <button class="panel-close" @click="closePanel">
+          <button
+            class="panel-close"
+            @click="closePanel"
+          >
             <i class="pi pi-times text-xs" />
           </button>
         </div>
@@ -42,7 +54,10 @@
             class="preview-large"
             :style="{ backgroundColor: isValidHex ? modelValue : undefined }"
           >
-            <span v-if="!isValidHex" class="preview-placeholder">
+            <span
+              v-if="!isValidHex"
+              class="preview-placeholder"
+            >
               {{ modelValue || '无' }}
             </span>
           </div>
@@ -66,7 +81,10 @@
               :title="color.label"
               @click="selectColor(color.value)"
             >
-              <i v-if="modelValue === color.value" class="pi pi-check text-white text-xs" />
+              <i
+                v-if="modelValue === color.value"
+                class="pi pi-check text-white text-xs"
+              />
             </button>
           </div>
         </div>
@@ -89,7 +107,10 @@
               :style="{ backgroundColor: isValidCustomHex ? '#' + customHexInput : undefined }"
             />
           </div>
-          <small v-if="customError" class="error-text">{{ customError }}</small>
+          <small
+            v-if="customError"
+            class="error-text"
+          >{{ customError }}</small>
         </div>
 
         <!-- CSS 类名快捷输入 -->

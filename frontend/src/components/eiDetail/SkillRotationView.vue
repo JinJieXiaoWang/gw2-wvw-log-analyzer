@@ -14,7 +14,8 @@
         >
           <!-- 玩家信息 + 武器配置 -->
           <div class="flex items-center gap-3 mb-3">
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0"
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0"
               :style="{ backgroundColor: getProfessionColor(player.profession) }"
             >
               {{ player.name.charAt(0) }}
@@ -25,7 +26,10 @@
                 <span class="text-xs text-neutral-text-secondary">{{ player.profession }}</span>
               </div>
               <!-- 武器配置 -->
-              <div v-if="player.weapons && player.weapons.length > 0" class="flex items-center gap-1 mt-1">
+              <div
+                v-if="player.weapons && player.weapons.length > 0"
+                class="flex items-center gap-1 mt-1"
+              >
                 <span class="text-xs text-neutral-text-secondary">武器:</span>
                 <span class="text-xs text-primary font-medium">{{ formatWeapons(player.weapons) }}</span>
               </div>
@@ -47,7 +51,10 @@
                   {{ cast.skillId % 1000 }}
                 </div>
               </template>
-              <span v-else class="text-xs text-neutral-text-secondary">无技能循环数据</span>
+              <span
+                v-else
+                class="text-xs text-neutral-text-secondary"
+              >无技能循环数据</span>
             </div>
           </div>
         </div>

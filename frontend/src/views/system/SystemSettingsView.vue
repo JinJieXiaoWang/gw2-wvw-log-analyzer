@@ -20,10 +20,12 @@
       </div>
 
       <!-- 设置详情 -->
-      <div class="lg:col-span-3">
+      <div class="lg:col-span-3 min-h-[400px]">
         <transition
           name="setting-section"
           mode="out-in"
+          :key="activeSection"
+          appear
         >
           <!-- 账号设置 -->
           <AccountSettings
@@ -76,6 +78,12 @@
             <DictionaryManagementWrapper />
           </div>
 
+          <!-- 评分规则设置 -->
+          <ScoringRulesSettings
+            v-else-if="activeSection === 'scoring-rules'"
+            :key="'scoring-rules'"
+          />
+
           <!-- 安全设置 -->
           <SecuritySettings
             v-else-if="activeSection === 'security'"
@@ -117,6 +125,7 @@ import ThemeSettings from '@/components/settings/ThemeSettings.vue'
 import NotificationSettings from '@/components/settings/NotificationSettings.vue'
 import SecuritySettings from '@/components/settings/SecuritySettings.vue'
 import WatermarkSettings from '@/components/settings/WatermarkSettings.vue'
+import ScoringRulesSettings from '@/components/settings/ScoringRulesSettings.vue'
 import DictionaryManagementWrapper from '@/components/common/DictionaryManagementWrapper.vue'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
@@ -151,6 +160,7 @@ const settingSections = [
   { id: 'theme', label: '界面主题', icon: 'pi pi-palette' },
   { id: 'notifications', label: '通知设置', icon: 'pi pi-bell' },
   { id: 'dictionary', label: '字典管理', icon: 'pi pi-book' },
+  { id: 'scoring-rules', label: '评分规则', icon: 'pi pi-chart-line' },
   { id: 'security', label: '安全设置', icon: 'pi pi-shield' },
   { id: 'watermark', label: '水印设置', icon: 'pi pi-circle-on' }
 ]
@@ -335,17 +345,32 @@ const saveNotificationSettings = () => {
   })
 }
 
-const saveWatermarkSettings = (settings: { watermarkEnabled: boolean; watermarkText: string; watermarkScreenshotEnabled: boolean }) => {
+const saveWatermarkSettings = async (settings: { watermarkEnabled: boolean; watermarkText: string; watermarkScreenshotEnabled: boolean }) => {
   Object.assign(watermarkSettings, settings)
   settingsStore.updateSettings({
     watermarkEnabled: settings.watermarkEnabled,
     watermarkText: settings.watermarkText,
     watermarkScreenshotEnabled: settings.watermarkScreenshotEnabled
   })
+  // 同步到后端（全局配置）
+  try {
+    const result = await settingsService.updateSettings({
+      watermark_enabled: settings.watermarkEnabled,
+      watermark_text: settings.watermarkText,
+      watermark_screenshot_enabled: settings.watermarkScreenshotEnabled
+    })
+    if (!result.success) {
+      toast.add({ severity: 'error', summary: '同步失败', detail: result.message || '服务器保存失败', life: 5000 })
+      return
+    }
+  } catch (e: any) {
+    toast.add({ severity: 'error', summary: '同步失败', detail: e?.message || '服务器保存失败', life: 5000 })
+    return
+  }
   toast.add({
     severity: 'success',
     summary: '保存成功',
-    detail: '水印设置已保存',
+    detail: '水印设置已保存并同步到服务器',
     life: 3000
   })
 }

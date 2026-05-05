@@ -127,6 +127,47 @@ async def get_account_detail(
 
 
 @router.get(
+    "/accounts/{account_name}/score-breakdown",
+    response_model=ApiResponse,
+    summary="获取账号评分维度明细",
+)
+async def get_account_score_breakdown(
+    account_name: str = Path(..., description="账号名"),
+    start_date: Optional[str] = Query(None, description="开始日期 (YYYY-MM-DD)"),
+    end_date: Optional[str] = Query(None, description="结束日期 (YYYY-MM-DD)"),
+    db: Session = Depends(get_db),
+):
+    """获取指定账号的评分维度明细（点击评分分数时展示）
+
+    返回该账号在统计周期内各评分维度的平均得分、权重及加权贡献值。
+    """
+    try:
+        start_dt = datetime.strptime(start_date, "%Y-%m-%d") if start_date else None
+        end_dt = (
+            datetime.strptime(end_date, "%Y-%m-%d") + timedelta(days=1)
+            if end_date
+            else None
+        )
+
+        data = attendance_service.get_account_score_breakdown(
+            db, account_name, start_date=start_dt, end_date=end_dt
+        )
+
+        if not data:
+            return ApiResponse(
+                success=False,
+                message=f"账号 {account_name} 无评分记录",
+                code=404,
+            )
+
+        return ApiResponse(success=True, message="获取成功", data=data)
+
+    except Exception as e:
+        logger.error(f"获取评分维度明细失败: {e}", exc_info=True)
+        return ApiResponse(success=False, message=f"查询失败: {str(e)}", code=500)
+
+
+@router.get(
     "/accounts/{account_name}/characters/{character_name}",
     response_model=ApiResponse,
     summary="获取角色战斗记录",

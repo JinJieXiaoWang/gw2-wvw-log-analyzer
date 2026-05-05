@@ -468,16 +468,9 @@ class TestEndToEndCommanderConsistency:
         stats_cmd = db_session.query(FightStats).filter(FightStats.fight_id == fight.id, FightStats.has_commander_tag == 1).count()
         assert stats_cmd == 1, f"fight_stats 中应有 1 个指挥官，实际 {stats_cmd}"
 
-        # ei_player 使用 BigInteger autoincrement，SQLite 不支持，跳过 flush 直接检查 pending 对象
-        original_flush = importer.db.flush
-        importer.db.flush = lambda *a, **k: None
-        try:
-            importer._insert_ei_players(1, ei_json, "dps_report")
-        finally:
-            importer.db.flush = original_flush
-
-        pending_ei = [obj for obj in db_session.new if isinstance(obj, EiPlayer)]
-        ei_cmd = sum(1 for ep in pending_ei if ep.has_commander_tag == 1)
+        # 验证 ei_player 数据一致性
+        importer._insert_ei_players(1, ei_json, "dps_report")
+        ei_cmd = db_session.query(EiPlayer).filter(EiPlayer.log_id == 1, EiPlayer.has_commander_tag == 1).count()
         assert ei_cmd == 1, f"ei_player 中应有 1 个指挥官，实际 {ei_cmd}"
         assert stats_cmd == ei_cmd, "fight_stats 与 ei_player 指挥官数量不一致"
 
@@ -524,16 +517,9 @@ class TestEndToEndCommanderConsistency:
         stats_count = db_session.query(FightStats).filter(FightStats.fight_id == fight.id).count()
         assert stats_count == 1, f"fight_stats 应只有 1 条记录（排除假玩家），实际 {stats_count}"
 
-        # ei_player SQLite 兼容性处理
-        original_flush = importer.db.flush
-        importer.db.flush = lambda *a, **k: None
-        try:
-            importer._insert_ei_players(2, ei_json, "dps_report")
-        finally:
-            importer.db.flush = original_flush
-
-        pending_ei = [obj for obj in db_session.new if isinstance(obj, EiPlayer)]
-        ei_count = len(pending_ei)
+        # 验证 ei_player 假玩家排除
+        importer._insert_ei_players(2, ei_json, "dps_report")
+        ei_count = db_session.query(EiPlayer).filter(EiPlayer.log_id == 2).count()
         assert ei_count == 1, f"ei_player 应只有 1 条记录（排除假玩家），实际 {ei_count}"
 
 

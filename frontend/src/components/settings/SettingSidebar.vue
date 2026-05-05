@@ -30,7 +30,10 @@
             ? 'bg-primary/20 text-primary shadow-sm'
             : 'bg-neutral-bg text-neutral-text-disabled group-hover:bg-neutral-card group-hover:text-neutral-text-secondary'"
         >
-          <i :class="section.icon" class="text-sm" />
+          <i
+            :class="section.icon"
+            class="text-sm"
+          />
         </div>
 
         <!-- 文字 -->

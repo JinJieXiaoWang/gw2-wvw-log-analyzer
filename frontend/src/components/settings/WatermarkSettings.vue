@@ -1,12 +1,12 @@
 <template>
-  <div class="card">
+  <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
     <div
       class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-primary-alpha-10) 0%, transparent 70%)"
     />
 
-    <div class="relative">
+    <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
         <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/20">
@@ -45,7 +45,10 @@
             </SettingItem>
 
             <Transition name="fade">
-              <div v-if="localSettings.watermarkEnabled" class="mt-3">
+              <div
+                v-if="localSettings.watermarkEnabled"
+                class="mt-3"
+              >
                 <div class="bg-neutral-bg rounded-xl p-4 border border-neutral-border">
                   <label class="block text-sm font-medium text-neutral-text mb-2">
                     水印内容

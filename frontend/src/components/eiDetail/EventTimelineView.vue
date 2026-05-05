@@ -14,19 +14,26 @@
           <div class="w-16 text-xs text-neutral-text-secondary font-mono">
             {{ formatTime(event.time_ms) }}
           </div>
-          <div class="w-8 h-8 rounded-full flex items-center justify-center"
+          <div
+            class="w-8 h-8 rounded-full flex items-center justify-center"
             :class="getEventIconClass(event.event_type)"
           >
             <i :class="getEventIcon(event.event_type)" />
           </div>
           <div class="flex-1">
             <span class="font-medium text-neutral-text">{{ getEventLabel(event.event_type) }}</span>
-            <span v-if="event.agent_name" class="text-sm text-neutral-text-secondary ml-2">
+            <span
+              v-if="event.agent_name"
+              class="text-sm text-neutral-text-secondary ml-2"
+            >
               — {{ event.agent_name }}
             </span>
           </div>
         </div>
-        <div v-if="timelineEvents.length === 0" class="text-center py-8 text-neutral-text-secondary">
+        <div
+          v-if="timelineEvents.length === 0"
+          class="text-center py-8 text-neutral-text-secondary"
+        >
           <i class="pi pi-inbox text-4xl mb-2" />
           <p>暂无时间线数据</p>
         </div>

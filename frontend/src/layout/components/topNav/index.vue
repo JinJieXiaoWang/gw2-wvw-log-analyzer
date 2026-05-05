@@ -1,10 +1,12 @@
 <template>
-  <header class="h-16 backdrop-blur-md border-b flex items-center justify-between px-4 lg:px-6 flex-shrink-0 sticky top-0 z-50 transition-all duration-300"
+  <header
+    class="h-16 backdrop-blur-md border-b flex items-center justify-between px-4 lg:px-6 flex-shrink-0 sticky top-0 z-50 transition-all duration-300"
     :style="{ 
       backgroundColor: 'var(--color-card)',
       borderColor: 'var(--color-border)',
       boxShadow: '0 1px 3px var(--color-shadow)'
-    }">
+    }"
+  >
     <div class="flex items-center gap-6">
       <!-- Logo区域 -->
       <router-link
@@ -12,7 +14,11 @@
         class="flex items-center gap-3 group"
       >
         <div class="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg shadow-primary/30 relative overflow-hidden group-hover:scale-105 transition-transform bg-neutral-card">
-          <img src="@/assets/fonts/logo.png" alt="GW2 Logo" class="w-10 h-10 object-contain" />
+          <img
+            src="@/assets/fonts/logo.png"
+            alt="GW2 Logo"
+            class="w-10 h-10 object-contain"
+          >
           <div class="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
         </div>
         <div class="hidden sm:block">
@@ -322,7 +328,9 @@
           <div class="w-16 h-16 bg-status-warning/10 rounded-full flex items-center justify-center mx-auto mb-4">
             <i class="pi pi-sign-out text-status-warning text-3xl" />
           </div>
-          <h3 class="text-xl font-bold text-neutral-text mb-2">确认退出登录</h3>
+          <h3 class="text-xl font-bold text-neutral-text mb-2">
+            确认退出登录
+          </h3>
           <p class="text-neutral-text-secondary mb-6">
             确定要退出当前账号吗？退出后将以游客身份浏览系统。
           </p>

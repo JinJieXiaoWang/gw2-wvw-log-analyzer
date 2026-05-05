@@ -36,7 +36,7 @@ class AdminResponse(BaseModel):
     role: str = Field("operator", description="用户角色")
     is_active: bool = Field(True, description="是否启用")
     is_predefined: bool = Field(False, description="是否为预置管理员")
-    created_at: datetime = Field(..., description="创建时间")
+    created_at: Optional[datetime] = Field(None, description="创建时间")
     last_login: Optional[datetime] = Field(None, description="最后登录时间")
 
 

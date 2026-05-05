@@ -22,6 +22,9 @@ __pycache__/
 dist/
 build/
 
+# 应用运行时缓存（不应打包进镜像）
+app/data/.cache/
+
 # IDE
 .idea/
 .vscode/
@@ -31,6 +34,7 @@ build/
 
 # 测试与调试（不进入生产镜像）
 tests/
+!tests/GW2.txt
 tools/
 .pytest_cache/
 .coverage
@@ -44,6 +48,8 @@ docs_backup_20260501/
 scripts/*
 !scripts/docker/
 !scripts/docker/**
+!scripts/init_data.py
+!scripts/migrations/
 
 # 本地数据（通过 volume 挂载）
 uploads/

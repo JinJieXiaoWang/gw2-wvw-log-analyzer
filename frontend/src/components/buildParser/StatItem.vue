@@ -11,7 +11,9 @@
         {{ value }}
       </div>
     </div>
-    <div class="stat-label">{{ label }}</div>
+    <div class="stat-label">
+      {{ label }}
+    </div>
   </div>
 </template>
 

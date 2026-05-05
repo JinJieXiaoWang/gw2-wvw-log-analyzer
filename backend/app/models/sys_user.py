@@ -30,7 +30,7 @@ class SysUser(Base):
     is_predefined = Column(Boolean, default=False, nullable=False, comment="是否预定义")
     email = Column(String(100), nullable=True, comment="邮箱")
     created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), comment="创建时间"
+        DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="创建时间"
     )
     last_login = Column(DateTime(timezone=True), nullable=True, comment="最后登录时间")
     token_version = Column(

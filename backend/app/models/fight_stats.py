@@ -4,7 +4,7 @@
 # 创建日期：2026-04-27
 # 更新说明：v2.0 扩展字段，支持 DPS、Buff 覆盖率等 WvW 核心指标
 
-from sqlalchemy import BigInteger, Column, ForeignKey, Index, Integer, Numeric, String
+from sqlalchemy import BigInteger, Column, ForeignKey, Index, Integer, JSON, Numeric, String
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
@@ -73,6 +73,7 @@ class FightStats(Base):
     # === AI 评分（后续计算或解析时生成）===
     ai_score = Column(Numeric(5, 2), default=0, comment="AI评分")
     score_grade = Column(String(10), default="", comment="评分等级（S/A/B/C/D）")
+    score_breakdown = Column(JSON, nullable=True, comment="评分维度明细JSON")
 
     # === 关联关系 ===
     fight = relationship("Fight", back_populates="fight_stats")

@@ -7,32 +7,48 @@
           <i class="pi pi-bolt text-primary text-xl" />
           <span class="text-sm text-neutral-text-secondary">总伤害</span>
         </div>
-        <p class="text-2xl font-bold text-primary">{{ formatNumber(totalDamage) }}</p>
-        <p class="text-xs text-neutral-text-disabled mt-1">场均 {{ formatNumber(avgDamage) }}</p>
+        <p class="text-2xl font-bold text-primary">
+          {{ formatNumber(totalDamage) }}
+        </p>
+        <p class="text-xs text-neutral-text-disabled mt-1">
+          场均 {{ formatNumber(avgDamage) }}
+        </p>
       </div>
       <div class="card bg-gradient-to-br from-status-success/20 to-status-success/5 border-status-success/30">
         <div class="flex items-center gap-3 mb-2">
           <i class="pi pi-heart text-status-success text-xl" />
           <span class="text-sm text-neutral-text-secondary">总治疗</span>
         </div>
-        <p class="text-2xl font-bold text-status-success">{{ formatNumber(totalHealing) }}</p>
-        <p class="text-xs text-neutral-text-disabled mt-1">场均 {{ formatNumber(avgHealing) }}</p>
+        <p class="text-2xl font-bold text-status-success">
+          {{ formatNumber(totalHealing) }}
+        </p>
+        <p class="text-xs text-neutral-text-disabled mt-1">
+          场均 {{ formatNumber(avgHealing) }}
+        </p>
       </div>
       <div class="card bg-gradient-to-br from-secondary/20 to-secondary/5 border-secondary/30">
         <div class="flex items-center gap-3 mb-2">
           <i class="pi pi-star text-secondary text-xl" />
           <span class="text-sm text-neutral-text-secondary">击杀数</span>
         </div>
-        <p class="text-2xl font-bold text-secondary">{{ totalKills }}</p>
-        <p class="text-xs text-neutral-text-disabled mt-1">场均 {{ avgKills }}</p>
+        <p class="text-2xl font-bold text-secondary">
+          {{ totalKills }}
+        </p>
+        <p class="text-xs text-neutral-text-disabled mt-1">
+          场均 {{ avgKills }}
+        </p>
       </div>
       <div class="card bg-gradient-to-br from-status-error/20 to-status-error/5 border-status-error/30">
         <div class="flex items-center gap-3 mb-2">
           <i class="pi pi-times-circle text-status-error text-xl" />
           <span class="text-sm text-neutral-text-secondary">死亡数</span>
         </div>
-        <p class="text-2xl font-bold text-error">{{ totalDeaths }}</p>
-        <p class="text-xs text-neutral-text-disabled mt-1">场均 {{ avgDeaths }}</p>
+        <p class="text-2xl font-bold text-error">
+          {{ totalDeaths }}
+        </p>
+        <p class="text-xs text-neutral-text-disabled mt-1">
+          场均 {{ avgDeaths }}
+        </p>
       </div>
     </div>
 
@@ -51,7 +67,8 @@
             class="flex items-center gap-4 p-3 rounded-lg hover:bg-neutral-bg/50 transition-colors cursor-pointer"
             @click="$emit('select-player', player.instanceID)"
           >
-            <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
+            <div
+              class="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm"
               :class="{
                 'bg-yellow-500/20 text-yellow-500': idx === 0,
                 'bg-gray-400/20 text-gray-400': idx === 1,
@@ -61,7 +78,8 @@
             >
               {{ idx + 1 }}
             </div>
-            <div class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
+            <div
+              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
               :style="{ backgroundColor: getProfessionColor(player.profession) }"
             >
               {{ player.name.charAt(0) }}
@@ -69,13 +87,23 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <span class="font-medium text-neutral-text truncate">{{ player.name }}</span>
-                <Tag v-if="player.hasCommanderTag" icon="pi pi-star-fill" severity="warning" value="指挥官" class="text-xs" />
+                <Tag
+                  v-if="player.hasCommanderTag"
+                  icon="pi pi-star-fill"
+                  severity="warning"
+                  value="指挥官"
+                  class="text-xs"
+                />
               </div>
               <span class="text-xs text-neutral-text-secondary">{{ player.profession }}</span>
             </div>
             <div class="text-right">
-              <p class="font-semibold text-primary">{{ formatNumber(player.dpsAll?.[0]?.damage || 0) }}</p>
-              <p class="text-xs text-neutral-text-secondary">{{ formatNumber(player.dps || 0) }} DPS</p>
+              <p class="font-semibold text-primary">
+                {{ formatNumber(player.dpsAll?.[0]?.damage || 0) }}
+              </p>
+              <p class="text-xs text-neutral-text-secondary">
+                {{ formatNumber(player.dps || 0) }} DPS
+              </p>
             </div>
           </div>
         </div>
@@ -93,7 +121,10 @@
             :key="prof"
             class="flex items-center gap-3"
           >
-            <span class="w-3 h-3 rounded-full shrink-0" :style="{ backgroundColor: getProfessionColor(prof) }" />
+            <span
+              class="w-3 h-3 rounded-full shrink-0"
+              :style="{ backgroundColor: getProfessionColor(prof) }"
+            />
             <span class="text-sm text-neutral-text flex-1">{{ prof }}</span>
             <div class="flex items-center gap-2">
               <div class="w-24 h-2 rounded-full bg-neutral-bg overflow-hidden">

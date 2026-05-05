@@ -40,6 +40,14 @@ export class AttendanceService {
     return apiFactory.get<any>(API_ENDPOINTS.ATTENDANCE.ACCOUNT_DETAIL(account), { params })
   }
 
+  /** v2.0 获取账号评分维度明细 */
+  async getAccountScoreBreakdown(account: string, startDate?: string | null, endDate?: string | null): Promise<ApiResponse<any>> {
+    const params: any = {}
+    if (startDate) params.start_date = startDate
+    if (endDate) params.end_date = endDate
+    return apiFactory.get<any>(API_ENDPOINTS.ATTENDANCE.ACCOUNT_SCORE_BREAKDOWN(account), { params })
+  }
+
   /** v2.0 获取角色战斗记录 */
   async getCharacterDetail(
     account: string,

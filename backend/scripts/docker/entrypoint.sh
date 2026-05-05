@@ -77,11 +77,14 @@ fi
 
 # 启动应用
 echo "========================================"
+# Uvicorn 只接受小写的日志级别
+LOG_LEVEL=$(echo "${LOG_LEVEL:-info}" | tr '[:upper:]' '[:lower:]')
+
 echo "  启动 Uvicorn..."
 echo "  Host: ${UVICORN_HOST:-0.0.0.0}"
 echo "  Port: ${UVICORN_PORT:-8000}"
 echo "  Workers: ${UVICORN_WORKERS:-1}"
-echo "  Log Level: ${LOG_LEVEL:-info}"
+echo "  Log Level: ${LOG_LEVEL}"
 echo "========================================"
 
 exec uvicorn main:app \
@@ -91,4 +94,4 @@ exec uvicorn main:app \
     --proxy-headers \
     --forwarded-allow-ips "*" \
     --access-log \
-    --log-level "${LOG_LEVEL:-info}"
+    --log-level "${LOG_LEVEL}"

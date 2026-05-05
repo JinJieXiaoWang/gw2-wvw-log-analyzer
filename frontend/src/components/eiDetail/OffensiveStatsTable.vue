@@ -14,16 +14,20 @@
               玩家
             </th>
             <th class="col-crit">
-              暴击�?            </th>
+              暴击�?
+            </th>
             <th class="col-crit-dmg">
               暴击伤害
             </th>
             <th class="col-flank">
-              侧身�?            </th>
+              侧身�?
+            </th>
             <th class="col-glance">
-              擦过�?            </th>
+              擦过�?
+            </th>
             <th class="col-miss">
-              未命�?            </th>
+              未命�?
+            </th>
             <th class="col-interrupt">
               打断
             </th>

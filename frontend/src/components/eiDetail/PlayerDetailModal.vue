@@ -16,7 +16,9 @@
             class="player-avatar"
           >
           <div class="player-details">
-            <h3 class="player-name">{{ player.name }}</h3>
+            <h3 class="player-name">
+              {{ player.name }}
+            </h3>
             <div class="player-meta">
               <span
                 class="profession-badge"
@@ -58,7 +60,10 @@
       <!-- 模态框内容 -->
       <div class="modal-body">
         <!-- 战斗详情 -->
-        <div v-if="activeTab === 'stats'" class="tab-content">
+        <div
+          v-if="activeTab === 'stats'"
+          class="tab-content"
+        >
           <!-- 主要数据卡片 -->
           <div class="stats-grid">
             <div class="stat-card damage">
@@ -198,16 +203,28 @@
         </div>
 
         <!-- 循环序列图 -->
-        <div v-if="activeTab === 'rotation'" class="tab-content">
-          <div v-if="isLoadingRotation" class="loading-content">
+        <div
+          v-if="activeTab === 'rotation'"
+          class="tab-content"
+        >
+          <div
+            v-if="isLoadingRotation"
+            class="loading-content"
+          >
             <i class="pi pi-spin pi-spinner text-2xl text-primary" />
             <span class="loading-text">正在加载循环数据...</span>
           </div>
-          <div v-else-if="rotationError" class="error-content">
+          <div
+            v-else-if="rotationError"
+            class="error-content"
+          >
             <i class="pi pi-exclamation-triangle text-2xl text-status-error" />
             <span class="error-text">{{ rotationError }}</span>
           </div>
-          <div v-else class="rotation-content">
+          <div
+            v-else
+            class="rotation-content"
+          >
             <h4 class="section-title">
               <i class="pi pi-repeat" />
               技能循环序列
@@ -227,7 +244,9 @@
                     <span class="timeline-skill">{{ action.skillName }}</span>
                     <span class="timeline-time">{{ action.timestamp }}</span>
                   </div>
-                  <div class="timeline-type">{{ action.type }}</div>
+                  <div class="timeline-type">
+                    {{ action.type }}
+                  </div>
                 </div>
               </div>
             </div>
@@ -245,16 +264,28 @@
         </div>
 
         <!-- 技能释放统计 -->
-        <div v-if="activeTab === 'skills'" class="tab-content">
-          <div v-if="isLoadingSkills" class="loading-content">
+        <div
+          v-if="activeTab === 'skills'"
+          class="tab-content"
+        >
+          <div
+            v-if="isLoadingSkills"
+            class="loading-content"
+          >
             <i class="pi pi-spin pi-spinner text-2xl text-primary" />
             <span class="loading-text">正在加载技能数据...</span>
           </div>
-          <div v-else-if="skillsError" class="error-content">
+          <div
+            v-else-if="skillsError"
+            class="error-content"
+          >
             <i class="pi pi-exclamation-triangle text-2xl text-status-error" />
             <span class="error-text">{{ skillsError }}</span>
           </div>
-          <div v-else class="skills-content">
+          <div
+            v-else
+            class="skills-content"
+          >
             <h4 class="section-title">
               <i class="pi pi-bar-chart" />
               技能释放统计
@@ -276,7 +307,9 @@
                       :style="{ width: skill.percentage + '%', backgroundColor: skill.color }"
                     />
                   </div>
-                  <div class="skill-percentage">{{ skill.percentage }}%</div>
+                  <div class="skill-percentage">
+                    {{ skill.percentage }}%
+                  </div>
                 </div>
               </div>
             </div>

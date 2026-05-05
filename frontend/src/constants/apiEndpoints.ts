@@ -51,6 +51,7 @@ export const API_ENDPOINTS = {
     // v2.0 新接口：账号维度出勤管理
     ACCOUNTS: `${API_V1}/attendance/accounts`,
     ACCOUNT_DETAIL: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}`,
+    ACCOUNT_SCORE_BREAKDOWN: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/score-breakdown`,
     CHARACTER_DETAIL: (account: string, character: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/characters/${encodeURIComponent(character)}`,
     FILTERS: `${API_V1}/attendance/filters`
   },
@@ -197,16 +198,19 @@ export const API_ENDPOINTS = {
     BUFF_CATEGORIES: `${API_V1}/game-data/categories/buffs`
   },
 
-  // WvW 报告
-  WVW_REPORT: {
-    LOGS: `${API_V1}/wvw-report/logs`,
-    SUMMARY: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/summary`,
-    PLAYERS: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/players`,
-    PLAYER_DETAIL: (logId: string | number, playerId: string | number) => `${API_V1}/wvw-report/logs/${logId}/players/${playerId}`,
-    TARGETS: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/targets`,
-    PHASES: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/phases`,
-    TIMELINE: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/timeline`,
-    SKILL_MAP: (logId: string | number) => `${API_V1}/wvw-report/logs/${logId}/skill-map`
+
+
+  // 评分规则管理
+  SCORING_RULES: {
+    BASE: `${API_V1}/scoring-rules`,
+    ROLES: `${API_V1}/scoring-rules/roles`,
+    RULES: `${API_V1}/scoring-rules/rules`,
+    RULE_DETAIL: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
+    RULE_UPDATE: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
+    RULE_DELETE: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
+    BATCH: `${API_V1}/scoring-rules/rules/batch`,
+    RESET: `${API_V1}/scoring-rules/rules/reset`,
+    DIMENSIONS: `${API_V1}/scoring-rules/dimensions`,
   },
 
   // 角色管理
@@ -238,6 +242,18 @@ export const API_ENDPOINTS = {
     ANALYSIS_PLAYER_DETAIL: (logId: string | number, account: string) => `${API_V1}/ei-analysis/${logId}/player/${account}`,
     ANALYSIS_PLAYER_ROTATION: (logId: string | number, account: string) => `${API_V1}/ei-analysis/${logId}/player/${account}/rotation`,
     UNIFIED: (logId: string | number) => `${API_V1}/ei-report/logs/${logId}/unified`
+  },
+
+  // WvW 战斗报告
+  WVW_REPORT: {
+    LOGS: `${API_V1}/wvw-report/logs`,
+    SUMMARY: (logId: string | number) => `${API_V1}/wvw-report/${logId}/summary`,
+    PLAYERS: (logId: string | number) => `${API_V1}/wvw-report/${logId}/players`,
+    PLAYER_DETAIL: (logId: string | number, playerId: string | number) => `${API_V1}/wvw-report/${logId}/players/${playerId}`,
+    TARGETS: (logId: string | number) => `${API_V1}/wvw-report/${logId}/targets`,
+    PHASES: (logId: string | number) => `${API_V1}/wvw-report/${logId}/phases`,
+    TIMELINE: (logId: string | number) => `${API_V1}/wvw-report/${logId}/timeline`,
+    SKILL_MAP: (logId: string | number) => `${API_V1}/wvw-report/${logId}/skill-map`,
   },
 
   // 战斗分析

@@ -15,7 +15,7 @@
       </transition>
     </router-view>
     
-      <!-- 全局页面水印 -->
+    <!-- 全局页面水印 -->
     <AppWatermark />
 
     <!-- 页面加载进度条 -->
@@ -35,12 +35,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import AppWatermark from '@/components/system/AppWatermark.vue'
+import { useSettingsStore } from '@/store/system/settings'
 
 const isLoading = ref(false)
+const settingsStore = useSettingsStore()
 
 onMounted(() => {
   console.log('GW2 WVW Log Analyzer initialized')
-  
+
+  // 从后端同步全局设置（水印等策略配置）
+  settingsStore.syncFromServer()
+
   // 使用setTimeout确保DOM已渲染
   setTimeout(() => {
     const event = new Event('pageTransitionStart')

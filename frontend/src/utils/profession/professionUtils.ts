@@ -354,6 +354,29 @@ export async function getAllProfessionOptions(): Promise<DictOption[]> {
 }
 
 /**
+ * 创建职业名称反转映射（中文到英文）
+ */
+const getChineseToEnglishMap = (): Map<string, string> => {
+  const map = new Map<string, string>()
+  for (const [english, chinese] of Object.entries(HARDCODED_PROFESSIONS)) {
+    map.set(chinese, english)
+  }
+  return map
+}
+
+const chineseToEnglishMap = getChineseToEnglishMap()
+
+/**
+ * 将中文职业/精英特长名称转换为英文名称
+ * @param chineseName 中文名称
+ * @returns 英文名称，如果未找到则返回原字符串
+ */
+export function getEnglishName(chineseName: string): string {
+  if (!chineseName) return chineseName
+  return chineseToEnglishMap.get(chineseName) || chineseName
+}
+
+/**
  * 检查职业是否有效
  * @param profession 职业英文名称
  * @returns 是否有效
