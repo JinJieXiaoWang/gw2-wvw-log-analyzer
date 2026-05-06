@@ -274,8 +274,9 @@ def init_predefined_admin(db: Session) -> SysUser:
         is_predefined=True,
     )
     db.add(admin)
-    db.commit()
-    db.refresh(admin)
+    # 【修复】不再在此处 commit，由调用方 get_db_context 统一提交事务。
+    # 避免 init_predefined_admin 内部 commit 后，get_db_context 再次 commit
+    # 导致 SQLAlchemy 重复插入同一对象（Duplicate entry）。
     logger.info(f"预置管理员账号已创建: {admin.username}")
     return admin
 
