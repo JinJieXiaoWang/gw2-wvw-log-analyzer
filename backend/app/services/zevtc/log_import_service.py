@@ -284,14 +284,12 @@ class LogImportService:
             # 步骤 9: 重要：保留源文件，不自动删除
             # =============================================
 
-            # 释放大对象引用，降低内存峰值
-            del ei_json, dps_result, parser, local_ei_json, player_stats, fight_data
-            gc.collect()
-
-            return {
+            # 先保存返回值，再释放大对象引用
+            players_count = len(player_stats)
+            result = {
                 "success": True,
                 "fight_id": fight.id,
-                "players_count": len(player_stats),
+                "players_count": players_count,
                 "map_name": fight.map_name,
                 "duration_sec": fight.duration_sec,
                 "data_source": data_source,
@@ -299,6 +297,9 @@ class LogImportService:
                 "validation_warnings": warnings,
                 "integrity_issues": integrity_issues,
             }
+            del ei_json, dps_result, parser, local_ei_json, player_stats, fight_data
+            gc.collect()
+            return result
 
         except ZevtcParseError as e:
             logger.error(f"解析日志失败 log_id={log_id}: {e.message}", exc_info=True)

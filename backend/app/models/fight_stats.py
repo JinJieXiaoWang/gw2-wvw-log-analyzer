@@ -36,9 +36,9 @@ class FightStats(Base):
     healing = Column(BigInteger, default=0, comment="治疗量")
 
     # === 命中质量 ===
-    critical_rate = Column(Numeric(5, 2), default=0, comment="暴击率（百分比）")
-    flanking_rate = Column(Numeric(5, 2), default=0, comment="背击率（百分比）")
-    glance_rate = Column(Numeric(5, 2), default=0, comment="偏斜率（百分比）")
+    critical_rate = Column(Integer, default=0, comment="暴击次数")
+    flanking_rate = Column(Integer, default=0, comment="背击次数")
+    glance_rate = Column(Integer, default=0, comment="偏斜次数")
     missed = Column(Integer, default=0, comment="未命中次数")
 
     # === 击杀 / 控制 ===

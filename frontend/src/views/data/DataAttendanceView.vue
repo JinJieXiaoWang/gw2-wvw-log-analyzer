@@ -501,7 +501,11 @@
                 field="avg_dps"
                 header="平均DPS"
                 sortable
-              />
+              >
+                <template #body="{ data }">
+                  <span class="text-status-error font-semibold">{{ formatDps(data.avg_dps) }}</span>
+                </template>
+              </Column>
               <Column
                 field="kd_ratio"
                 header="K/D"
@@ -1159,6 +1163,15 @@ const formatNumber = (num: number | string | undefined): string => {
     return (n / 1000).toFixed(1) + 'K'
   }
   return n.toLocaleString()
+}
+
+const formatDps = (dps: number | string | undefined): string => {
+  const n = Number(dps)
+  if (!n && n !== 0) return '0'
+  if (n >= 1000) {
+    return Math.round(n / 1000) + 'k'
+  }
+  return n.toString()
 }
 
 const formatDuration = (seconds: number | string | undefined): string => {
