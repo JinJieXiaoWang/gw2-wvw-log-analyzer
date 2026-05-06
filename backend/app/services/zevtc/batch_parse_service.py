@@ -293,6 +293,7 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         db.rollback()
         raise
     finally:
+        db.expunge_all()  # 清理 session 缓存的所有 ORM 对象，释放内存
         db.close()
 
 

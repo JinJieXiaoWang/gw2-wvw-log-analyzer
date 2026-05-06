@@ -39,6 +39,9 @@ const DataAiAnalysisView = () => import('@/views/data/DataAiAnalysisView.vue')
 const SystemSettingsView = () => import('@/views/system/SystemSettingsView.vue')
 const SystemDictionaryView = () => import('@/views/system/SystemDictionaryView.vue')
 
+// settings: 设置模块
+const ScoringRulesView = () => import('@/views/settings/ScoringRulesView.vue')
+
 // test: 测试工具模块
 const DpsReportTestView = () => import('@/views/test/DpsReportTestView.vue')
 
@@ -149,6 +152,16 @@ const routes: RouteRecordRaw[] = [
           requiresAuth: true,
           title: '设置',
           permissions: ['write']
+        }
+      },
+      {
+        path: 'scoring-rules',
+        name: 'scoring-rules',
+        component: ScoringRulesView,
+        meta: {
+          requiresAuth: true,
+          title: '评分规则',
+          permissions: ['read']
         }
       },
       {

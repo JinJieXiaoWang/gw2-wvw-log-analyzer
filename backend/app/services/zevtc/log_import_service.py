@@ -17,6 +17,7 @@ import os
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
+from sqlalchemy import tuple_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -283,7 +284,8 @@ class LogImportService:
             # 步骤 9: 重要：保留源文件，不自动删除
             # =============================================
 
-            # 显式触发 GC，加速解析器大对象的回收，降低内存峰值
+            # 释放大对象引用，降低内存峰值
+            del ei_json, dps_result, parser, local_ei_json, player_stats, fight_data
             gc.collect()
 
             return {
@@ -614,7 +616,35 @@ class LogImportService:
         # 获取评分规则（默认 dps，后续可按职业自动判断）
         scoring_rules = ScoringService.get_scoring_rules(self.db, "dps")
 
-        # 第一步：处理 Member 和 AccountCharacter
+        # 【优化】批量预查询：收集所有 account 和 account-character 对
+        needed_accounts = set()
+        needed_pairs = set()
+        for p in players:
+            account = p.get("account", "").strip()[:100]
+            if account:
+                needed_accounts.add(account)
+                needed_pairs.add((account, p.get("character_name", "").strip()[:100]))
+
+        # 【优化】一次性查询所有已存在的 AccountCharacter（2次查询替代N次）
+        existing_acs = {}
+        if needed_pairs:
+            existing_acs = {
+                (ac.account_name, ac.character_name): ac
+                for ac in self.db.query(AccountCharacter).filter(
+                    tuple_(AccountCharacter.account_name, AccountCharacter.character_name).in_(needed_pairs)
+                ).all()
+            }
+
+        # 【优化】一次性查询所有已存在的 Member
+        existing_members = {}
+        if needed_accounts:
+            existing_members = {
+                m.account_name: m
+                for m in self.db.query(Member).filter(Member.account_name.in_(needed_accounts)).all()
+            }
+
+        # 第一步：处理 Member 和 AccountCharacter（内存字典 O(1) 查找）
+        new_acs = []
         for p in players:
             account = p.get("account", "").strip()[:100]
             if not account:
@@ -626,59 +656,37 @@ class LogImportService:
             character_name = p.get("character_name", "").strip()[:100]
             profession = p.get("profession", "").strip()[:50]
 
-            # AccountCharacter：查到就更新 seen_count++，没有就新建
-            ac = (
-                self.db.query(AccountCharacter)
-                .filter(
-                    AccountCharacter.account_name == account,
-                    AccountCharacter.character_name == character_name,
-                )
-                .first()
-            )
+            # AccountCharacter：内存字典查找 O(1)，替代数据库查询
+            ac = existing_acs.get((account, character_name))
             if ac:
                 ac.last_seen_date = today
                 ac.seen_count += 1
                 if profession and ac.profession != profession:
                     ac.profession = profession
             else:
-                # 使用 savepoint 尝试插入，避免重复键污染外层事务
-                try:
-                    with self.db.begin_nested():
-                        new_ac = AccountCharacter(
-                            account_name=account,
-                            character_name=character_name,
-                            profession=profession,
-                            first_seen_date=today,
-                            last_seen_date=today,
-                            seen_count=1,
-                        )
-                        self.db.add(new_ac)
-                        self.db.flush()
-                except IntegrityError:
-                    # savepoint 已回滚，查询已存在的记录并更新
-                    ac = (
-                        self.db.query(AccountCharacter)
-                        .filter(
-                            AccountCharacter.account_name == account,
-                            AccountCharacter.character_name == character_name,
-                        )
-                        .first()
-                    )
-                    if ac:
-                        ac.last_seen_date = today
-                        ac.seen_count += 1
-                        if profession and ac.profession != profession:
-                            ac.profession = profession
+                new_acs.append(AccountCharacter(
+                    account_name=account,
+                    character_name=character_name,
+                    profession=profession,
+                    first_seen_date=today,
+                    last_seen_date=today,
+                    seen_count=1,
+                ))
 
-            # Member：只存 account_name，角色信息去 account_characters 查
-            member = self.db.query(Member).filter(Member.account_name == account).first()
+            # Member：内存字典查找 O(1)
+            member = existing_members.get(account)
             if not member:
                 member = Member(account_name=account)
                 self.db.add(member)
+                existing_members[account] = member
 
             member_map[account] = member
 
-        # 第二步：flush 获取所有 member.id
+        # 批量插入新的 AccountCharacter
+        if new_acs:
+            self.db.add_all(new_acs)
+
+        # 第二步：flush 获取所有 member.id / ac.id
         self.db.flush()
 
         # 第三步：创建 fight_stats（此时 member.id 已可用）
