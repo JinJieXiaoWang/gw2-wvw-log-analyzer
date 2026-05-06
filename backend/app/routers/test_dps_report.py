@@ -7,6 +7,7 @@ dps.report API 测试接口
 import time
 from typing import Optional
 
+import orjson
 import requests
 from fastapi import APIRouter, File, HTTPException, UploadFile
 from pydantic import BaseModel
@@ -84,7 +85,7 @@ async def test_dps_report(file: UploadFile = File(...)):
                 data=None,
             )
 
-        upload_data = upload_resp.json()
+        upload_data = orjson.loads(upload_resp.content)
         if upload_data.get("error"):
             logger.error(f"[dps.report测试] 解析错误: {upload_data['error']}")
             return ApiResponse(
@@ -115,7 +116,7 @@ async def test_dps_report(file: UploadFile = File(...)):
                 data=None,
             )
 
-        ei_json = json_resp.json()
+        ei_json = orjson.loads(json_resp.content)
         parse_time_ms = upload_data.get("encounter", {}).get("duration", 0) * 1000
 
         # Step 3: 提取关键字段

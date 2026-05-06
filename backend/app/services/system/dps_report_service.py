@@ -18,6 +18,7 @@ import os
 import time
 from typing import Any, Dict, Optional
 
+import orjson
 import requests
 
 from app.services.zevtc.rate_limiter import dps_report_limiter
@@ -129,8 +130,12 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
         # 使用文件对象而不是 f.read()，实现流式上传，避免大文件全量读入内存
         with open(file_path, "rb") as f:
             files = {"file": (filename, f, "application/octet-stream")}
+            # 【优化】去掉 detailedwvw=true：
+            # dps.report 官方文档明确说明 detailedwvw 会产生 extended per-target reports，
+            # 导致 JSON 体积暴增 50-80%，且超过 50MB 的日志会因此解析失败。
+            # 我们的代码只使用 dpsAll[0] 等汇总数据，完全不需要 detailed wvw 数据。
             upload_url = (
-                f"{DPS_REPORT_UPLOAD_URL}?json=1&generator=ei&detailedwvw=true{token_param}"
+                f"{DPS_REPORT_UPLOAD_URL}?json=1&generator=ei{token_param}"
             )
             upload_resp = requests.post(upload_url, files=files, timeout=300)
 
@@ -153,7 +158,7 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
                 upload_resp.status_code,
             )
 
-        upload_data = upload_resp.json()
+        upload_data = orjson.loads(upload_resp.content)
         if upload_data.get("error"):
             raise DpsReportParseError(
                 f"dps.report 解析错误: {upload_data['error']}"
@@ -175,7 +180,10 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
                 json_resp.status_code,
             )
 
-        ei_json = json_resp.json()
+        # 【优化】使用 orjson 替代标准库 json 解析：
+        # orjson (Rust 原生) 比 Python json 快 10-50 倍，内存占用更低。
+        # 对于几十到上百 MB 的 EI JSON，这是关键优化。
+        ei_json = orjson.loads(json_resp.content)
         total_time = time.time() - total_start
         logger.info(f"[dps.report] 完整流程完成: {total_time:.2f}s")
 

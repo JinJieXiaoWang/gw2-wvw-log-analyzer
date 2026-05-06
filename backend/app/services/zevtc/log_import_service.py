@@ -225,6 +225,20 @@ class LogImportService:
             logger.info(f"[import] 数据验证完成，有效玩家数: {len(valid_players)}, 数据来源: {data_source}")
 
             # =============================================
+            # 【优化】步骤 2.5: 立即丢弃不需要的大字段，降低内存峰值
+            # EI JSON 中 phases（战斗阶段详细数据）和 mechanics（机制数据）
+            # 通常占总体积的 50% 以上，但我们的代码完全不需要它们。
+            # 在提取标量数据之前丢弃，避免这些大字段一直驻留内存。
+            # =============================================
+            dropped_fields = []
+            for big_field in ("phases", "mechanics", "combatReplayData"):
+                if big_field in ei_json:
+                    ei_json.pop(big_field, None)
+                    dropped_fields.append(big_field)
+            if dropped_fields:
+                logger.info(f"[import] 已丢弃 EI JSON 大字段: {dropped_fields}，降低内存峰值")
+
+            # =============================================
             # 步骤 3: 提取标量数据（保留原有逻辑，增强验证）
             # =============================================
             fight_data = self._extract_fight_data(parser, ei_json)
