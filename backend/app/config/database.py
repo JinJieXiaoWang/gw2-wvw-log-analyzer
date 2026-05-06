@@ -262,6 +262,14 @@ def _check_and_create_tables(engine) -> Dict[str, Any]:
                     stats["created_tables"] += 1
                     logger.info(f"表 {table.name} 创建成功")
                 except Exception as e:
+                    # 【修复】多 worker 并发 DDL 时，1050(表已存在)和1213(死锁)是预期内的正常现象
+                    # 由其他 worker 已创建/处理，本 worker 无需报错。
+                    from sqlalchemy.exc import OperationalError
+                    if isinstance(e, OperationalError):
+                        code = getattr(e.orig, 'args', [None])[0] if hasattr(e, 'orig') else None
+                        if code in (1050, 1213):
+                            logger.info(f"表 {table.name} 已由其他 worker 创建，跳过")
+                            continue
                     error_msg = f"创建表 {table.name} 失败: {e}"
                     logger.error(error_msg)
                     stats["errors"].append(error_msg)
