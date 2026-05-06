@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 from app.config.settings import settings
 from app.config.database import init_db, get_db_context
 from app.services.auth_service import init_predefined_admin
@@ -51,39 +52,60 @@ async def lifespan(app: FastAPI):
     start_scheduler()
     try:
         with get_db_context() as db:
-            init_predefined_admin(db)
-            logger.info("预置管理员账号初始化完成")
+            # 【修复】使用 MySQL GET_LOCK 分布式锁，确保多 worker 并发启动时
+            # 只有一个 worker 执行数据初始化，避免 Duplicate entry 错误。
+            # GET_LOCK 是会话级锁，即使不同 worker 也能正确互斥。
+            lock_acquired = False
+            try:
+                result = db.execute(text("SELECT GET_LOCK('gw2_init_lock', 30)")).scalar()
+                lock_acquired = (result == 1)
+            except Exception as e:
+                logger.warning(f"获取初始化锁失败: {e}")
 
-            # 初始化字典数据
-            from app.database.dict_init import DictionaryDataInitializer
+            if lock_acquired:
+                logger.info("获取初始化锁成功，开始执行数据初始化")
+                try:
+                    init_predefined_admin(db)
+                    logger.info("预置管理员账号初始化完成")
 
-            dict_init = DictionaryDataInitializer(db)
-            dict_result = dict_init.init_all_dictionaries()
-            logger.info(f"字典数据初始化完成: {dict_result}")
+                    # 初始化字典数据
+                    from app.database.dict_init import DictionaryDataInitializer
 
-            # 加载字典缓存
-            from app.utils.dict_utils import load_all_dictionaries
+                    dict_init = DictionaryDataInitializer(db)
+                    dict_result = dict_init.init_all_dictionaries()
+                    logger.info(f"字典数据初始化完成: {dict_result}")
 
-            load_all_dictionaries(db)
-            logger.info("字典缓存加载完成")
+                    # 加载字典缓存
+                    from app.utils.dict_utils import load_all_dictionaries
 
-            # 初始化评分规则（如果表为空）
-            from app.services.scoring_rule_service import ScoringRuleService
+                    load_all_dictionaries(db)
+                    logger.info("字典缓存加载完成")
 
-            scoring_service = ScoringRuleService(db)
-            scoring_init = scoring_service.init_default_rules_if_empty()
-            if scoring_init["initialized"]:
-                logger.info(f"评分规则初始化完成: {scoring_init}")
+                    # 初始化评分规则（如果表为空）
+                    from app.services.scoring_rule_service import ScoringRuleService
+
+                    scoring_service = ScoringRuleService(db)
+                    scoring_init = scoring_service.init_default_rules_if_empty()
+                    if scoring_init["initialized"]:
+                        logger.info(f"评分规则初始化完成: {scoring_init}")
+                    else:
+                        logger.info(f"评分规则已存在，跳过初始化: {scoring_init}")
+
+                    # 初始化 Build 图书馆数据（表为空时自动导入 GW2.txt）
+                    build_init = BuildDataInitializer(db)
+                    build_result = build_init.init_builds()
+                    if build_result["initialized"]:
+                        logger.info(f"Build 图书馆数据初始化完成: 导入 {build_result['count']} 条配置")
+                    elif build_result["errors"]:
+                        logger.warning(f"Build 图书馆数据初始化有警告: {build_result['errors']}")
+                finally:
+                    try:
+                        db.execute(text("SELECT RELEASE_LOCK('gw2_init_lock')"))
+                        logger.info("释放初始化锁")
+                    except Exception:
+                        pass
             else:
-                logger.info(f"评分规则已存在，跳过初始化: {scoring_init}")
-
-            # 初始化 Build 图书馆数据（表为空时自动导入 GW2.txt）
-            build_init = BuildDataInitializer(db)
-            build_result = build_init.init_builds()
-            if build_result["initialized"]:
-                logger.info(f"Build 图书馆数据初始化完成: 导入 {build_result['count']} 条配置")
-            elif build_result["errors"]:
-                logger.warning(f"Build 图书馆数据初始化有警告: {build_result['errors']}")
+                logger.info("其他 worker 正在执行初始化，本 worker 跳过数据初始化")
 
     except Exception as e:
         logger.error(f"初始化失败: {e}")

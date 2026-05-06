@@ -256,7 +256,9 @@ def _check_and_create_tables(engine) -> Dict[str, Any]:
                     continue
                 try:
                     logger.info(f"创建表: {table.name}")
-                    table.create(bind=engine)
+                    # 【修复】加 checkfirst=True，避免多 worker 并发时 race condition 导致
+                    # "Table already exists" 错误（Worker A 创建后 Worker B 也尝试创建）
+                    table.create(bind=engine, checkfirst=True)
                     stats["created_tables"] += 1
                     logger.info(f"表 {table.name} 创建成功")
                 except Exception as e:
@@ -555,6 +557,47 @@ def _sync_table_columns(engine) -> Dict[str, Any]:
                     f"字段类型不一致: {table_name}.{col_name} "
                     f"期望={expected_type_str}, 实际={actual_type_str}"
                 )
+                # 【新增】自动修改列类型（MySQL）
+                if dialect_name == "mysql":
+                    try:
+                        with engine.begin() as conn:
+                            row = conn.execute(
+                                text(
+                                    "SELECT COLUMN_DEFAULT, EXTRA "
+                                    "FROM INFORMATION_SCHEMA.COLUMNS "
+                                    "WHERE TABLE_NAME = :table AND COLUMN_NAME = :col AND TABLE_SCHEMA = DATABASE()"
+                                ),
+                                {"table": table_name, "col": col_name}
+                            ).fetchone()
+                            current_default = row[0] if row else None
+                            extra = row[1] or "" if row else ""
+
+                            new_type = column.type.compile(dialect=engine.dialect)
+                            nullable_clause = "NULL" if column.nullable else "NOT NULL"
+                            default_clause = _format_mysql_default(current_default)
+                            extra_clause = extra.strip()
+
+                            parts = [new_type, nullable_clause]
+                            if default_clause:
+                                parts.append(default_clause)
+                            if extra_clause:
+                                parts.append(extra_clause)
+                            if column.comment:
+                                comment_escaped = column.comment.replace("'", "''")
+                                parts.append(f"COMMENT '{comment_escaped}'")
+
+                            quoted_tbl = engine.dialect.identifier_preparer.quote(table_name)
+                            quoted_col = engine.dialect.identifier_preparer.quote(col_name)
+                            full_def = " ".join(parts)
+
+                            alter_stmt = f"ALTER TABLE {quoted_tbl} MODIFY COLUMN {quoted_col} {full_def}"
+                            conn.execute(text(alter_stmt))
+                            logger.info(
+                                f"修改列类型: {table_name}.{col_name} "
+                                f"{actual_type_str} -> {expected_type_str}"
+                            )
+                    except Exception as e:
+                        logger.warning(f"修改列类型 {table_name}.{col_name} 失败: {e}")
 
             # === 3. nullable 一致性检查 ===
             expected_nullable = column.nullable
