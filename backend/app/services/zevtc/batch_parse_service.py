@@ -412,25 +412,29 @@ def worker():
                     time.sleep(POLL_INTERVAL_SECONDS)
                     continue
 
+                # 在 session 关闭前提取原始数据，避免 commit() 后对象 expired 导致 DetachedInstanceError
+                task_id = item.task_id
+                log_id = item.log_id
+
                 # 检查是否已在执行中（防止重启后重复执行）
                 with active_workers_lock:
-                    if (item.task_id, item.log_id) in active_workers:
+                    if (task_id, log_id) in active_workers:
                         db.close()
                         time.sleep(POLL_INTERVAL_SECONDS)
                         continue
-                    active_workers.add((item.task_id, item.log_id))
+                    active_workers.add((task_id, log_id))
 
-                # 更新父任务状态
-                task = BatchParseService.get_task_by_id(db, item.task_id)
+                # 更新父任务状态（内部会 commit，导致 ORM 对象 expired）
+                task = BatchParseService.get_task_by_id(db, task_id)
                 if task and task.status == "pending":
-                    BatchParseService.update_task_status(db, item.task_id, "processing")
+                    BatchParseService.update_task_status(db, task_id, "processing")
 
             finally:
                 db.close()
 
-            # 执行解析（带限流）
+            # 执行解析（带限流）——使用原始 int，不再访问已 detached 的 ORM 对象
             parse_single_log_with_rate_limit(
-                item.task_id, item.log_id, "", overwrite=True
+                task_id, log_id, "", overwrite=True
             )
 
             # 每个任务完成后触发 GC，加速大对象回收
