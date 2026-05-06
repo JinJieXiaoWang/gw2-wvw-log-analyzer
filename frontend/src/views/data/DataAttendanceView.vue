@@ -1167,11 +1167,17 @@ const formatNumber = (num: number | string | undefined): string => {
 
 const formatDps = (dps: number | string | undefined): string => {
   const n = Number(dps)
-  if (!n && n !== 0) return '0'
+  if (!n && n !== 0) return '0K'
+  
   if (n >= 1000) {
-    return Math.round(n / 1000) + 'k'
+    const result = Math.floor(n / 100) / 10
+    return result.toFixed(1).replace(/\.0$/, '') + 'K'
+  } else if (n > 0 && n < 1000 && n % 1 !== 0) {
+    const truncated = Math.floor(n * 10) / 10
+    return truncated.toFixed(1).replace(/\.0$/, '') + 'K'
   }
-  return n.toString()
+  
+  return n + 'K'
 }
 
 const formatDuration = (seconds: number | string | undefined): string => {
