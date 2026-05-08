@@ -546,12 +546,13 @@ const closeDialog = () => {
   }
   emit('update:visible', false)
   setTimeout(() => {
-    if (!uploadComplete.value) {
-      selectedFiles.value = []
-      uploadItems.value = []
-    }
+    // 关闭弹框时始终重置状态，避免下次打开还显示旧文件
+    selectedFiles.value = []
+    uploadItems.value = []
+    uploadComplete.value = false
     uploadPhase.value = 'idle'
     currentError.value = ''
+    currentUploadIndex.value = 0
   }, 300)
 }
 </script>

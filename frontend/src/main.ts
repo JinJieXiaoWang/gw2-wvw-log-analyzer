@@ -78,8 +78,8 @@ window.addEventListener('auth:logout', (event: Event) => {
     }))
   }
 
-  // 仅在认证页面才跳转登录页
-  if (!isPublicPage && currentRoute.path !== '/login') {
+  // 登录过期一律跳转登录页（除非已在登录页）
+  if (currentRoute.path !== '/login') {
     sessionStorage.setItem('auth_redirect', currentRoute.fullPath)
     router.push('/login')
   }
