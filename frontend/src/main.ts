@@ -64,7 +64,6 @@ window.addEventListener('auth:logout', (event: Event) => {
   clearToken()
 
   const currentRoute = router.currentRoute.value
-  const isPublicPage = currentRoute.meta.public === true || currentRoute.meta.requiresAuth === false
 
   // 触发全局 Toast 事件（由 App.vue 消费）
   if (source === 'api') {

@@ -56,12 +56,16 @@ async def lifespan(app: FastAPI):
             # 【修复】使用 MySQL GET_LOCK 分布式锁，确保多 worker 并发启动时
             # 只有一个 worker 执行数据初始化，避免 Duplicate entry 错误。
             # GET_LOCK 是会话级锁，即使不同 worker 也能正确互斥。
+            # SQLite 不支持 GET_LOCK，跳过锁直接执行初始化
+            # MySQL 使用 GET_LOCK 确保多 worker 并发安全
             lock_acquired = False
             try:
                 result = db.execute(text("SELECT GET_LOCK('gw2_init_lock', 30)")).scalar()
                 lock_acquired = (result == 1)
             except Exception as e:
-                logger.warning(f"获取初始化锁失败: {e}")
+                # SQLite 会走到这里，直接放行
+                logger.info(f"跳过分布式锁（SQLite 模式或无锁支持）: {e}")
+                lock_acquired = True
 
             if lock_acquired:
                 logger.info("获取初始化锁成功，开始执行数据初始化")
