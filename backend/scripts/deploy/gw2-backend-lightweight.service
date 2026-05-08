@@ -37,7 +37,8 @@ Environment="UPLOAD_DIR=/opt/gw2-backend/uploads"
 Environment="MAX_UPLOAD_SIZE=104857600"
 
 # ==================== 管理员配置 ====================
-# Environment="ADMIN_INITIAL_PASSWORD=your_secure_admin_password"
+Environment="ADMIN_INITIAL_PASSWORD=admin123"
+Environment="ADMIN_PASSWORD_SYNC=true"
 
 # ==================== 存储管理配置 ====================
 Environment="FILE_RETENTION_DAYS=30"
