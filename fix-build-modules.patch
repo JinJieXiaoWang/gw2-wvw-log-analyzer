@@ -1,0 +1,1107 @@
+From b31eec5bf7d443ae502c0ae42446483e666ef36a Mon Sep 17 00:00:00 2001
+From: GW2 WvW Log System <gw2-log-system@example.com>
+Date: Sat, 9 May 2026 01:44:09 +0800
+Subject: [PATCH] fix: add missing build module files ignored by .gitignore
+
+The frontend/.gitignore had 'build/' which incorrectly ignored source
+directories like src/api/build/, src/services/build/, src/store/build/.
+Changed to '/build/' to only ignore root-level build output.
+
+Also includes the build module source files required for compilation.
+---
+ frontend/src/api/build/build.ts               | 281 +++++++++++++
+ frontend/src/api/build/skills.ts              | 169 ++++++++
+ frontend/src/services/build/bdCodeService.ts  |  47 +++
+ frontend/src/services/build/buildsService.ts  | 122 ++++++
+ .../services/build/skillRotationService.ts    |  38 ++
+ frontend/src/store/build/buildLibrary.ts      | 384 ++++++++++++++++++
+ 6 files changed, 1041 insertions(+)
+ create mode 100644 frontend/src/api/build/build.ts
+ create mode 100644 frontend/src/api/build/skills.ts
+ create mode 100644 frontend/src/services/build/bdCodeService.ts
+ create mode 100644 frontend/src/services/build/buildsService.ts
+ create mode 100644 frontend/src/services/build/skillRotationService.ts
+ create mode 100644 frontend/src/store/build/buildLibrary.ts
+
+diff --git a/frontend/src/api/build/build.ts b/frontend/src/api/build/build.ts
+new file mode 100644
+index 0000000..44037bd
+--- /dev/null
++++ b/frontend/src/api/build/build.ts
+@@ -0,0 +1,281 @@
++/**
++ * Build API 服务模块
++ * 功能：处理Build代码解析、保存、列表查询等API请求
++ * 作者：帅姐姐
++ * 创建日期：2024-01-15
++ */
++
++import { apiFactory } from '@/services/core/apiService';
++import { API_ENDPOINTS } from '@/constants/apiEndpoints';
++import type { BuildEntry, BuildCreateDto, BuildUpdateDto } from '@/types/buildLibrary';
++
++// 类型定义
++export interface BuildParseRequest {
++  bd_code: string;
++  include_icons: boolean;
++}
++
++export interface BuildParseResponse {
++  bd_code: string;
++  profession_id: number;
++  profession: string;
++  profession_cn: string;
++  specializations: Array<{
++    id: number;
++    name: string;
++    name_cn: string;
++    icon: string;
++    is_elite: boolean;
++    selected_traits: [number, number, number];
++    traits: Array<{
++      id: number;
++      name: string;
++      icon: string;
++      description: string;
++      is_selected: boolean;
++    }>;
++  }>;
++  skills: {
++    heal: {
++      id: number;
++      palette_id: number;
++      name: string;
++      name_cn: string;
++      icon: string;
++      description: string;
++      slot: string;
++      recharge: number;
++    };
++    utility: Array<{
++      id: number;
++      palette_id: number;
++      name: string;
++      name_cn: string;
++      icon: string;
++      description: string;
++      slot: string;
++      recharge: number;
++    }>;
++    elite: {
++      id: number;
++      palette_id: number;
++      name: string;
++      name_cn: string;
++      icon: string;
++      description: string;
++      slot: string;
++      recharge: number;
++    };
++  };
++}
++
++export interface BuildCompareRequest {
++  build_ids: string[];
++}
++
++export interface BuildCompareResponse {
++  builds: Array<{
++    id: string;
++    name: string;
++    profession: string;
++    stats: Record<string, number>;
++  }>;
++  differences: Array<{
++    field: string;
++    values: Record<string, any>;
++  }>;
++}
++
++/**
++ * Build API 服务
++ */
++class BuildApiService {
++  /**
++   * 解析Build代码
++   * @param buildCode Build代码字符串
++   * @param includeIcons 是否包含图标数据
++   */
++  async parseBuildCode(buildCode: string, includeIcons: boolean = true): Promise<BuildParseResponse | null> {
++    try {
++      const response = await apiFactory.post<BuildParseResponse>(
++        API_ENDPOINTS.BUILD.PARSE,
++        { bd_code: buildCode, include_icons: includeIcons },
++        { timeout: 30000 }
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      console.warn('[BuildApi] 解析Build代码响应格式异常', response);
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 解析Build代码失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 保存Build配置
++   * @param buildData Build数据
++   */
++  async saveBuild(buildData: BuildCreateDto): Promise<BuildEntry | null> {
++    try {
++      const response = await apiFactory.post<BuildEntry>(
++        API_ENDPOINTS.BUILD.BASE,
++        buildData
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 保存Build失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 获取Build列表
++   * @param params 查询参数
++   */
++  async getBuildList(params?: {
++    page?: number;
++    pageSize?: number;
++    profession?: string;
++    role?: string;
++    searchQuery?: string;
++  }): Promise<{ items: BuildEntry[]; total: number; page: number; pageSize: number; totalPages: number } | null> {
++    try {
++      const response = await apiFactory.get<{
++        items: BuildEntry[];
++        total: number;
++        page: number;
++        pageSize: number;
++        totalPages: number;
++      }>(API_ENDPOINTS.BUILD.LIST, { params });
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 获取Build列表失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 获取Build详情
++   * @param buildId Build ID
++   */
++  async getBuildDetail(buildId: string): Promise<BuildEntry | null> {
++    try {
++      const response = await apiFactory.get<BuildEntry>(
++        API_ENDPOINTS.BUILD.DETAIL(buildId)
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 获取Build详情失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 更新Build配置
++   * @param buildId Build ID
++   * @param buildData 更新数据
++   */
++  async updateBuild(buildId: string, buildData: BuildUpdateDto): Promise<BuildEntry | null> {
++    try {
++      const response = await apiFactory.put<BuildEntry>(
++        API_ENDPOINTS.BUILD.DETAIL(buildId),
++        buildData
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 更新Build失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 删除Build配置
++   * @param buildId Build ID
++   */
++  async deleteBuild(buildId: string): Promise<boolean> {
++    try {
++      const response = await apiFactory.delete(
++        API_ENDPOINTS.BUILD.DETAIL(buildId)
++      );
++
++      return response.success;
++    } catch (error) {
++      console.error('[BuildApi] 删除Build失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 对比多个Build配置
++   * @param buildIds Build ID数组
++   */
++  async compareBuilds(buildIds: string[]): Promise<BuildCompareResponse | null> {
++    try {
++      const response = await apiFactory.post<BuildCompareResponse>(
++        API_ENDPOINTS.BUILD.COMPARE,
++        { build_ids: buildIds }
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 对比Build失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 导出Build配置
++   * @param buildId Build ID
++   */
++  async exportBuild(buildId: string): Promise<Blob | null> {
++    try {
++      const response = await apiFactory.get(
++        API_ENDPOINTS.BUILD.EXPORT(buildId),
++        { responseType: 'blob' }
++      );
++
++      if (response.success && response.data) {
++        return response.data as Blob;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[BuildApi] 导出Build失败', error);
++      throw error;
++    }
++  }
++}
++
++// 导出单例实例
++export default new BuildApiService();
++export { BuildApiService };
++
++// 类型已通过 interface 声明自动导出，无需重复 export type
+\ No newline at end of file
+diff --git a/frontend/src/api/build/skills.ts b/frontend/src/api/build/skills.ts
+new file mode 100644
+index 0000000..4a71c39
+--- /dev/null
++++ b/frontend/src/api/build/skills.ts
+@@ -0,0 +1,169 @@
++/**
++ * 技能API 服务模块
++ * 功能：处理技能相关的API请求
++ * 作者：帅姐姐
++ * 创建日期：2024-01-15
++ */
++
++import { apiFactory } from '@/services/core/apiService';
++import { API_ENDPOINTS } from '@/constants/apiEndpoints';
++
++export interface Skill {
++  id: string;
++  name: string;
++  icon: string;
++  profession?: string;
++  elite_spec?: string;
++  type: 'heal' | 'utility' | 'elite' | 'weapon';
++  description?: string;
++  cooldown?: number;
++  energy_cost?: number;
++  initiative_cost?: number;
++}
++
++export interface SkillRotationEvent {
++  timestamp: number;
++  skill_id: string;
++  skill_name: string;
++  target?: string;
++  success: boolean;
++}
++
++export interface SkillAnalysisRequest {
++  log_id: string;
++  member_id: string;
++}
++
++export interface SkillAnalysisResponse {
++  rotations: SkillRotationEvent[];
++  stats: {
++    total_casts: number;
++    average_cast_time: number;
++    mistakes: Array<{
++      timestamp: number;
++      skill_id: string;
++      description: string;
++    }>;
++  };
++  ideal_rotation: SkillRotationEvent[];
++}
++
++/**
++ * 技能API 服务
++ */
++class SkillsApiService {
++  /**
++   * 获取技能列表
++   * @param profession 职业筛选
++   */
++  async getSkillList(profession?: string): Promise<Skill[] | null> {
++    try {
++      const params = profession ? { profession } : {};
++      const response = await apiFactory.get<Skill[]>(
++        API_ENDPOINTS.SKILLS.LIST,
++        { params }
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[SkillsApi] 获取技能列表失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 获取技能详情
++   * @param skillId 技能ID
++   */
++  async getSkillDetail(skillId: string): Promise<Skill | null> {
++    try {
++      const response = await apiFactory.get<Skill>(
++        API_ENDPOINTS.SKILLS.DETAIL(skillId)
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[SkillsApi] 获取技能详情失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 分析技能循环
++   * @param logId 日志ID
++   * @param memberId 成员ID
++   */
++  async analyzeSkillRotation(logId: string, memberId: string): Promise<SkillAnalysisResponse | null> {
++    try {
++      const response = await apiFactory.post<SkillAnalysisResponse>(
++        API_ENDPOINTS.SKILL_ROTATION.ANALYZE,
++        { log_id: logId, member_id: memberId }
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[SkillsApi] 分析技能循环失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 对比技能循环
++   * @param logIds 日志ID数组
++   */
++  async compareSkillRotations(logIds: string[]): Promise<any | null> {
++    try {
++      const response = await apiFactory.post(
++        API_ENDPOINTS.SKILL_ROTATION.COMPARE,
++        { log_ids: logIds }
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[SkillsApi] 对比技能循环失败', error);
++      throw error;
++    }
++  }
++
++  /**
++   * 获取技能历史记录
++   */
++  async getSkillRotationHistory(): Promise<any[] | null> {
++    try {
++      const response = await apiFactory.get<any[]>(
++        API_ENDPOINTS.SKILL_ROTATION.HISTORY
++      );
++
++      if (response.success && response.data) {
++        return response.data;
++      }
++
++      return null;
++    } catch (error) {
++      console.error('[SkillsApi] 获取技能历史失败', error);
++      throw error;
++    }
++  }
++}
++
++// 导出单例实例
++export default new SkillsApiService();
++export { SkillsApiService };
++
++// 类型已通过 interface 声明自动导出，无需重复 export type
+\ No newline at end of file
+diff --git a/frontend/src/services/build/bdCodeService.ts b/frontend/src/services/build/bdCodeService.ts
+new file mode 100644
+index 0000000..343dc6a
+--- /dev/null
++++ b/frontend/src/services/build/bdCodeService.ts
+@@ -0,0 +1,47 @@
++import { apiFactory } from '../core/apiService'
++import { API_ENDPOINTS } from '@/constants/apiEndpoints'
++import type { ApiResponse } from '../../models'
++
++export interface BDCodeParseRequest {
++  bd_code: string
++  include_icons?: boolean
++}
++
++export interface BDCodeValidationRequest {
++  bd_code: string
++}
++
++export interface BDCodeBatchRequest {
++  bd_codes: string[]
++  include_icons?: boolean
++}
++
++export class BDCodeService {
++  async parseBDCode(data: BDCodeParseRequest): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.PARSE, data)
++  }
++
++  async parseBDCodeByUrl(bdCode: string, includeIcons: boolean = true): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.PARSE_BY_URL(bdCode), {
++      params: { include_icons: includeIcons }
++    })
++  }
++
++  async validateBDCode(data: BDCodeValidationRequest): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.VALIDATE, data)
++  }
++
++  async parseBatch(data: BDCodeBatchRequest): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.BATCH, data)
++  }
++
++  async getBDCodeStats(): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.STATS)
++  }
++
++  async healthCheck(): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.HEALTH)
++  }
++}
++
++export const bdCodeService = new BDCodeService()
+\ No newline at end of file
+diff --git a/frontend/src/services/build/buildsService.ts b/frontend/src/services/build/buildsService.ts
+new file mode 100644
+index 0000000..5dd2892
+--- /dev/null
++++ b/frontend/src/services/build/buildsService.ts
+@@ -0,0 +1,122 @@
++import { apiFactory } from '../core/apiService'
++import { API_ENDPOINTS } from '@/constants/apiEndpoints'
++import type { ApiResponse } from '../../models'
++
++export interface BuildsListParams {
++  page?: number
++  page_size?: number
++  profession?: string | null
++  member_id?: number | null
++}
++
++/** Build图书馆列表查询参数 */
++export interface BuildLibraryListParams {
++  page?: number
++  page_size?: number
++  profession?: string | null
++  role?: string | null
++  sub_role?: string | null
++  search?: string | null
++  sort_by?: string
++}
++
++export interface BuildCreate {
++  name: string
++  profession: string
++  build_code: string
++  description?: string
++}
++
++export interface BuildUpdate {
++  name?: string
++  build_code?: string
++  description?: string
++}
++
++/** Build图书馆创建/更新请求体（snake_case，与后端对齐） */
++export interface BuildLibraryCreateRequest {
++  title: string
++  profession: string
++  profession_color?: string | null
++  elite_spec?: string | null
++  role: 'dps' | 'support'
++  sub_roles?: string[]
++  armor_type?: string | null
++  weapons?: { set: number; name: string; sigils: string[] }[]
++  relic?: string | null
++  rune?: string | null
++  food?: string | null
++  wrench?: string | null
++  infusion?: string | null
++  attr_requirements?: string[]
++  bd_code: string
++  trait_lines?: { name: string; choices: number[] }[]
++  rotation_commands?: { callout: string; action: string; note?: string }[]
++  mechanics?: { name: string; sources: string[] }[]
++  videos?: { title: string; url: string; author?: string }[]
++  author?: string
++  is_meta?: boolean
++}
++
++export type BuildLibraryUpdateRequest = Partial<BuildLibraryCreateRequest>
++
++export class BuildsService {
++  async getBuilds(params: BuildsListParams): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.LIST, { params })
++  }
++
++  async createBuild(data: BuildCreate): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.LIST, data)
++  }
++
++  async parseBuild(buildCode: string): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.SAVE, null, {
++      params: { build_code: buildCode }
++    })
++  }
++
++  async compareBuilds(buildId1: number, buildId2: number): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.COMPARE, null, {
++      params: { build_id_1: buildId1, build_id_2: buildId2 }
++    })
++  }
++
++  async getBuild(buildId: number): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.DETAIL(buildId))
++  }
++
++  async updateBuild(buildId: number, data: BuildUpdate): Promise<ApiResponse<void>> {
++    return apiFactory.put<void>(API_ENDPOINTS.BUILD.DETAIL(buildId), data)
++  }
++
++  async deleteBuild(buildId: number): Promise<ApiResponse<void>> {
++    return apiFactory.delete<void>(API_ENDPOINTS.BUILD.DETAIL(buildId))
++  }
++
++  /** Build图书馆：获取列表 */
++  async getBuildLibraryList(params: BuildLibraryListParams = {}): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.LIST, { params })
++  }
++
++  /** Build图书馆：获取详情 */
++  async getBuildLibraryDetail(buildId: number): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.BUILD.DETAIL(buildId))
++  }
++
++  /** Build图书馆：创建 */
++  async createBuildLibrary(data: BuildLibraryCreateRequest): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.BUILD.LIST, data)
++  }
++
++  /** Build图书馆：更新 */
++  async updateBuildLibrary(buildId: number, data: BuildLibraryUpdateRequest): Promise<ApiResponse<any>> {
++    return apiFactory.put<any>(API_ENDPOINTS.BUILD.DETAIL(buildId), data)
++  }
++
++  /** Build图书馆：删除 */
++  async deleteBuildLibrary(buildId: number): Promise<ApiResponse<void>> {
++    return apiFactory.delete<void>(API_ENDPOINTS.BUILD.DETAIL(buildId))
++  }
++}
++
++export const buildsService = new BuildsService()
+\ No newline at end of file
+diff --git a/frontend/src/services/build/skillRotationService.ts b/frontend/src/services/build/skillRotationService.ts
+new file mode 100644
+index 0000000..057c9ac
+--- /dev/null
++++ b/frontend/src/services/build/skillRotationService.ts
+@@ -0,0 +1,38 @@
++import { apiFactory } from '../core/apiService'
++import { API_ENDPOINTS } from '@/constants/apiEndpoints'
++import type { ApiResponse } from '../../models'
++
++export interface SkillRotationAnalyzeRequest {
++  member_account: string
++  fight_id?: number
++  granularity?: string
++  output_format?: string
++}
++
++export class SkillRotationService {
++  async healthCheck(): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.SKILL_ROTATION.HEALTH)
++  }
++
++  async getPlayerSkillRotation(memberAccount: string, fightId?: number | null, granularity: string = 'detailed', outputFormat: string = 'json'): Promise<ApiResponse<any>> {
++    const params: any = { granularity, output_format: outputFormat }
++    if (fightId) params.fight_id = fightId
++    return apiFactory.get<any>(API_ENDPOINTS.SKILL_ROTATION.PLAYER(memberAccount), { params })
++  }
++
++  async analyzeSkillRotation(data: SkillRotationAnalyzeRequest): Promise<ApiResponse<any>> {
++    return apiFactory.post<any>(API_ENDPOINTS.SKILL_ROTATION.ANALYZE, data)
++  }
++
++  async getErrorCodes(): Promise<ApiResponse<any>> {
++    return apiFactory.get<any>(API_ENDPOINTS.SKILL_ROTATION.ERRORS)
++  }
++
++  async compareSkillRotation(memberAccount: string, benchmarkAccount: string, fightId?: number | null): Promise<ApiResponse<any>> {
++    const params: any = { benchmark_account: benchmarkAccount }
++    if (fightId) params.fight_id = fightId
++    return apiFactory.get<any>(API_ENDPOINTS.SKILL_ROTATION.COMPARE_PLAYER(memberAccount), { params })
++  }
++}
++
++export const skillRotationService = new SkillRotationService()
+\ No newline at end of file
+diff --git a/frontend/src/store/build/buildLibrary.ts b/frontend/src/store/build/buildLibrary.ts
+new file mode 100644
+index 0000000..ae90edf
+--- /dev/null
++++ b/frontend/src/store/build/buildLibrary.ts
+@@ -0,0 +1,384 @@
++import { ref, computed } from 'vue'
++import { defineStore } from 'pinia'
++import type { BuildEntry, BuildFilterState, BuildCreateDto } from '@/types/buildLibrary'
++import { buildsService } from '@/services/build/buildsService'
++import { PROFESSION_COLORS } from '@/types/buildLibrary'
++import type { BuildLibraryCreateRequest, BuildLibraryUpdateRequest } from '@/services/build/buildsService'
++import { dictionaryService, type DictOption } from '@/services/system/dictionaryService'
++
++export const useBuildLibraryStore = defineStore('buildLibrary', () => {
++  // State
++  const builds = ref<BuildEntry[]>([])
++  const filters = ref<BuildFilterState>({
++    profession: 'all',
++    role: 'all',
++    subRoles: [],
++    searchQuery: '',
++    sortBy: 'updated',
++  })
++  const selectedBuildId = ref<string | null>(null)
++  const loading = ref(false)
++  const error = ref<string | null>(null)
++  
++  // 字典数据
++  const professionsDict = ref<DictOption[]>([])
++  const eliteSpecsDict = ref<DictOption[]>([])
++  const rolesDict = ref<DictOption[]>([])
++
++  // Getters
++  const filteredBuilds = computed(() => {
++    let result = [...builds.value]
++
++    // Profession filter
++    if (filters.value.profession !== 'all') {
++      result = result.filter(b => b.profession === filters.value.profession)
++    }
++
++    // Role filter
++    if (filters.value.role !== 'all') {
++      result = result.filter(b => b.role === filters.value.role)
++    }
++
++    // Sub-role filter (AND logic: build must have ALL selected sub-roles)
++    if (filters.value.subRoles.length > 0) {
++      result = result.filter(b =>
++        filters.value.subRoles.every(sr => b.subRoles.includes(sr as any))
++      )
++    }
++
++    // Search filter
++    if (filters.value.searchQuery.trim()) {
++      const q = filters.value.searchQuery.toLowerCase()
++      result = result.filter(b =>
++        b.title.toLowerCase().includes(q) ||
++        b.profession.toLowerCase().includes(q) ||
++        (b.eliteSpec?.toLowerCase().includes(q) ?? false) ||
++        b.author.toLowerCase().includes(q)
++      )
++    }
++
++    // Sorting
++    result.sort((a, b) => {
++      switch (filters.value.sortBy) {
++        case 'updated':
++          return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
++        case 'profession':
++          return a.profession.localeCompare(b.profession) || a.title.localeCompare(b.title)
++        case 'name':
++          return a.title.localeCompare(b.title)
++        default:
++          return 0
++      }
++    })
++
++    return result
++  })
++
++  const selectedBuild = computed(() => {
++    if (!selectedBuildId.value) return null
++    return builds.value.find(b => String(b.id) === selectedBuildId.value) || null
++  })
++
++  const professions = computed(() => {
++    const set = new Set(builds.value.map(b => b.profession))
++    return Array.from(set).sort()
++  })
++
++  // 修复：基于当前筛选后的Builds进行计数
++  const roleCounts = computed(() => {
++    const counts: Record<string, number> = { all: filteredBuilds.value.length, dps: 0, support: 0 }
++    filteredBuilds.value.forEach(b => {
++      counts[b.role] = (counts[b.role] || 0) + 1
++    })
++    return counts
++  })
++
++  // 修复：基于当前筛选后的Builds进行计数
++  const subRoleCounts = computed(() => {
++    const counts: Record<string, number> = { boon: 0, heal: 0, tank: 0, cc: 0 }
++    filteredBuilds.value.forEach(b => {
++      b.subRoles.forEach(sr => {
++        counts[sr] = (counts[sr] || 0) + 1
++      })
++    })
++    return counts
++  })
++  
++  // 基于当前筛选后的职业计数
++  const professionCounts = computed(() => {
++    const counts: Record<string, number> = {}
++    filteredBuilds.value.forEach(b => {
++      counts[b.profession] = (counts[b.profession] || 0) + 1
++    })
++    return counts
++  })
++  
++  // 获取指定职业的精英特长选项
++  const getEliteSpecsForProfession = (profession: string) => {
++    return eliteSpecsDict.value.filter(spec => 
++      spec.value.toLowerCase().includes(profession.toLowerCase()) || 
++      spec.css_class?.includes(profession.toLowerCase())
++    )
++  }
++
++  // Actions
++  /** 加载字典数据 */
++  async function loadDictionaries() {
++    try {
++      const [professions, eliteSpecs, roles] = await Promise.all([
++        dictionaryService.getOptions('profession'),
++        dictionaryService.getOptions('specialization'),
++        dictionaryService.getOptions('role'),
++      ])
++      professionsDict.value = professions
++      eliteSpecsDict.value = eliteSpecs
++      rolesDict.value = roles
++    } catch (e) {
++      console.error('[BuildLibrary] 加载字典失败', e)
++    }
++  }
++  
++  /** 将后端snake_case 数据转为前端 camelCase BuildEntry */
++  function mapBackendToBuildEntry(raw: any): BuildEntry {
++    return {
++      id: String(raw.id ?? ''),
++      slug: raw.slug ?? '',
++      title: raw.title ?? '',
++      profession: raw.profession ?? '',
++      professionColor: raw.profession_color || PROFESSION_COLORS[raw.profession] || '#888888',
++      eliteSpec: raw.elite_spec ?? null,
++      role: raw.role === 'dps' || raw.role === 'support' ? raw.role : 'dps',
++      subRoles: (raw.sub_roles || []).filter((r: string) => ['boon', 'heal', 'tank', 'cc'].includes(r)),
++      armorType: raw.armor_type ?? '',
++      weapons: (raw.weapons || []).map((w: any) => ({
++        set: w.set ?? 0,
++        name: w.name ?? '',
++        sigils: w.sigils || []
++      })),
++      relic: raw.relic ?? '',
++      rune: raw.rune ?? '',
++      food: raw.food ?? '',
++      wrench: raw.wrench ?? '',
++      infusion: raw.infusion ?? '',
++      attrRequirements: raw.attr_requirements || [],
++      bdCode: raw.bd_code ?? '',
++      traitLines: (raw.trait_lines || []).map((t: any) => ({
++        name: t.name ?? '',
++        choices: (t.choices || []).slice(0, 3) as [number, number, number]
++      })),
++      rotationCommands: (raw.rotation_commands || []).map((c: any) => ({
++        callout: c.callout ?? '',
++        action: c.action ?? '',
++        note: c.note
++      })),
++      mechanics: (raw.mechanics || []).map((m: any) => ({
++        name: m.name ?? '',
++        sources: m.sources || []
++      })),
++      videos: (raw.videos || []).map((v: any) => ({
++        title: v.title ?? '',
++        url: v.url ?? '',
++        author: v.author
++      })),
++      author: raw.author ?? '',
++      updatedAt: raw.updated_at || raw.created_at || new Date().toISOString(),
++      wordCount: raw.word_count ?? 0,
++      isMeta: raw.is_meta ?? false,
++    }
++  }
++
++  async function fetchBuilds() {
++    loading.value = true
++    error.value = null
++    try {
++      // 先加载字典数据
++      if (professionsDict.value.length === 0) {
++        await loadDictionaries()
++      }
++      
++      const params: Record<string, any> = {}
++      if (filters.value.profession && filters.value.profession !== 'all') {
++        params.profession = filters.value.profession
++      }
++      if (filters.value.role && filters.value.role !== 'all') {
++        params.role = filters.value.role
++      }
++      if (filters.value.subRoles.length > 0) {
++        params.sub_role = filters.value.subRoles.join(',')
++      }
++      if (filters.value.searchQuery.trim()) {
++        params.search = filters.value.searchQuery.trim()
++      }
++      const sortMap: Record<string, string> = {
++        updated: 'updated',
++        profession: 'profession',
++        name: 'name'
++      }
++      params.sort_by = sortMap[filters.value.sortBy] || 'updated'
++
++      const response = await buildsService.getBuildLibraryList(params)
++      const items = response.data?.items || []
++      builds.value = items.map(mapBackendToBuildEntry)
++    } catch (e: any) {
++      error.value = e?.message || '加载失败'
++      console.error('[BuildLibrary] fetchBuilds error:', e)
++    } finally {
++      loading.value = false
++    }
++  }
++
++  function setFilter<K extends keyof BuildFilterState>(key: K, value: BuildFilterState[K]) {
++    filters.value[key] = value
++  }
++
++  function toggleSubRole(role: string) {
++    const idx = filters.value.subRoles.indexOf(role as any)
++    if (idx >= 0) {
++      filters.value.subRoles.splice(idx, 1)
++    } else {
++      filters.value.subRoles.push(role as any)
++    }
++  }
++
++  function selectBuild(id: string | null) {
++    selectedBuildId.value = id
++  }
++
++  function clearFilters() {
++    filters.value = {
++      profession: 'all',
++      role: 'all',
++      subRoles: [],
++      searchQuery: '',
++      sortBy: 'updated',
++    }
++  }
++
++  /** 将前端 camelCase BuildEntry/DTO 转为后端 snake_case 请求体 */
++  function mapBuildToBackend(build: Partial<BuildEntry> | BuildCreateDto): BuildLibraryCreateRequest {
++    return {
++      title: build.title ?? '',
++      profession: build.profession ?? '',
++      profession_color: (build as any).professionColor ?? PROFESSION_COLORS[build.profession ?? ''] ?? null,
++      elite_spec: (build as any).eliteSpec ?? null,
++      role: build.role ?? 'dps',
++      sub_roles: (build as any).subRoles ?? [],
++      armor_type: (build as any).armorType ?? null,
++      weapons: (build as any).weapons ?? [],
++      relic: (build as any).relic ?? null,
++      rune: (build as any).rune ?? null,
++      food: (build as any).food ?? null,
++      wrench: (build as any).wrench ?? null,
++      infusion: (build as any).infusion ?? null,
++      attr_requirements: (build as any).attrRequirements ?? [],
++      bd_code: (build as any).bdCode ?? '',
++      trait_lines: ((build as any).traitLines ?? []).map((t: any) => ({
++        name: t.name ?? '',
++        choices: t.choices ?? [1, 1, 1]
++      })),
++      rotation_commands: ((build as any).rotationCommands ?? []).map((c: any) => ({
++        callout: c.callout ?? '',
++        action: c.action ?? '',
++        note: c.note
++      })),
++      mechanics: ((build as any).mechanics ?? []).map((m: any) => ({
++        name: m.name ?? '',
++        sources: m.sources ?? []
++      })),
++      videos: ((build as any).videos ?? []).map((v: any) => ({
++        title: v.title ?? '',
++        url: v.url ?? '',
++        author: v.author
++      })),
++      author: (build as any).author ?? '',
++      is_meta: (build as any).isMeta ?? false,
++    }
++  }
++
++  async function createBuild(build: BuildCreateDto) {
++    loading.value = true
++    error.value = null
++    try {
++      const data = mapBuildToBackend(build)
++      const response = await buildsService.createBuildLibrary(data)
++      if (response.data) {
++        builds.value.unshift(mapBackendToBuildEntry(response.data))
++      }
++      return { success: true, data: response.data }
++    } catch (e: any) {
++      error.value = e?.message || '创建失败'
++      console.error('[BuildLibrary] createBuild error:', e)
++      return { success: false, error: e?.message || '创建失败' }
++    } finally {
++      loading.value = false
++    }
++  }
++
++  async function updateBuild(buildId: string, build: Partial<BuildEntry>) {
++    loading.value = true
++    error.value = null
++    try {
++      const data: BuildLibraryUpdateRequest = mapBuildToBackend(build)
++      const response = await buildsService.updateBuildLibrary(Number(buildId), data)
++      if (response.data) {
++        const idx = builds.value.findIndex(b => b.id === buildId)
++        if (idx >= 0) {
++          builds.value[idx] = mapBackendToBuildEntry(response.data)
++        }
++      }
++      return { success: true, data: response.data }
++    } catch (e: any) {
++      error.value = e?.message || '更新失败'
++      console.error('[BuildLibrary] updateBuild error:', e)
++      return { success: false, error: e?.message || '更新失败' }
++    } finally {
++      loading.value = false
++    }
++  }
++
++  async function deleteBuild(buildId: string) {
++    loading.value = true
++    error.value = null
++    try {
++      await buildsService.deleteBuildLibrary(Number(buildId))
++      builds.value = builds.value.filter(b => b.id !== buildId)
++      if (selectedBuildId.value === buildId) {
++        selectedBuildId.value = null
++      }
++      return { success: true }
++    } catch (e: any) {
++      error.value = e?.message || '删除失败'
++      console.error('[BuildLibrary] deleteBuild error:', e)
++      return { success: false, error: e?.message || '删除失败' }
++    } finally {
++      loading.value = false
++    }
++  }
++
++  return {
++    builds,
++    filters,
++    selectedBuildId,
++    loading,
++    error,
++    filteredBuilds,
++    selectedBuild,
++    professions,
++    roleCounts,
++    subRoleCounts,
++    professionCounts,
++    professionsDict,
++    eliteSpecsDict,
++    rolesDict,
++    fetchBuilds,
++    setFilter,
++    toggleSubRole,
++    selectBuild,
++    clearFilters,
++    createBuild,
++    updateBuild,
++    deleteBuild,
++    loadDictionaries,
++    getEliteSpecsForProfession,
++  }
++})

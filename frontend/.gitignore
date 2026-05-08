@@ -41,7 +41,7 @@ coverage
 Thumbs.db
 
 # Build files
-build/
+/build/
 out/
 
 # Dependency directories

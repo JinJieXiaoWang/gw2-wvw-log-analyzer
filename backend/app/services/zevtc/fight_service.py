@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session, joinedload
 from app.models.fight import Fight
 from app.models.fight_stats import FightStats
 from app.models.zevtc_data import EiPlayer, EiSkillMap
+from app.services.score_query_service import PlayerScoreService
 from app.utils.logger import logger
 
 
@@ -150,6 +151,15 @@ def get_log_player_stats(
     def _float(v):
         return float(v) if v is not None else 0
 
+    # 查询时实时计算评分（替代已弃用的导入时持久化评分）
+    score_map: Dict[str, Dict[str, Any]] = {}
+    try:
+        score_result = PlayerScoreService.calculate_fight_scores(db, fight.id)
+        for sc in score_result.get("scores", []):
+            score_map[sc.get("account", "")] = sc
+    except Exception as e:
+        logger.warning(f"[fight_service] 实时评分计算失败，使用数据库默认值: {e}")
+
     return [
         {
             "id": s.id,
@@ -219,9 +229,9 @@ def get_log_player_stats(
             "power_damage_taken": s.power_damage_taken or 0,
             "against_downed_damage": s.against_downed_damage or 0,
             "down_contribution": s.down_contribution or 0,
-            # AI 评分
-            "ai_score": _float(s.ai_score),
-            "score_grade": s.score_grade,
+            # AI 评分（查询时实时计算，导入时不再持久化）
+            "ai_score": _float(score_map.get(s.account, {}).get("total_score", s.ai_score)),
+            "score_grade": score_map.get(s.account, {}).get("grade", s.score_grade) or "",
         }
         for s in stats
     ]

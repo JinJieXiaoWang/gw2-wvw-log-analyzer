@@ -1987,8 +1987,10 @@ const statDetailAverage = computed(() => {
 
 const getStatValue = (p: EiAnalysisPlayer, type: string) => {
   switch (type) {
-    case 'protection': return (p.protection_uptime || 0).toFixed(1) + '%'
-    case 'stability': return (p.stability_uptime || 0).toFixed(1) + '%'
+    case 'protection':
+    case 'protection_uptime': return (p.protection_uptime || 0).toFixed(1) + '%'
+    case 'stability':
+    case 'stability_uptime': return (p.stability_uptime || 0).toFixed(1) + '%'
     case 'condition_cleanses': return fmtCompact(p.condition_cleanses)
     case 'boon_strips': return fmtCompact(p.boon_strips)
     case 'damage_taken': return fmtCompact(p.damage_taken)
@@ -2038,7 +2040,9 @@ const getStatValueClass = (type: string, p: EiAnalysisPlayer) => {
   const val = parseFloat(getStatValue(p, type).replace('%', ''))
   switch (type) {
     case 'protection':
+    case 'protection_uptime':
     case 'stability':
+    case 'stability_uptime':
     case 'hitRate':
     case 'skill_cast_uptime':
       return val >= 70 ? 'text-success' : val >= 40 ? 'text-warning' : 'text-error'
