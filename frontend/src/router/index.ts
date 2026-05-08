@@ -239,6 +239,8 @@ router.beforeEach(async (to, _from, next) => {
   // 需要认证的页面
   if (to.meta.requiresAuth) {
     if (!isAuthenticated.value) {
+      // 记录当前路径，登录后重定向回来
+      sessionStorage.setItem('auth_redirect', to.fullPath)
       next('/login')
       return
     }

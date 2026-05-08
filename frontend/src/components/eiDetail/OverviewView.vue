@@ -14,16 +14,16 @@
           场均 {{ formatNumber(avgDamage) }}
         </p>
       </div>
-      <div class="card bg-gradient-to-br from-status-success/20 to-status-success/5 border-status-success/30">
+      <div class="card bg-gradient-to-br from-status-warning/20 to-status-warning/5 border-status-warning/30">
         <div class="flex items-center gap-3 mb-2">
-          <i class="pi pi-heart text-status-success text-xl" />
-          <span class="text-sm text-neutral-text-secondary">总治疗</span>
+          <i class="pi pi-shield text-status-warning text-xl" />
+          <span class="text-sm text-neutral-text-secondary">总承伤</span>
         </div>
-        <p class="text-2xl font-bold text-status-success">
-          {{ formatNumber(totalHealing) }}
+        <p class="text-2xl font-bold text-status-warning">
+          {{ formatNumber(totalDamageTaken) }}
         </p>
         <p class="text-xs text-neutral-text-disabled mt-1">
-          场均 {{ formatNumber(avgHealing) }}
+          场均 {{ formatNumber(avgDamageTaken) }}
         </p>
       </div>
       <div class="card bg-gradient-to-br from-secondary/20 to-secondary/5 border-secondary/30">
@@ -157,8 +157,8 @@ defineEmits(['select-player']);
 
 const totalDamage = computed(() => props.players.reduce((s, p) => s + (p.dpsAll?.[0]?.damage || 0), 0));
 const avgDamage = computed(() => Math.round(totalDamage.value / Math.max(props.players.length, 1)));
-const totalHealing = computed(() => props.players.reduce((s, p) => s + (p.heal || 0), 0));
-const avgHealing = computed(() => Math.round(totalHealing.value / Math.max(props.players.length, 1)));
+const totalDamageTaken = computed(() => props.players.reduce((s, p) => s + (p.defenses?.[0]?.damageTaken || 0), 0));
+const avgDamageTaken = computed(() => Math.round(totalDamageTaken.value / Math.max(props.players.length, 1)));
 const totalKills = computed(() => props.players.reduce((s, p) => s + (p.kills || 0), 0));
 const avgKills = computed(() => Math.round(totalKills.value / Math.max(props.players.length, 1) * 10) / 10);
 const totalDeaths = computed(() => props.players.reduce((s, p) => s + (p.deaths || 0), 0));

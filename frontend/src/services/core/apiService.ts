@@ -43,13 +43,15 @@ class ApiFactory {
         const response = error.response?.data || {}
         const message = response.message || error.message || '请求失败'
         
-        // 401 未授权：清除 Token 并跳转登录页
+        // 401 未授权：清除 Token 并触发登出事件，由应用层决定是否跳转
+        // 避免在公开页面上因游客访问而强制跳转到登录页
         if (error.response?.status === 401) {
-          console.warn('[ApiClient] Received 401 Unauthorized, redirecting to login...')
+          console.warn('[ApiClient] Received 401 Unauthorized, clearing token...')
           clearToken()
-          if (window.location.pathname !== '/login') {
-            window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
-          }
+          // 触发认证过期事件，传递来源信息
+          window.dispatchEvent(new CustomEvent('auth:logout', {
+            detail: { source: 'api', path: window.location.pathname }
+          }))
         }
 
         return Promise.reject({

@@ -70,10 +70,49 @@ class FightStats(Base):
     protection_uptime = Column(Numeric(5, 2), default=0, comment="保护覆盖（百分比）")
     stability_uptime = Column(Numeric(5, 2), default=0, comment="稳定覆盖（百分比）")
 
+    # === 高级战斗指标（dps.report API 专有）===
+    down_contribution = Column(Integer, default=0, comment="倒地贡献")
+    against_downed_damage = Column(BigInteger, default=0, comment="对倒地敌人伤害")
+    applied_cc_duration = Column(Integer, default=0, comment="施加CC时长(ms)")
+    applied_cc_count = Column(Integer, default=0, comment="施加CC次数")
+    barrier_damage_absorbed = Column(BigInteger, default=0, comment="屏障吸收伤害")
+    condition_damage_taken = Column(BigInteger, default=0, comment="症状承受伤害")
+    power_damage_taken = Column(BigInteger, default=0, comment="直伤承受伤害")
+    received_cc_duration = Column(Integer, default=0, comment="受到CC时长(ms)")
+    might_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期力量覆盖(%)")
+    quickness_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期急速覆盖(%)")
+    alacrity_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期敏捷覆盖(%)")
+    avg_boons = Column(Numeric(5, 2), default=0, comment="平均增益层数")
+    avg_conditions = Column(Numeric(5, 2), default=0, comment="平均症状层数")
+
+    # === 技能效率与位置（EI 扩展字段）===
+    wasted = Column(Integer, default=0, comment="技能浪费值")
+    saved = Column(Integer, default=0, comment="技能节省值")
+    skill_cast_uptime = Column(Numeric(5, 2), default=0, comment="技能施法占比(%)")
+    stack_dist = Column(Numeric(10, 2), default=0, comment="堆叠距离")
+    dist_to_com = Column(Numeric(10, 2), default=0, comment="与指挥官距离")
+
+    # === 倒地/死亡详情（EI 扩展字段）===
+    downed_damage_taken = Column(BigInteger, default=0, comment="倒地时承受伤害")
+    interrupted_count = Column(Integer, default=0, comment="被打断次数")
+    down_duration = Column(Integer, default=0, comment="倒地时长(ms)")
+    dead_duration = Column(Integer, default=0, comment="死亡时长(ms)")
+    dc_count = Column(Integer, default=0, comment="掉线次数")
+    dc_duration = Column(Integer, default=0, comment="掉线时长(ms)")
+
+    # === 支援详情（EI 扩展字段）===
+    stun_break = Column(Integer, default=0, comment="解控次数")
+    removed_stun_duration = Column(Numeric(8, 3), default=0, comment="解除眩晕时长(s)")
+
     # === AI 评分（后续计算或解析时生成）===
     ai_score = Column(Numeric(5, 2), default=0, comment="AI评分")
     score_grade = Column(String(10), default="", comment="评分等级（S/A/B/C/D）")
     score_breakdown = Column(JSON, nullable=True, comment="评分维度明细JSON")
+
+    # === 评分规则元数据（用于追溯和重算）===
+    role_type = Column(String(50), nullable=True, comment="评分时使用的职能类型")
+    rule_version = Column(Integer, default=0, comment="评分规则版本号")
+    scoring_profession_rule = Column(String(50), nullable=True, comment="使用的职业特定规则名")
 
     # === 关联关系 ===
     fight = relationship("Fight", back_populates="fight_stats")

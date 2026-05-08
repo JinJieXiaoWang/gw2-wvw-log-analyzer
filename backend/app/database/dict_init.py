@@ -43,6 +43,7 @@ class DictionaryDataInitializer:
     ROLE_COLORS = {
         "dps": "#FF6B35",
         "support": "#35B0FF",
+        "tank": "#9D4EDD",
         "condition": "#9A3412",
         "healing": "#166534",
         "control": "#1f2937",
@@ -296,6 +297,7 @@ class DictionaryDataInitializer:
         roles = [
             ("dps", "输出"),
             ("support", "辅助"),
+            ("tank", "承伤"),
             ("condition", "症状"),
             ("healing", "治疗"),
             ("control", "控制"),

@@ -37,6 +37,7 @@ from app.routers.storage import router as storage_router
 from app.routers.builds import router as builds_router
 from app.routers.test_dps_report import router as test_dps_report_router
 from app.routers.memory_monitor import router as memory_monitor_router
+from app.routers.notice import router as notice_router
 from app.utils.logger import logger
 from app.utils.exceptions import AppException
 from app.utils.exception_handler import register_exception_handlers
@@ -90,6 +91,20 @@ async def lifespan(app: FastAPI):
                         logger.info(f"评分规则初始化完成: {scoring_init}")
                     else:
                         logger.info(f"评分规则已存在，跳过初始化: {scoring_init}")
+
+                    # 初始化评分规则版本表
+                    version_init = scoring_service.init_version_if_empty()
+                    if version_init["initialized"]:
+                        logger.info(f"评分规则版本表初始化完成: {version_init}")
+                    else:
+                        logger.info(f"评分规则版本表已存在，跳过初始化: {version_init}")
+
+                    # 从 professions.json 导入默认职业特定规则
+                    profession_init = scoring_service.init_profession_rules_from_json()
+                    if profession_init["initialized"]:
+                        logger.info(f"职业特定规则初始化完成: {profession_init}")
+                    else:
+                        logger.info(f"职业特定规则已存在或无需初始化: {profession_init}")
 
                     # 初始化 Build 图书馆数据（表为空时自动导入 GW2.txt）
                     build_init = BuildDataInitializer(db)
@@ -163,6 +178,7 @@ app.include_router(storage_router, prefix=settings.API_PREFIX)
 app.include_router(builds_router, prefix=settings.API_PREFIX)
 app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
+app.include_router(notice_router, prefix=settings.API_PREFIX)
 
 
 @app.get("/")

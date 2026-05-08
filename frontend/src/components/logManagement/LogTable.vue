@@ -202,7 +202,7 @@
               @click="viewLogDetail(data)"
             />
             <Button
-              v-permission="'admin'"
+              v-permission="'write'"
               v-tooltip.top="'解析'"
               :icon="parsingLogs.includes(data.id) ? '' : 'pi pi-play'"
               size="small"
@@ -213,7 +213,7 @@
               @click="parseLog(data)"
             />
             <Button
-              v-permission="'admin'"
+              v-permission="'delete'"
               v-tooltip.top="'删除'"
               icon="pi pi-trash"
               size="small"

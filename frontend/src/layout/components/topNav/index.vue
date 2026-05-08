@@ -136,31 +136,31 @@
             <div class="max-h-80 overflow-y-auto">
               <div
                 v-for="notification in notifications"
-                :key="notification.id"
+                :key="notification.notice_id"
                 class="px-4 py-3 hover:bg-neutral-bg/50 border-b border-neutral-border/50 last:border-b-0 transition-colors cursor-pointer"
-                :class="{ 'bg-primary/5': !notification.read }"
+                :class="{ 'bg-primary/5': !notification.is_read }"
                 @click.stop="handleNotificationClick(notification)"
               >
                 <div class="flex items-start gap-3">
                   <div
                     class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                    :class="getNotificationIconClass(notification.type)"
+                    :class="getNotificationIconClass(notification.source_type)"
                   >
-                    <i :class="getNotificationIcon(notification.type)" />
+                    <i :class="getNotificationIcon(notification.source_type)" />
                   </div>
                   <div class="flex-1 min-w-0">
                     <p class="text-base font-medium text-neutral-text mb-0.5">
-                      {{ notification.title }}
+                      {{ notification.notice_title }}
                     </p>
                     <p class="text-sm text-neutral-text-secondary line-clamp-2">
-                      {{ notification.message }}
+                      {{ notification.notice_content }}
                     </p>
                     <p class="text-xs text-neutral-text-disabled mt-1">
-                      {{ notification.time }}
+                      {{ formatTime(notification.create_time) }}
                     </p>
                   </div>
                   <div
-                    v-if="!notification.read"
+                    v-if="!notification.is_read"
                     class="w-2 h-2 rounded-full bg-primary flex-shrink-0 mt-2"
                   />
                 </div>
@@ -434,6 +434,8 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { authStore, usePermission } from '@/composables/system/usePermission'
+import { noticeService } from '@/services/system/noticeService'
+import type { NoticeItem } from '@/services/system/noticeService'
 import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'
 
 const router = useRouter()
@@ -511,46 +513,12 @@ const visibleMenuItems = computed(() => {
   })
 })
 
-interface Notification {
-  id: number
-  type: 'log' | 'system' | 'achievement' | 'warning'
-  title: string
-  message: string
-  time: string
-  read: boolean
-}
-
-const notifications = ref<Notification[]>([
-  {
-    id: 1,
-    type: 'log',
-    title: '日志解析完成',
-    message: '您上传的 zevtc 文件已成功解析，发现3个WVW战斗记录',
-    time: '5分钟前',
-    read: false
-  },
-  {
-    id: 2,
-    type: 'achievement',
-    title: '成就解锁',
-    message: '恭喜您！本周出勤次数达到10次，解锁"常胜将军"成就',
-    time: '1小时前',
-    read: false
-  },
-  {
-    id: 3,
-    type: 'system',
-    title: '系统更新',
-    message: 'GW2 WVW日志解析系统已更新至 v2.1.0，带来全新的UI体验',
-    time: '昨天',
-    read: true
-  }
-])
-
-const unreadCount = computed(() => notifications.value.filter(n => !n.read).length)
+const notifications = ref<NoticeItem[]>([])
+const unreadCount = ref(0)
+const isLoadingNotifications = ref(false)
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)
-const isOperator = computed(() => authStore.currentRole === 'operator')
+const isOperator = computed(() => authStore.currentRole === 'operator' || authStore.currentRole === 'super_admin')
 const user = computed(() => authStore.currentUser)
 const userInitial = computed(() => {
   return user.value?.username?.charAt(0).toUpperCase() || 'A'
@@ -569,9 +537,12 @@ const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
-const toggleNotifications = () => {
+const toggleNotifications = async () => {
   showNotifications.value = !showNotifications.value
   showUserMenu.value = false
+  if (showNotifications.value && notifications.value.length === 0) {
+    await loadNotifications()
+  }
 }
 
 const toggleUserMenu = () => {
@@ -623,44 +594,98 @@ const handleLogout = async () => {
   }
 }
 
-const markAllAsRead = () => {
-  notifications.value.forEach(n => n.read = true)
-  toast.add({
-    severity: 'success',
-    summary: '操作成功',
-    detail: '已全部标记为已读',
-    life: 2000
-  })
+const loadNotifications = async () => {
+  if (!isAuthenticated.value) return
+  try {
+    isLoadingNotifications.value = true
+    const result = await noticeService.getNoticeList({ page: 1, page_size: 20 })
+    if (result.success && result.data) {
+      notifications.value = result.data.items || []
+    }
+  } catch (e) {
+    console.error('加载通知失败:', e)
+  } finally {
+    isLoadingNotifications.value = false
+  }
 }
 
-const handleNotificationClick = (notification: Notification) => {
-  notification.read = true
-  if (notification.type === 'log') {
+const loadUnreadCount = async () => {
+  if (!isAuthenticated.value) return
+  try {
+    const result = await noticeService.getUnreadCount()
+    if (result.success && result.data) {
+      unreadCount.value = result.data.count || 0
+    }
+  } catch (e) {
+    console.error('加载未读通知数失败:', e)
+  }
+}
+
+const markAllAsRead = async () => {
+  try {
+    const result = await noticeService.markAllAsRead()
+    if (result.success) {
+      notifications.value.forEach(n => n.is_read = true)
+      unreadCount.value = 0
+      toast.add({
+        severity: 'success',
+        summary: '操作成功',
+        detail: '已全部标记为已读',
+        life: 2000
+      })
+    }
+  } catch (e) {
+    console.error('标记全部已读失败:', e)
+  }
+}
+
+const handleNotificationClick = async (notification: NoticeItem) => {
+  if (!notification.is_read) {
+    try {
+      await noticeService.markAsRead(notification.notice_id)
+      notification.is_read = true
+      unreadCount.value = Math.max(0, unreadCount.value - 1)
+    } catch (e) {
+      console.error('标记已读失败:', e)
+    }
+  }
+  if (notification.source_type === 'parse_failed') {
     router.push('/logs')
-  } else if (notification.type === 'system') {
-    router.push('/settings')
   }
   closeNotifications()
 }
 
-const getNotificationIcon = (type: string) => {
+const getNotificationIcon = (sourceType: string | null) => {
   const icons: Record<string, string> = {
-    log: 'pi pi-file text-base',
+    parse_failed: 'pi pi-exclamation-triangle text-base',
+    parse_complete: 'pi pi-check-circle text-base',
     system: 'pi pi-cog text-base',
-    achievement: 'pi pi-trophy text-base',
-    warning: 'pi pi-exclamation-triangle text-base'
   }
-  return icons[type] || 'pi pi-bell text-base'
+  return icons[sourceType || ''] || 'pi pi-bell text-base'
 }
 
-const getNotificationIconClass = (type: string) => {
+const getNotificationIconClass = (sourceType: string | null) => {
   const classes: Record<string, string> = {
-    log: 'bg-primary/10 text-primary',
+    parse_failed: 'bg-status-error/10 text-status-error',
+    parse_complete: 'bg-status-success/10 text-status-success',
     system: 'bg-secondary/10 text-secondary',
-    achievement: 'bg-rarity-legendary/10 text-rarity-legendary',
-    warning: 'bg-status-warning/10 text-status-warning'
   }
-  return classes[type] || 'bg-neutral-bg text-neutral-text-secondary'
+  return classes[sourceType || ''] || 'bg-neutral-bg text-neutral-text-secondary'
+}
+
+const formatTime = (timeStr: string | null) => {
+  if (!timeStr) return ''
+  const date = new Date(timeStr)
+  const now = new Date()
+  const diff = now.getTime() - date.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
+  if (minutes < 1) return '刚刚'
+  if (minutes < 60) return `${minutes}分钟前`
+  if (hours < 24) return `${hours}小时前`
+  if (days < 7) return `${days}天前`
+  return date.toLocaleDateString('zh-CN')
 }
 
 const handleClickOutside = (event: MouseEvent) => {
@@ -675,6 +700,12 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  if (isAuthenticated.value) {
+    loadUnreadCount()
+    // 每30秒刷新一次未读数
+    const interval = setInterval(loadUnreadCount, 30000)
+    onUnmounted(() => clearInterval(interval))
+  }
 })
 
 onUnmounted(() => {

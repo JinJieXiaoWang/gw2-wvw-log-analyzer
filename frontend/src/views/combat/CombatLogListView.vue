@@ -220,8 +220,8 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const totalRecords = ref(0)
 
-// 活跃的解析进度轮询器（用于组件卸载时清理，防止内存泄漏）
-const activePollIntervals = ref<Set<number>>(new Set())
+// 列表请求锁，防止并发重复请求
+let isFetchingLogs = false
 
 // 批量解析任务相关状态
 const batchTaskId = ref<number | null>(null)
@@ -233,9 +233,9 @@ const batchParseTotal = ref(0)
 const batchParseCompleted = ref(0)
 const batchParseFailed = ref(0)
 
-// 是否在批量解析中
+// 是否在批量解析中（提交后有10秒缓冲期显示解析中状态）
 const isBatchParsing = computed(() => {
-  return batchParseTotal.value > 0 && (batchParseCompleted.value + batchParseFailed.value) < batchParseTotal.value
+  return batchParseTotal.value > 0
 })
 
 // 解析进度列表（用于弹窗显示）
@@ -271,6 +271,8 @@ const logs = ref<LogFile[]>([])
  * API: GET /api/v1/logs
  */
 const fetchLogs = async (): Promise<void> => {
+  if (isFetchingLogs) return
+  isFetchingLogs = true
   isLoading.value = true
   try {
     const result = await ApiResponseWrapper.wrap(
@@ -319,6 +321,7 @@ const fetchLogs = async (): Promise<void> => {
     })
   } finally {
     isLoading.value = false
+    isFetchingLogs = false
   }
 }
 
@@ -448,7 +451,15 @@ const startBatchParse = async (): Promise<void> => {
       selectedLogs.value.forEach(log => {
         batchTaskLogNameMap.value.set(Number(log.id), log.fileName)
       })
-      // 不再轮询进度，用户自行刷新页面查看结果
+      // 10秒后自动清理批量解析状态，避免UI一直显示"解析中"
+      setTimeout(() => {
+        parseProgressMap.value.clear()
+        batchParseTotal.value = 0
+        batchParseCompleted.value = 0
+        batchParseFailed.value = 0
+        batchTaskId.value = null
+        batchTaskLogNameMap.value.clear()
+      }, 10000)
     }
   } else {
     // 请求失败后解除解析中状态并刷新列表恢复真实状态
@@ -468,49 +479,7 @@ const startBatchParse = async (): Promise<void> => {
   }
 }
 
-/**
- * 显示批量解析汇总提示
- */
-const showBatchParseSummaryToast = (): void => {
-  const success = batchParseCompleted.value
-  const failed = batchParseFailed.value
-  const total = batchParseTotal.value
 
-  if (total === 0) return
-
-  if (failed === 0) {
-    toast.add({
-      severity: 'success',
-      summary: '批量解析完成',
-      detail: `全部 ${success} 个日志解析成功`,
-      life: 5000
-    })
-  } else if (success === 0) {
-    toast.add({
-      severity: 'error',
-      summary: '批量解析失败',
-      detail: `全部 ${failed} 个日志解析失败，请检查日志格式`,
-      life: 5000
-    })
-  } else {
-    toast.add({
-      severity: 'warn',
-      summary: '批量解析完成',
-      detail: `${success} 个成功，${failed} 个失败`,
-      life: 5000
-    })
-  }
-
-  // 延迟清理进度追踪，让用户还能看到进度条
-  setTimeout(() => {
-    parseProgressMap.value.clear()
-    batchParseTotal.value = 0
-    batchParseCompleted.value = 0
-    batchParseFailed.value = 0
-    batchTaskId.value = null
-    batchTaskLogNameMap.value.clear()
-  }, 5000)
-}
 
 /**
  * 查看日志详情
@@ -526,11 +495,31 @@ const viewLogDetail = (log: LogFile): void => {
  * @param log 日志对象
  */
 const parseLog = async (log: LogFile): Promise<void> => {
-  // 设置解析中状态
+  const logId = Number(log.id)
+  const fileName = log.fileName
+
+  // 防重入：如果该日志已经在解析中（包括等待API响应期间），跳过
+  if (parseProgressMap.value.has(logId)) {
+    toast.add({
+      severity: 'warn',
+      summary: '解析中',
+      detail: `${fileName} 正在解析中，请勿重复操作`,
+      life: 3000
+    })
+    return
+  }
+
+  // 立即标记为解析中，防止API请求期间的重复点击
+  parseProgressMap.value.set(logId, {
+    logId,
+    fileName,
+    status: 'parsing',
+    progress: 0
+  })
   logTableRef.value?.setParsing(log.id, true)
 
   const result = await ApiResponseWrapper.wrap(
-    logsService.parseLog(Number(log.id)),
+    logsService.parseLog(logId),
     {
       showSuccessMessage: false,
       showErrorMessage: false
@@ -538,16 +527,16 @@ const parseLog = async (log: LogFile): Promise<void> => {
   )
 
   if (result.success) {
-    // 解析任务已提交到后台，开始轮询真实进度
+    // 解析任务已提交到后台，不再轮询，用户手动刷新查看结果
     toast.add({
       severity: 'info',
-      summary: '解析已启动',
-      detail: `${log.fileName} 解析任务已提交，正在后台处理...`,
+      summary: '解析已提交',
+      detail: `${fileName} 解析任务已提交，请稍后刷新页面查看结果`,
       life: 4000
     })
-    pollParseProgress(Number(log.id), log.fileName, false)
   } else {
-    // 立即失败的情况（请求被拒绝等）
+    // 立即失败：清除解析中标记
+    parseProgressMap.value.delete(logId)
     logTableRef.value?.setParsing(log.id, false)
     const errorMessage = result.error?.message || '解析失败，请重试'
     toast.add({
@@ -557,126 +546,6 @@ const parseLog = async (log: LogFile): Promise<void> => {
       life: 5000
     })
   }
-}
-
-/**
- * 轮询解析进度
- * @param logId 日志ID
- * @param fileName 文件名
- */
-const pollParseProgress = (logId: number, fileName: string, isBatch: boolean = false): void => {
-  let pollCount = 0
-  const maxPolls = 60 // 最多轮询2分钟（每2秒一次）
-
-  const intervalId = window.setInterval(async () => {
-    pollCount++
-
-    try {
-      const result = await ApiResponseWrapper.wrap(
-        logsService.getParseProgress(logId),
-        { showSuccessMessage: false, showErrorMessage: false }
-      )
-
-      if (result.success && result.data) {
-        const progressData = result.data as any
-        const status = progressData.status || progressData.parse_status
-        const progress = progressData.progress || 0
-
-        // 更新进度追踪
-        parseProgressMap.value.set(logId, {
-          logId,
-          fileName,
-          status: status === 'completed' ? 'completed' : status === 'failed' || status === 'error' ? 'failed' : 'parsing',
-          progress,
-          errorMessage: progressData.error_message
-        })
-
-        // 解析完成
-        if (status === 'completed' || progress >= 100) {
-          clearInterval(intervalId)
-          activePollIntervals.value.delete(intervalId)
-          logTableRef.value?.setParsing(String(logId), false)
-          batchParseCompleted.value++
-
-          // 批量模式下只在全部完成时汇总提示；单文件模式立即提示
-          if (!isBatch) {
-            toast.add({
-              severity: 'success',
-              summary: '解析完成',
-              detail: `${fileName} 解析成功`,
-              life: 4000
-            })
-          } else if (batchParseCompleted.value + batchParseFailed.value >= batchParseTotal.value) {
-            showBatchParseSummaryToast()
-          }
-          fetchLogs()
-          return
-        }
-
-        // 解析失败
-        if (status === 'failed' || status === 'error') {
-          clearInterval(intervalId)
-          activePollIntervals.value.delete(intervalId)
-          logTableRef.value?.setParsing(String(logId), false)
-          batchParseFailed.value++
-
-          if (!isBatch) {
-            toast.add({
-              severity: 'error',
-              summary: '解析失败',
-              detail: progressData.error_message || `${fileName} 解析失败`,
-              life: 5000
-            })
-          } else if (batchParseCompleted.value + batchParseFailed.value >= batchParseTotal.value) {
-            showBatchParseSummaryToast()
-          }
-          fetchLogs()
-          return
-        }
-
-        // 批量模式下不再逐文件显示进度toast，改为通过进度条展示
-        // 单文件模式每5次轮询（约10秒）更新一次提示
-        if (!isBatch && pollCount % 5 === 0) {
-          toast.add({
-            severity: 'info',
-            summary: '解析进行中',
-            detail: `${fileName} 解析进度: ${progress}%`,
-            life: 3000
-          })
-        }
-      }
-    } catch {
-      // 忽略轮询中的网络错误，继续轮询
-    }
-
-    // 超时保护
-    if (pollCount >= maxPolls) {
-      clearInterval(intervalId)
-      activePollIntervals.value.delete(intervalId)
-      logTableRef.value?.setParsing(String(logId), false)
-      batchParseFailed.value++
-      parseProgressMap.value.set(logId, {
-        logId,
-        fileName,
-        status: 'timeout',
-        progress: 0
-      })
-
-      if (!isBatch) {
-        toast.add({
-          severity: 'warn',
-          summary: '解析超时',
-          detail: `${fileName} 解析时间超过2分钟，请稍后刷新列表查看结果`,
-          life: 5000
-        })
-      } else if (batchParseCompleted.value + batchParseFailed.value >= batchParseTotal.value) {
-        showBatchParseSummaryToast()
-      }
-      fetchLogs()
-    }
-  }, 2000)
-
-  activePollIntervals.value.add(intervalId)
 }
 
 /**
@@ -733,8 +602,6 @@ const clearSelection = (): void => {
 // 生命周期清理
 // ============================================
 onUnmounted(() => {
-  // 清理所有活跃的解析进度轮询器，防止内存泄漏
-  activePollIntervals.value.forEach(id => clearInterval(id))
-  activePollIntervals.value.clear()
+  // 组件卸载时清理
 })
 </script>

@@ -70,6 +70,7 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import Select from 'primevue/select'
 import { dictionaryService, type DictOption } from '@/services/system/dictionaryService'
+import { useDictStore } from '@/store/system/dict'
 
 interface SelectOption {
   label: string
@@ -156,18 +157,43 @@ const innerValue = computed({
   }
 })
 
+const dictStore = useDictStore()
+
 /**
- * 加载字典选项
+ * 加载字典选项（优先从 Pinia Store 读取）
  */
 async function loadDictOptions() {
   if (!props.dictType || (props.options && props.options.length > 0)) {
     return
   }
 
+  // 优先从 Store 缓存读取
+  const cached = dictStore.getDict(props.dictType)
+  if (cached && cached.length > 0) {
+    dictOptions.value = cached.map((item) => ({
+      label: item.label,
+      value: item.value,
+      css_class: item.css_class || '',
+      is_default: item.is_default || 0,
+    }))
+    return
+  }
+
+  // Store 中没有，从 API 加载并存入 Store
   dictLoading.value = true
   try {
     const result = await dictionaryService.getOptions(props.dictType)
     dictOptions.value = result
+    // 同步到 Store
+    dictStore.setDict(
+      props.dictType,
+      result.map((o) => ({
+        label: o.label || '',
+        value: o.value || '',
+        css_class: o.css_class || '',
+        is_default: o.is_default || 0,
+      }))
+    )
   } catch (error) {
     console.error(`[DictSelect] 加载字典选项失败: ${props.dictType}`, error)
     dictOptions.value = []

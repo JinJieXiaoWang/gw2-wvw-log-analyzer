@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Optional
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
 from apscheduler.triggers.interval import IntervalTrigger
 
 from app.config.database import SessionLocal
@@ -17,6 +18,28 @@ from app.services.system.storage_service import (
     StorageMonitorService,
 )
 from app.utils.logger import logger
+
+
+async def scheduled_sync_skill_icons():
+    """定时同步技能图标（每周日凌晨 3:00）。"""
+    logger.info("执行定时技能图标同步...")
+    try:
+        import subprocess
+        import sys
+        from pathlib import Path
+        script_path = Path(__file__).resolve().parent.parent.parent / "scripts" / "sync_skill_icons.py"
+        result = subprocess.run(
+            [sys.executable, str(script_path)],
+            capture_output=True,
+            text=True,
+            timeout=3600,
+        )
+        if result.returncode == 0:
+            logger.info(f"技能图标同步成功:\n{result.stdout}")
+        else:
+            logger.error(f"技能图标同步失败:\n{result.stderr}")
+    except Exception as e:
+        logger.error(f"技能图标同步异常: {e}", exc_info=True)
 
 scheduler: Optional[AsyncIOScheduler] = None
 
@@ -89,6 +112,16 @@ def init_scheduler():
         replace_existing=True,
     )
     logger.info(f"已添加自动清理任务（每 {cleanup_interval} 小时执行）")
+
+    # 添加技能图标同步任务（每周日凌晨 3:00）
+    scheduler.add_job(
+        scheduled_sync_skill_icons,
+        trigger=CronTrigger(day_of_week="sun", hour=3, minute=0),
+        id="sync_skill_icons",
+        name="技能图标同步",
+        replace_existing=True,
+    )
+    logger.info("已添加技能图标同步任务（每周日凌晨 3:00）")
 
     return scheduler
 

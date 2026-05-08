@@ -211,7 +211,7 @@ def _from_zevtc_sync(db: Session, log_id: int) -> Optional[Dict[str, Any]]:
 
         # 组装技能映射
         skill_map = {
-            sk.skill_key: {"name": sk.name, "id": sk.gw2_skill_id} for sk in skills
+            sk.skill_key: {"name": sk.name, "id": sk.gw2_skill_id, "icon": sk.icon or ""} for sk in skills
         }
 
         return {
@@ -266,7 +266,7 @@ def _build_ei_player(p: EiPlayer, duration_ms: int) -> Dict[str, Any]:
         "dps": dps_data.get("dps", 0),
         "total_score": 0,  # ZEVTC 同步不计算评分
         "cc": 0,
-        "downs": defs_data.get("downCount", 0),
+        "downs": stats_data.get("downed", 0),
         "deaths": defs_data.get("deadCount", 0),
         "cleanses": sup_data.get("condiCleanse", 0),
         "strips": sup_data.get("boonStrips", 0),
@@ -352,8 +352,8 @@ def _build_ei_player(p: EiPlayer, duration_ms: int) -> Dict[str, Any]:
                 "blocked": 0,
                 "interrupts": stats_data.get("interrupts", 0),
                 "invulned": 0,
-                "killed": 0,
-                "downed": defs_data.get("downCount", 0),
+                "killed": stats_data.get("killed", 0),
+                "downed": stats_data.get("downed", 0),
                 "downContribution": 0,
                 "connectedPowerCount": 0,
                 "connectedPowerAbove90HPCount": 0,

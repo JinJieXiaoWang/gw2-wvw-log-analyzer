@@ -903,6 +903,8 @@ def init_db(force_recreate: bool = False) -> bool:
             _fix_auto_increment(engine)
             # 修复被覆盖的 server_default（MySQL）
             _fix_server_defaults(engine)
+            # 确保 scoring_rule 的唯一约束已升级（支持职业特定规则）
+            _ensure_scoring_rule_constraint(engine)
             
             _log_initialization_summary(stats)
 
@@ -1001,6 +1003,36 @@ def get_current_db_info() -> dict:
         "config": db_settings.get_config_summary(),
         "connected": test_connection(),
     }
+
+
+def _ensure_scoring_rule_constraint(engine):
+    """确保 scoring_rule 表的唯一约束已升级为支持职业特定规则
+    
+    创建新的唯一索引 uk_role_profession_dimension（如果不存在）。
+    对于已有数据（profession 为 NULL），新旧索引都兼容。
+    """
+    try:
+        with engine.begin() as conn:
+            # 检查新索引是否已存在
+            inspector = inspect(engine)
+            existing_indexes = {
+                idx["name"].lower()
+                for idx in inspector.get_indexes("scoring_rule")
+            }
+
+            if "uk_role_profession_dimension" in existing_indexes:
+                return
+
+            # 创建新的唯一索引
+            conn.execute(
+                text(
+                    "CREATE UNIQUE INDEX IF NOT EXISTS uk_role_profession_dimension "
+                    "ON scoring_rule (role_type, profession, dimension)"
+                )
+            )
+            logger.info("创建 scoring_rule 唯一索引: uk_role_profession_dimension")
+    except Exception as e:
+        logger.warning(f"升级 scoring_rule 约束失败: {e}")
 
 
 # 导出

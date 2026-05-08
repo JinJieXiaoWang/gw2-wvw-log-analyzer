@@ -15,23 +15,29 @@
       <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
         <i class="pi pi-info-circle text-primary" />
       </div>
-      <div>
+      <div class="flex-1 min-w-0">
         <p class="text-sm text-neutral-text">
           当前评分基于
           <span class="font-semibold text-primary">{{ currentRoleLabel }}</span>
           角色类型的评分规则计算
+          <Tag
+            v-if="currentRuleVersion > 0"
+            :value="'v' + currentRuleVersion"
+            severity="info"
+            class="text-[10px] ml-2"
+          />
         </p>
         <p class="text-xs text-neutral-text-secondary">
-          不同角色类型（输出/辅助/承伤）使用不同的评分维度和权重
+          不同角色类型（输出/辅助/承伤）使用不同的评分维度和权重，支持按职业配置独立规则
         </p>
       </div>
-       <Button
-            label="评分规则"
-            icon="pi pi-chart-line"
-            class="btn-ghost"
-            size="small"
-            @click="openScoringRulesDialog"
-          />
+      <Button
+        label="评分规则"
+        icon="pi pi-chart-line"
+        class="btn-ghost"
+        size="small"
+        @click="openScoringRulesDialog"
+      />
     </div>
 
     <!-- 统计卡片 -->
@@ -631,11 +637,17 @@
         <!-- 总评分卡片 -->
         <div class="card p-4 flex items-center justify-between">
           <div>
-            <p class="text-xs text-neutral-text-secondary mb-1">平均总分</p>
-            <p class="text-3xl font-bold text-primary">{{ scoreBreakdownData.avg_total_score }}</p>
+            <p class="text-xs text-neutral-text-secondary mb-1">
+              平均总分
+            </p>
+            <p class="text-3xl font-bold text-primary">
+              {{ scoreBreakdownData.avg_total_score }}
+            </p>
           </div>
           <div class="text-right">
-            <p class="text-xs text-neutral-text-secondary mb-1">等级</p>
+            <p class="text-xs text-neutral-text-secondary mb-1">
+              等级
+            </p>
             <span
               :class="{
                 'game-badge game-badge-legendary text-lg': scoreBreakdownData.avg_grade === 's',
@@ -648,8 +660,12 @@
             </span>
           </div>
           <div class="text-right">
-            <p class="text-xs text-neutral-text-secondary mb-1">统计场次</p>
-            <p class="text-xl font-semibold text-neutral-text">{{ scoreBreakdownData.total_fights }}</p>
+            <p class="text-xs text-neutral-text-secondary mb-1">
+              统计场次
+            </p>
+            <p class="text-xl font-semibold text-neutral-text">
+              {{ scoreBreakdownData.total_fights }}
+            </p>
           </div>
         </div>
 
@@ -693,97 +709,181 @@
       :draggable="false"
       class="scoring-rules-dialog"
     >
-      <div v-if="scoringRulesLoading" class="flex items-center justify-center py-12">
-        <ProgressSpinner style="width: 40px; height: 40px" stroke-width="4" />
+      <div
+        v-if="scoringRulesLoading"
+        class="flex items-center justify-center py-12"
+      >
+        <ProgressSpinner
+          style="width: 40px; height: 40px"
+          stroke-width="4"
+        />
       </div>
       <div v-else>
         <TabView v-model:active-index="scoringRulesActiveTab">
-          <TabPanel header="输出" value="0">
+          <TabPanel
+            header="输出"
+            value="0"
+          >
             <div class="space-y-3">
-              <div v-if="scoringRulesData.dps?.rules?.length" class="text-xs text-neutral-text-secondary mb-2">
+              <div
+                v-if="scoringRulesData.dps?.rules?.length"
+                class="text-xs text-neutral-text-secondary mb-2"
+              >
                 共 {{ scoringRulesData.dps.rules.length }} 个评分维度
               </div>
-              <div v-for="rule in (scoringRulesData.dps?.rules || [])" :key="rule.id || rule.dimension"
-                class="card p-3 rounded-lg border border-neutral-border/40" :class="rule.is_active ? '' : 'opacity-50'">
+              <div
+                v-for="rule in (scoringRulesData.dps?.rules || [])"
+                :key="rule.id || rule.dimension"
+                class="card p-3 rounded-lg border border-neutral-border/40"
+                :class="rule.is_active ? '' : 'opacity-50'"
+              >
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <span class="text-sm font-semibold text-neutral-text">{{ rule.dimension }}</span>
-                      <Tag v-if="!rule.is_active" value="已禁用" severity="secondary" class="text-[10px] px-1 py-0" />
+                      <Tag
+                        v-if="!rule.is_active"
+                        value="已禁用"
+                        severity="secondary"
+                        class="text-[10px] px-1 py-0"
+                      />
                     </div>
-                    <p v-if="rule.description" class="text-xs text-neutral-text-secondary truncate">{{ rule.description }}</p>
+                    <p
+                      v-if="rule.description"
+                      class="text-xs text-neutral-text-secondary truncate"
+                    >
+                      {{ rule.description }}
+                    </p>
                   </div>
                   <div class="flex items-center gap-3 shrink-0">
                     <span class="text-lg font-bold text-primary">{{ (rule.weight * 100).toFixed(0) }}%</span>
                     <div class="w-24">
                       <div class="h-2 rounded-full bg-neutral-bg overflow-hidden">
-                        <div class="h-full rounded-full bg-primary transition-all" :style="{ width: Math.min(rule.weight * 100, 100) + '%' }" />
+                        <div
+                          class="h-full rounded-full bg-primary transition-all"
+                          :style="{ width: Math.min(rule.weight * 100, 100) + '%' }"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-if="!scoringRulesData.dps?.rules?.length" class="text-center py-8 text-neutral-text-secondary text-sm">
+              <div
+                v-if="!scoringRulesData.dps?.rules?.length"
+                class="text-center py-8 text-neutral-text-secondary text-sm"
+              >
                 <i class="pi pi-info-circle text-lg mb-2 block" />暂无输出角色的评分规则
               </div>
             </div>
           </TabPanel>
-          <TabPanel header="辅助" value="1">
+          <TabPanel
+            header="辅助"
+            value="1"
+          >
             <div class="space-y-3">
-              <div v-if="scoringRulesData.support?.rules?.length" class="text-xs text-neutral-text-secondary mb-2">
+              <div
+                v-if="scoringRulesData.support?.rules?.length"
+                class="text-xs text-neutral-text-secondary mb-2"
+              >
                 共 {{ scoringRulesData.support.rules.length }} 个评分维度
               </div>
-              <div v-for="rule in (scoringRulesData.support?.rules || [])" :key="rule.id || rule.dimension"
-                class="card p-3 rounded-lg border border-neutral-border/40" :class="rule.is_active ? '' : 'opacity-50'">
+              <div
+                v-for="rule in (scoringRulesData.support?.rules || [])"
+                :key="rule.id || rule.dimension"
+                class="card p-3 rounded-lg border border-neutral-border/40"
+                :class="rule.is_active ? '' : 'opacity-50'"
+              >
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <span class="text-sm font-semibold text-neutral-text">{{ rule.dimension }}</span>
-                      <Tag v-if="!rule.is_active" value="已禁用" severity="secondary" class="text-[10px] px-1 py-0" />
+                      <Tag
+                        v-if="!rule.is_active"
+                        value="已禁用"
+                        severity="secondary"
+                        class="text-[10px] px-1 py-0"
+                      />
                     </div>
-                    <p v-if="rule.description" class="text-xs text-neutral-text-secondary truncate">{{ rule.description }}</p>
+                    <p
+                      v-if="rule.description"
+                      class="text-xs text-neutral-text-secondary truncate"
+                    >
+                      {{ rule.description }}
+                    </p>
                   </div>
                   <div class="flex items-center gap-3 shrink-0">
                     <span class="text-lg font-bold text-primary">{{ (rule.weight * 100).toFixed(0) }}%</span>
                     <div class="w-24">
                       <div class="h-2 rounded-full bg-neutral-bg overflow-hidden">
-                        <div class="h-full rounded-full bg-primary transition-all" :style="{ width: Math.min(rule.weight * 100, 100) + '%' }" />
+                        <div
+                          class="h-full rounded-full bg-primary transition-all"
+                          :style="{ width: Math.min(rule.weight * 100, 100) + '%' }"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-if="!scoringRulesData.support?.rules?.length" class="text-center py-8 text-neutral-text-secondary text-sm">
+              <div
+                v-if="!scoringRulesData.support?.rules?.length"
+                class="text-center py-8 text-neutral-text-secondary text-sm"
+              >
                 <i class="pi pi-info-circle text-lg mb-2 block" />暂无辅助角色的评分规则
               </div>
             </div>
           </TabPanel>
-          <TabPanel header="承伤" value="2">
+          <TabPanel
+            header="承伤"
+            value="2"
+          >
             <div class="space-y-3">
-              <div v-if="scoringRulesData.tank?.rules?.length" class="text-xs text-neutral-text-secondary mb-2">
+              <div
+                v-if="scoringRulesData.tank?.rules?.length"
+                class="text-xs text-neutral-text-secondary mb-2"
+              >
                 共 {{ scoringRulesData.tank.rules.length }} 个评分维度
               </div>
-              <div v-for="rule in (scoringRulesData.tank?.rules || [])" :key="rule.id || rule.dimension"
-                class="card p-3 rounded-lg border border-neutral-border/40" :class="rule.is_active ? '' : 'opacity-50'">
+              <div
+                v-for="rule in (scoringRulesData.tank?.rules || [])"
+                :key="rule.id || rule.dimension"
+                class="card p-3 rounded-lg border border-neutral-border/40"
+                :class="rule.is_active ? '' : 'opacity-50'"
+              >
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-2 mb-1">
                       <span class="text-sm font-semibold text-neutral-text">{{ rule.dimension }}</span>
-                      <Tag v-if="!rule.is_active" value="已禁用" severity="secondary" class="text-[10px] px-1 py-0" />
+                      <Tag
+                        v-if="!rule.is_active"
+                        value="已禁用"
+                        severity="secondary"
+                        class="text-[10px] px-1 py-0"
+                      />
                     </div>
-                    <p v-if="rule.description" class="text-xs text-neutral-text-secondary truncate">{{ rule.description }}</p>
+                    <p
+                      v-if="rule.description"
+                      class="text-xs text-neutral-text-secondary truncate"
+                    >
+                      {{ rule.description }}
+                    </p>
                   </div>
                   <div class="flex items-center gap-3 shrink-0">
                     <span class="text-lg font-bold text-primary">{{ (rule.weight * 100).toFixed(0) }}%</span>
                     <div class="w-24">
                       <div class="h-2 rounded-full bg-neutral-bg overflow-hidden">
-                        <div class="h-full rounded-full bg-primary transition-all" :style="{ width: Math.min(rule.weight * 100, 100) + '%' }" />
+                        <div
+                          class="h-full rounded-full bg-primary transition-all"
+                          :style="{ width: Math.min(rule.weight * 100, 100) + '%' }"
+                        />
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div v-if="!scoringRulesData.tank?.rules?.length" class="text-center py-8 text-neutral-text-secondary text-sm">
+              <div
+                v-if="!scoringRulesData.tank?.rules?.length"
+                class="text-center py-8 text-neutral-text-secondary text-sm"
+              >
                 <i class="pi pi-info-circle text-lg mb-2 block" />暂无承伤角色的评分规则
               </div>
             </div>
@@ -792,15 +892,59 @@
 
         <!-- 评分等级说明 -->
         <div class="mt-4 pt-4 border-t border-neutral-border/30">
-          <p class="text-xs text-neutral-text-secondary mb-2">评分等级说明</p>
+          <p class="text-xs text-neutral-text-secondary mb-2">
+            评分等级说明
+          </p>
           <div class="flex flex-wrap gap-2">
-            <Tag value="S 级 (≥90)" severity="success" class="text-[10px]" />
-            <Tag value="A 级 (≥80)" severity="info" class="text-[10px]" />
-            <Tag value="B 级 (≥70)" severity="warn" class="text-[10px]" />
-            <Tag value="C 级 (≥60)" severity="secondary" class="text-[10px]" />
-            <Tag value="D 级 (≥40)" severity="danger" class="text-[10px]" />
-            <Tag value="F 级 (<40)" severity="danger" class="text-[10px]" />
+            <Tag
+              value="S 级 (≥90)"
+              severity="success"
+              class="text-[10px]"
+            />
+            <Tag
+              value="A 级 (≥80)"
+              severity="info"
+              class="text-[10px]"
+            />
+            <Tag
+              value="B 级 (≥70)"
+              severity="warn"
+              class="text-[10px]"
+            />
+            <Tag
+              value="C 级 (≥60)"
+              severity="secondary"
+              class="text-[10px]"
+            />
+            <Tag
+              value="D 级 (≥40)"
+              severity="danger"
+              class="text-[10px]"
+            />
+            <Tag
+              value="F 级 (<40)"
+              severity="danger"
+              class="text-[10px]"
+            />
           </div>
+        </div>
+
+        <!-- v3.0 新增：版本信息 + 管理入口 -->
+        <div class="mt-4 pt-4 border-t border-neutral-border/30 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="pi pi-tag text-xs text-neutral-text-secondary" />
+            <span class="text-xs text-neutral-text-secondary">
+              当前规则版本: <span class="font-semibold text-primary">v{{ currentRuleVersion }}</span>
+            </span>
+          </div>
+          <Button
+            label="前往管理"
+            icon="pi pi-external-link"
+            size="small"
+            text
+            class="text-xs"
+            @click="$router.push('/scoring-rules')"
+          />
         </div>
       </div>
     </Dialog>
@@ -859,6 +1003,21 @@ const currentRoleLabel = computed(() => {
   const map: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
   return map[currentRoleType.value] || '输出'
 })
+
+// v3.0 新增：当前评分规则版本
+const currentRuleVersion = ref(0)
+
+/** 获取当前评分规则版本 */
+const fetchCurrentRuleVersion = async () => {
+  try {
+    const versions = await scoringRulesService.getVersions(0, 1)
+    if (versions && versions.length > 0) {
+      currentRuleVersion.value = versions[0].version
+    }
+  } catch (e) {
+    console.error('获取评分规则版本失败', e)
+  }
+}
 
 // 评分维度按加权得分降序排列
 const sortedDimensions = computed(() => {
@@ -1200,6 +1359,7 @@ const formatDuration = (seconds: number | string | undefined): string => {
 onMounted(() => {
   fetchFilters()
   fetchAccounts()
+  fetchCurrentRuleVersion()
 })
 </script>
 

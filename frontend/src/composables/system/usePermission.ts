@@ -159,6 +159,17 @@ class AuthStore {
         
         this.saveToStorage()
 
+        // 登录成功后预加载常用字典到 Pinia Store（异步，不阻塞登录流程）
+        try {
+          const { useDictStore } = await import('@/store/system/dict')
+          const dictStore = useDictStore()
+          dictStore.preloadCommonDicts().catch((e: any) => {
+            console.warn('[AuthStore] 预加载字典失败:', e)
+          })
+        } catch (e) {
+          console.warn('[AuthStore] 字典 Store 加载失败:', e)
+        }
+
         return {
           success: true,
           message: result.message || '登录成功'
@@ -348,6 +359,13 @@ class AuthStore {
   }
 
   /**
+   * 检查是否具有指定角色
+   */
+  public hasRole(role: Role): boolean {
+    return this.currentRole === role
+  }
+
+  /**
    * 验证密码强度
    */
   public validatePassword(password: string): { valid: boolean; errors: string[] } {
@@ -423,6 +441,7 @@ export function usePermission() {
   const isOperator = computed(() => authStore.currentRole === 'operator')
   const isSuperAdmin = computed(() => authStore.currentRole === 'super_admin')
   const isAuthenticated = computed(() => authStore.isAuthenticated)
+  const isAdmin = computed(() => authStore.isAuthenticated && authStore.currentRole !== 'guest')
 
   return {
     can,
@@ -432,6 +451,7 @@ export function usePermission() {
     isOperator,
     isSuperAdmin,
     isAuthenticated,
+    isAdmin,
     user: computed(() => authStore.currentUser),
     permissions: computed(() => authStore.permissions)
   }

@@ -36,7 +36,6 @@ from app.config.status_codes import (
     HTTP_404_NOT_FOUND,
     HTTP_500_INTERNAL_SERVER_ERROR,
 )
-from app.core.zevtc.parser import ZevtcParseError
 from app.models.log import Log
 from app.models.sys_user import SysUser
 from app.routers.auth import get_current_admin
@@ -492,15 +491,16 @@ async def parse_log(
         "start_time": datetime.now().isoformat(),
     }
 
-    # 启动后台解析任务（带overwrite参数）
-    background_tasks.add_task(parse_log_background, log_id, db.bind.url, overwrite)
+    # 启动后台解析任务（带overwrite参数和当前用户ID）
+    background_tasks.add_task(parse_log_background, log_id, db.bind.url, overwrite, current_admin.id)
 
     return ApiResponse(success=True, message="开始解析日志", data={"log_id": log_id})
 
 
-def _do_parse_log(log_id: int, db_url: str, overwrite: bool = True):
+def _do_parse_log(log_id: int, db_url: str, overwrite: bool = True, user_id: int = 0):
     """实际执行解析（供信号量包装调用）"""
     from app.config.database import SessionLocal
+    from app.services.system.notice_service import NoticeService
 
     db = SessionLocal()
 
@@ -540,17 +540,18 @@ def _do_parse_log(log_id: int, db_url: str, overwrite: bool = True):
             logger.error(
                 f"日志解析失败，日志ID: {log_id}, 原因: {import_result['error']}"
             )
+            # 解析失败时创建全局通知（所有人可见）
+            NoticeService.create_notice(
+                db=db,
+                title=f"日志解析失败: {log.filename}",
+                content=f"文件 {log.filename} (ID: {log_id}) 解析失败，原因: {import_result['error']}，请尝试重新解析。",
+                notice_type="1",
+                source_type="parse_failed",
+                source_id=str(log_id),
+                create_by=str(user_id) if user_id else "system",
+            )
+            db.commit()
 
-    except ZevtcParseError as e:
-        logger.error(f"解析失败: {e}")
-        try:
-            db.rollback()
-        except Exception:
-            pass
-        log_service.update_parse_status(db, log_id, "failed", str(e))
-        if log_id in parse_progress_store:
-            parse_progress_store[log_id]["errors"].append(str(e))
-            parse_progress_store[log_id]["stage"] = "错误"
     except Exception as e:
         logger.error(f"解析异常: {e}")
         try:
@@ -561,15 +562,31 @@ def _do_parse_log(log_id: int, db_url: str, overwrite: bool = True):
         if log_id in parse_progress_store:
             parse_progress_store[log_id]["errors"].append(str(e))
             parse_progress_store[log_id]["stage"] = "错误"
+        # 异常时也创建通知
+        try:
+            log = log_service.get_log_by_id(db, log_id)
+            if log:
+                NoticeService.create_notice(
+                    db=db,
+                    title=f"日志解析异常: {log.filename}",
+                    content=f"文件 {log.filename} (ID: {log_id}) 解析过程中发生异常: {str(e)}，请尝试重新解析。",
+                    notice_type="1",
+                    source_type="parse_failed",
+                    source_id=str(log_id),
+                    create_by=str(user_id) if user_id else "system",
+                )
+                db.commit()
+        except Exception:
+            pass
     finally:
         db.close()
 
 
-async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True):
+async def parse_log_background(log_id: int, db_url: str, overwrite: bool = True, user_id: int = 0):
     """后台解析任务（带全局并发限制，防止服务器卡死）"""
     # 使用信号量限制全局并发数，超过限制则排队等待
     with _parse_semaphore:
-        _do_parse_log(log_id, db_url, overwrite)
+        _do_parse_log(log_id, db_url, overwrite, user_id)
 
 
 @router.get(

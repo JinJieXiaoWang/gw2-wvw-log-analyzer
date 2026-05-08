@@ -47,6 +47,7 @@ export interface EiAnalysisPlayer {
   swap_count: number
   // 击杀/控制
   killed: number
+  downed: number
   down_count: number
   dead_count: number
   // 防御/生存
@@ -54,6 +55,8 @@ export interface EiAnalysisPlayer {
   blocked_count: number
   evaded_count: number
   dodge_count: number
+  downed_damage_taken: number
+  interrupted_count: number
   // 支援
   boon_strips: number
   condition_cleanses: number
@@ -61,6 +64,7 @@ export interface EiAnalysisPlayer {
   condi_cleanse_ally: number
   boon_strips_ally: number
   healing: number
+  stun_break: number
   // Buff 覆盖率
   might_uptime: number
   fury_uptime: number
@@ -68,6 +72,23 @@ export interface EiAnalysisPlayer {
   alacrity_uptime: number
   protection_uptime: number
   stability_uptime: number
+  // 技能效率与位置
+  wasted: number
+  saved: number
+  skill_cast_uptime: number
+  stack_dist: number
+  dist_to_com: number
+  // 倒地/死亡详情
+  down_duration: number
+  dead_duration: number
+  dc_count: number
+  dc_duration: number
+  // CC 输出与控制
+  applied_cc_count: number
+  applied_cc_duration: number
+  received_cc_duration: number
+  down_contribution: number
+  against_downed_damage: number
   // AI 评分
   ai_score: number
   score_grade: string
@@ -81,10 +102,10 @@ export interface EiAnalysisAggregate {
   total_condi_damage: number
   total_breakbar_damage: number
   total_damage_taken: number
-  total_healing: number
   total_kills: number
   total_deaths: number
   total_downs: number
+  total_downed: number
   total_boon_strips: number
   total_condition_cleanses: number
   total_resurrects: number

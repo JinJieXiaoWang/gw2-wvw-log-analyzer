@@ -543,6 +543,7 @@ import { useToast } from 'primevue/usetoast'
 import { useDictTypes } from '@/composables/core/useDictMapping'
 import { dictionaryService, type DictType, type DictData } from '@/services/system/dictionaryService'
 import { usePermission } from '@/composables/system/usePermission'
+import { useDictStore } from '@/store/system/dict'
 import ColorPickerInput from '@/components/common/ColorPickerInput.vue'
 
 // =============================================
@@ -550,6 +551,9 @@ import ColorPickerInput from '@/components/common/ColorPickerInput.vue'
 // =============================================
 const { isAuthenticated } = usePermission()
 const isAdmin = computed(() => isAuthenticated.value)
+
+// Pinia 字典 Store，操作成功后自动刷新前端缓存
+const dictStore = useDictStore()
 
 // =============================================
 // Toast & Confirm
@@ -825,6 +829,8 @@ async function saveType() {
     }
 
     showTypeDialog.value = false
+    // 字典分类变更可能影响所有字典，清空全部前端缓存
+    dictStore.cleanDict()
     await refreshTypes()
   } catch (error) {
     console.error('[DictionaryManagement] 保存字典分类失败', error)
@@ -854,7 +860,9 @@ function confirmDelete(data: DictData) {
           detail: '字典项已删除',
           life: 3000
         })
+        // 清除该字典类型的前端缓存
         if (selectedDictType.value) {
+          dictStore.removeDict(selectedDictType.value.dict_type)
           await loadDictDataByType(selectedDictType.value.dict_type)
         }
       } catch (error) {
@@ -881,6 +889,8 @@ async function handleReloadCache() {
         detail: '字典缓存已刷新',
         life: 3000
       })
+      // 清空前端字典 Store 缓存
+      dictStore.cleanDict()
       await refreshTypes()
     }
   } catch (error) {
@@ -908,6 +918,8 @@ async function handleInit() {
         life: 3000
       })
       showInitDialog.value = false
+      // 初始化后所有字典数据可能变更，清空全部前端缓存
+      dictStore.cleanDict()
       await refreshTypes()
     }
   } catch (error) {

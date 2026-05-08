@@ -17,14 +17,14 @@
         </div>
         <div class="flex gap-3">
           <Button
-            v-permission="'admin'"
+            v-permission="'upload'"
             label="上传日志"
             icon="pi pi-upload"
             class="btn-game"
             @click="showUploadDialog"
           />
           <Button
-            v-permission="'admin'"
+            v-permission="'write'"
             label="批量解析"
             icon="pi pi-play"
             class="btn-game"

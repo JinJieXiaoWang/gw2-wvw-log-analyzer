@@ -22,9 +22,9 @@
       <!-- 设置详情 -->
       <div class="lg:col-span-3 min-h-[400px]">
         <transition
+          :key="activeSection"
           name="setting-section"
           mode="out-in"
-          :key="activeSection"
           appear
         >
           <!-- 账号设置 -->

@@ -345,7 +345,8 @@ const handleLogin = async () => {
         if (progressInterval) {
           clearInterval(progressInterval)
         }
-        router.push('/')
+        // 触发登录成功事件，由 main.ts 处理重定向
+        window.dispatchEvent(new CustomEvent('auth:login'))
       }, 1000)
     } else {
       loginError.value = result.message

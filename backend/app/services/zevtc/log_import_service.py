@@ -4,24 +4,22 @@
 # 创建日期：2026-04-27
 # 更新日期：2026-05-04
 # 说明：
-#   1. 解析 zevtc 文件（使用 EnhancedZevtcParser）
-#   2. 【优化】优先使用 dps.report API 获取高质量 EI JSON 数据
-#   3. 【优化】数据验证：确保关键字段的存在和有效性
-#   4. 【优化】字段映射：统一不同数据源的字段名
-#   5. 写入 fights (1 行) + fight_stats (~50 行) + members（更新或插入）
-#   6. 重要：不自动删除源文件，保留用户重新解析的可能性
-#   7. 用户确认数据正确后，可调用 cleanup_file() 或 cleanup_files_batch() 删除文件
+#   1. 使用 dps.report API 获取高质量 EI JSON 数据
+#   2. 数据验证：确保关键字段的存在和有效性
+#   3. 字段映射：统一不同数据源的字段名
+#   4. 写入 fights (1 行) + fight_stats (~50 行) + members（更新或插入）
+#   5. 重要：不自动删除源文件，保留用户重新解析的可能性
+#   6. 用户确认数据正确后，可调用 cleanup_file() 或 cleanup_files_batch() 删除文件
 
 import gc
 import os
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 
 from sqlalchemy import tuple_
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.core.zevtc.parser import EnhancedZevtcParser, ZevtcParseError
 from app.services.system.dps_report_service import (
     DpsReportError,
     DpsReportTimeoutError,
@@ -57,23 +55,12 @@ class LogImportService:
         self.db = db
 
     @staticmethod
-    def _resolve_commander_tag(ei_player: Dict, local_player, data_source: str = "local_parser") -> bool:
-        """统一解析指挥官标记，明确数据源优先级，避免 isCommander/hasCommanderTag 冲突。
-
-        优先级：
-        1. dps_report 数据源且 EI JSON 显式包含 isCommander 字段 -> 使用 isCommander
-        2. EI JSON 显式包含 hasCommanderTag 字段 -> 使用 hasCommanderTag
-        3. EI JSON 显式包含 isCommander 字段 -> 使用 isCommander
-        4. 本地解析器 player_stats.has_commander_tag -> fallback
-        """
-        if data_source == "dps_report" and "isCommander" in ei_player:
-            return bool(ei_player["isCommander"])
+    def _resolve_commander_tag(ei_player: Dict) -> bool:
+        """从 EI JSON 解析指挥官标记。"""
         if "hasCommanderTag" in ei_player:
             return bool(ei_player["hasCommanderTag"])
         if "isCommander" in ei_player:
             return bool(ei_player["isCommander"])
-        if hasattr(local_player, "has_commander_tag"):
-            return bool(local_player.has_commander_tag)
         return False
 
     @staticmethod
@@ -144,58 +131,33 @@ class LogImportService:
 
         return 0
 
-    def import_log(
-        self, log_id: int, file_path: str, allow_fallback: bool = True
-    ) -> Dict[str, Any]:
-        """【优化后】主入口：导入单个日志文件。
-        
-        优化流程：
-        1. 获取数据（优先 dps.report API，fallback 本地解析器）
-        2. 数据验证（确保关键字段有效性）
-        3. 字段映射（统一不同数据源的字段名）
-        4. 数据转换（类型标准化）
-        5. 数据库存储（事务处理）
-        
-        Args:
-            allow_fallback: 当 dps.report API 失败时是否回退到本地解析器。
-                           Batch 解析时应设为 False，确保 429 等错误能被上层重试。
+    def import_log(self, log_id: int, file_path: str) -> Dict[str, Any]:
+        """主入口：导入单个日志文件（完全依赖 dps.report API）。
+
+        流程：
+        1. 调用 dps.report API 获取 EI JSON
+        2. 数据验证
+        3. 字段映射
+        4. 数据库存储
         """
         if not os.path.exists(file_path):
             return {"success": False, "error": f"文件不存在: {file_path}"}
 
         try:
             # =============================================
-            # 步骤 1: 获取数据（优先 dps.report API，超时/失败才 fallback 本地解析）
+            # 步骤 1: 调用 dps.report API
             # =============================================
-            parser: Optional[EnhancedZevtcParser] = None
-            local_ei_json: Optional[Dict] = None
-            ei_json: Optional[Dict] = None
-            data_source: Optional[str] = None
-            dps_result: Optional[Dict] = None
-
-            try:
-                dps_result = upload_and_parse(file_path)
-                ei_json = dps_result["ei_json"]
-                data_source = "dps_report"
-                logger.info(
-                    f"[import] dps.report 解析成功，直接使用高质量 EI JSON 数据，"
-                    f"跳过本地解析器以节省内存"
-                )
-            except (DpsReportTimeoutError, DpsReportError) as e:
-                # dps.report 超时/失败，fallback 到本地解析
-                logger.warning(
-                    f"[import] dps.report 失败: {e}，fallback 到本地解析"
-                )
-                parser = EnhancedZevtcParser(file_path)
-                local_ei_json = parser.parse()
-                ei_json = local_ei_json
-                data_source = "local_parser"
-                gc.collect()
+            dps_result = upload_and_parse(file_path)
+            # 【内存优化】pop 出 ei_json，让 dps_result 提前释放引用
+            ei_json = dps_result.pop("ei_json", {})
+            permalink = dps_result.pop("permalink", None)
+            del dps_result
+            logger.info("[import] dps.report 解析成功")
 
             # =============================================
-            # 步骤 2: 数据验证（宽松策略 + fallback）
+            # 步骤 2: 数据验证
             # =============================================
-            logger.info(f"[import] 开始验证数据（来源: {data_source}）")
+            logger.info("[import] 开始验证数据")
             valid_players, valid_encounter, errors, warnings = EIJsonValidator.validate_ei_json(ei_json)
 
             if errors:
@@ -203,32 +165,13 @@ class LogImportService:
             if warnings:
                 logger.info(f"[import] 数据验证发现 {len(warnings)} 个警告: {warnings}")
 
-            # 如果使用 dps.report 数据但验证失败，fallback 到本地解析器
-            if data_source == "dps_report" and not valid_players:
-                logger.warning("[import] dps.report 数据验证失败，fallback 到本地解析器")
-                if parser is None:
-                    parser = EnhancedZevtcParser(file_path)
-                    local_ei_json = parser.parse()
-                ei_json = local_ei_json
-                data_source = "local_parser"
-                # 重新验证本地解析器数据
-                valid_players, valid_encounter, errors, warnings = EIJsonValidator.validate_ei_json(ei_json)
-                if errors:
-                    logger.warning(f"[import] 本地解析器数据验证发现 {len(errors)} 个错误: {errors}")
-                if warnings:
-                    logger.info(f"[import] 本地解析器数据验证发现 {len(warnings)} 个警告: {warnings}")
-
-            # 即使没有 valid_players 也继续处理
             if not valid_players:
                 logger.warning("[import] 没有通过验证的玩家数据，但将继续处理")
 
-            logger.info(f"[import] 数据验证完成，有效玩家数: {len(valid_players)}, 数据来源: {data_source}")
+            logger.info(f"[import] 数据验证完成，有效玩家数: {len(valid_players)}")
 
             # =============================================
-            # 【优化】步骤 2.5: 立即丢弃不需要的大字段，降低内存峰值
-            # EI JSON 中 phases（战斗阶段详细数据）和 mechanics（机制数据）
-            # 通常占总体积的 50% 以上，但我们的代码完全不需要它们。
-            # 在提取标量数据之前丢弃，避免这些大字段一直驻留内存。
+            # 步骤 2.5: 丢弃不需要的大字段，降低内存峰值
             # =============================================
             dropped_fields = []
             for big_field in ("phases", "mechanics", "combatReplayData"):
@@ -239,16 +182,21 @@ class LogImportService:
                 logger.info(f"[import] 已丢弃 EI JSON 大字段: {dropped_fields}，降低内存峰值")
 
             # =============================================
-            # 步骤 3: 提取标量数据（保留原有逻辑，增强验证）
+            # 步骤 3: 提取标量数据
             # =============================================
-            fight_data = self._extract_fight_data(parser, ei_json)
-            player_stats = self._extract_player_stats(parser, ei_json, data_source)
+            fight_data = self._extract_fight_data(ei_json)
+            player_stats = self._extract_player_stats(ei_json)
 
             # =============================================
             # 步骤 4: 写入数据库
             # =============================================
             fight = self._insert_fight(log_id, fight_data)
             self._insert_players(fight.id, player_stats)
+
+            # 【内存优化】player_stats 和 fight_data 已用完，立即释放
+            players_count = len(player_stats)
+            del player_stats, fight_data
+            gc.collect()
 
             # =============================================
             # 步骤 5: 更新 Log 状态
@@ -257,35 +205,33 @@ class LogImportService:
             if log:
                 log.parse_status = "completed"
                 log.parsed_at = datetime.now(timezone.utc)
-                # dps.report 成功时从 EI JSON 获取 duration，本地解析时从 parser 获取
-                if parser is not None:
-                    log.parse_time_ms = parser.meta.duration_ms
-                else:
-                    log.parse_time_ms = ei_json.get("durationMS", 0)
-                log.parser = "dps_report_ei_v1" if data_source == "dps_report" else "enhanced_zevtc_v2"
+                log.parse_time_ms = ei_json.get("durationMS", 0)
+                log.parser = "dps_report_ei_v1"
                 log.parsed_data = None
-                if dps_result and dps_result.get("permalink"):
-                    log.dps_report_permalink = dps_result.get("permalink")
+                if permalink:
+                    log.dps_report_permalink = permalink
                 self.db.flush()
 
             # =============================================
             # 步骤 6: 同步 EI Player 数据
             # =============================================
-            self._insert_ei_players(log_id, ei_json, data_source)
-            # 释放已处理的大块 JSON 数据，降低内存峰值
+            self._insert_ei_players(log_id, ei_json)
             ei_json.pop("players", None)
             ei_json.pop("deathRecap", None)
+            gc.collect()
 
             self._insert_skill_maps(log_id, ei_json)
             ei_json.pop("skillMap", None)
 
             self._insert_targets(log_id, ei_json)
             ei_json.pop("targets", None)
+            gc.collect()
 
             # =============================================
             # 步骤 7: 数据完整性验证
             # =============================================
-            integrity_issues = self._validate_data_integrity(fight.id, log_id, player_stats, ei_json)
+            # 【v4.0】player_stats 已释放，完整性验证简化为数据库查询对比
+            integrity_issues = self._validate_data_integrity(fight.id, log_id)
             if integrity_issues:
                 logger.warning(f"[import] 数据完整性检查发现 {len(integrity_issues)} 个问题: {integrity_issues}")
 
@@ -295,33 +241,23 @@ class LogImportService:
             self.db.commit()
 
             # =============================================
-            # 步骤 9: 重要：保留源文件，不自动删除
+            # 步骤 9: 保留源文件，不自动删除
             # =============================================
-
-            # 先保存返回值，再释放大对象引用
-            players_count = len(player_stats)
             result = {
                 "success": True,
                 "fight_id": fight.id,
                 "players_count": players_count,
                 "map_name": fight.map_name,
                 "duration_sec": fight.duration_sec,
-                "data_source": data_source,
+                "data_source": "dps_report",
                 "validation_errors": errors,
                 "validation_warnings": warnings,
                 "integrity_issues": integrity_issues,
             }
-            del ei_json, dps_result, parser, local_ei_json, player_stats, fight_data
+            del ei_json
             gc.collect()
             return result
 
-        except ZevtcParseError as e:
-            logger.error(f"解析日志失败 log_id={log_id}: {e.message}", exc_info=True)
-            try:
-                self.db.rollback()
-            except Exception:
-                pass
-            return {"success": False, "error": e.message}
         except Exception as e:
             logger.error(f"导入日志失败 log_id={log_id}: {e}", exc_info=True)
             try:
@@ -330,31 +266,13 @@ class LogImportService:
                 pass
             return {"success": False, "error": str(e)}
 
-    def _extract_fight_data(
-        self, parser: Optional[EnhancedZevtcParser], ei_json: Dict
-    ) -> Dict[str, Any]:
-        """提取战斗级标量数据。
-
-        支持两种模式：
-        1. dps.report 成功（parser=None）：所有数据从 EI JSON 中提取
-        2. 本地解析（parser!=None）：优先使用 EI JSON，部分字段 fallback 到 parser
-        """
-        # 优先从 EI JSON 获取 duration（dps.report 的数据最准确）
-        ei_duration_ms = ei_json.get("durationMS")
-        if ei_duration_ms is None and parser is not None:
-            ei_duration_ms = parser.meta.duration_ms
-        elif ei_duration_ms is None:
-            ei_duration_ms = 0
-
+    def _extract_fight_data(self, ei_json: Dict) -> Dict[str, Any]:
+        """提取战斗级标量数据（直接从 EI JSON）。"""
+        ei_duration_ms = ei_json.get("durationMS", 0)
         duration_sec = max(1, int(ei_duration_ms / 1000))
 
-        # 时间字段优先级：EI JSON > parser.meta
         ei_start = ei_json.get("timeStartStd") or ei_json.get("timeStart")
         ei_end = ei_json.get("timeEndStd") or ei_json.get("timeEnd")
-
-        if parser is not None:
-            ei_start = ei_start or parser.meta.start_datetime
-            ei_end = ei_end or parser.meta.end_datetime
 
         # 从 EI JSON players 计算总伤害、击杀、死亡（排除宠物/非玩家）
         ei_players = ei_json.get("players", [])
@@ -373,13 +291,6 @@ class LogImportService:
             total_deaths += defenses.get("deadCount", 0)
             player_count += 1
 
-        # fallback：如果 EI JSON 中没有 players，使用本地 parser 数据
-        if not ei_players and parser is not None:
-            total_damage = sum(p.total_damage for p in parser.player_stats.values())
-            total_kills = sum(p.kills_inflicted for p in parser.player_stats.values())
-            total_deaths = sum(p.own_deaths for p in parser.player_stats.values())
-            player_count = len(parser.player_stats)
-
         parsed_start = self._parse_ei_time(ei_start)
         parsed_end = self._parse_ei_time(ei_end)
 
@@ -389,17 +300,12 @@ class LogImportService:
         if not parsed_end:
             parsed_end = parsed_start
 
-        # map_name 来源：EI JSON > parser.meta
-        map_name = ei_json.get("fightName")
-        if map_name is None and parser is not None:
-            map_name = parser.meta.map_name
-
         return {
             "start_time": parsed_start,
             "end_time": parsed_end,
             "duration_sec": duration_sec,
             "duration_ms": ei_duration_ms,
-            "map_name": map_name,
+            "map_name": ei_json.get("fightName"),
             "server_name": "Unknown",
             "recorded_by": ei_json.get("recordedBy"),
             "recorded_account": ei_json.get("recordedAccountBy"),
@@ -412,129 +318,78 @@ class LogImportService:
             "player_count": player_count,
         }
 
-    def _extract_player_stats(
-        self, parser: Optional[EnhancedZevtcParser], ei_json: Dict, data_source: str = "local_parser"
-    ) -> List[Dict[str, Any]]:
-        """提取每个玩家的标量统计。
-
-        支持两种模式：
-        1. dps.report 成功（parser=None）：直接从 EI JSON players 遍历
-        2. 本地解析（parser!=None）：优先使用 EI JSON，部分字段 fallback 到 parser
-        """
-        duration_ms = ei_json.get("durationMS", 0)
-        if duration_ms == 0 and parser is not None:
-            duration_ms = parser.meta.duration_ms
-        duration_sec = max(1, int(duration_ms / 1000))
+    def _extract_player_stats(self, ei_json: Dict) -> List[Dict[str, Any]]:
+        """提取每个玩家的标量统计（直接从 EI JSON）。"""
         results = []
 
-        if parser is None:
-            # ========== dps.report 模式：直接从 EI JSON 提取 ==========
-            for ei_p in ei_json.get("players", []):
-                if self._should_skip_player(ei_p):
-                    continue
-
-                dps_all = ei_p.get("dpsAll", [{}])[0]
-                stats_all = ei_p.get("statsAll", [{}])[0]
-                defenses = ei_p.get("defenses", [{}])[0]
-                support = ei_p.get("support", [{}])[0]
-
-                # 从 buffUptimes 中提取覆盖率（格式: [{"id": 740, "name": "Might", "uptime": 85.5}, ...]）
-                buff_uptimes = {}
-                for bu in ei_p.get("buffUptimes", []):
-                    name = bu.get("name", "")
-                    if name:
-                        buff_uptimes[name] = bu.get("uptime", 0)
-
-                has_cmd = bool(
-                    ei_p.get("isCommander") or ei_p.get("hasCommanderTag")
-                )
-
-                player = {
-                    "account": ei_p.get("account", ""),
-                    "character_name": ei_p.get("name", ""),
-                    "profession": ei_p.get("profession", ""),
-                    "group_id": ei_p.get("group", 0),
-                    "team_id": ei_p.get("teamID", 0),
-                    "has_commander_tag": has_cmd,
-                    "damage": dps_all.get("damage", 0),
-                    "dps": dps_all.get("dps", 0),
-                    "power_damage": dps_all.get("powerDamage", 0),
-                    "condi_damage": dps_all.get("condiDamage", 0),
-                    "breakbar_damage": int(dps_all.get("breakbarDamage", 0) or 0),
-                    "critical_rate": stats_all.get("criticalRate", 0),
-                    "flanking_rate": stats_all.get("flankingRate", 0),
-                    "glance_rate": stats_all.get("glanceRate", 0),
-                    "missed": stats_all.get("missed", 0),
-                    "interrupts": stats_all.get("interrupts", 0),
-                    "swap_count": stats_all.get("swapCount", 0),
-                    "blocked_count": defenses.get("blockedCount", 0),
-                    "evaded_count": defenses.get("evadedCount", 0),
-                    "dodge_count": defenses.get("dodgeCount", 0),
-                    "down_count": defenses.get("downCount", 0),
-                    "dead_count": defenses.get("deadCount", 0),
-                    "boon_strips": support.get("boonStrips", 0),
-                    "condition_cleanses": support.get("condiCleanse", 0),
-                    "resurrects": support.get("resurrects", 0),
-                    "condi_cleanse_ally": support.get("condiCleanse", 0),
-                    "boon_strips_ally": support.get("boonStrips", 0),
-                    "might_uptime": buff_uptimes.get("Might", 0),
-                    "fury_uptime": buff_uptimes.get("Fury", 0),
-                    "quickness_uptime": buff_uptimes.get("Quickness", 0),
-                    "alacrity_uptime": buff_uptimes.get("Alacrity", 0),
-                    "protection_uptime": buff_uptimes.get("Protection", 0),
-                    "stability_uptime": buff_uptimes.get("Stability", 0),
-                    "healing": self._extract_player_healing(ei_p),
-                    "killed": stats_all.get("killed", 0),
-                    "damage_taken": defenses.get("damageTaken", 0),
-                }
-                results.append(player)
-            return results
-
-        # ========== 本地解析模式：保持原有逻辑 ==========
-        # 建立 account -> ei player json 的映射
-        ei_players_by_account = {}
-        for p in ei_json.get("players", []):
-            ei_players_by_account[p.get("account", "")] = p
-
-        for addr, pstats in parser.player_stats.items():
-            if self._should_skip_player(pstats):
-                logger.info(f"[import] 跳过假玩家/NPC: {pstats.account} / {pstats.name}")
+        for ei_p in ei_json.get("players", []):
+            if self._should_skip_player(ei_p):
                 continue
 
-            ei_p = ei_players_by_account.get(pstats.account, {})
             dps_all = ei_p.get("dpsAll", [{}])[0]
             stats_all = ei_p.get("statsAll", [{}])[0]
             defenses = ei_p.get("defenses", [{}])[0]
             support = ei_p.get("support", [{}])[0]
-            buff_uptime = pstats.buff_uptime
 
-            if dps_all and dps_all.get("damage"):
-                dmg = dps_all.get("damage", 0)
-                dps = dps_all.get("dps", 0)
-                power_dmg = dps_all.get("powerDamage", 0)
-                condi_dmg = dps_all.get("condiDamage", 0)
-                breakbar_dmg = int(dps_all.get("breakbarDamage", 0) or 0)
-            else:
-                dmg = pstats.total_damage
-                dps = int(dmg / duration_sec) if duration_sec > 0 else 0
-                power_dmg = pstats.power_damage
-                condi_dmg = pstats.condi_damage
-                breakbar_dmg = int(pstats.breakbar_damage)
+            # 从 buffUptimes / buffUptimesActive 中提取覆盖率
+            # 注：EI JSON 中 buffUptimes 项使用 id 而非 name 标识增益，
+            # 尤其在 detailed WvW 模式下 name 字段可能缺失。
+            # 另外，uptime 可能位于 buffData[0].uptime 而非顶层。
+            BUFF_ID_MAP = {
+                725: "might",
+                726: "fury",
+                740: "quickness",
+                743: "alacrity",
+                717: "protection",
+                1122: "stability",
+            }
 
-            has_cmd = self._resolve_commander_tag(ei_p, pstats, data_source)
+            def _extract_uptime(bu: dict) -> float:
+                """兼容多种 buffUptimes 结构提取 uptime。"""
+                # 方案1：顶层 uptime（常规 EI）
+                uptime = bu.get("uptime")
+                if uptime is not None:
+                    return uptime
+                # 方案2：buffData[0].uptime（detailed WvW）
+                buff_data = bu.get("buffData")
+                if buff_data and isinstance(buff_data, list) and len(buff_data) > 0:
+                    return buff_data[0].get("uptime", 0)
+                return 0
+
+            buff_uptimes = {}
+            for bu in ei_p.get("buffUptimes", []):
+                buff_id = bu.get("id")
+                name = bu.get("name", "")
+                uptime = _extract_uptime(bu)
+                if buff_id and buff_id in BUFF_ID_MAP:
+                    buff_uptimes[BUFF_ID_MAP[buff_id]] = uptime
+                elif name:
+                    buff_uptimes[name.lower()] = uptime
+
+            buff_uptimes_active = {}
+            for bu in ei_p.get("buffUptimesActive", []):
+                buff_id = bu.get("id")
+                name = bu.get("name", "")
+                uptime = _extract_uptime(bu)
+                if buff_id and buff_id in BUFF_ID_MAP:
+                    buff_uptimes_active[BUFF_ID_MAP[buff_id]] = uptime
+                elif name:
+                    buff_uptimes_active[name.lower()] = uptime
+
+            has_cmd = self._resolve_commander_tag(ei_p)
 
             player = {
-                "account": pstats.account,
-                "character_name": pstats.name,
-                "profession": pstats.profession,
-                "group_id": pstats.group,
-                "team_id": pstats.team if pstats.team is not None else 0,
+                "account": ei_p.get("account", ""),
+                "character_name": ei_p.get("name", ""),
+                "profession": ei_p.get("profession", ""),
+                "group_id": ei_p.get("group", 0),
+                "team_id": ei_p.get("teamID", 0),
                 "has_commander_tag": has_cmd,
-                "damage": dmg,
-                "dps": dps,
-                "power_damage": power_dmg,
-                "condi_damage": condi_dmg,
-                "breakbar_damage": breakbar_dmg,
+                "damage": dps_all.get("damage", 0),
+                "dps": dps_all.get("dps", 0),
+                "power_damage": dps_all.get("powerDamage", 0),
+                "condi_damage": dps_all.get("condiDamage", 0),
+                "breakbar_damage": int(dps_all.get("breakbarDamage", 0) or 0),
                 "critical_rate": stats_all.get("criticalRate", 0),
                 "flanking_rate": stats_all.get("flankingRate", 0),
                 "glance_rate": stats_all.get("glanceRate", 0),
@@ -544,22 +399,56 @@ class LogImportService:
                 "blocked_count": defenses.get("blockedCount", 0),
                 "evaded_count": defenses.get("evadedCount", 0),
                 "dodge_count": defenses.get("dodgeCount", 0),
-                "down_count": pstats.own_downs,
-                "dead_count": pstats.own_deaths,
-                "boon_strips": pstats.boon_strips,
-                "condition_cleanses": pstats.condi_cleanses,
+                "down_count": defenses.get("downCount", 0),
+                "dead_count": defenses.get("deadCount", 0),
+                "boon_strips": support.get("boonStrips", 0),
+                "condition_cleanses": support.get("condiCleanse", 0),
                 "resurrects": support.get("resurrects", 0),
-                "condi_cleanse_ally": support.get("condiCleanse", 0),
+                "condi_cleanse_ally": max(
+                    0, support.get("condiCleanse", 0) - support.get("condiCleanseSelf", 0)
+                ),
                 "boon_strips_ally": support.get("boonStrips", 0),
-                "might_uptime": buff_uptime.get("Might", 0),
-                "fury_uptime": buff_uptime.get("Fury", 0),
-                "quickness_uptime": buff_uptime.get("Quickness", 0),
-                "alacrity_uptime": buff_uptime.get("Alacrity", 0),
-                "protection_uptime": buff_uptime.get("Protection", 0),
-                "stability_uptime": buff_uptime.get("Stability", 0),
+                "might_uptime": buff_uptimes.get("might", 0),
+                "fury_uptime": buff_uptimes.get("fury", 0),
+                "quickness_uptime": buff_uptimes.get("quickness", 0),
+                "alacrity_uptime": buff_uptimes.get("alacrity", 0),
+                "protection_uptime": buff_uptimes.get("protection", 0),
+                "stability_uptime": buff_uptimes.get("stability", 0),
                 "healing": self._extract_player_healing(ei_p),
-                "killed": pstats.kills_inflicted,
+                "killed": stats_all.get("killed", 0),
+                "downed": stats_all.get("downed", 0),
                 "damage_taken": defenses.get("damageTaken", 0),
+                # === 高级战斗指标（dps.report API 专有）===
+                "down_contribution": dps_all.get("downContribution", 0),
+                "against_downed_damage": dps_all.get("againstDownedDamage", 0),
+                "applied_cc_duration": support.get("appliedCcDuration", 0),
+                "barrier_damage_absorbed": defenses.get("damageBarrier", 0),
+                "condition_damage_taken": defenses.get("conditionDamageTaken", 0),
+                "power_damage_taken": defenses.get("powerDamageTaken", 0),
+                "received_cc_duration": support.get("receivedCcDuration", 0),
+                "might_uptime_active": buff_uptimes_active.get("might", 0),
+                "quickness_uptime_active": buff_uptimes_active.get("quickness", 0),
+                "alacrity_uptime_active": buff_uptimes_active.get("alacrity", 0),
+                "avg_boons": stats_all.get("avgBoons", 0),
+                "avg_conditions": stats_all.get("avgConditions", 0),
+                # === 技能效率与位置（EI 扩展字段）===
+                "wasted": stats_all.get("wasted", 0),
+                "saved": stats_all.get("saved", 0),
+                "skill_cast_uptime": stats_all.get("skillCastUptime", 0),
+                "stack_dist": stats_all.get("stackDist", 0),
+                "dist_to_com": stats_all.get("distToCom", 0),
+                # === 倒地/死亡详情（EI 扩展字段）===
+                "downed_damage_taken": defenses.get("downedDamageTaken", 0),
+                "interrupted_count": defenses.get("interruptedCount", 0),
+                "down_duration": defenses.get("downDuration", 0),
+                "dead_duration": defenses.get("deadDuration", 0),
+                "dc_count": defenses.get("dcCount", 0),
+                "dc_duration": defenses.get("dcDuration", 0),
+                # === 支援详情（EI 扩展字段）===
+                "stun_break": support.get("stunBreak", 0),
+                "removed_stun_duration": support.get("removedStunDuration", 0),
+                # === CC 输出详情 ===
+                "applied_cc_count": stats_all.get("appliedCrowdControl", 0),
             }
             results.append(player)
 
@@ -605,31 +494,16 @@ class LogImportService:
 
         逻辑：遍历 players → 查询或创建 Member/AccountCharacter → flush 获取 id → 创建 FightStats
         批量解析已改为单线程顺序执行，不存在并发冲突。
+
+        【v4.0 变更】删除导入时评分计算，只保存原始数据。
+        评分移至查询阶段（PlayerScoreService），规则更新立即生效。
         """
         from datetime import date
         from app.models.account_character import AccountCharacter
-        from app.services.wvw.scoring_service import ScoringService
 
         today = date.today()
         seen_accounts: set = set()
         member_map: Dict[str, Member] = {}
-
-        # 预计算评分所需的同场最大值（用于归一化）
-        max_values = {}
-        if players:
-            max_values = {
-                "damage": max(p.get("damage", 0) for p in players),
-                "power_damage": max(p.get("power_damage", 0) for p in players),
-                "condition_damage": max(p.get("condi_damage", 0) for p in players),
-                "healing": max(p.get("healing", 0) for p in players),
-                "strips": max(p.get("boon_strips", 0) for p in players),
-                "cleanses": max(p.get("condition_cleanses", 0) for p in players),
-                "kills": max(p.get("killed", 0) for p in players),
-                "breakbar": max(p.get("breakbar_damage", 0) for p in players),
-            }
-
-        # 获取评分规则（默认 dps，后续可按职业自动判断）
-        scoring_rules = ScoringService.get_scoring_rules(self.db, "dps")
 
         # 【优化】批量预查询：收集所有 account 和 account-character 对
         needed_accounts = set()
@@ -712,26 +586,13 @@ class LogImportService:
             if account and account not in account_to_player:
                 account_to_player[account] = p
 
-        # 【优化】使用 bulk_insert_mappings 批量插入 FightStats，绕过 ORM 跟踪
+        # 【v4.0】使用 bulk_insert_mappings 批量插入原始数据，绕过 ORM 跟踪
+        # 评分字段不再在导入时计算（ai_score / score_grade / score_breakdown / role_type / rule_version）
         fight_stats_mappings = []
         for account, member in member_map.items():
             if account not in account_to_player:
                 continue
             p = account_to_player[account]
-
-            # 计算该玩家的评分
-            stat_dict = {
-                "damage": p.get("damage", 0),
-                "power_damage": p.get("power_damage", 0),
-                "condi_damage": p.get("condi_damage", 0),
-                "healing": p.get("healing", 0),
-                "boon_strips": p.get("boon_strips", 0),
-                "condition_cleanses": p.get("condition_cleanses", 0),
-                "killed": p.get("killed", 0),
-                "breakbar_damage": p.get("breakbar_damage", 0),
-                "dead_count": p.get("dead_count", 0),
-            }
-            score_result = ScoringService.calculate_player_score(stat_dict, scoring_rules, max_values)
 
             fight_stats_mappings.append({
                 "fight_id": fight_id,
@@ -771,10 +632,45 @@ class LogImportService:
                 "stability_uptime": p.get("stability_uptime", 0),
                 "healing": p.get("healing", 0),
                 "killed": p.get("killed", 0),
+                "downed": p.get("downed", 0),
                 "damage_taken": p.get("damage_taken", 0),
-                "ai_score": score_result["total_score"],
-                "score_grade": score_result["grade"][:10] if score_result.get("grade") else "",
-                "score_breakdown": score_result["breakdown"],
+                "down_contribution": p.get("down_contribution", 0),
+                "against_downed_damage": p.get("against_downed_damage", 0),
+                "applied_cc_duration": p.get("applied_cc_duration", 0),
+                "barrier_damage_absorbed": p.get("barrier_damage_absorbed", 0),
+                "condition_damage_taken": p.get("condition_damage_taken", 0),
+                "power_damage_taken": p.get("power_damage_taken", 0),
+                "received_cc_duration": p.get("received_cc_duration", 0),
+                "might_uptime_active": p.get("might_uptime_active", 0),
+                "quickness_uptime_active": p.get("quickness_uptime_active", 0),
+                "alacrity_uptime_active": p.get("alacrity_uptime_active", 0),
+                "avg_boons": p.get("avg_boons", 0),
+                "avg_conditions": p.get("avg_conditions", 0),
+                # === 技能效率与位置（EI 扩展字段）===
+                "wasted": p.get("wasted", 0),
+                "saved": p.get("saved", 0),
+                "skill_cast_uptime": p.get("skill_cast_uptime", 0),
+                "stack_dist": p.get("stack_dist", 0),
+                "dist_to_com": p.get("dist_to_com", 0),
+                # === 倒地/死亡详情（EI 扩展字段）===
+                "downed_damage_taken": p.get("downed_damage_taken", 0),
+                "interrupted_count": p.get("interrupted_count", 0),
+                "down_duration": p.get("down_duration", 0),
+                "dead_duration": p.get("dead_duration", 0),
+                "dc_count": p.get("dc_count", 0),
+                "dc_duration": p.get("dc_duration", 0),
+                # === 支援详情（EI 扩展字段）===
+                "stun_break": p.get("stun_break", 0),
+                "removed_stun_duration": p.get("removed_stun_duration", 0),
+                # === CC 输出详情 ===
+                "applied_cc_count": p.get("applied_cc_count", 0),
+                # 评分字段留空，查询时计算
+                "ai_score": 0,
+                "score_grade": "",
+                "score_breakdown": None,
+                "role_type": None,
+                "rule_version": 0,
+                "scoring_profession_rule": None,
             })
 
         if fight_stats_mappings:
@@ -805,13 +701,13 @@ class LogImportService:
                 raise
 
     def _validate_data_integrity(
-        self, fight_id: int, log_id: int,
-        player_stats: List[Dict[str, Any]], ei_json: Dict[str, Any]
+        self, fight_id: int, log_id: int
     ) -> List[str]:
-        """数据完整性验证。
+        """数据完整性验证（v4.0 纯数据库查询版）。
         在事务提交前检查 fights / fight_stats / ei_player 之间的一致性。
         返回问题列表（空列表表示通过）。
         """
+        from sqlalchemy import func
         issues = []
 
         # 1. 检查 fight_stats 行数与 Fight.player_count 是否一致
@@ -844,7 +740,6 @@ class LogImportService:
             )
 
         # 3. 检查 fight_stats 中是否有重复 account（同一 fight 内）
-        from sqlalchemy import func
         dup_accounts = (
             self.db.query(FightStats.account)
             .filter(FightStats.fight_id == fight_id)
@@ -872,7 +767,7 @@ class LogImportService:
 
         return issues
 
-    def _insert_ei_players(self, log_id: int, ei_json: Dict[str, Any], data_source: str = "local_parser"):
+    def _insert_ei_players(self, log_id: int, ei_json: Dict[str, Any]):
         """插入/更新 EiPlayer（技能循环、stats、defenses、deathRecap 等）
         过滤假玩家 / NPC，确保 ei_player 与 fight_stats 数据一致。
         【优化】使用 bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值。
@@ -891,7 +786,7 @@ class LogImportService:
                 logger.info(f"[import] EiPlayer 跳过假玩家/NPC: {p.get('account')} / {p.get('name')}")
                 continue
 
-            has_cmd = self._resolve_commander_tag(p, None, data_source)
+            has_cmd = self._resolve_commander_tag(p)
 
             mappings.append({
                 "log_id": log_id,

@@ -1,14 +1,13 @@
-# 模块功能：评分 API 接口（实时计算）
+# 模块功能：评分 API 接口（实时计算 + 重算任务）
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-04-30
-# 更新日期：2026-05-05
-# 依赖说明：FastAPI, SQLAlchemy, Pydantic
+# 更新日期：2026-05-07
+# 依赖说明：FastAPI, SQLAlchemy, Pydantic, APScheduler
 # 说明：
-#   1. 本模块提供实时评分计算接口，基于当前评分规则配置动态计算。
-#   2. 接口与评分规则系统深度关联：计算时自动读取 scoring_rule 表中的权重配置。
-#   3. 若数据库中无规则配置，则自动回退到系统硬编码的默认规则。
-#   4. 日志导入时（log_import_service.py）的评分由 calculate_player_score 独立计算，
-#      不经过本接口，但两者使用同一套规则逻辑。
+#   1. 本模块提供实时评分计算接口和后台重算任务接口。
+#   2. 实时计算基于当前评分规则配置动态计算。
+#   3. 重算任务支持全量或按条件筛选重算历史数据，通过 APScheduler 后台执行。
+#   4. 若数据库中无规则配置，则自动回退到系统硬编码的默认规则。
 
 from fastapi import APIRouter, Depends, Path
 from sqlalchemy.orm import Session
@@ -16,10 +15,18 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.schemas.common import ApiResponse
 from app.schemas.scoring import FightScoreResult, ScoringRulesResult
+from app.schemas.scoring_recalculation import (
+    RecalculateRequest,
+    RecalculateResponse,
+    RecalculateStatusResponse,
+)
+from app.services.score_query_service import PlayerScoreService
+from app.services.score_recalculation_service import ScoreRecalculationService
 from app.services.wvw.scoring_service import ScoringService
+from app.utils.exceptions import BadRequestException
 from app.utils.logger import logger
 
-router = APIRouter(prefix="/scoring", tags=["评分系统 — 实时计算"])
+router = APIRouter(prefix="/scoring", tags=["评分系统 — 实时计算与重算"])
 
 
 @router.get(
@@ -106,7 +113,8 @@ async def calculate_fight_scores(
     - `data.scoring_rules`: 本次计算使用的规则权重
     """
     try:
-        result = ScoringService.calculate_all_scores(fight_id, db)
+        # 【v4.0】使用 PlayerScoreService 查询时实时计算，规则更新立即生效
+        result = PlayerScoreService.calculate_fight_scores(db, fight_id)
         fight_result = FightScoreResult(**result)
         return ApiResponse.success_response(
             message=f"计算战斗 {fight_id} 评分成功",
@@ -115,3 +123,119 @@ async def calculate_fight_scores(
     except Exception as e:
         logger.error(f"计算战斗评分失败: {e}")
         return ApiResponse.error_response(message=f"计算评分失败: {e}")
+
+
+# ==================== 评分重算任务接口 ====================
+
+@router.post(
+    "/recalculate",
+    response_model=ApiResponse,
+    summary="触发评分重算任务",
+    description=(
+        "根据筛选条件触发历史评分数据的后台重算任务。"
+        "任务在后台异步执行，通过返回的 version_id 查询进度。"
+        "支持按时间范围、职业、账号、战斗ID等条件筛选。"
+    ),
+)
+async def trigger_recalculation(
+    request: RecalculateRequest,
+    db: Session = Depends(get_db),
+) -> ApiResponse:
+    """
+    触发评分重算任务。
+
+    **执行流程**：
+    1. 创建 `ScoringRuleVersion` 记录（status=pending）
+    2. 通过 APScheduler 添加后台任务
+    3. 返回 version_id 供前端轮询进度
+
+    **筛选条件**（filters 字段）：
+    - `fight_ids`: 指定战斗ID列表
+    - `date_from` / `date_to`: 时间范围（YYYY-MM-DD）
+    - `professions`: 指定职业列表
+    - `account_names`: 指定账号列表
+    - 空 filters 表示全量重算
+
+    **并发控制**：
+    - 同一时刻只允许一个重算任务在执行中
+    - 如果已有任务在执行，新请求将被拒绝
+    """
+    try:
+        # 并发控制检查
+        if ScoreRecalculationService.is_task_running(db):
+            raise BadRequestException("已有重算任务在执行中，请等待完成后再触发新任务")
+
+        filters = request.filters.model_dump(exclude_none=True) if request.filters else {}
+
+        # 创建重算任务
+        version = ScoreRecalculationService.create_task(
+            db, filters, description=request.description or ""
+        )
+
+        # 启动后台任务（使用 APScheduler 或 asyncio.create_task）
+        from app.core.task_scheduler import scheduler
+        if scheduler and scheduler.running:
+            scheduler.add_job(
+                ScoreRecalculationService.execute_recalculation_async,
+                args=[version.id, filters],
+                id=f"recalc_{version.id}",
+                replace_existing=False,
+            )
+        else:
+            # 调度器未运行时，使用 asyncio.create_task
+            import asyncio
+            asyncio.create_task(
+                ScoreRecalculationService.execute_recalculation_async(version.id, filters)
+            )
+
+        return ApiResponse.success_response(
+            message="重算任务已创建，正在后台执行",
+            data=RecalculateResponse(
+                version_id=version.id,
+                version=version.version,
+                status=version.status,
+                message="重算任务已创建",
+            ).model_dump(),
+        )
+    except BadRequestException:
+        raise
+    except Exception as e:
+        logger.error(f"创建重算任务失败: {e}")
+        return ApiResponse.error_response(message=f"创建重算任务失败: {e}")
+
+
+@router.get(
+    "/recalculate/{version_id}",
+    response_model=ApiResponse,
+    summary="查询重算任务进度",
+    description="根据版本记录ID查询后台重算任务的执行进度和状态。",
+)
+async def get_recalculation_status(
+    version_id: int = Path(..., ge=1, description="版本记录ID"),
+    db: Session = Depends(get_db),
+) -> ApiResponse:
+    """
+    查询重算任务的执行进度。
+
+    **返回字段说明**：
+    - `status`: 任务状态（pending/processing/completed/failed）
+    - `total_records`: 需更新的总记录数
+    - `updated_records`: 已更新记录数
+    - `progress_percent`: 进度百分比
+    - `created_at`: 任务创建时间
+    - `completed_at`: 任务完成时间
+    """
+    try:
+        status = ScoreRecalculationService.get_task_status(db, version_id)
+        if not status:
+            raise BadRequestException(f"版本记录 ID={version_id} 不存在")
+
+        return ApiResponse.success_response(
+            message="获取重算进度成功",
+            data=RecalculateStatusResponse(**status).model_dump(),
+        )
+    except BadRequestException:
+        raise
+    except Exception as e:
+        logger.error(f"获取重算进度失败: {e}")
+        return ApiResponse.error_response(message=f"获取重算进度失败: {e}")

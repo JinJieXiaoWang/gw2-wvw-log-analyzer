@@ -10,11 +10,12 @@ from app.config.database import Base
 class ScoringRule(Base):
     """评分规则配置表
     
-    支持按角色类型（输出/辅助/承伤）配置不同的评分权重和阈值。
+    支持按角色类型（输出/辅助/承伤）和职业配置不同的评分权重和阈值。
+    profession 为 null 时表示该 role_type 的通用规则；有值时表示该职业的特定规则。
     """
     __tablename__ = "scoring_rule"
     __table_args__ = (
-        UniqueConstraint("role_type", "dimension", name="uk_role_dimension"),
+        UniqueConstraint("role_type", "profession", "dimension", name="uk_role_profession_dimension"),
         {"comment": "评分规则配置表"},
     )
 
@@ -23,6 +24,11 @@ class ScoringRule(Base):
         String(50),
         nullable=False,
         comment="角色类型: dps-输出, support-辅助, tank-承伤",
+    )
+    profession = Column(
+        String(50),
+        nullable=True,
+        comment="精英特长/职业名称，null表示通用规则",
     )
     dimension = Column(
         String(50),

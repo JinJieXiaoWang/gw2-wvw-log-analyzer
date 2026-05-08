@@ -174,6 +174,7 @@ def get_log_player_stats(
             "swap_count": s.swap_count,
             # 击杀/控制
             "killed": s.killed,
+            "downed": s.downed,
             "down_count": s.down_count,
             "dead_count": s.dead_count,
             # 防御/生存
@@ -181,6 +182,8 @@ def get_log_player_stats(
             "blocked_count": s.blocked_count,
             "evaded_count": s.evaded_count,
             "dodge_count": s.dodge_count,
+            "downed_damage_taken": s.downed_damage_taken,
+            "interrupted_count": s.interrupted_count,
             # 支援
             "boon_strips": s.boon_strips,
             "condition_cleanses": s.condition_cleanses,
@@ -188,6 +191,7 @@ def get_log_player_stats(
             "condi_cleanse_ally": s.condi_cleanse_ally,
             "boon_strips_ally": s.boon_strips_ally,
             "healing": s.healing,
+            "stun_break": s.stun_break,
             # Buff 覆盖率
             "might_uptime": _float(s.might_uptime),
             "fury_uptime": _float(s.fury_uptime),
@@ -195,6 +199,26 @@ def get_log_player_stats(
             "alacrity_uptime": _float(s.alacrity_uptime),
             "protection_uptime": _float(s.protection_uptime),
             "stability_uptime": _float(s.stability_uptime),
+            # 技能效率与位置
+            "wasted": s.wasted or 0,
+            "saved": s.saved or 0,
+            "skill_cast_uptime": _float(s.skill_cast_uptime),
+            "stack_dist": _float(s.stack_dist),
+            "dist_to_com": _float(s.dist_to_com),
+            # 倒地/死亡详情
+            "down_duration": s.down_duration or 0,
+            "dead_duration": s.dead_duration or 0,
+            "dc_count": s.dc_count or 0,
+            "dc_duration": s.dc_duration or 0,
+            # CC 输出与防御
+            "applied_cc_count": s.applied_cc_count or 0,
+            "applied_cc_duration": s.applied_cc_duration or 0,
+            "received_cc_duration": s.received_cc_duration or 0,
+            "barrier_damage_absorbed": s.barrier_damage_absorbed or 0,
+            "condition_damage_taken": s.condition_damage_taken or 0,
+            "power_damage_taken": s.power_damage_taken or 0,
+            "against_downed_damage": s.against_downed_damage or 0,
+            "down_contribution": s.down_contribution or 0,
             # AI 评分
             "ai_score": _float(s.ai_score),
             "score_grade": s.score_grade,
@@ -220,8 +244,17 @@ def get_enemy_players(db: Session, log_id: int) -> List[Dict[str, Any]]:
 
     friendly_team = _get_friendly_team_id(all_stats)
     if friendly_team is not None:
-        stats = [s for s in all_stats if s.team_id != friendly_team]
+        # 修复：team_id=0 的玩家不能简单归为敌方。
+        # 在 WvW 中，team_id=0 的可能是友方（有 account）或 NPC/敌方（无 account）。
+        stats = []
+        for s in all_stats:
+            if s.team_id == friendly_team:
+                continue  # 友方 team
+            if s.team_id == 0 and s.account:
+                continue  # team_id=0 但有账号，推断为友方
+            stats.append(s)
     else:
+        # 旧日志：无 team_id 区分，用 account 判断
         stats = [s for s in all_stats if not s.account]
 
     stats = sorted(stats, key=lambda s: s.damage or 0, reverse=True)
@@ -247,6 +280,7 @@ def get_enemy_players(db: Session, log_id: int) -> List[Dict[str, Any]]:
             "missed": s.missed,
             "down_count": s.down_count,
             "dead_count": s.dead_count,
+            "downed": s.downed,
         }
         for s in stats
     ]
@@ -273,10 +307,10 @@ def get_fight_aggregate_stats(db: Session, log_id: int) -> Dict[str, Any]:
     total_condi = sum(s.condi_damage or 0 for s in stats)
     total_breakbar = sum(s.breakbar_damage or 0 for s in stats)
     total_taken = sum(s.damage_taken or 0 for s in stats)
-    total_healing = sum(s.healing or 0 for s in stats)
     total_kills = sum(s.killed or 0 for s in stats)
     total_deaths = sum(s.dead_count or 0 for s in stats)
     total_downs = sum(s.down_count or 0 for s in stats)
+    total_downed = sum(s.downed or 0 for s in stats)
     total_strips = sum(s.boon_strips or 0 for s in stats)
     total_cleanses = sum(s.condition_cleanses or 0 for s in stats)
     total_res = sum(s.resurrects or 0 for s in stats)
@@ -291,10 +325,10 @@ def get_fight_aggregate_stats(db: Session, log_id: int) -> Dict[str, Any]:
         "total_condi_damage": total_condi,
         "total_breakbar_damage": total_breakbar,
         "total_damage_taken": total_taken,
-        "total_healing": total_healing,
         "total_kills": total_kills,
         "total_deaths": total_deaths,
         "total_downs": total_downs,
+        "total_downed": total_downed,
         "total_boon_strips": total_strips,
         "total_condition_cleanses": total_cleanses,
         "total_resurrects": total_res,

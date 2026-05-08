@@ -79,6 +79,27 @@ export interface PaginatedDictData {
 }
 
 /**
+ * 精英特长级联项
+ */
+export interface SpecCascadeItem {
+  value: string
+  label: string
+  color: string
+  default_role: string
+}
+
+/**
+ * 职业级联数据
+ */
+export interface ProfessionCascade {
+  value: string
+  label: string
+  color: string
+  default_role: string
+  elite_specs: SpecCascadeItem[]
+}
+
+/**
  * 检测是否为认证错误
  */
 function isAuthError(error: any): error is AuthError {
@@ -293,6 +314,25 @@ class DictionaryService {
         console.error('[DictionaryService] 刷新字典缓存异常', error)
       }
       return false
+    }
+  }
+
+  /**
+   * 获取职业-精英特长级联数据
+   * @returns Promise<{ professions: ProfessionCascade[], count: number }>
+   */
+  async getProfessionSpecsCascade(): Promise<{ professions: ProfessionCascade[]; count: number } | null> {
+    try {
+      const response = await apiFactory.get<any>(
+        API_ENDPOINTS.DICTIONARY.PROFESSION_SPECS_CASCADE
+      )
+      if (response.success && response.data) {
+        return response.data as { professions: ProfessionCascade[]; count: number }
+      }
+      return null
+    } catch (error) {
+      console.error('[DictionaryService] 获取职业级联数据异常', error)
+      return null
     }
   }
 

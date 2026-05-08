@@ -11,8 +11,12 @@
 
 import concurrent.futures
 import gc
+import multiprocessing
+import os
+import sys
 import threading
 import time
+import traceback
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -25,14 +29,118 @@ from app.models.log import Log
 from app.services.zevtc import log_service
 from app.utils.logger import logger
 
+try:
+    import psutil
+    _PSUTIL_AVAILABLE = True
+except ImportError:
+    _PSUTIL_AVAILABLE = False
+
 # 全局状态
 is_running = False
 worker_threads = []
 MAX_CONCURRENT_TASKS = 1  # 单线程顺序执行，避免数据库并发冲突
 POLL_INTERVAL_SECONDS = 2  # 轮询数据库间隔
-TASK_DELAY_SECONDS = 0.5  # 任务完成后延迟
+TASK_DELAY_SECONDS = 1.0  # 任务完成后延迟（增加 GC 时间）
 active_workers_lock = threading.Lock()
 active_workers: set = set()
+
+# =====================================================================
+# 内存管理配置（针对 2G2核 低内存服务器优化）
+# =====================================================================
+# 系统可用内存低于此值（MB）时暂停解析，等待 GC
+MIN_SYSTEM_FREE_MEMORY_MB = int(os.environ.get("MIN_SYSTEM_FREE_MEMORY_MB", "300"))
+# 进程 RSS 超过此值（MB）时强制 GC
+PROCESS_RSS_THRESHOLD_MB = int(os.environ.get("PROCESS_RSS_THRESHOLD_MB", "800"))
+# 是否启用子进程隔离解析（默认开启，Windows 下自动关闭）
+USE_SUBPROCESS_PARSE = os.environ.get("USE_SUBPROCESS_PARSE", "true").lower() in ("true", "1", "yes")
+# 子进程解析超时（秒）
+SUBPROCESS_TIMEOUT = int(os.environ.get("SUBPROCESS_TIMEOUT", "600"))
+
+
+def _get_memory_info() -> Dict[str, float]:
+    """获取内存信息（MB）"""
+    result = {"rss_mb": 0.0, "system_free_mb": 0.0, "system_total_mb": 0.0}
+    if not _PSUTIL_AVAILABLE:
+        return result
+    try:
+        proc = psutil.Process()
+        result["rss_mb"] = proc.memory_info().rss / (1024 * 1024)
+        vm = psutil.virtual_memory()
+        result["system_free_mb"] = vm.available / (1024 * 1024)
+        result["system_total_mb"] = vm.total / (1024 * 1024)
+    except Exception:
+        pass
+    return result
+
+
+def _check_memory_and_wait(action: str = "") -> bool:
+    """检查内存状态，如果不足则等待并 GC，直到恢复或超时
+
+    Returns:
+        True: 内存已恢复，可以继续
+        False: 应该跳过本次任务
+    """
+    if not _PSUTIL_AVAILABLE:
+        return True
+
+    mem = _get_memory_info()
+    rss_mb = mem["rss_mb"]
+    free_mb = mem["system_free_mb"]
+
+    # 进程内存过高，立即 GC
+    if rss_mb > PROCESS_RSS_THRESHOLD_MB:
+        logger.warning(
+            f"[batch] 进程内存偏高 action={action} rss={rss_mb:.0f}MB，"
+            f"强制 GC (threshold={PROCESS_RSS_THRESHOLD_MB}MB)"
+        )
+        gc.collect()
+        gc.collect()
+        time.sleep(0.5)
+
+    # 系统可用内存不足，等待
+    wait_rounds = 0
+    max_wait_rounds = 30  # 最多等 30 * 2 = 60 秒
+    while free_mb < MIN_SYSTEM_FREE_MEMORY_MB and wait_rounds < max_wait_rounds:
+        logger.warning(
+            f"[batch] 系统可用内存不足 action={action} free={free_mb:.0f}MB "
+            f"(need {MIN_SYSTEM_FREE_MEMORY_MB}MB)，暂停 {wait_rounds + 1}/{max_wait_rounds}"
+        )
+        gc.collect()
+        gc.collect()
+        time.sleep(2)
+        wait_rounds += 1
+        mem = _get_memory_info()
+        free_mb = mem["system_free_mb"]
+
+    if free_mb < MIN_SYSTEM_FREE_MEMORY_MB:
+        logger.error(
+            f"[batch] 系统可用内存持续不足 free={free_mb:.0f}MB，"
+            f"跳过本次任务以避免 OOM"
+        )
+        return False
+
+    return True
+
+
+def _deep_gc(action: str = ""):
+    """深度 GC：释放未引用对象并记录效果"""
+    if not _PSUTIL_AVAILABLE:
+        gc.collect()
+        return
+    try:
+        before = _get_memory_info()["rss_mb"]
+        gc.collect()
+        gc.collect()
+        gc.collect()
+        after = _get_memory_info()["rss_mb"]
+        freed = before - after
+        if freed > 5:
+            logger.info(
+                f"[batch] 深度 GC action={action} freed={freed:.1f}MB "
+                f"before={before:.1f}MB after={after:.1f}MB"
+            )
+    except Exception:
+        gc.collect()
 
 
 class BatchParseService:
@@ -252,15 +360,41 @@ _batch_parse_executor: Optional[concurrent.futures.ThreadPoolExecutor] = None
 
 
 def _get_batch_executor() -> concurrent.futures.ThreadPoolExecutor:
-    """获取复用的 ThreadPoolExecutor"""
+    """获取复用的 ThreadPoolExecutor（用于非子进程模式）"""
     global _batch_parse_executor
     if _batch_parse_executor is None:
         _batch_parse_executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
     return _batch_parse_executor
 
 
+# =====================================================================
+# 子进程隔离解析
+# =====================================================================
+
+def _import_log_subprocess(log_id: int, file_path: str) -> Dict[str, Any]:
+    """在独立子进程中执行日志导入（隔离内存，防止 OOM 拖垮主进程）
+
+    注意：此函数在子进程中运行，必须自包含所有导入。
+    """
+    try:
+        # 子进程中重新初始化数据库连接
+        from app.config.database import SessionLocal
+        from app.services.zevtc.log_import_service import LogImportService
+
+        db = SessionLocal()
+        try:
+            importer = LogImportService(db)
+            result = importer.import_log(log_id, file_path)
+            return result
+        finally:
+            db.expunge_all()
+            db.close()
+    except Exception as e:
+        return {"success": False, "error": f"{type(e).__name__}: {str(e)}"}
+
+
 def _do_parse_single_log(task_id: int, log_id: int) -> None:
-    """实际执行解析（不含超时保护）"""
+    """实际执行解析（主进程直接执行，含内存检查）"""
     from app.config.database import SessionLocal
     from app.services.zevtc.log_import_service import LogImportService
 
@@ -275,12 +409,10 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         if not log:
             raise ValueError(f"日志不存在: {log_id}")
 
-        # 注意：Log.parse_status 在 create_task 时已被设为 "parsing"
-        # 此处不再检查，因为 BatchParseTaskItem.status 已经防止了重复处理
         log_service.update_parse_status(db, log_id, "parsing")
 
         importer = LogImportService(db)
-        result = importer.import_log(log_id, log.file_path, allow_fallback=False)
+        result = importer.import_log(log_id, log.file_path)
 
         if not result.get("success"):
             raise Exception(result.get("error", "日志导入失败"))
@@ -293,24 +425,102 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         db.rollback()
         raise
     finally:
-        db.expunge_all()  # 清理 session 缓存的所有 ORM 对象，释放内存
+        db.expunge_all()
+        db.close()
+
+
+def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -> None:
+    """使用子进程隔离执行解析，主进程只负责状态更新
+
+    流程：
+        1. 子进程执行 import_log（独立内存空间）
+        2. 子进程退出后内存完全释放
+        3. 主进程根据返回结果更新数据库状态
+    """
+    from app.config.database import SessionLocal
+
+    db = SessionLocal()
+    try:
+        logger.info(f"[batch] 子进程解析开始，任务ID: {task_id}，日志ID: {log_id}")
+        BatchParseService.update_task_item_status(db, task_id, log_id, "processing")
+        log_service.update_parse_status(db, log_id, "parsing")
+        db.commit()
+    finally:
+        db.close()
+
+    # 启动子进程执行解析
+    ctx = multiprocessing.get_context("spawn")
+    queue = ctx.Queue()
+
+    def _worker(q, lid, fpath):
+        result = _import_log_subprocess(lid, fpath)
+        q.put(result)
+
+    proc = ctx.Process(target=_worker, args=(queue, log_id, file_path))
+    proc.start()
+    proc.join(timeout=SUBPROCESS_TIMEOUT)
+
+    if proc.is_alive():
+        proc.terminate()
+        proc.join(timeout=5)
+        if proc.is_alive():
+            proc.kill()
+            proc.join()
+        raise TimeoutError(f"子进程解析超时（{SUBPROCESS_TIMEOUT}秒）")
+
+    if proc.exitcode != 0:
+        raise RuntimeError(f"子进程异常退出，exitcode={proc.exitcode}")
+
+    result = queue.get()
+    if not result.get("success"):
+        raise Exception(result.get("error", "日志导入失败"))
+
+    logger.info(f"[batch] log_id={log_id} 子进程导入成功")
+
+    # 更新状态
+    db = SessionLocal()
+    try:
+        BatchParseService.update_task_item_status(db, task_id, log_id, "completed")
+        db.commit()
+    finally:
         db.close()
 
 
 def parse_single_log_with_rate_limit(
-    task_id: int, log_id: int, db_url: str, overwrite: bool = True
+    task_id: int, log_id: int, db_url: str = "", overwrite: bool = True
 ):
-    """解析单个日志（在限流保护 + 超时保护下执行）
+    """解析单个日志（在限流保护 + 超时保护 + 内存保护下执行）
 
-    流程：
-        1. 执行解析（upload_and_parse 内部已做限流等待）
-        2. 处理失败：根据错误类型决定重试或放弃
+    根据系统平台和配置，选择子进程隔离或线程执行。
     """
+    # 解析前内存检查
+    if not _check_memory_and_wait(f"parse_start_log_{log_id}"):
+        _handle_parse_error(task_id, log_id, "系统内存不足，跳过解析", "oom_risk")
+        with active_workers_lock:
+            active_workers.discard((task_id, log_id))
+        return
+
     try:
-        # 使用复用的线程池 + 超时，防止损坏文件导致解析永久挂起
-        executor = _get_batch_executor()
-        future = executor.submit(_do_parse_single_log, task_id, log_id)
-        future.result(timeout=SINGLE_LOG_PARSE_TIMEOUT)
+        # 查询文件路径（主进程查一次，避免子进程重复查询）
+        db = SessionLocal()
+        try:
+            log = log_service.get_log_by_id(db, log_id)
+            file_path = log.file_path if log else None
+        finally:
+            db.close()
+
+        if not file_path:
+            raise ValueError(f"日志不存在或文件路径为空: {log_id}")
+
+        use_subprocess = USE_SUBPROCESS_PARSE and sys.platform != "win32"
+
+        if use_subprocess:
+            _do_parse_single_log_subprocess(task_id, log_id, file_path)
+        else:
+            # Windows 或不启用子进程时，使用线程池 + 超时
+            executor = _get_batch_executor()
+            future = executor.submit(_do_parse_single_log, task_id, log_id)
+            future.result(timeout=SINGLE_LOG_PARSE_TIMEOUT)
 
     except concurrent.futures.TimeoutError:
         logger.error(f"[batch] log_id={log_id} 解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒），强制终止")
@@ -324,6 +534,8 @@ def parse_single_log_with_rate_limit(
     finally:
         with active_workers_lock:
             active_workers.discard((task_id, log_id))
+        # 解析完成后深度清理内存
+        _deep_gc(f"parse_end_log_{log_id}")
 
 
 def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error_code: str = "unknown"):
@@ -401,9 +613,14 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
 
 
 def worker():
-    """工作线程：轮询数据库 → 限流检查 → 执行任务"""
+    """工作线程：轮询数据库 → 内存检查 → 限流检查 → 执行任务 → 深度 GC"""
     while is_running:
         try:
+            # 轮询前内存检查
+            if not _check_memory_and_wait("poll"):
+                time.sleep(POLL_INTERVAL_SECONDS)
+                continue
+
             db = SessionLocal()
             try:
                 item = _fetch_next_pending_item(db)
@@ -432,17 +649,15 @@ def worker():
             finally:
                 db.close()
 
-            # 执行解析（带限流）——使用原始 int，不再访问已 detached 的 ORM 对象
+            # 执行解析（带限流 + 内存保护 + 可选子进程隔离）
             parse_single_log_with_rate_limit(
                 task_id, log_id, "", overwrite=True
             )
 
-            # 每个任务完成后触发 GC，加速大对象回收
-            gc.collect()
-
-            # 任务间延迟
+            # 任务间延迟 + 深度 GC
             if TASK_DELAY_SECONDS > 0:
                 time.sleep(TASK_DELAY_SECONDS)
+            _deep_gc(f"task_delay_log_{log_id}")
 
         except Exception as e:
             logger.error(f"[batch] 工作线程异常: {e}", exc_info=True)

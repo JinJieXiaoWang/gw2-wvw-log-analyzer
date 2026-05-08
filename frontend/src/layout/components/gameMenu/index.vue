@@ -106,20 +106,23 @@
  * 设计：使用渐变、阴影、动画等游戏化元素
  */
 
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import { usePermission } from '@/composables/system/usePermission'
 
 const route = useRoute()
 const isOpen = ref(false)
+const { isAuthenticated } = usePermission()
 
 interface MenuItem {
   path: string
   label: string
   icon: string
   description?: string
+  requireAuth?: boolean
 }
 
-const menuItems: MenuItem[] = [
+const allMenuItems: MenuItem[] = [
   {
     path: '/',
     label: '数据看板',
@@ -160,7 +163,8 @@ const menuItems: MenuItem[] = [
     path: '/settings',
     label: '设置',
     icon: 'pi pi-cog',
-    description: '系统配置'
+    description: '系统配置',
+    requireAuth: true
   },
   {
     path: '/test/dps-report',
@@ -169,6 +173,15 @@ const menuItems: MenuItem[] = [
     description: 'dps.report API测试'
   }
 ]
+
+const menuItems = computed(() => {
+  return allMenuItems.filter(item => {
+    if (item.requireAuth && !isAuthenticated.value) {
+      return false
+    }
+    return true
+  })
+})
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value

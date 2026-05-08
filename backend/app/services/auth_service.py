@@ -347,6 +347,32 @@ async def get_current_admin(
     return admin
 
 
+async def get_current_user_optional(
+    authorization: str = Header(None), db: Session = Depends(get_db)
+) -> Optional[SysUser]:
+    """可选认证：获取当前登录用户，未登录返回 None（不抛异常）"""
+    if not authorization or not authorization.startswith("Bearer "):
+        return None
+
+    token = authorization[7:]
+    payload = decode_access_token(token)
+
+    if not payload or "sub" not in payload:
+        return None
+
+    try:
+        admin_id = int(payload.get("sub"))
+        admin = get_admin_by_id(db, admin_id)
+        if not admin or not admin.is_active:
+            return None
+        token_version = payload.get("tv")
+        if token_version is not None and token_version != (admin.token_version or 0):
+            return None
+        return admin
+    except Exception:
+        return None
+
+
 def require_super_admin(admin: SysUser = Depends(get_current_admin)) -> SysUser:
     """要求超级管理员权限"""
     if admin.role != "super_admin":

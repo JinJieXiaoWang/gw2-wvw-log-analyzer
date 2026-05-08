@@ -4,6 +4,8 @@
 # 创建日期：2026-04-29
 # 依赖说明：FastAPI, JWT认证
 
+import json
+import os
 from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Header, Query
@@ -379,6 +381,71 @@ async def delete_dict_data(
 
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="删除字典项成功", data=None
+    )
+
+
+@router.get(
+    "/cascade/profession-specs",
+    response_model=ApiResponse,
+    summary="获取职业-精英特长级联数据",
+    description="返回职业与精英特长的级联结构，数据来源于字典表和 professions.json",
+)
+async def get_profession_specs_cascade(db: Session = Depends(get_db)):
+    """获取职业-精英特长级联数据（公开接口）
+
+    返回结构包含每个职业及其下属的精英特长列表，
+    数据合并自 sys_dict_data 字典表和 professions.json。
+    """
+    service = DictionaryService(db)
+
+    # 从字典表获取职业和精英特长数据
+    profession_options = service.get_dict_options("profession")
+    spec_options = service.get_dict_options("specialization")
+
+    # 构建字典值到标签/颜色的映射
+    prof_map = {p["value"]: p for p in profession_options}
+    spec_map = {s["value"]: s for s in spec_options}
+
+    # 从 professions.json 读取结构关系
+    professions_file = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "data", "professions.json"
+    )
+
+    result = []
+    if os.path.exists(professions_file):
+        with open(professions_file, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        base_professions = data.get("base_professions", {})
+        elite_specs = data.get("elite_specs", {})
+
+        for prof_key, prof_info in base_professions.items():
+            prof_dict = prof_map.get(prof_key, {})
+            spec_list = []
+
+            for spec_name in prof_info.get("elite_specs", []):
+                spec_dict = spec_map.get(spec_name, {})
+                spec_info = elite_specs.get(spec_name, {})
+                spec_list.append({
+                    "value": spec_name,
+                    "label": spec_dict.get("label") or spec_info.get("name_cn", spec_name),
+                    "color": spec_dict.get("css_class", "#6b7280"),
+                    "default_role": spec_info.get("default_role", "dps"),
+                })
+
+            result.append({
+                "value": prof_key,
+                "label": prof_dict.get("label") or prof_info.get("name_cn", prof_key),
+                "color": prof_dict.get("css_class", "#6b7280"),
+                "default_role": prof_info.get("default_role", "dps"),
+                "elite_specs": spec_list,
+            })
+
+    return ApiResponse.success_response(
+        code=HTTP_200_OK,
+        message="获取职业级联数据成功",
+        data={"professions": result, "count": len(result)},
     )
 
 

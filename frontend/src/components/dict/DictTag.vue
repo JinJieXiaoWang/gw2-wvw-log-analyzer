@@ -1,166 +1,174 @@
 <template>
-  <div class="dict-tag inline-flex flex-wrap gap-1.5 items-center">
-    <template v-if="displayTags.length > 0">
-      <Tag
-        v-for="(tag, index) in displayTags"
-        :key="index"
-        :value="tag.label"
-        :severity="tag.severity"
-        :style="tag.style"
-        :class="tag.class"
-        :rounded="true"
-      />
+  <span
+    v-if="variant === 'text'"
+    class="inline-flex items-center gap-1.5"
+    :class="textClass"
+    :style="textStyle"
+  >
+    <span
+      v-if="showDot && color"
+      class="w-2 h-2 rounded-full inline-block"
+      :style="{ backgroundColor: color }"
+    />
+    <span>{{ displayLabel }}</span>
+  </span>
+
+  <Tag
+    v-else-if="variant === 'tag'"
+    :value="displayLabel"
+    :severity="computedSeverity"
+    :class="tagClass"
+    :style="tagStyle"
+  >
+    <template v-if="$slots.default">
+      <slot :label="displayLabel" :value="displayValue" :color="color" />
     </template>
+  </Tag>
+
+  <Badge
+    v-else-if="variant === 'badge'"
+    :value="displayLabel"
+    :severity="computedSeverity"
+    :class="badgeClass"
+    :style="badgeStyle"
+  />
+
+  <span
+    v-else
+    class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-medium"
+    :class="pillClass"
+    :style="pillStyle"
+  >
     <span
-      v-else-if="showValue && rawValue"
-      class="text-neutral-text-secondary text-sm"
-    >
-      {{ rawValue }}
-    </span>
-    <span
-      v-else
-      class="text-neutral-text-disabled text-sm"
-    >
-      -
-    </span>
-  </div>
+      v-if="showDot && color"
+      class="w-1.5 h-1.5 rounded-full inline-block"
+      :style="{ backgroundColor: color }"
+    />
+    <span>{{ displayLabel }}</span>
+  </span>
 </template>
 
 <script setup lang="ts">
 /**
  * DictTag - 字典标签组件
- * 功能：将字典值转换为标签显示，支持单值、多值、数组输入
- * 作者：帅姐姐
- * 创建日期：2026-04-30
+ * 功能：根据字典类型和值自动显示标签文本，支持颜色高亮
+ * 设计理念：借鉴若依 DictTag，零配置自动翻译 + 颜色映射
+ * 作者：系统
+ * 创建日期：2026-05-07
+ *
+ * 使用示例：
+ *   <DictTag dict-type="role" value="dps" />
+ *   <DictTag dict-type="profession" value="Guardian" variant="badge" />
+ *   <DictTag dict-type="role" value="support" variant="pill" show-dot />
  */
 
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import Tag from 'primevue/tag'
-
-interface DictOption {
-  value: string
-  label: string
-  css_class?: string
-  is_default?: number
-  list_class?: string
-}
+import Badge from 'primevue/badge'
+import { useDictStore } from '@/store/system/dict'
 
 interface Props {
-  /** 字典选项列表 */
-  options: DictOption[]
-  /** 字典值（支持单值、逗号分隔多值、数组） */
-  value: string | number | string[] | number[] | null | undefined
-  /** 是否显示未匹配的值 */
-  showValue?: boolean
-  /** 多值分隔符 */
-  separator?: string
+  /** 字典类型编码 */
+  dictType: string
+  /** 字典值 */
+  value?: string | number | null
+  /** 显示变体：text-纯文本 / tag-PrimeVue Tag / badge-PrimeVue Badge / pill-圆角标签（默认） */
+  variant?: 'text' | 'tag' | 'badge' | 'pill'
+  /** 是否显示颜色圆点（仅 text/pill 有效） */
+  showDot?: boolean
+  /** 为空时的占位文本 */
+  placeholder?: string
+  /** 自定义 CSS 类 */
+  customClass?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showValue: true,
-  separator: ','
+  variant: 'pill',
+  showDot: true,
+  placeholder: '-',
 })
 
-/**
- * 解析输入值为字符串数组
- */
-const parsedValues = computed(() => {
-  if (props.value === null || props.value === undefined || props.value === '') {
-    return []
-  }
+const dictStore = useDictStore()
 
-  if (Array.isArray(props.value)) {
-    return props.value.map(v => String(v)).filter(v => v !== '')
+/** 显示的标签文本 */
+const displayLabel = computed(() => {
+  if (props.value === undefined || props.value === null || props.value === '') {
+    return props.placeholder
   }
-
-  return String(props.value)
-    .split(props.separator)
-    .map(v => v.trim())
-    .filter(v => v !== '')
+  return dictStore.getDictLabel(props.dictType, props.value)
 })
 
-/**
- * 原始值字符串
- */
-const rawValue = computed(() => {
-  if (props.value === null || props.value === undefined) return ''
-  return Array.isArray(props.value) ? props.value.join(props.separator) : String(props.value)
+/** 原始值 */
+const displayValue = computed(() => String(props.value ?? ''))
+
+/** 字典项颜色 */
+const color = computed(() => {
+  if (props.value === undefined || props.value === null) return ''
+  return dictStore.getDictColor(props.dictType, props.value)
 })
 
-/**
- * 将 list_class 映射为 PrimeVue Tag severity
- */
-function mapSeverity(listClass?: string): string | undefined {
-  if (!listClass) return undefined
-  const severityMap: Record<string, string> = {
-    primary: 'info',
-    secondary: 'secondary',
-    success: 'success',
-    danger: 'danger',
-    warning: 'warn',
-    info: 'info',
-    contrast: 'contrast'
+/** 自动推断 PrimeVue severity */
+const computedSeverity = computed(() => {
+  // 如果字典有颜色，尝试映射到 PrimeVue severity
+  const c = color.value.toLowerCase()
+  if (c.includes('ff') && c.includes('4d')) return 'danger'      // 红
+  if (c.includes('00') && c.includes('d6')) return 'success'     // 绿
+  if (c.includes('35') && c.includes('b0')) return 'info'        // 蓝
+  if (c.includes('ff') && c.includes('aa')) return 'warning'     // 橙
+  if (c.includes('9d') && c.includes('4e')) return 'secondary'   // 紫
+  return 'secondary'
+})
+
+/** pill 样式 */
+const pillStyle = computed(() => {
+  if (!color.value) return {}
+  return {
+    backgroundColor: color.value + '1A', // 10% 透明度
+    color: color.value,
+    border: `1px solid ${color.value}40`,
   }
-  return severityMap[listClass] || undefined
-}
+})
 
-/**
- * 生成显示标签列表
- */
-const displayTags = computed(() => {
-  return parsedValues.value.map(val => {
-    const option = props.options.find(opt => opt.value === val)
+const pillClass = computed(() => {
+  return props.customClass || ''
+})
 
-    if (option) {
-      const style: Record<string, string> = {}
-      const cls: string[] = []
+/** text 样式 */
+const textStyle = computed(() => {
+  if (!color.value) return {}
+  return { color: color.value }
+})
 
-      if (option.css_class) {
-        // 判断是否为颜色值（以 # 开头）
-        if (option.css_class.startsWith('#')) {
-          style.backgroundColor = option.css_class
-          style.color = getContrastColor(option.css_class)
-          style.borderColor = option.css_class
-        } else {
-          cls.push(option.css_class)
-        }
-      }
+const textClass = computed(() => {
+  return `text-sm ${props.customClass || ''}`
+})
 
-      return {
-        label: option.label,
-        severity: mapSeverity(option.list_class),
-        style,
-        class: cls.join(' ')
-      }
+/** tag 样式 */
+const tagStyle = computed(() => {
+  if (!color.value) return {}
+  return {
+    backgroundColor: color.value + '20',
+    color: color.value,
+    borderColor: color.value + '40',
+  }
+})
+
+const tagClass = computed(() => {
+  return `border ${props.customClass || ''}`
+})
+
+/** badge 样式（Badge 组件不支持自定义颜色，用 severity） */
+const badgeStyle = computed(() => ({}))
+const badgeClass = computed(() => props.customClass || '')
+
+// 自动加载字典数据（如果缓存中没有）
+watch(
+  () => props.dictType,
+  (type) => {
+    if (type && !dictStore.hasDict(type)) {
+      dictStore.loadDict(type)
     }
-
-    // 未匹配的值
-    return {
-      label: val,
-      severity: undefined as string | undefined,
-      style: {} as Record<string, string>,
-      class: 'bg-neutral-bg-secondary text-neutral-text-secondary border border-neutral-border'
-    }
-  })
-})
-
-/**
- * 根据背景色计算对比文字颜色（简单版本）
- */
-function getContrastColor(hexColor: string): string {
-  const hex = hexColor.replace('#', '')
-  const r = parseInt(hex.substr(0, 2), 16)
-  const g = parseInt(hex.substr(2, 2), 16)
-  const b = parseInt(hex.substr(4, 2), 16)
-  const brightness = (r * 299 + g * 587 + b * 114) / 1000
-  return brightness > 128 ? '#0D0D0F' : '#F0F0F5'
-}
+  },
+  { immediate: true }
+)
 </script>
-
-<style scoped>
-.dict-tag :deep(.p-tag) {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
-  font-weight: 500;
-}
-</style>

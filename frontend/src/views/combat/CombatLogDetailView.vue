@@ -213,7 +213,7 @@
                 </div>
                 战斗属性统计
               </h3>
-              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-7 gap-3">
+              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-3">
                 <!-- 伤害构成 -->
                 <div
                   class="card p-3 rounded-xl border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
@@ -448,6 +448,63 @@
                     </p>
                     <p class="text-xs text-neutral-text-secondary">
                       命中率
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 击倒控制 -->
+                <div
+                  class="card p-3 rounded-xl border-warning/20 bg-gradient-to-br from-warning/5 to-transparent hover:border-warning/40 hover:shadow-lg hover:shadow-warning/10 transition-all duration-300 cursor-pointer"
+                  @click="openStatDetailDialog('control', '击倒控制统计')"
+                >
+                  <div class="flex flex-col items-center">
+                    <div class="p-2 rounded-lg bg-warning/10 mb-2">
+                      <i class="pi pi-arrow-down text-warning text-lg" />
+                    </div>
+                    <p class="text-lg font-bold text-neutral-text">
+                      {{ agg.total_downed || 0 }}
+                    </p>
+                    <p class="text-xs text-neutral-text-secondary">
+                      击倒
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 技能效率 -->
+                <div
+                  class="card p-3 rounded-xl border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 cursor-pointer"
+                  @click="openStatDetailDialog('efficiency', '技能效率统计')"
+                >
+                  <div class="flex flex-col items-center">
+                    <div class="p-2 rounded-lg bg-secondary/10 mb-2">
+                      <i class="pi pi-cog text-secondary text-lg" />
+                    </div>
+                    <p class="text-lg font-bold text-neutral-text">
+                      {{ statAverages.skillCastUptime?.toFixed(0) ?? 0 }}%
+                    </p>
+                    <p class="text-xs text-neutral-text-secondary">
+                      施法占比
+                    </p>
+                  </div>
+                </div>
+
+                <!-- 位置协同 -->
+                <div
+                  class="card p-3 rounded-xl border-info/20 bg-gradient-to-br from-info/5 to-transparent hover:border-info/40 hover:shadow-lg hover:shadow-info/10 transition-all duration-300 cursor-pointer"
+                  @click="openStatDetailDialog('position', '位置协同统计')"
+                >
+                  <div class="flex flex-col items-center">
+                    <div class="p-2 rounded-lg bg-info/10 mb-2">
+                      <i class="pi pi-map-marker text-info text-lg" />
+                    </div>
+                    <p class="text-lg font-bold text-neutral-text">
+                      {{ statAverages.stackDist?.toFixed(0) ?? 0 }}
+                    </p>
+                    <p class="text-xs text-neutral-text-secondary">
+                      堆叠距离
+                    </p>
+                    <p class="text-[10px] text-neutral-text-secondary mt-1">
+                      指挥距离 {{ statAverages.distToCom?.toFixed(0) ?? 0 }}
                     </p>
                   </div>
                 </div>
@@ -688,15 +745,78 @@
                     style="min-width: 70px"
                   />
                   <Column
-                    field="healing"
-                    header="治疗"
-                    style="min-width: 90px"
+                    field="downed"
+                    header="击倒"
+                    style="min-width: 70px"
                   >
                     <template #body="{ data }">
-                      <span class="text-sm">{{ fmtCompact(data.healing) }}</span>
+                      <span class="text-sm font-semibold text-warning">{{ data.downed || 0 }}</span>
+                    </template>
+                  </Column>
+                  <Column
+                    field="stun_break"
+                    header="解控"
+                    style="min-width: 70px"
+                  >
+                    <template #body="{ data }">
+                      <span class="text-sm">{{ data.stun_break || 0 }}</span>
                     </template>
                   </Column>
                 </DataTable>
+              </div>
+            </div>
+
+            <!-- 小队对比分析 -->
+            <div
+              v-if="groups.length > 0"
+              class="card p-5 rounded-xl border-neutral-border/50"
+            >
+              <h3 class="text-sm font-semibold text-neutral-text mb-4 flex items-center gap-2">
+                <div class="p-1.5 rounded-lg bg-primary/10">
+                  <i class="pi pi-chart-bar text-primary" />
+                </div>
+                小队对比分析
+              </h3>
+              <div class="space-y-3">
+                <div
+                  v-for="g in groups"
+                  :key="g.id"
+                  class="flex items-center gap-4"
+                >
+                  <span
+                    class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
+                    :style="{ backgroundColor: groupColor(g.id) }"
+                  >{{ g.id }}</span>
+                  <div class="flex-1 min-w-0">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-xs text-neutral-text-secondary">小队 {{ g.id }} · {{ g.players.length }}人</span>
+                      <span class="text-xs font-semibold text-primary">{{ fmtCompact(getTeamTotalDamage(g)) }}</span>
+                    </div>
+                    <div class="h-2 bg-neutral-bg rounded-full overflow-hidden">
+                      <div
+                        class="h-full rounded-full transition-all duration-700"
+                        :style="{
+                          width: Math.min((getTeamTotalDamage(g) / Math.max(groups.reduce((s, x) => s + getTeamTotalDamage(x), 0) / groups.length, 1)) * 50, 100) + '%',
+                          backgroundColor: groupColor(g.id)
+                        }"
+                      />
+                    </div>
+                  </div>
+                  <div class="flex items-center gap-3 text-xs flex-shrink-0">
+                    <div class="text-center">
+                      <span class="block font-semibold text-neutral-text">{{ fmtCompact(getTeamAvgDps(g)) }}</span>
+                      <span class="text-neutral-text-secondary">平均DPS</span>
+                    </div>
+                    <div class="text-center">
+                      <span class="block font-semibold text-error">{{ g.players.reduce((s, p) => s + (p.dead_count || 0), 0) }}</span>
+                      <span class="text-neutral-text-secondary">死亡</span>
+                    </div>
+                    <div class="text-center">
+                      <span class="block font-semibold text-warning">{{ g.players.reduce((s, p) => s + (p.downed || 0), 0) }}</span>
+                      <span class="text-neutral-text-secondary">击倒</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -724,14 +844,14 @@
             <!-- 统一内容区：左侧排行榜 + 右侧小队视图 -->
             <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
               <!-- 左侧：玩家排行榜 -->
-              <div class="xl:col-span-3 card rounded-xl border-neutral-border/50 overflow-hidden">
-                <div class="p-4 border-b border-neutral-border/50">
+              <div class="xl:col-span-3 card rounded-xl border-neutral-border/50 overflow-hidden flex flex-col h-full">
+                <div class="p-4 border-b border-neutral-border/50 flex-shrink-0">
                   <h4 class="text-sm font-semibold text-neutral-text flex items-center gap-2">
                     <i class="pi pi-list text-primary" />
                     玩家排行榜
                   </h4>
                 </div>
-                <div class="max-h-[600px] overflow-auto">
+                <div class="flex-1 overflow-auto">
                   <DataTable
                     :value="sortedPlayerList"
                     :paginator="true"
@@ -993,6 +1113,10 @@
                         >
                           {{ getTeamAvgScore(g)?.toFixed(1) ?? '-' }}
                         </span>
+                      </div>
+                      <div class="flex items-center justify-between text-xs">
+                        <span class="text-neutral-text-secondary">总击倒</span>
+                        <span class="font-semibold text-warning">{{ g.players.reduce((sum, p) => sum + (p.downed || 0), 0) }}</span>
                       </div>
                     </div>
                   </div>
@@ -1301,7 +1425,7 @@
         >
           <span class="text-xs text-neutral-text-secondary">平均值：</span>
           <span class="text-sm font-semibold text-primary">
-            {{ statDetailList.length > 0 ? (statDetailList.reduce((s, p) => s + parseFloat(getStatValue(p, currentStatType).replace('%', '')), 0) / statDetailList.length).toFixed(1) : '0' }}{{ currentStatType === 'condition_cleanses' || currentStatType === 'boon_strips' || currentStatType === 'damage_taken' ? '' : '%' }}
+            {{ statDetailAverage.toFixed(1) }}{{ currentStatType === 'condition_cleanses' || currentStatType === 'boon_strips' || currentStatType === 'damage_taken' || currentStatType === 'position' ? '' : '%' }}
           </span>
         </div>
       </div>
@@ -1361,16 +1485,19 @@
             <span class="text-xs text-neutral-text-secondary">{{ data.account }}</span>
           </template>
         </Column>
+        <!-- 动态字段列：根据当前分类展示一个或多个字段 -->
         <Column
-          :field="currentStatType"
-          header="数值"
-          style="min-width: 120px"
+          v-for="field in currentStatCategory"
+          :key="field"
+          :field="field"
+          :header="CATEGORY_FIELDS[currentStatType]?.labels[field] || field"
+          style="min-width: 100px"
         >
           <template #body="{ data }">
             <span
               class="text-sm font-semibold"
-              :class="getStatValueClass(currentStatType, data)"
-            >{{ getStatValue(data, currentStatType) }}</span>
+              :class="getStatValueClass(field, data)"
+            >{{ getStatValue(data, field) }}</span>
           </template>
         </Column>
       </DataTable>
@@ -1643,7 +1770,12 @@ const rotationLoading = ref(false)
 const showDetailStats = ref(false)
 const showDamageDetailDialog = ref(false)
 const showStatDetailDialog = ref(false)
-const currentStatType = ref<'protection' | 'stability' | 'condition_cleanses' | 'boon_strips' | 'damage_taken' | 'hitRate'>('protection')
+// 统计分类类型，支持单字段和分类弹窗
+type StatCategory =
+  | 'protection' | 'stability' | 'condition_cleanses' | 'boon_strips' | 'damage_taken' | 'hitRate'
+  | 'damage_output' | 'hit_quality' | 'buff_coverage' | 'survival' | 'support' | 'control' | 'efficiency' | 'position'
+const currentStatType = ref<StatCategory>('protection')
+const currentStatCategory = ref<string[]>([]) // 当前分类包含的字段列表
 const statDetailTitle = ref('')
 
 const logDetail = ref<Record<string, any>>({})
@@ -1657,74 +1789,74 @@ const tabItems = [
 const fightSummary = computed<EiAnalysisFight>(() => summary.value?.fight || ({} as EiAnalysisFight))
 const agg = computed<EiAnalysisAggregate>(() => summary.value?.aggregate || {
   duration_sec: 0, player_count: 0, total_damage: 0, total_power_damage: 0, total_condi_damage: 0,
-  total_breakbar_damage: 0, total_damage_taken: 0, total_healing: 0, total_kills: 0, total_deaths: 0,
-  total_downs: 0, total_boon_strips: 0, total_condition_cleanses: 0, total_resurrects: 0, avg_dps: 0, avg_critical_rate: 0
+  total_breakbar_damage: 0, total_damage_taken: 0, total_kills: 0, total_deaths: 0,
+  total_downs: 0, total_downed: 0, total_boon_strips: 0, total_condition_cleanses: 0, total_resurrects: 0, avg_dps: 0, avg_critical_rate: 0
 })
 
 const players = computed(() => summary.value?.players || [])
 
 const kpiList = computed(() => {
   const maxDamage = 5000000 // 参考最大值
-  const maxHealing = 2000000 // 参考最大值
+  const maxDowned = 100 // 参考最大值
   const maxDeaths = 50 // 参考最大值
   const maxDps = 50000 // 参考最大值
-  
+
   return [
-    { 
-      icon: 'pi pi-bolt', 
-      label: '总伤害', 
-      value: fmtCompact(agg.value.total_damage), 
-      color: 'text-primary', 
+    {
+      icon: 'pi pi-bolt',
+      label: '总伤害',
+      value: fmtCompact(agg.value.total_damage),
+      color: 'text-primary',
       bg: 'from-primary/20 to-primary/5',
       barColor: 'bg-primary',
       unit: '',
       percent: Math.min((agg.value.total_damage / maxDamage) * 100, 100)
     },
-    { 
-      icon: 'pi pi-heart', 
-      label: '总治疗', 
-      value: fmtCompact(agg.value.total_healing), 
-      color: 'text-success', 
-      bg: 'from-success/20 to-success/5',
-      barColor: 'bg-success',
-      unit: '',
-      percent: Math.min((agg.value.total_healing / maxHealing) * 100, 100)
-    },
-    { 
-      icon: 'pi pi-shield', 
-      label: '总承伤', 
-      value: fmtCompact(agg.value.total_damage_taken), 
-      color: 'text-secondary', 
+    {
+      icon: 'pi pi-shield',
+      label: '总承伤',
+      value: fmtCompact(agg.value.total_damage_taken),
+      color: 'text-secondary',
       bg: 'from-secondary/20 to-secondary/5',
       barColor: 'bg-secondary',
       unit: '',
       percent: Math.min((agg.value.total_damage_taken / maxDamage) * 100, 100)
     },
-    { 
-      icon: 'pi pi-star', 
-      label: '击杀', 
-      value: String(agg.value.total_kills || 0), 
-      color: 'text-success', 
+    {
+      icon: 'pi pi-star',
+      label: '击杀',
+      value: String(agg.value.total_kills || 0),
+      color: 'text-success',
       bg: 'from-success/20 to-success/5',
       barColor: 'bg-success',
       unit: '次',
       percent: Math.min((agg.value.total_kills / maxDeaths) * 100, 100)
     },
-    { 
-      icon: 'pi pi-times-circle', 
-      label: '死亡', 
-      value: String(agg.value.total_deaths || 0), 
-      color: 'text-error', 
+    {
+      icon: 'pi pi-times-circle',
+      label: '死亡',
+      value: String(agg.value.total_deaths || 0),
+      color: 'text-error',
       bg: 'from-error/20 to-error/5',
       barColor: 'bg-error',
       unit: '次',
       percent: Math.min((agg.value.total_deaths / maxDeaths) * 100, 100)
     },
-    { 
-      icon: 'pi pi-chart-line', 
-      label: '平均DPS', 
-      value: fmtCompact(agg.value.avg_dps), 
-      color: 'text-primary', 
+    {
+      icon: 'pi pi-arrow-down',
+      label: '击倒',
+      value: String(agg.value.total_downed || 0),
+      color: 'text-warning',
+      bg: 'from-warning/20 to-warning/5',
+      barColor: 'bg-warning',
+      unit: '次',
+      percent: Math.min((agg.value.total_downed / maxDowned) * 100, 100)
+    },
+    {
+      icon: 'pi pi-chart-line',
+      label: '平均DPS',
+      value: fmtCompact(agg.value.avg_dps),
+      color: 'text-primary',
       bg: 'from-primary/20 to-primary/5',
       barColor: 'bg-primary',
       unit: '',
@@ -1769,15 +1901,21 @@ const ungroupedPlayers = computed(() => players.value.filter((p: EiAnalysisPlaye
 
 const statAverages = computed(() => {
   const list = players.value
-  if (!list.length) return { protection: 0, stability: 0, hitRate: 100 }
+  if (!list.length) return { protection: 0, stability: 0, hitRate: 100, skillCastUptime: 0, stackDist: 0, distToCom: 0 }
   const sum = (key: keyof EiAnalysisPlayer) => list.reduce((s, p) => s + (Number(p[key]) || 0), 0)
   const avgProtection = list.filter(p => p.protection_uptime > 0).reduce((s, p) => s + p.protection_uptime, 0) / list.filter(p => p.protection_uptime > 0).length || 0
   const avgStability = list.filter(p => p.stability_uptime > 0).reduce((s, p) => s + p.stability_uptime, 0) / list.filter(p => p.stability_uptime > 0).length || 0
   const hitRate = 100 - ((sum('missed') / (sum('missed') + sum('critical_rate') + sum('flanking_rate') + sum('glance_rate') + 1)) * 100) || 0
+  const avgSkillCast = list.filter(p => p.skill_cast_uptime > 0).reduce((s, p) => s + p.skill_cast_uptime, 0) / list.filter(p => p.skill_cast_uptime > 0).length || 0
+  const avgStackDist = list.filter(p => p.stack_dist > 0).reduce((s, p) => s + p.stack_dist, 0) / list.filter(p => p.stack_dist > 0).length || 0
+  const avgDistToCom = list.filter(p => p.dist_to_com > 0).reduce((s, p) => s + p.dist_to_com, 0) / list.filter(p => p.dist_to_com > 0).length || 0
   return {
     protection: avgProtection || 0,
     stability: avgStability || 0,
-    hitRate: Math.min(Math.max(hitRate, 0), 100)
+    hitRate: Math.min(Math.max(hitRate, 0), 100),
+    skillCastUptime: avgSkillCast || 0,
+    stackDist: avgStackDist || 0,
+    distToCom: avgDistToCom || 0,
   }
 })
 
@@ -1795,34 +1933,62 @@ const getTeamAvgScore = (g: { id: number; players: EiAnalysisPlayer[] }): number
   return scored.length ? scored.reduce((sum, p) => sum + (p.ai_score || 0), 0) / scored.length : undefined
 }
 
+// 分类排序主键
+const CATEGORY_SORT_KEY: Record<StatCategory, keyof EiAnalysisPlayer> = {
+  protection: 'protection_uptime',
+  stability: 'stability_uptime',
+  condition_cleanses: 'condition_cleanses',
+  boon_strips: 'boon_strips',
+  damage_taken: 'damage_taken',
+  hitRate: 'missed',
+  damage_output: 'damage',
+  hit_quality: 'critical_rate',
+  buff_coverage: 'might_uptime',
+  survival: 'damage_taken',
+  support: 'boon_strips',
+  control: 'downed',
+  efficiency: 'skill_cast_uptime',
+  position: 'stack_dist',
+}
+
 const statDetailList = computed(() => {
   const list = [...players.value]
-  switch (currentStatType.value) {
-    case 'protection':
-      return list.filter(p => p.protection_uptime > 0).sort((a, b) => b.protection_uptime - a.protection_uptime)
-    case 'stability':
-      return list.filter(p => p.stability_uptime > 0).sort((a, b) => b.stability_uptime - a.stability_uptime)
-    case 'condition_cleanses':
-      return list.sort((a, b) => b.condition_cleanses - a.condition_cleanses)
-    case 'boon_strips':
-      return list.sort((a, b) => b.boon_strips - a.boon_strips)
-    case 'damage_taken':
-      return list.sort((a, b) => b.damage_taken - a.damage_taken)
-    case 'hitRate':
-      return list.sort((a, b) => {
-        const aRate = 100 - ((a.missed || 0) / ((a.missed || 0) + (a.critical_rate || 0) + (a.flanking_rate || 0) + (a.glance_rate || 0) + 1) * 100)
-        const bRate = 100 - ((b.missed || 0) / ((b.missed || 0) + (b.critical_rate || 0) + (b.flanking_rate || 0) + (b.glance_rate || 0) + 1) * 100)
-        return bRate - aRate
-      })
-    default:
-      return list
+  const type = currentStatType.value
+  const sortKey = CATEGORY_SORT_KEY[type] || 'damage'
+  // 对于命中率特殊排序（missed 越少越好）
+  if (type === 'hitRate') {
+    return list.sort((a, b) => {
+      const aRate = 100 - ((a.missed || 0) / ((a.missed || 0) + (a.critical_rate || 0) + (a.flanking_rate || 0) + (a.glance_rate || 0) + 1) * 100)
+      const bRate = 100 - ((b.missed || 0) / ((b.missed || 0) + (b.critical_rate || 0) + (b.flanking_rate || 0) + (b.glance_rate || 0) + 1) * 100)
+      return bRate - aRate
+    })
   }
+  return list.sort((a: any, b: any) => (b[sortKey] || 0) - (a[sortKey] || 0))
+})
+
+const statDetailAverage = computed(() => {
+  const fields = currentStatCategory.value
+  const list = statDetailList.value
+  if (!list.length || !fields.length) return 0
+  let total = 0
+  let count = 0
+  for (const p of list) {
+    for (const f of fields) {
+      const val = getStatValue(p, f)
+      const num = parseFloat(String(val).replace('%', '').replace(/,/g, ''))
+      if (!isNaN(num) && isFinite(num)) {
+        total += num
+        count++
+      }
+    }
+  }
+  return count > 0 ? total / count : 0
 })
 
 const getStatValue = (p: EiAnalysisPlayer, type: string) => {
   switch (type) {
-    case 'protection': return p.protection_uptime.toFixed(1) + '%'
-    case 'stability': return p.stability_uptime.toFixed(1) + '%'
+    case 'protection': return (p.protection_uptime || 0).toFixed(1) + '%'
+    case 'stability': return (p.stability_uptime || 0).toFixed(1) + '%'
     case 'condition_cleanses': return fmtCompact(p.condition_cleanses)
     case 'boon_strips': return fmtCompact(p.boon_strips)
     case 'damage_taken': return fmtCompact(p.damage_taken)
@@ -1830,6 +1996,40 @@ const getStatValue = (p: EiAnalysisPlayer, type: string) => {
       const rate = 100 - ((p.missed || 0) / ((p.missed || 0) + (p.critical_rate || 0) + (p.flanking_rate || 0) + (p.glance_rate || 0) + 1) * 100)
       return rate.toFixed(1) + '%'
     }
+    case 'damage': return fmtCompact(p.damage)
+    case 'dps': return fmtCompact(p.dps)
+    case 'power_damage': return fmtCompact(p.power_damage)
+    case 'condi_damage': return fmtCompact(p.condi_damage)
+    case 'breakbar_damage': return fmtCompact(p.breakbar_damage)
+    case 'critical_rate': return String(p.critical_rate || 0)
+    case 'flanking_rate': return String(p.flanking_rate || 0)
+    case 'glance_rate': return String(p.glance_rate || 0)
+    case 'missed': return String(p.missed || 0)
+    case 'interrupts': return String(p.interrupts || 0)
+    case 'might_uptime': return (p.might_uptime || 0).toFixed(1) + '%'
+    case 'fury_uptime': return (p.fury_uptime || 0).toFixed(1) + '%'
+    case 'quickness_uptime': return (p.quickness_uptime || 0).toFixed(1) + '%'
+    case 'alacrity_uptime': return (p.alacrity_uptime || 0).toFixed(1) + '%'
+    case 'blocked_count': return String(p.blocked_count || 0)
+    case 'evaded_count': return String(p.evaded_count || 0)
+    case 'dodge_count': return String(p.dodge_count || 0)
+    case 'down_count': return String(p.down_count || 0)
+    case 'dead_count': return String(p.dead_count || 0)
+    case 'downed_damage_taken': return fmtCompact(p.downed_damage_taken || 0)
+    case 'interrupted_count': return String(p.interrupted_count || 0)
+    case 'resurrects': return String(p.resurrects || 0)
+    case 'condi_cleanse_ally': return String(p.condi_cleanse_ally || 0)
+    case 'stun_break': return String(p.stun_break || 0)
+    case 'downed': return String(p.downed || 0)
+    case 'applied_cc_count': return String(p.applied_cc_count || 0)
+    case 'applied_cc_duration': return String(p.applied_cc_duration || 0)
+    case 'down_contribution': return String(p.down_contribution || 0)
+    case 'against_downed_damage': return fmtCompact(p.against_downed_damage || 0)
+    case 'wasted': return String(p.wasted || 0)
+    case 'saved': return String(p.saved || 0)
+    case 'skill_cast_uptime': return (p.skill_cast_uptime || 0).toFixed(1) + '%'
+    case 'stack_dist': return (p.stack_dist || 0).toFixed(0)
+    case 'dist_to_com': return (p.dist_to_com || 0).toFixed(0)
     default: return '-'
   }
 }
@@ -1840,20 +2040,71 @@ const getStatValueClass = (type: string, p: EiAnalysisPlayer) => {
     case 'protection':
     case 'stability':
     case 'hitRate':
+    case 'skill_cast_uptime':
       return val >= 70 ? 'text-success' : val >= 40 ? 'text-warning' : 'text-error'
     case 'condition_cleanses':
     case 'boon_strips':
+    case 'downed':
+    case 'applied_cc_count':
+    case 'stun_break':
       return 'text-primary'
     case 'damage_taken':
+    case 'down_count':
+    case 'dead_count':
+    case 'interrupted_count':
       return 'text-secondary'
     default:
       return 'text-neutral-text'
   }
 }
 
-const openStatDetailDialog = (type: 'protection' | 'stability' | 'condition_cleanses' | 'boon_strips' | 'damage_taken' | 'hitRate', title: string) => {
+// 分类定义：字段 -> 中文标签
+const CATEGORY_FIELDS: Record<StatCategory, { fields: string[]; labels: Record<string, string> }> = {
+  protection: { fields: ['protection_uptime'], labels: { protection_uptime: '保护覆盖率' } },
+  stability: { fields: ['stability_uptime'], labels: { stability_uptime: '稳固覆盖率' } },
+  condition_cleanses: { fields: ['condition_cleanses'], labels: { condition_cleanses: '清症次数' } },
+  boon_strips: { fields: ['boon_strips'], labels: { boon_strips: '削增益次数' } },
+  damage_taken: { fields: ['damage_taken'], labels: { damage_taken: '承受伤害' } },
+  hitRate: { fields: ['hitRate'], labels: { hitRate: '命中率' } },
+  damage_output: {
+    fields: ['damage', 'dps', 'power_damage', 'condi_damage', 'breakbar_damage'],
+    labels: { damage: '总伤害', dps: 'DPS', power_damage: '直伤', condi_damage: '症状', breakbar_damage: '破甲' }
+  },
+  hit_quality: {
+    fields: ['critical_rate', 'flanking_rate', 'glance_rate', 'missed', 'interrupts'],
+    labels: { critical_rate: '暴击次数', flanking_rate: '背击次数', glance_rate: '偏斜次数', missed: '未命中', interrupts: '打断' }
+  },
+  buff_coverage: {
+    fields: ['might_uptime', 'fury_uptime', 'quickness_uptime', 'alacrity_uptime', 'protection_uptime', 'stability_uptime'],
+    labels: { might_uptime: '力量', fury_uptime: '狂怒', quickness_uptime: '急速', alacrity_uptime: '敏捷', protection_uptime: '保护', stability_uptime: '稳固' }
+  },
+  survival: {
+    fields: ['damage_taken', 'blocked_count', 'evaded_count', 'dodge_count', 'down_count', 'dead_count', 'downed_damage_taken', 'interrupted_count'],
+    labels: { damage_taken: '承伤', blocked_count: '格挡', evaded_count: '闪避', dodge_count: '翻滚', down_count: '倒地', dead_count: '死亡', downed_damage_taken: '倒地承伤', interrupted_count: '被打断' }
+  },
+  support: {
+    fields: ['boon_strips', 'condition_cleanses', 'resurrects', 'condi_cleanse_ally', 'stun_break'],
+    labels: { boon_strips: '削增益', condition_cleanses: '清症', resurrects: '复活', condi_cleanse_ally: '队友清症', stun_break: '解控' }
+  },
+  control: {
+    fields: ['downed', 'applied_cc_count', 'applied_cc_duration', 'down_contribution', 'against_downed_damage'],
+    labels: { downed: '击倒敌人', applied_cc_count: 'CC次数', applied_cc_duration: 'CC时长', down_contribution: '倒地贡献', against_downed_damage: '对倒地伤害' }
+  },
+  efficiency: {
+    fields: ['wasted', 'saved', 'skill_cast_uptime'],
+    labels: { wasted: '技能浪费', saved: '技能节省', skill_cast_uptime: '施法占比' }
+  },
+  position: {
+    fields: ['stack_dist', 'dist_to_com'],
+    labels: { stack_dist: '堆叠距离', dist_to_com: '与指挥距离' }
+  },
+}
+
+const openStatDetailDialog = (type: StatCategory, title: string) => {
   currentStatType.value = type
   statDetailTitle.value = title
+  const cfg = CATEGORY_FIELDS[type]
+  currentStatCategory.value = cfg ? cfg.fields : [type]
   showStatDetailDialog.value = true
 }
 
@@ -2031,11 +2282,12 @@ const sortedSkillCasts = computed(() => {
   return Object.entries(playerRotation.value.skill_casts)
     .map(([skillId, count]) => {
       const name = map[skillId]?.name || `技能 #${skillId}`
+      const iconUrl = map[skillId]?.icon || ''
       return {
         skillId,
         count,
         name,
-        icon: getSkillIconUrl(name),
+        icon: getSkillIconUrl(name, iconUrl),
       }
     })
     .sort((a, b) => b.count - a.count)
@@ -2049,7 +2301,8 @@ const rotationEvents = computed(() => {
     if (!rot || typeof rot !== 'object') return
     const skillId = rot.id ?? 0
     const name = map[String(skillId)]?.name || `技能 #${skillId}`
-    const icon = getSkillIconUrl(name)
+    const iconUrl = map[String(skillId)]?.icon || ''
+    const icon = getSkillIconUrl(name, iconUrl)
     ;(rot.skills || []).forEach((cast: any) => {
       events.push({
         time: (cast.castTime ?? 0) / 1000,

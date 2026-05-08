@@ -36,8 +36,12 @@
             <i :class="role.icon" />
           </div>
           <div>
-            <h4 class="font-semibold text-neutral-text text-sm">{{ role.label }}</h4>
-            <p class="text-xs text-neutral-text-secondary">{{ role.description }}</p>
+            <h4 class="font-semibold text-neutral-text text-sm">
+              {{ role.label }}
+            </h4>
+            <p class="text-xs text-neutral-text-secondary">
+              {{ role.description }}
+            </p>
           </div>
         </div>
         <div
@@ -52,9 +56,15 @@
     </div>
 
     <!-- 权重状态提示 -->
-    <div class="mb-6 p-4 rounded-xl" :class="weightStatusBgClass">
+    <div
+      class="mb-6 p-4 rounded-xl"
+      :class="weightStatusBgClass"
+    >
       <div class="flex items-center justify-between mb-2">
-        <span class="text-sm font-medium" :class="weightStatusTextClass">
+        <span
+          class="text-sm font-medium"
+          :class="weightStatusTextClass"
+        >
           权重总和: {{ totalWeight.toFixed(2) }} / 1.00
         </span>
         <span
@@ -85,10 +95,13 @@
         :responsive="true"
         :resizable-columns="true"
         scrollable
-        scrollHeight="auto"
+        scroll-height="auto"
       >
         <!-- 排序列 -->
-        <Column header="排序" style="width: 80px; min-width: 80px;">
+        <Column
+          header="排序"
+          style="width: 80px; min-width: 80px;"
+        >
           <template #body="{ index }">
             <div class="flex items-center gap-1">
               <Button
@@ -115,7 +128,10 @@
         </Column>
 
         <!-- 评分维度列 -->
-        <Column header="评分维度" style="width: 150px; min-width: 150px;">
+        <Column
+          header="评分维度"
+          style="width: 150px; min-width: 150px;"
+        >
           <template #body="{ data }">
             <div class="flex items-center gap-2">
               <div
@@ -130,10 +146,16 @@
         </Column>
 
         <!-- 权重列 -->
-        <Column header="权重" style="width: 280px; min-width: 280px;">
+        <Column
+          header="权重"
+          style="width: 280px; min-width: 280px;"
+        >
           <template #body="{ index }">
             <div class="flex items-center gap-3">
-              <div class="flex-1" style="min-width: 150px; max-width: 180px;">
+              <div
+                class="flex-1"
+                style="min-width: 150px; max-width: 180px;"
+              >
                 <Slider
                   v-model="editableRules[index].weight"
                   :min="0"
@@ -160,7 +182,10 @@
         </Column>
 
         <!-- 描述列 -->
-        <Column header="描述" style="flex: 1; min-width: 250px;">
+        <Column
+          header="描述"
+          style="flex: 1; min-width: 250px;"
+        >
           <template #body="{ index }">
             <InputText
               v-model="editableRules[index].description"
@@ -173,7 +198,10 @@
         </Column>
 
         <!-- 状态列 -->
-        <Column header="状态" style="width: 120px; min-width: 120px;">
+        <Column
+          header="状态"
+          style="width: 120px; min-width: 120px;"
+        >
           <template #body="{ data, index }">
             <div class="flex items-center gap-2">
               <ToggleSwitch
@@ -191,7 +219,10 @@
         </Column>
 
         <!-- 操作列 -->
-        <Column header="操作" style="width: 60px; min-width: 60px;">
+        <Column
+          header="操作"
+          style="width: 60px; min-width: 60px;"
+        >
           <template #body="{ index }">
             <Button
               icon="pi pi-trash"
@@ -208,7 +239,9 @@
         <template #empty>
           <div class="py-12 text-center">
             <i class="pi pi-inbox text-4xl mb-3 opacity-50 text-neutral-text-tertiary" />
-            <p class="text-sm text-neutral-text-tertiary">暂无评分规则，请添加新规则</p>
+            <p class="text-sm text-neutral-text-tertiary">
+              暂无评分规则，请添加新规则
+            </p>
           </div>
         </template>
       </DataTable>
@@ -268,8 +301,8 @@
             severity="success"
             size="small"
             :disabled="!newRuleDimension"
-            @click="addRule"
             class="w-full"
+            @click="addRule"
           />
         </div>
       </div>
@@ -293,8 +326,12 @@
           >
             {{ grade.letter }}
           </div>
-          <div class="text-xs font-medium text-neutral-text">{{ grade.range }}</div>
-          <div class="text-xs text-neutral-text-tertiary">{{ grade.desc }}</div>
+          <div class="text-xs font-medium text-neutral-text">
+            {{ grade.range }}
+          </div>
+          <div class="text-xs text-neutral-text-tertiary">
+            {{ grade.desc }}
+          </div>
         </div>
       </div>
     </div>

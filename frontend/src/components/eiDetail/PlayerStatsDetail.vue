@@ -56,13 +56,13 @@
             <span class="stat-label">评分</span>
           </div>
         </div>
-        <div class="stat-box hps">
+        <div class="stat-box cleanse">
           <div class="stat-icon">
-            <i class="pi pi-heart" />
+            <i class="pi pi-minus-circle" />
           </div>
           <div class="stat-data">
-            <span class="stat-value">{{ player.hps || 0 }}</span>
-            <span class="stat-label">HPS</span>
+            <span class="stat-value">{{ player.support?.[0]?.condiCleanse || 0 }}</span>
+            <span class="stat-label">清症</span>
           </div>
         </div>
       </div>
@@ -297,7 +297,7 @@ function formatLargeNumber(num: number): string {
   background: linear-gradient(135deg, #f59e0b, #eab308);
 }
 
-.stat-box.hps .stat-icon {
+.stat-box.cleanse .stat-icon {
   background: linear-gradient(135deg, #22c55e, #10b981);
 }
 

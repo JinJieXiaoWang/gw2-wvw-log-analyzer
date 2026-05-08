@@ -160,3 +160,44 @@ export function getAuthHeader(): string {
   const token = getToken();
   return token ? `Bearer ${token.accessToken}` : '';
 }
+
+// =============================================================================
+// Token 过期定时监控
+// =============================================================================
+
+let _tokenMonitorInterval: ReturnType<typeof setInterval> | null = null;
+
+/**
+ * 启动 Token 过期后台监控
+ * @param onExpired Token 过期时的回调函数
+ * @param intervalMs 检测间隔（毫秒），默认 60 秒
+ */
+export function startTokenMonitor(
+  onExpired: () => void,
+  intervalMs: number = 60000
+): void {
+  if (_tokenMonitorInterval) {
+    clearInterval(_tokenMonitorInterval);
+  }
+
+  // 立即执行一次检测
+  if (!getToken()) {
+    onExpired();
+  }
+
+  _tokenMonitorInterval = setInterval(() => {
+    if (!getToken()) {
+      onExpired();
+    }
+  }, intervalMs);
+}
+
+/**
+ * 停止 Token 过期监控
+ */
+export function stopTokenMonitor(): void {
+  if (_tokenMonitorInterval) {
+    clearInterval(_tokenMonitorInterval);
+    _tokenMonitorInterval = null;
+  }
+}

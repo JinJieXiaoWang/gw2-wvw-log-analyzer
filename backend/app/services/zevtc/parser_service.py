@@ -220,7 +220,7 @@ class LogParser:
             "healing": self._extract_player_healing(player),
             "power_damage": dps_data.get("powerDamage", 0),
             "condi_damage": dps_data.get("condiDamage", 0),
-            "kills": defense_data.get("killed", 0),
+            "kills": stats_data.get("killed", 0),
             "deaths": defense_data.get("deadCount", 0),
             "downs": defense_data.get("downCount", 0),
             "time_in_combat": combat_time,

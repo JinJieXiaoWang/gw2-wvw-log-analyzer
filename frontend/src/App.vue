@@ -29,16 +29,38 @@
         />
       </div>
     </transition>
+
+    <!-- 全局 Toast（用于认证事件等全局提示） -->
+    <Toast position="top-right" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
 import AppWatermark from '@/components/system/AppWatermark.vue'
 import { useSettingsStore } from '@/store/system/settings'
 
 const isLoading = ref(false)
 const settingsStore = useSettingsStore()
+const toast = useToast()
+
+/**
+ * 全局 Toast 事件处理
+ * 供 main.ts 等非 Vue 组件场景调用
+ */
+const handleGlobalToast = (event: Event) => {
+  const detail = (event as CustomEvent).detail
+  if (detail) {
+    toast.add({
+      severity: detail.severity || 'info',
+      summary: detail.summary || '提示',
+      detail: detail.message || detail.detail || '',
+      life: detail.life || 3000
+    })
+  }
+}
 
 onMounted(() => {
   console.log('GW2 WVW Log Analyzer initialized')
@@ -51,6 +73,13 @@ onMounted(() => {
     const event = new Event('pageTransitionStart')
     window.dispatchEvent(event)
   }, 100)
+
+  // 监听全局 Toast 事件
+  window.addEventListener('global:toast', handleGlobalToast)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('global:toast', handleGlobalToast)
 })
 </script>
 

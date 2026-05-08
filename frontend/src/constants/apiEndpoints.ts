@@ -160,7 +160,8 @@ export const API_ENDPOINTS = {
     TYPE_DETAIL: (dictId: string | number) => `${API_V1}/dictionary/types/${dictId}`,
     TYPES_ALL: `${API_V1}/dictionary/types/all`,
     RELOAD_CACHE: `${API_V1}/dictionary/reload-cache`,
-    INIT: `${API_V1}/dictionary/init`
+    INIT: `${API_V1}/dictionary/init`,
+    PROFESSION_SPECS_CASCADE: `${API_V1}/dictionary/cascade/profession-specs`,
   },
 
   // 成员管理
@@ -211,6 +212,21 @@ export const API_ENDPOINTS = {
     BATCH: `${API_V1}/scoring-rules/rules/batch`,
     RESET: `${API_V1}/scoring-rules/rules/reset`,
     DIMENSIONS: `${API_V1}/scoring-rules/dimensions`,
+    // v3.0 新增：职业特定规则
+    PROFESSION_RULES: (profession: string) => `${API_V1}/scoring-rules/rules/profession/${encodeURIComponent(profession)}`,
+    PROFESSIONS: `${API_V1}/scoring-rules/professions`,
+    // v3.0 新增：版本管理
+    VERSIONS: `${API_V1}/scoring-rules/versions`,
+    VERSION_DETAIL: (id: string | number) => `${API_V1}/scoring-rules/versions/${id}`,
+    VERSION_BUMP: `${API_V1}/scoring-rules/versions/bump`,
+  },
+
+  // 评分系统（实时计算 + 重算任务）
+  SCORING: {
+    RULES: `${API_V1}/scoring/rules`,
+    FIGHT: (id: string | number) => `${API_V1}/scoring/fight/${id}`,
+    RECALCULATE: `${API_V1}/scoring/recalculate`,
+    RECALCULATE_STATUS: (versionId: string | number) => `${API_V1}/scoring/recalculate/${versionId}`,
   },
 
   // 角色管理
@@ -254,6 +270,14 @@ export const API_ENDPOINTS = {
     PHASES: (logId: string | number) => `${API_V1}/wvw-report/${logId}/phases`,
     TIMELINE: (logId: string | number) => `${API_V1}/wvw-report/${logId}/timeline`,
     SKILL_MAP: (logId: string | number) => `${API_V1}/wvw-report/${logId}/skill-map`,
+  },
+
+  // 通知中心
+  NOTICES: {
+    UNREAD_COUNT: `${API_V1}/notices/unread-count`,
+    LIST: `${API_V1}/notices`,
+    MARK_READ: (id: string | number) => `${API_V1}/notices/${id}/read`,
+    MARK_ALL_READ: `${API_V1}/notices/read-all`,
   },
 
   // 战斗分析

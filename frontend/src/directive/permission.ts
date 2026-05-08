@@ -25,13 +25,21 @@ interface PermissionBinding {
 }
 
 /**
- * 检查是否有admin角色
- * admin是super_admin的别名，operator也应该有管理权限
+ * 检查是否有admin角色（仅 super_admin）
  */
 function checkAdminRole(): boolean {
   const user = authStore.getUser()
   const userRole = user?.role as string | undefined
-  return userRole === 'super_admin' || userRole === 'admin' || userRole === 'operator'
+  return userRole === 'super_admin'
+}
+
+/**
+ * 检查是否已登录（operator 或 super_admin）
+ */
+function checkLoggedInRole(): boolean {
+  const user = authStore.getUser()
+  const userRole = user?.role as string | undefined
+  return userRole === 'super_admin' || userRole === 'operator'
 }
 
 /**
@@ -47,6 +55,9 @@ function checkPermission(binding: PermissionBinding): boolean {
   if (typeof value === 'string') {
     if (value === 'admin') {
       return checkAdminRole()
+    }
+    if (value === 'logged_in') {
+      return checkLoggedInRole()
     }
     return authStore.hasPermission(value as Permission)
   }
