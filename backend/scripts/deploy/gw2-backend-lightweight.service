@@ -26,7 +26,7 @@ Environment="DEBUG=False"
 Environment="API_PREFIX=/api/v1"
 # 安全提示：生产环境必须设置强密钥（至少32位随机字符串）
 Environment="SECRET_KEY=CHANGE_ME_TO_A_RANDOM_STRING_AT_LEAST_32_CHARS_LONG"
-Environment="BACKEND_CORS_ORIGINS=http://localhost:5173,http://localhost:3000"
+Environment="BACKEND_CORS_ORIGINS=[\"http://localhost:5173\",\"http://localhost:3000\",\"https://www.gw2-log-analyzer.top\",\"http://www.gw2-log-analyzer.top\"]"
 
 # ==================== 日志配置 ====================
 Environment="LOG_LEVEL=INFO"
