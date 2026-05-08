@@ -41,7 +41,7 @@ class SysConfig(Base):
     update_time = Column(
         DateTime(timezone=True),
         onupdate=datetime.now,
-        server_default=text("CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"),
+        server_default=text("CURRENT_TIMESTAMP"),
         comment="更新时间",
     )
     remark = Column(String(500), nullable=True, comment="备注")
