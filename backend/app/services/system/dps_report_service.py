@@ -28,6 +28,15 @@ DPS_REPORT_UPLOAD_URL = "https://dps.report/uploadContent"
 DPS_REPORT_JSON_URL = "https://dps.report/getJson"
 DPS_REPORT_TOKEN_URL = "https://dps.report/getUserToken"
 
+# 支持通过环境变量配置代理（适用于中国大陆服务器）
+REQUESTS_PROXIES = {}
+_http_proxy = os.environ.get("HTTP_PROXY") or os.environ.get("http_proxy")
+_https_proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+if _http_proxy:
+    REQUESTS_PROXIES["http"] = _http_proxy
+if _https_proxy:
+    REQUESTS_PROXIES["https"] = _https_proxy
+
 # 进程级内存缓存（确保同一进程内复用，不同进程/机器各自独立）
 _dps_report_token: Optional[str] = None
 
@@ -66,7 +75,7 @@ def _get_user_token() -> Optional[str]:
         return _dps_report_token
 
     try:
-        resp = requests.get(DPS_REPORT_TOKEN_URL, timeout=30)
+        resp = requests.get(DPS_REPORT_TOKEN_URL, timeout=30, proxies=REQUESTS_PROXIES)
         if resp.status_code == 200:
             data = resp.json()
             token = data.get("userToken")
@@ -137,7 +146,7 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
             upload_url = (
                 f"{DPS_REPORT_UPLOAD_URL}?json=1&generator=ei{token_param}"
             )
-            upload_resp = requests.post(upload_url, files=files, timeout=300)
+            upload_resp = requests.post(upload_url, files=files, timeout=300, proxies=REQUESTS_PROXIES)
 
         if upload_resp.status_code == 429:
             # 被限流：记录拒绝，让上层重试
@@ -172,6 +181,7 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
         json_resp = requests.get(
             f"{DPS_REPORT_JSON_URL}?permalink={permalink}{token_param}",
             timeout=60,
+            proxies=REQUESTS_PROXIES,
         )
 
         if json_resp.status_code != 200:

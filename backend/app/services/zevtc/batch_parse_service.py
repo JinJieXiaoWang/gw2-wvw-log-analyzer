@@ -469,9 +469,22 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
         raise TimeoutError(f"子进程解析超时（{SUBPROCESS_TIMEOUT}秒）")
 
     if proc.exitcode != 0:
-        raise RuntimeError(f"子进程异常退出，exitcode={proc.exitcode}")
+        # 尝试获取子进程错误输出
+        error_detail = ""
+        try:
+            error_detail = queue.get(timeout=1)
+        except Exception:
+            pass
+        raise RuntimeError(
+            f"子进程异常退出，exitcode={proc.exitcode}"
+            f"{(', 错误: ' + str(error_detail)) if error_detail else ''}"
+        )
 
-    result = queue.get()
+    try:
+        result = queue.get(timeout=5)
+    except Exception:
+        raise RuntimeError("子进程未返回结果")
+
     if not result.get("success"):
         raise Exception(result.get("error", "日志导入失败"))
 
