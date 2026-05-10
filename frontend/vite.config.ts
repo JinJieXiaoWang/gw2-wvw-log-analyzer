@@ -15,6 +15,7 @@ export default defineConfig({
     include: ['tests/**/*.spec.ts', 'tests/**/*.test.ts', 'src/**/*.spec.ts', 'src/**/*.test.ts']
   },
   server: {
+    host: '0.0.0.0',
     port: 3000,
     open: true,
     proxy: {
