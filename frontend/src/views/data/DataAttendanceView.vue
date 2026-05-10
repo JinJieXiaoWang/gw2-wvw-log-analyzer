@@ -380,239 +380,17 @@
       </div>
     </div>
 
-    <!-- 账号详情对话框 -->
+    <!-- 账号详情页面 -->
     <Dialog
       v-model:visible="detailVisible"
       :header="`账号详情：${selectedAccount}`"
       maximizable
       modal
-      :style="{ width: '900px', maxWidth: '95vw' }"
+      :style="{ width: '95%', maxWidth: '1400px', height: '95vh' }"
       :breakpoints="{ '960px': '95vw' }"
       class="game-dialog"
     >
-      <div
-        v-if="detailLoading"
-        class="flex items-center justify-center py-12"
-      >
-        <ProgressSpinner style="width: 50px; height: 50px" />
-      </div>
-
-      <div
-        v-else-if="detailData"
-        class="space-y-6"
-      >
-        <!-- 汇总卡片 -->
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="card p-4">
-            <p class="text-xs text-neutral-text-secondary">
-              出勤天数
-            </p>
-            <p class="text-2xl font-bold text-primary">
-              {{ detailData.summary?.attendance_count || 0 }}
-            </p>
-          </div>
-          <div class="card p-4">
-            <p class="text-xs text-neutral-text-secondary">
-              总伤害
-            </p>
-            <p class="text-2xl font-bold text-status-error">
-              {{ formatNumber(detailData.summary?.total_damage || 0) }}
-            </p>
-          </div>
-          <div class="card p-4">
-            <p class="text-xs text-neutral-text-secondary">
-              总治疗
-            </p>
-            <p class="text-2xl font-bold text-status-success">
-              {{ formatNumber(detailData.summary?.total_healing || 0) }}
-            </p>
-          </div>
-          <div class="card p-4">
-            <p class="text-xs text-neutral-text-secondary">
-              K/D
-            </p>
-            <p class="text-2xl font-bold text-secondary">
-              {{ detailData.summary?.kd_ratio || 0 }}
-            </p>
-          </div>
-        </div>
-
-        <TabView>
-          <!-- 角色列表 -->
-          <TabPanel
-            header="角色统计"
-            value="0"
-          >
-            <DataTable
-              :value="detailData.characters || []"
-              class="w-full game-table"
-              removable-sort
-            >
-              <Column
-                field="character_name"
-                header="角色名"
-              >
-                <template #body="{ data }">
-                  <div class="flex items-center gap-2">
-                    <div
-                      class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold"
-                      :style="{ backgroundColor: getProfessionColor(data.profession) }"
-                    >
-                      {{ data.character_name.charAt(0) }}
-                    </div>
-                    <span class="font-medium">{{ data.character_name }}</span>
-                  </div>
-                </template>
-              </Column>
-              <Column
-                field="profession"
-                header="职业"
-              >
-                <template #body="{ data }">
-                  <span
-                    :style="{ color: getProfessionColor(data.profession) }"
-                    class="font-medium"
-                  >
-                    {{ getProfessionName(data.profession) }}
-                  </span>
-                </template>
-              </Column>
-              <Column
-                field="attendance_count"
-                header="出勤天数"
-                sortable
-              >
-                <template #body="{ data }">
-                  <span class="text-primary font-bold">{{ data.attendance_count }}</span>
-                </template>
-              </Column>
-              <Column
-                field="total_damage"
-                header="总伤害"
-                sortable
-              >
-                <template #body="{ data }">
-                  <span class="text-status-error font-semibold">{{ formatNumber(data.total_damage) }}</span>
-                </template>
-              </Column>
-              <Column
-                field="total_healing"
-                header="总治疗"
-                sortable
-              >
-                <template #body="{ data }">
-                  <span class="text-status-success font-semibold">{{ formatNumber(data.total_healing) }}</span>
-                </template>
-              </Column>
-              <Column
-                field="avg_dps"
-                header="平均DPS"
-                sortable
-              >
-                <template #body="{ data }">
-                  <span class="text-status-error font-semibold">{{ formatDps(data.avg_dps) }}</span>
-                </template>
-              </Column>
-              <Column
-                field="kd_ratio"
-                header="K/D"
-                sortable
-              />
-              <Column
-                field="avg_score"
-                header="评分"
-                sortable
-              >
-                <template #body="{ data }">
-                  <span
-                    :class="{
-                      'game-badge game-badge-legendary': data.avg_score >= 90,
-                      'game-badge game-badge-exotic': data.avg_score >= 80 && data.avg_score < 90,
-                      'game-badge game-badge-rare': data.avg_score >= 70 && data.avg_score < 80,
-                      'game-badge': data.avg_score < 70
-                    }"
-                  >
-                    {{ data.avg_score }}
-                  </span>
-                </template>
-              </Column>
-            </DataTable>
-          </TabPanel>
-
-          <!-- 最近战斗 -->
-          <TabPanel
-            header="最近战斗"
-            value="1"
-          >
-            <DataTable
-              :value="detailData.recent_fights || []"
-              class="w-full game-table"
-            >
-              <Column
-                field="fight_date"
-                header="战斗时间"
-              >
-                <template #body="{ data }">
-                  {{ formatDateTime(data.fight_date) }}
-                </template>
-              </Column>
-              <Column
-                field="character_name"
-                header="角色"
-              />
-              <Column
-                field="profession"
-                header="职业"
-              >
-                <template #body="{ data }">
-                  <span
-                    :style="{ color: getProfessionColor(data.profession) }"
-                    class="font-medium"
-                  >
-                    {{ getProfessionName(data.profession) }}
-                  </span>
-                </template>
-              </Column>
-              <Column
-                field="map_name"
-                header="地图"
-              />
-              <Column
-                field="damage"
-                header="伤害"
-              >
-                <template #body="{ data }">
-                  <span class="text-status-error font-semibold">{{ formatNumber(data.damage) }}</span>
-                </template>
-              </Column>
-              <Column
-                field="dps"
-                header="DPS"
-              />
-              <Column
-                field="healing"
-                header="治疗"
-              >
-                <template #body="{ data }">
-                  <span class="text-status-success font-semibold">{{ formatNumber(data.healing) }}</span>
-                </template>
-              </Column>
-              <Column
-                field="killed"
-                header="击杀"
-              />
-              <Column
-                field="dead_count"
-                header="死亡"
-              />
-              <Column
-                field="ai_score"
-                header="评分"
-              />
-            </DataTable>
-          </TabPanel>
-        </TabView>
-      </div>
+      <AttendanceDetail :data="detailData" :loading="detailLoading" />
     </Dialog>
 
     <!-- 评分维度详情对话框 -->
@@ -988,6 +766,7 @@ import Toast from 'primevue/toast'
 
 // 子组件
 import PageHeader from '@/components/common/layout/PageHeader.vue'
+import AttendanceDetail from '@/components/attendance/AttendanceDetail.vue'
 
 // 服务层
 import { attendanceService } from '@/services'

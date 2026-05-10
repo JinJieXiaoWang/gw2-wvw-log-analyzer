@@ -3,7 +3,7 @@
     <div class="flex items-center gap-2 mb-4">
       <i class="pi pi-users text-primary" />
       <span class="font-semibold">角色统计</span>
-      <span class="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">{{ characters.length }} 个角ɫ</span>
+      <span class="text-xs px-2 py-0.5 rounded-full bg-primary/20 text-primary">{{ characters.length }} 个角色</span>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       <div

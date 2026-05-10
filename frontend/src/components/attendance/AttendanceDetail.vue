@@ -1,5 +1,5 @@
 <template>
-  <div class="attendance-detail-page min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-surface-900">
+  <div class="attendance-detail-page bg-surface-900">
     <!-- Loading State -->
     <LoadingState v-if="loading" text="加载详情中..." class="min-h-screen flex items-center justify-center" />
 

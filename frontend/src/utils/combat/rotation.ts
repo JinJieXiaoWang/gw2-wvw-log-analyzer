@@ -200,3 +200,42 @@ export function computeHeatmap(events: CycleEvent[], fightDuration: number): Hea
     })
     .slice(0, 15)
 }
+
+/** 生成时序图数据（简化接口） */
+export function generateTimelineData(events: any[], fightDuration: number) {
+  const filtered = events.map((evt: any) => ({
+    ...evt,
+    castTime: (evt.time || 0) * 1000,
+    state: evt.state || 'full',
+    timeGained: 0,
+    quickness: false,
+  }))
+  const ticks = computeTimelineTicks(fightDuration)
+  const tracks = computeSkillTracks(filtered, fightDuration)
+  return { ticks, tracks }
+}
+
+/** 生成热力图数据（简化接口） */
+export function generateHeatmapData(skillCasts: any[], events: any[]) {
+  const filtered = events.map((evt: any) => ({
+    ...evt,
+    castTime: (evt.time || 0) * 1000,
+    state: evt.state || 'full',
+    timeGained: 0,
+    quickness: false,
+  }))
+  return computeHeatmap(filtered, 120)
+}
+
+/** 生成循环数据（简化接口） */
+export function generateCycleData(events: any[]): import('./rotationTypes').SkillCycle[] {
+  const filtered = events.map((evt: any) => ({
+    ...evt,
+    castTime: (evt.time || 0) * 1000,
+    state: evt.state || 'full',
+    timeGained: 0,
+    quickness: false,
+    isSwap: evt.isSwap || false,
+  }))
+  return computeCycles(filtered)
+}

@@ -1640,10 +1640,13 @@
 
         <div
           v-else
-          class="grid grid-cols-1 lg:grid-cols-2 gap-5"
+          class="space-y-4"
         >
-          <!-- 技能释放次数 -->
-          <div v-if="sortedSkillCasts.length > 0">
+          <!-- 视图切换栏 -->
+          <RotationViewTabs v-model="rotationViewMode" />
+
+          <!-- 技能释放次数统计 -->
+          <div v-if="rotationViewMode === 'stats'">
             <h4 class="text-sm font-semibold text-neutral-text mb-3 flex items-center gap-2">
               <i class="pi pi-sort-amount-down text-primary" /> 技能释放次数
             </h4>
@@ -1670,38 +1673,46 @@
             </div>
           </div>
 
-          <!-- 技能循环 -->
-          <div v-if="rotationEvents.length > 0">
-            <h4 class="text-sm font-semibold text-neutral-text mb-3 flex items-center gap-2">
-              <i class="pi pi-history text-primary" /> 技能循环 (前100次)
-            </h4>
-            <div class="max-h-[400px] overflow-auto space-y-1">
-              <div
-                v-for="(e, idx) in rotationEvents"
-                :key="idx"
-                class="flex items-center gap-3 p-2 rounded hover:bg-neutral-bg/50"
-              >
-                <img
-                  v-if="e.icon"
-                  :src="e.icon"
-                  class="w-8 h-8 rounded"
-                >
-                <div
-                  v-else
-                  class="w-8 h-8 rounded bg-neutral-bg flex items-center justify-center text-xs text-neutral-text-secondary"
-                >
-                  ?
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-sm text-neutral-text truncate">
-                    {{ e.name }}
-                  </p>
-                  <p class="text-[10px] text-neutral-text-secondary">
-                    {{ e.duration > 0 ? e.duration + 'ms' : '瞬发' }}
-                  </p>
-                </div>
-                <span class="text-xs text-neutral-text-secondary w-16 text-right">{{ e.time.toFixed(1) }}s</span>
-              </div>
+          <!-- 技能循环时序图 -->
+          <div v-if="rotationViewMode === 'timeline'">
+            <RotationTimelineView 
+              :ticks="timelineTicks" 
+              :tracks="timelineTracks"
+              @hover-skill="handleHoverSkill"
+              @leave-skill="handleLeaveSkill"
+              @mousemove="handleMouseMove"
+            />
+          </div>
+
+          <!-- 技能循环热力图 -->
+          <div v-if="rotationViewMode === 'heatmap'">
+            <RotationHeatmapView :rows="heatmapRows" />
+          </div>
+
+          <!-- 技能循环流程视图 -->
+          <div v-if="rotationViewMode === 'cycle'">
+            <RotationCycleView 
+              :cycles="skillCycles"
+              @hover-skill="handleHoverSkill"
+              @leave-skill="handleLeaveSkill"
+              @mousemove="handleMouseMove"
+            />
+          </div>
+
+          <!-- 悬浮提示 -->
+          <div
+            v-if="hoveredSkill && tooltipPosition"
+            class="fixed z-50 p-3 rounded-lg bg-neutral-card border border-neutral-border shadow-xl pointer-events-none"
+            :style="{ left: tooltipPosition.x + 'px', top: tooltipPosition.y + 'px' }"
+          >
+            <div class="flex items-center gap-2 mb-2">
+              <img v-if="hoveredSkill.icon" :src="hoveredSkill.icon" class="w-6 h-6 rounded" />
+              <span class="font-semibold text-neutral-text">{{ hoveredSkill.name }}</span>
+            </div>
+            <div class="text-xs text-neutral-text-secondary space-y-1">
+              <p v-if="hoveredSkill.count">释放次数: {{ hoveredSkill.count }}</p>
+              <p v-if="hoveredSkill.time !== undefined">时间: {{ hoveredSkill.time.toFixed(1) }}s</p>
+              <p v-if="hoveredSkill.duration">持续时间: {{ hoveredSkill.duration }}ms</p>
             </div>
           </div>
         </div>
@@ -1745,6 +1756,12 @@ import { eiAnalysisService, type EiAnalysisResponse, type EiAnalysisPlayer, type
 import type { PlayerRotationData } from '@/services/ei/eiAnalysisService'
 
 import { getSkillIconUrl } from '@/utils/skillIcons'
+import RotationViewTabs from '@/components/combat/rotation/RotationViewTabs.vue'
+import RotationTimelineView from '@/components/combat/rotation/RotationTimelineView.vue'
+import RotationHeatmapView from '@/components/combat/rotation/RotationHeatmapView.vue'
+import RotationCycleView from '@/components/combat/rotation/RotationCycleView.vue'
+import type { TimelineTick, SkillTrack, HeatmapRow, SkillCycle } from '@/utils/combat/rotationTypes'
+import { generateTimelineData, generateHeatmapData, generateCycleData } from '@/utils/combat/rotation'
 
 const weaponNameMap: Record<string, string> = {
   'Sword': '剑', 'Axe': '斧', 'Mace': '锤', 'Shield': '盾',
@@ -1770,6 +1787,9 @@ const rotationLoading = ref(false)
 const showDetailStats = ref(false)
 const showDamageDetailDialog = ref(false)
 const showStatDetailDialog = ref(false)
+const rotationViewMode = ref<'stats' | 'timeline' | 'heatmap' | 'cycle'>('stats')
+const hoveredSkill = ref<any>(null)
+const tooltipPosition = ref<{ x: number; y: number } | null>(null)
 // 统计分类类型，支持单字段和分类弹窗
 type StatCategory =
   | 'protection' | 'stability' | 'condition_cleanses' | 'boon_strips' | 'damage_taken' | 'hitRate'
@@ -2315,11 +2335,54 @@ const rotationEvents = computed(() => {
         casts: 1,
         name,
         icon,
+        state: cast.interrupted ? 'interrupted' : cast.instant ? 'instant' : cast.isSwap ? 'swap' : cast.isTraitProc ? 'trait' : 'full',
+        autoAttack: cast.autoAttack,
+        isSwap: cast.isSwap,
+        isInstant: cast.instant,
+        isTraitProc: cast.isTraitProc,
       })
     })
   })
   return events.slice(0, 100)
 })
+
+// 时序图数据
+const timelineTicks = computed<TimelineTick[]>(() => {
+  const duration = fightSummary.value.duration_sec || 120
+  return generateTimelineData(rotationEvents.value, duration).ticks
+})
+
+const timelineTracks = computed<SkillTrack[]>(() => {
+  const duration = fightSummary.value.duration_sec || 120
+  return generateTimelineData(rotationEvents.value, duration).tracks
+})
+
+// 热力图数据
+const heatmapRows = computed<HeatmapRow[]>(() => {
+  return generateHeatmapData(sortedSkillCasts.value, rotationEvents.value)
+})
+
+// 循环视图数据
+const skillCycles = computed<SkillCycle[]>(() => {
+  return generateCycleData(rotationEvents.value)
+})
+
+// 悬浮提示处理
+const handleHoverSkill = (skill: any) => {
+  hoveredSkill.value = skill
+}
+
+const handleLeaveSkill = () => {
+  hoveredSkill.value = null
+  tooltipPosition.value = null
+}
+
+const handleMouseMove = (event: MouseEvent) => {
+  tooltipPosition.value = {
+    x: event.clientX + 15,
+    y: event.clientY + 15,
+  }
+}
 
 // 监听路由参数变化，切换日志时重新加载数据
 watch(() => route.params.id, () => {

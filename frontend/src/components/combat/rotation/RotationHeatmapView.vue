@@ -2,7 +2,7 @@
   <div class="sr-heatmap-view">
     <div class="heatmap-container">
       <div class="heatmap-header">
-        <span class="heatmap-title">技能使用热力ͼ</span>
+        <span class="heatmap-title">技能使用热力图</span>
         <div class="heatmap-legend">
           <span class="legend-text">少</span>
           <div class="legend-gradient" />
