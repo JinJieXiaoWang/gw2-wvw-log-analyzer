@@ -72,10 +72,16 @@ async def bad_request_exception_handler(request: Request, exc: BadRequestExcepti
     返回：JSON响应
     """
     logger.error(f"请求参数错误: {exc.detail}")
+    error_detail = exc.detail or ""
+    error_code = (
+        "INVALID_CREDENTIALS"
+        if any(k in error_detail for k in ("密码", "认证", "credential", "用户名", "登录"))
+        else "BAD_REQUEST"
+    )
     content = {
         "success": False,
         "message": exc.detail,
-        "error_code": "INVALID_CREDENTIALS",
+        "error_code": error_code,
         "data": None,
         "timestamp": datetime.now().isoformat(),
     }

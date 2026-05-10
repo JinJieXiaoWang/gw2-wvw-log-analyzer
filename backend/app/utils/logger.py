@@ -41,8 +41,11 @@ class _LazyLogger:
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
 
-        # 文件handler
-        file_handler = logging.FileHandler(settings.LOG_FILE, encoding="utf-8")
+        # 文件handler（自动轮转，50MB×10个备份）
+        from logging.handlers import RotatingFileHandler
+        file_handler = RotatingFileHandler(
+            settings.LOG_FILE, maxBytes=50*1024*1024, backupCount=10, encoding="utf-8"
+        )
         file_handler.setFormatter(log_format)
         self._logger.addHandler(file_handler)
 

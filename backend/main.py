@@ -38,6 +38,7 @@ from app.routers.builds import router as builds_router
 from app.routers.test_dps_report import router as test_dps_report_router
 from app.routers.memory_monitor import router as memory_monitor_router
 from app.routers.notice import router as notice_router
+from app.routers.config import router as config_router
 from app.utils.logger import logger
 from app.utils.exceptions import AppException
 from app.utils.exception_handler import register_exception_handlers
@@ -150,8 +151,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.BACKEND_CORS_ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-Silent-Request"],
 )
 
 # 注册增强版内存监控中间件（自动GC、内存超限告警、OOM预防）
@@ -183,6 +184,7 @@ app.include_router(builds_router, prefix=settings.API_PREFIX)
 app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
 app.include_router(notice_router, prefix=settings.API_PREFIX)
+app.include_router(config_router, prefix=settings.API_PREFIX)
 
 
 @app.get("/")

@@ -258,7 +258,7 @@ let progressInterval: ReturnType<typeof setInterval> | null = null
 const isFormValid = computed(() => {
   return loginForm.username.length >= 3 && 
          loginForm.username.length <= 50 && 
-         loginForm.password.length >= 6 && 
+         loginForm.password.length >= 8 && 
          loginForm.password.length <= 128 &&
          !errors.username && 
          !errors.password
@@ -281,8 +281,8 @@ const validatePassword = () => {
   const password = loginForm.password
   if (!password) {
     errors.password = '请输入密码'
-  } else if (password.length < 6) {
-    errors.password = '密码长度不能少于6个字符'
+  } else if (password.length < 8) {
+    errors.password = '密码长度不能少于8个字符'
   } else if (password.length > 128) {
     errors.password = '密码长度不能超过128个字符'
   } else {

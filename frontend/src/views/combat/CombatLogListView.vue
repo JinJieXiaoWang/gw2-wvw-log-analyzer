@@ -1,10 +1,11 @@
 <template>
   <div class="space-y-6">
-    <!-- 游戏化欢迎区 -->
-    <WelcomeBanner
-      :selected-logs="selectedLogs"
-      @show-upload-dialog="showUploadDialog = true"
-      @show-batch-parse-dialog="showBatchParseDialog = true"
+    <!-- 页面头部 -->
+    <PageHeader
+      title="战斗日志"
+      subtitle="管理和解析您的 WvW 战斗日志"
+      icon="pi pi-folder-open"
+      icon-gradient="bg-gradient-to-br from-primary to-secondary"
     />
 
     <!-- 已选提示条 + 解析进度 -->
@@ -178,13 +179,13 @@ import { formatDate } from '@/utils/core/helpers'
 import type { LogFile } from '@/types'
 
 // 导入子组件
-import WelcomeBanner from '@/components/logManagement/WelcomeBanner.vue'
-import StatCards from '@/components/logManagement/StatCards.vue'
-import LogFilters from '@/components/logManagement/LogFilters.vue'
-import LogTable from '@/components/logManagement/LogTable.vue'
-import LogUploadDialog from '@/components/logManagement/LogUploadDialog.vue'
-import BatchParseDialog from '@/components/logManagement/BatchParseDialog.vue'
-import DeleteConfirmDialog from '@/components/logManagement/DeleteConfirmDialog.vue'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
+import StatCards from '@/components/log/StatCards.vue'
+import LogFilters from '@/components/log/LogFilters.vue'
+import LogTable from '@/components/log/LogTable.vue'
+import LogUploadDialog from '@/components/log/LogUploadDialog.vue'
+import BatchParseDialog from '@/components/log/BatchParseDialog.vue'
+import DeleteConfirmDialog from '@/components/log/DeleteConfirmDialog.vue'
 
 // 解析进度项
 interface ParseProgressItem {

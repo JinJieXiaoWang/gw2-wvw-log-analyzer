@@ -1,10 +1,11 @@
 <template>
   <div class="space-y-6">
-    <!-- 欢迎横幅 -->
-    <WelcomeBanner
-      @export-excel="exportExcel"
-      @export-csv="exportCSV"
-      @view-scoring-rules="openScoringRulesDialog"
+    <!-- 页面头部 -->
+    <PageHeader
+      title="出勤评分"
+      subtitle="查看和管理 WvW 出勤评分数据"
+      icon="pi pi-users"
+      icon-gradient="bg-gradient-to-br from-primary to-secondary"
     />
 
     <!-- 评分规则提示卡片 -->
@@ -986,7 +987,7 @@ import Tag from 'primevue/tag'
 import Toast from 'primevue/toast'
 
 // 子组件
-import WelcomeBanner from '@/components/attendance/WelcomeBanner.vue'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
 
 // 服务层
 import { attendanceService } from '@/services'

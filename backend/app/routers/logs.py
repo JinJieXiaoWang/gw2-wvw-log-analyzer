@@ -3,14 +3,13 @@
 # 创建日期：2026-04-27
 # 依赖说明：FastAPI
 
+import asyncio
 import hashlib
 import json
 import os
 import threading
 import uuid
-import zipfile
 from datetime import datetime
-from io import BytesIO
 from typing import Any, Dict, Optional
 
 # 全局解析并发限制：最多同时解析 3 个日志，防止线程池被占满导致服务器卡死
@@ -70,6 +69,8 @@ router = APIRouter(prefix="/logs", tags=["日志管理"])
 
 UPLOAD_DIR = "./uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+_upload_semaphore = asyncio.Semaphore(2)
 
 
 class _ProgressStore:
@@ -320,17 +321,18 @@ async def upload_log(
     current_admin: SysUser = Depends(get_current_admin),
 ):
     # 功能：上传日志文件
-    if not file.filename.endswith((".zevtc", ".evtc", ".zip")):
-        raise BadRequestException("只支持 .zevtc, .evtc, .zip 格式的文件")
+    if not file.filename.endswith(".zevtc"):
+        raise BadRequestException("只支持 .zevtc 格式的文件")
 
-    file_id = str(uuid.uuid4())
-    file_ext = os.path.splitext(file.filename)[1]
-    file_path = os.path.join(UPLOAD_DIR, f"{file_id}{file_ext}")
+    async with _upload_semaphore:
+        file_id = str(uuid.uuid4())
+        file_ext = os.path.splitext(file.filename)[1]
+        file_path = os.path.join(UPLOAD_DIR, f"{file_id}{file_ext}")
 
-    content = await file.read()
+        content = await file.read()
 
-    with open(file_path, "wb") as f:
-        f.write(content)
+        with open(file_path, "wb") as f:
+            f.write(content)
 
     # 计算 SHA256 指纹
     file_sha256 = hashlib.sha256(content).hexdigest()
@@ -352,18 +354,8 @@ async def upload_log(
             data=LogResponse.model_validate(existing_log),
         )
 
-    # 计算解压后大小（ZEVTC 为 ZIP 压缩包）
-    file_size_raw = 0
-    if file.filename.endswith(".zevtc"):
-        try:
-            with zipfile.ZipFile(BytesIO(content), "r") as zf:
-                namelist = zf.namelist()
-                if namelist:
-                    file_size_raw = sum(zf.getinfo(name).file_size for name in namelist)
-        except Exception:
-            file_size_raw = len(content)  # 解压失败则回退到压缩大小
-    else:
-        file_size_raw = len(content)
+    # 使用传输大小作为文件大小（不解析 ZIP 内部结构）
+    file_size_raw = len(content)
 
     # 获取客户端 IP
     upload_ip = None
@@ -699,27 +691,32 @@ async def batch_delete_logs(
     deleted_count = 0
     failed_ids = []
 
-    for log_id in log_ids:
-        log = log_service.get_log_by_id(db, log_id)
-        if not log:
-            failed_ids.append(log_id)
-            continue
+    try:
+        for log_id in log_ids:
+            log = log_service.get_log_by_id(db, log_id)
+            if not log:
+                failed_ids.append(log_id)
+                continue
 
-        # 删除文件
-        if log.file_path and os.path.exists(log.file_path):
-            try:
-                os.remove(log.file_path)
-            except Exception as e:
-                logger.error(f"删除日志文件失败 {log_id}: {e}")
+            # 删除文件
+            if log.file_path and os.path.exists(log.file_path):
+                try:
+                    os.remove(log.file_path)
+                except Exception as e:
+                    logger.error(f"删除日志文件失败 {log_id}: {e}")
 
-        # 删除数据库记录
-        if log_service.delete_log(db, log_id):
-            deleted_count += 1
-            # 清理进度存储
-            if log_id in parse_progress_store:
-                del parse_progress_store[log_id]
-        else:
-            failed_ids.append(log_id)
+            # 删除数据库记录
+            if log_service.delete_log(db, log_id):
+                deleted_count += 1
+                # 清理进度存储
+                if log_id in parse_progress_store:
+                    del parse_progress_store[log_id]
+            else:
+                failed_ids.append(log_id)
+    except Exception as e:
+        db.rollback()
+        logger.error(f"批量删除日志异常: {e}", exc_info=True)
+        raise InternalServerErrorException(f"批量删除失败: {str(e)}")
 
     return ApiResponse(
         success=True,

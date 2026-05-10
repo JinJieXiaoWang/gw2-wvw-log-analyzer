@@ -314,7 +314,7 @@ def main():
     else:
         print("未发现指挥官标记")
     
-    print("\n=== 摘要 ===")
+    print("\n=== ժҪ ===")
     print(reports["summary"])
     
     return 0

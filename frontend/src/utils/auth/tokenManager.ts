@@ -43,7 +43,7 @@ export interface LoginResponse {
  * @param accessToken 访问令牌
  * @param expiresInSeconds 过期秒数，默认24小时
  */
-export function saveAccessToken(accessToken: string, expiresInSeconds: number = 24 * 60 * 60): void {
+export function saveAccessToken(accessToken: string, expiresInSeconds: number = 2 * 60 * 60): void {
   const expiresAt = Date.now() + (expiresInSeconds * 1000);
   localStorage.setItem(TOKEN_KEY, accessToken);
   localStorage.setItem(TOKEN_EXPIRY_KEY, expiresAt.toString());
@@ -93,8 +93,8 @@ export function getToken(): TokenInfo | null {
       return null;
     }
   } else {
-    // 旧系统 token，默认 24 小时有效期（从存储时间推算）
-    expiresAt = Date.now() + 24 * 60 * 60 * 1000;
+    // 旧系统 token，默认 2 小时有效期（从存储时间推算）
+    expiresAt = Date.now() + 2 * 60 * 60 * 1000;
   }
 
   return {

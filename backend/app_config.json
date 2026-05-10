@@ -1,8 +1,0 @@
-{
-  "theme": "light",
-  "default_server": "Tarnished Coast",
-  "parse_parallel": 1,
-  "export_format": "json",
-  "auto_backup": true,
-  "retention_days": 365
-}

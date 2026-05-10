@@ -151,6 +151,10 @@ export interface SkillMapItem {
   icon?: string
   gw2_id: number
   skill_key: string
+  auto_attack?: boolean
+  is_swap?: boolean
+  is_instant_cast?: boolean
+  is_trait_proc?: boolean
 }
 
 export interface PlayerRotationData {

@@ -116,7 +116,7 @@
 
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import PageHeader from '@/components/common/PageHeader.vue'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
 import SettingSidebar from '@/components/settings/SettingSidebar.vue'
 import AccountSettings from '@/components/settings/AccountSettings.vue'
 import ParsingSettings from '@/components/settings/ParsingSettings.vue'
@@ -126,7 +126,7 @@ import NotificationSettings from '@/components/settings/NotificationSettings.vue
 import SecuritySettings from '@/components/settings/SecuritySettings.vue'
 import WatermarkSettings from '@/components/settings/WatermarkSettings.vue'
 import ScoringRulesSettings from '@/components/settings/ScoringRulesSettings.vue'
-import DictionaryManagementWrapper from '@/components/common/DictionaryManagementWrapper.vue'
+import DictionaryManagementWrapper from '@/components/common/dictionary/DictionaryManagementWrapper.vue'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import { settingsService } from '@/services'

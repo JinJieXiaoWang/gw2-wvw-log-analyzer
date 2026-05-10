@@ -6,6 +6,7 @@
 # 更新日期：2026-05-01 - 增加多数据库支持和自动初始化
 
 import os
+import threading
 from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
@@ -21,6 +22,7 @@ from app.utils.logger import logger
 _engine = None
 _SessionLocal = None
 _Base = declarative_base()
+_db_lock = threading.RLock()
 
 
 def _create_engine():
@@ -959,40 +961,40 @@ def switch_database(new_type: DatabaseType, **kwargs):
         **kwargs: 其他配置参数
     """
     global _engine, _SessionLocal
+    with _db_lock:
+        db_settings.DB_TYPE = new_type
 
-    db_settings.DB_TYPE = new_type
+        if kwargs.get("sqlite_path"):
+            db_settings.SQLITE_DB_PATH = kwargs["sqlite_path"]
 
-    if kwargs.get("sqlite_path"):
-        db_settings.SQLITE_DB_PATH = kwargs["sqlite_path"]
+        if kwargs.get("mysql_host"):
+            db_settings.MYSQL_HOST = kwargs["mysql_host"]
+        if kwargs.get("mysql_port"):
+            db_settings.MYSQL_PORT = kwargs["mysql_port"]
+        if kwargs.get("mysql_user"):
+            db_settings.MYSQL_USER = kwargs["mysql_user"]
+        if kwargs.get("mysql_password"):
+            db_settings.MYSQL_PASSWORD = kwargs["mysql_password"]
+        if kwargs.get("mysql_database"):
+            db_settings.MYSQL_DATABASE = kwargs["mysql_database"]
 
-    if kwargs.get("mysql_host"):
-        db_settings.MYSQL_HOST = kwargs["mysql_host"]
-    if kwargs.get("mysql_port"):
-        db_settings.MYSQL_PORT = kwargs["mysql_port"]
-    if kwargs.get("mysql_user"):
-        db_settings.MYSQL_USER = kwargs["mysql_user"]
-    if kwargs.get("mysql_password"):
-        db_settings.MYSQL_PASSWORD = kwargs["mysql_password"]
-    if kwargs.get("mysql_database"):
-        db_settings.MYSQL_DATABASE = kwargs["mysql_database"]
+        if kwargs.get("postgresql_host"):
+            db_settings.POSTGRESQL_HOST = kwargs["postgresql_host"]
+        if kwargs.get("postgresql_port"):
+            db_settings.POSTGRESQL_PORT = kwargs["postgresql_port"]
+        if kwargs.get("postgresql_user"):
+            db_settings.POSTGRESQL_USER = kwargs["postgresql_user"]
+        if kwargs.get("postgresql_password"):
+            db_settings.POSTGRESQL_PASSWORD = kwargs["postgresql_password"]
+        if kwargs.get("postgresql_database"):
+            db_settings.POSTGRESQL_DATABASE = kwargs["postgresql_database"]
 
-    if kwargs.get("postgresql_host"):
-        db_settings.POSTGRESQL_HOST = kwargs["postgresql_host"]
-    if kwargs.get("postgresql_port"):
-        db_settings.POSTGRESQL_PORT = kwargs["postgresql_port"]
-    if kwargs.get("postgresql_user"):
-        db_settings.POSTGRESQL_USER = kwargs["postgresql_user"]
-    if kwargs.get("postgresql_password"):
-        db_settings.POSTGRESQL_PASSWORD = kwargs["postgresql_password"]
-    if kwargs.get("postgresql_database"):
-        db_settings.POSTGRESQL_DATABASE = kwargs["postgresql_database"]
+        _engine = None
+        _SessionLocal = None
 
-    _engine = None
-    _SessionLocal = None
+        logger.info(f"切换数据库配置: {new_type}")
 
-    logger.info(f"切换数据库配置: {new_type}")
-
-    _get_engine()
+        _get_engine()
 
 
 def get_current_db_info() -> dict:

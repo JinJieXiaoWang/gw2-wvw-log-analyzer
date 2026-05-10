@@ -162,7 +162,7 @@ def generate_cache_key(
     import hashlib
 
     content = json.dumps(messages, ensure_ascii=False, sort_keys=True)
-    key = f"{provider.value}:{model}:{hashlib.md5(content.encode()).hexdigest()}"
+    key = f"{provider.value}:{model}:{hashlib.sha256(content.encode()).hexdigest()}"
     return key
 
 

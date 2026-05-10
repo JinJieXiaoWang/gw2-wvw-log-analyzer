@@ -224,10 +224,10 @@
 
 import { ref, computed } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import PageHeader from '@/components/common/PageHeader.vue';
-import BuildCodeInput from '@/components/buildParser/BuildCodeInput.vue';
-import ImportDialog from '@/components/buildParser/ImportDialog.vue';
-import SaveDialog from '@/components/buildParser/SaveDialog.vue';
+import PageHeader from '@/components/common/layout/PageHeader.vue';
+import BuildCodeInput from '@/components/build/parser/BuildCodeInput.vue';
+import ImportDialog from '@/components/build/parser/ImportDialog.vue';
+import SaveDialog from '@/components/build/parser/SaveDialog.vue';
 import buildApi from '@/api/build/build';
 
 

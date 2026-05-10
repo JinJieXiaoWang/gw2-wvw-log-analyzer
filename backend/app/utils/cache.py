@@ -5,6 +5,7 @@
 
 import functools
 import time
+from collections import OrderedDict
 from typing import Any, Callable, Dict, Optional
 
 
@@ -17,7 +18,7 @@ class Cache:
             max_size: 缓存最大容量
             default_ttl: 默认缓存过期时间（秒）
         """
-        self.cache: Dict[str, Dict[str, Any]] = {}
+        self.cache: OrderedDict[str, Dict[str, Any]] = OrderedDict()
         self.max_size = max_size
         self.default_ttl = default_ttl
 
@@ -35,6 +36,7 @@ class Cache:
             del self.cache[key]
             return None
 
+        self.cache.move_to_end(key)
         return item["value"]
 
     def set(self, key: str, value: Any, ttl: Optional[int] = None) -> None:
@@ -45,25 +47,25 @@ class Cache:
             value: 缓存值
             ttl: 缓存过期时间（秒），如果为None则使用默认值
         """
-        if len(self.cache) >= self.max_size:
-            # 简单的LRU策略：删除最早的项
-            oldest_key = min(self.cache, key=lambda k: self.cache[k]["created_time"])
-            del self.cache[oldest_key]
+        if key in self.cache:
+            del self.cache[key]
+        elif len(self.cache) >= self.max_size:
+            # O(1) LRU 驱逐：删除最久未访问的项
+            self.cache.popitem(last=False)
 
         expire_time = time.time() + (ttl or self.default_ttl)
         self.cache[key] = {
             "value": value,
             "expire_time": expire_time,
-            "created_time": time.time(),
         }
+        self.cache.move_to_end(key)
 
     def delete(self, key: str) -> None:
         """
         功能：删除缓存值
         参数：key - 缓存键
         """
-        if key in self.cache:
-            del self.cache[key]
+        self.cache.pop(key, None)
 
     def clear(self) -> None:
         """

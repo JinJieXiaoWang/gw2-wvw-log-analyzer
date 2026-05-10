@@ -204,7 +204,7 @@
 
 import { ref, computed, onMounted } from 'vue';
 import { useToast } from 'primevue/usetoast';
-import PageHeader from '@/components/common/PageHeader.vue';
+import PageHeader from '@/components/common/layout/PageHeader.vue';
 import Button from 'primevue/button';
 import Dropdown from 'primevue/dropdown';
 import skillsApi from '@/api/build/skills';

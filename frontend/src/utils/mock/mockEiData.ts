@@ -1,7 +1,7 @@
 /**
  * Elite Insights 模拟数据
- * 作者：帅姐�? * 创建日期�?024-01-15
- * 更新日期�?026-04-28 - 添加Vindicator裁决者数�? */
+ * 作者：帅姐姐 * 创建日期：2024-01-15
+ * 更新日期：2026-04-28 - 添加Vindicator裁决者数据 */
 
 import type { EliteInsightsLog } from '@/types/eliteInsights'
 
@@ -105,7 +105,7 @@ export const mockEiData: EliteInsightsLog = {
   ],
   players: [
     // ============================================
-    // Vindicator 裁决�?- 主角�?    // ============================================
+    // Vindicator 裁决者 - 主角    // ============================================
     {
       account: 'vindicator.9999',
       group: 1,
@@ -262,7 +262,7 @@ export const mockEiData: EliteInsightsLog = {
       }
     },
     // ============================================
-    // Firebrand 燃火�?- 辅助
+    // Firebrand 燃火者 - 辅助
     // ============================================
     {
       account: 'firebrand.1234',
@@ -421,7 +421,7 @@ export const mockEiData: EliteInsightsLog = {
       }
     },
     // ============================================
-    // Spellbreaker 破法�?- DPS
+    // Spellbreaker 破法者 - DPS
     // ============================================
     {
       account: 'spellbreaker.5678',

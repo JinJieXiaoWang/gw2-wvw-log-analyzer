@@ -260,25 +260,8 @@
                     </p>
                   </div>
                 </router-link>
-                <!-- 管理员后台（仅操作员可见） -->
-                <router-link
-                  v-if="can('write')"
-                  to="/admin"
-                  class="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-neutral-bg transition-colors group"
-                  @click="closeUserMenu"
-                >
-                  <div class="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center group-hover:bg-secondary/20 transition-colors">
-                    <i class="pi pi-shield text-secondary text-base" />
-                  </div>
-                  <div>
-                    <p class="text-base font-medium text-neutral-text">
-                      管理员后台
-                    </p>
-                    <p class="text-sm text-neutral-text-disabled">
-                      高级管理
-                    </p>
-                  </div>
-                </router-link>
+                <!-- 管理员后台入口已由系统设置统一接管 -->
+                <!-- router-link to="/admin" 已移除（该路由不存在） -->
               </div>
               <div class="px-4 py-3 border-t border-neutral-border bg-neutral-bg/50">
                 <button
@@ -436,7 +419,7 @@ import { useToast } from 'primevue/usetoast'
 import { authStore, usePermission } from '@/composables/system/usePermission'
 import { noticeService } from '@/services/system/noticeService'
 import type { NoticeItem } from '@/services/system/noticeService'
-import ThemeSwitcher from '@/components/common/ThemeSwitcher.vue'
+import ThemeSwitcher from '@/components/common/theme/ThemeSwitcher.vue'
 
 const router = useRouter()
 const toast = useToast()

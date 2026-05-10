@@ -212,7 +212,7 @@ def generate_full_documentation(schema: Dict[str, Any]) -> str:
         f"> **生成时间**: {datetime.now().isoformat()}  ",
         f"> **端点总数**: {total_endpoints}  ",
         "",
-        "## 目录",
+        "## Ŀ¼",
         "",
     ]
 

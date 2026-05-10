@@ -1,6 +1,6 @@
 /**
  * Elite Insights 数据处理服务
- * 作者：帅姐�? * 创建日期�?024-01-15
+ * 作者：帅姐姐 * 创建日期：2024-01-15
  */
 
 import type { EliteInsightsLog, Player } from '@/types/eliteInsights';
@@ -54,7 +54,7 @@ export class EiDataService {
   }
 
   /**
-   * 获取记录者信�?   */
+   * 获取记录者信息   */
   getRecorderInfo(): { name: string; account: string } {
     return {
       name: this.logData?.recordedBy || '未知',
@@ -82,20 +82,20 @@ export class EiDataService {
   // =============================================
 
   /**
-   * 获取所有玩�?   */
+   * 获取所有玩家   */
   getAllPlayers(): Player[] {
     return this.logData?.players || [];
   }
 
   /**
-   * 获取�?NPC 玩家
+   * 获取非 NPC 玩家
    */
   getRealPlayers(): Player[] {
     return this.getAllPlayers().filter(p => !p.isFake && !p.friendlyNPC);
   }
 
   /**
-   * 按职业分组玩�?   */
+   * 按职业分组玩家   */
   getPlayersByProfession(): Map<string, Player[]> {
     const groups = new Map<string, Player[]>();
     this.getRealPlayers().forEach(player => {
@@ -108,19 +108,19 @@ export class EiDataService {
   }
 
   /**
-   * 按伤害排序玩�?   */
+   * 按伤害排序玩家   */
   getPlayersSortedByDmg(): Player[] {
     return [...this.getRealPlayers()].sort((a, b) => b.dps - a.dps);
   }
 
   /**
-   * 按评分排序玩�?   */
+   * 按评分排序玩家   */
   getPlayersSortedByScore(): Player[] {
     return [...this.getRealPlayers()].sort((a, b) => b.total_score - a.total_score);
   }
 
   /**
-   * 获取总伤害统�?   */
+   * 获取总伤害统计   */
   getTotalDamageStats(): {
     total: number;
     power: number;
@@ -185,13 +185,13 @@ export class EiDataService {
   // =============================================
 
   /**
-   * 获取所有目�?   */
+   * 获取所有目标   */
   getTargets(): any[] {
     return this.logData?.targets || [];
   }
 
   /**
-   * 获取真实目标 (�?dummy)
+   * 获取真实目标 (非 dummy)
    */
   getRealTargets(): any[] {
     return this.getTargets().filter(t => !t.isFake);
@@ -216,7 +216,7 @@ export class EiDataService {
   }
 
   /**
-   * 根据职业筛选玩�?   */
+   * 根据职业筛选玩家   */
   getPlayersByProfessionFilter(profession: string): Player[] {
     return this.getRealPlayers().filter(p => p.profession === profession);
   }

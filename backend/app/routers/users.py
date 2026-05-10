@@ -280,12 +280,16 @@ async def reset_user_password(
     user.token_version = (user.token_version or 0) + 1
     db.commit()
 
-    logger.info(f"管理员 {admin.username} 重置了用户 {user.username} 的密码")
+    # 将临时密码记录到日志（仅管理员可在服务器查看），不返回给客户端
+    logger.warning(
+        f"管理员 {admin.username} 重置了用户 {user.username} 的密码，"
+        f"临时密码: {new_password}"
+    )
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,
-        message=f"密码重置成功，新密码为: {new_password}",
-        data={"temp_password": new_password},
+        message="密码重置成功，临时密码已输出到服务器日志",
+        data=None,
     )
 
 

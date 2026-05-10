@@ -13,6 +13,13 @@ export interface AppConfig {
   i18n: I18nSettings
   security: SecuritySettings
   performance: PerformanceSettings
+  ui: UISettings
+  cache: CacheSettings
+  pagination: PaginationSettings
+  polling: PollingSettings
+  debounce: DebounceSettings
+  upload: UploadSettings
+  export: ExportSettings
 }
 
 export interface AppSettings {
@@ -28,10 +35,13 @@ export interface AppSettings {
 export interface ApiSettings {
   baseUrl: string
   timeout: number
+  uploadTimeout: number
   retryAttempts: number
   retryDelay: number
   mockEnabled: boolean
   mockDelay: number
+  tokenMonitorInterval: number
+  notificationPollInterval: number
 }
 
 export interface FeatureFlags {
@@ -82,6 +92,48 @@ export interface PerformanceSettings {
   bundleAnalyzer: boolean
 }
 
+export interface UISettings {
+  toastLife: number
+  toastErrorLife: number
+  mobileBreakpoint: number
+  tabletBreakpoint: number
+  dialogMaxWidth: number
+  mobileDialogWidth: number
+}
+
+export interface CacheSettings {
+  professionTtl: number
+  dictMappingTtl: number
+  defaultApiTtl: number
+  requestCacheTtl: number
+}
+
+export interface PaginationSettings {
+  defaultPageSize: number
+  pageSizeOptions: number[]
+}
+
+export interface PollingSettings {
+  defaultInterval: number
+  maxRetries: number
+}
+
+export interface DebounceSettings {
+  searchDelay: number
+  inputDelay: number
+}
+
+export interface UploadSettings {
+  maxFileSize: number
+  allowedFormats: string[]
+  chunkSize: number
+}
+
+export interface ExportSettings {
+  maxRows: number
+  defaultFormat: string
+}
+
 const DefaultConfig: AppConfig = {
   app: {
     name: 'GW2 WVW 日志解析系统',
@@ -96,10 +148,13 @@ const DefaultConfig: AppConfig = {
   api: {
     baseUrl: import.meta.env.VITE_API_BASE_URL || '/api',
     timeout: 30000,
+    uploadTimeout: 60000,
     retryAttempts: 3,
     retryDelay: 1000,
     mockEnabled: import.meta.env.VITE_MOCK_ENABLED === 'true',
-    mockDelay: 500
+    mockDelay: 500,
+    tokenMonitorInterval: 300000,
+    notificationPollInterval: 30000
   },
 
   features: {
@@ -148,6 +203,48 @@ const DefaultConfig: AppConfig = {
     virtualizationEnabled: true,
     prefetchEnabled: true,
     bundleAnalyzer: false
+  },
+
+  ui: {
+    toastLife: 3000,
+    toastErrorLife: 5000,
+    mobileBreakpoint: 768,
+    tabletBreakpoint: 1024,
+    dialogMaxWidth: 900,
+    mobileDialogWidth: 360
+  },
+
+  cache: {
+    professionTtl: 86400000,
+    dictMappingTtl: 3600000,
+    defaultApiTtl: 300000,
+    requestCacheTtl: 60000
+  },
+
+  pagination: {
+    defaultPageSize: 20,
+    pageSizeOptions: [10, 20, 50, 100]
+  },
+
+  polling: {
+    defaultInterval: 5000,
+    maxRetries: 30
+  },
+
+  debounce: {
+    searchDelay: 300,
+    inputDelay: 500
+  },
+
+  upload: {
+    maxFileSize: 100 * 1024 * 1024,
+    allowedFormats: ['.zevtc', '.evtc'],
+    chunkSize: 1024 * 1024
+  },
+
+  export: {
+    maxRows: 10000,
+    defaultFormat: 'xlsx'
   }
 }
 

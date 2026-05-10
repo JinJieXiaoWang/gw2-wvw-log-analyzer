@@ -1,0 +1,97 @@
+<template>
+  <BaseDialog
+    v-model:visible="localVisible"
+    :header="editingData ? '编辑字典项' : '新增字典项'"
+    width="500px"
+    :confirm-label="editingData ? '保存' : '新增'"
+    :loading="saving"
+    @confirm="$emit('save')"
+  >
+    <div class="dialog-form">
+      <div class="form-row">
+        <label class="form-label">显示标签 *</label>
+        <InputText v-model="localForm.dict_label" placeholder="请输入显示标签" class="w-full" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">存储值 *</label>
+        <InputText v-model="localForm.dict_value" placeholder="请输入存储值" class="w-full" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">排序</label>
+        <InputNumber v-model="localForm.dict_sort" :min="0" class="w-full" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">CSS类</label>
+        <ColorPickerInput v-model="localForm.css_class" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">列表类</label>
+        <InputText v-model="localForm.list_class" placeholder="如: primary, secondary" class="w-full" />
+      </div>
+      <div class="form-row">
+        <label class="form-label">状态</label>
+        <BaseSelect
+          v-model="localForm.status"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+          class="w-full"
+        />
+      </div>
+      <div class="form-row">
+        <label class="form-label">备注</label>
+        <Textarea v-model="localForm.remark" placeholder="请输入备注说明" rows="3" class="w-full" />
+      </div>
+    </div>
+  </BaseDialog>
+</template>
+
+<script setup lang="ts">
+import { ref, watch, computed } from 'vue'
+import InputText from 'primevue/inputtext'
+import InputNumber from 'primevue/inputnumber'
+import Textarea from 'primevue/textarea'
+import BaseDialog from '@/components/common/ui/BaseDialog.vue'
+import BaseSelect from '@/components/common/ui/BaseSelect.vue'
+import ColorPickerInput from '@/components/common/ui/ColorPickerInput.vue'
+import type { DictData } from '@/services/system/dictionaryService'
+
+interface DataForm {
+  dict_label: string
+  dict_value: string
+  dict_sort: number
+  css_class: string
+  list_class: string
+  status: number
+  remark: string
+}
+
+const props = defineProps<{
+  visible: boolean
+  editingData: DictData | null
+  saving: boolean
+  form: DataForm
+  statusOptions: { label: string; value: number | null }[]
+}>()
+
+const emit = defineEmits<{
+  'update:visible': [value: boolean]
+  'update:form': [value: DataForm]
+  save: []
+}>()
+
+const localVisible = computed({
+  get: () => props.visible,
+  set: v => emit('update:visible', v)
+})
+
+const localForm = ref<DataForm>({ ...props.form })
+watch(() => props.form, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
+watch(localForm, (v) => { emit('update:form', { ...v }) }, { deep: true })
+</script>
+
+<style scoped>
+.dialog-form { display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 14px; font-weight: 500; color: #e5e5e5; }
+</style>

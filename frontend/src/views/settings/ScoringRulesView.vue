@@ -702,7 +702,7 @@
 import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import PageHeader from '@/components/common/PageHeader.vue'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
 import Button from 'primevue/button'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'

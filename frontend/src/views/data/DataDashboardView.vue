@@ -1,10 +1,22 @@
 <template>
   <div class="space-y-6">
-    <!-- 欢迎横幅 -->
-    <WelcomeBanner
-      v-model:time-range="timeRange"
-      :time-range-options="timeRangeOptions"
-    />
+    <!-- 页面头部 -->
+    <PageHeader
+      title="数据看板"
+      subtitle="WvW 战斗数据总览"
+      icon="pi pi-chart-line"
+      icon-gradient="bg-gradient-to-br from-primary to-secondary"
+    >
+      <template #actions>
+        <Select
+          v-model="timeRange"
+          :options="timeRangeOptions"
+          option-label="label"
+          option-value="value"
+          class="w-32"
+        />
+      </template>
+    </PageHeader>
 
     <!-- 统计卡片 -->
     <StatCards
@@ -64,7 +76,8 @@
  */
 
 import { ref, watch, onMounted } from 'vue'
-import WelcomeBanner from '@/components/dashboard/WelcomeBanner.vue'
+import Select from 'primevue/select'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
 import StatCards from '@/components/dashboard/StatCards.vue'
 import DamageTrend from '@/components/dashboard/DamageTrend.vue'
 import ProfessionDistribution from '@/components/dashboard/ProfessionDistribution.vue'

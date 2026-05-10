@@ -36,10 +36,10 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import AiReportList from '@/components/aiAnalysis/AiReportList.vue'
-import AiSuggestions from '@/components/aiAnalysis/AiSuggestions.vue'
-import AiTrendAnalysis from '@/components/aiAnalysis/AiTrendAnalysis.vue'
-import AiAnalysisTools from '@/components/aiAnalysis/AiAnalysisTools.vue'
+import AiReportList from '@/components/ai/AiReportList.vue'
+import AiSuggestions from '@/components/ai/AiSuggestions.vue'
+import AiTrendAnalysis from '@/components/ai/AiTrendAnalysis.vue'
+import AiAnalysisTools from '@/components/ai/AiAnalysisTools.vue'
 import { aiApi } from '@/api'
 import type { AiReport, AiSuggestion, AiTrend } from '@/api/ai/ai'
 

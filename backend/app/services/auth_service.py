@@ -163,7 +163,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
         expire = datetime.now(UTC) + expires_delta
     else:
         expire = datetime.now(UTC) + timedelta(hours=ACCESS_TOKEN_EXPIRE_HOURS)
-    to_encode.update({"exp": expire})
+    to_encode.update({
+        "exp": expire,
+        "aud": "gw2-log-analyzer",
+        "iss": "gw2-log-analyzer-backend",
+    })
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
@@ -173,7 +177,14 @@ def decode_access_token(token: str) -> Optional[dict]:
     # 参数：token - JWT令牌字符串
     # 返回：解码后的payload字典或None
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM],
+            audience="gw2-log-analyzer",
+            issuer="gw2-log-analyzer-backend",
+            options={"require": ["exp", "sub"]},
+        )
         return payload
     except jwt.ExpiredSignatureError:
         logger.warning("JWT token已过期")

@@ -121,7 +121,7 @@ def sync_skill_icons():
     print("\n========== 同步报告 ==========")
     print(f"  成功下载:   {results['success']}")
     print(f"  已有/跳过:  {skipped}")
-    print(f"  404 缺失:   {results['not_found']}")
+    print(f"  404 ȱʧ:   {results['not_found']}")
     print(f"  HTTP 错误:  {results['http_error']}")
     print(f"  文件过小:   {results['too_small']}")
     print(f"  异常失败:   {results['error']}")

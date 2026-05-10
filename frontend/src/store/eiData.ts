@@ -1,5 +1,5 @@
 /**
- * Elite Insights 数据状态管�? * 作者：帅姐�? * 创建日期�?024-01-15
+ * Elite Insights 数据状态管理 * 作者：帅姐姐 * 创建日期：2024-01-15
  */
 
 import { defineStore } from 'pinia';
@@ -9,7 +9,7 @@ import { eiDataService } from '@/services/ei/eiDataService';
 
 export const useEiDataStore = defineStore('eiData', () => {
   // =============================================
-  // 状态定�?  // =============================================
+  // 状态定义  // =============================================
 
   const logData = ref<EliteInsightsLog | null>(null);
   const isLoading = ref(false);
@@ -20,7 +20,7 @@ export const useEiDataStore = defineStore('eiData', () => {
   const lightTheme = ref(false);
 
   // =============================================
-  // 计算属�?  // =============================================
+  // 计算属性  // =============================================
 
   const players = computed(() => eiDataService.getRealPlayers());
 
@@ -70,7 +70,7 @@ export const useEiDataStore = defineStore('eiData', () => {
   }
 
   /**
-   * �?JSON 字符串加�?   */
+   * 从 JSON 字符串加载   */
   async function loadLogDataFromJson(jsonString: string): Promise<void> {
     try {
       const data = JSON.parse(jsonString);
@@ -83,7 +83,7 @@ export const useEiDataStore = defineStore('eiData', () => {
   }
 
   /**
-   * 从文件加�?   */
+   * 从文件加载   */
   async function loadLogDataFromFile(file: File): Promise<void> {
     isLoading.value = true;
     isError.value = false;
@@ -110,7 +110,7 @@ export const useEiDataStore = defineStore('eiData', () => {
   }
 
   /**
-   * 切换标签�?   */
+   * 切换标签页   */
   function setActiveTab(tab: 'stats' | 'replay' | 'healing'): void {
     activeTab.value = tab;
   }
@@ -153,7 +153,7 @@ export const useEiDataStore = defineStore('eiData', () => {
   }
 
   return {
-    // 状�?    logData,
+    // 状态    logData,
     isLoading,
     isError,
     errorMessage,
@@ -161,7 +161,7 @@ export const useEiDataStore = defineStore('eiData', () => {
     selectedPlayerId,
     lightTheme,
 
-    // 计算属�?    isDataLoaded,
+    // 计算属性    isDataLoaded,
     players,
     playersSortedByDmg,
     playersSortedByScore,

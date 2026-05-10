@@ -162,7 +162,7 @@ def parse_gw2_txt(path: str) -> List[Dict[str, Any]]:
             # 提取护甲类型
             armor_patterns = [
                 r'([^（\s]*?套)',
-                r'(全[\u4e00-\u9fa5]+)',
+                r'(ȫ[\u4e00-\u9fa5]+)',
                 r'([^\s]*混搭)',
                 r'([^\s]*者套)',
             ]

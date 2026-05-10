@@ -374,6 +374,16 @@ class Settings(BaseSettings):
                     return member
         return v
 
+    @field_validator("SECRET_KEY")
+    @classmethod
+    def _validate_secret_key(cls, v: str) -> str:
+        """生产环境强制要求强密钥"""
+        if not v:
+            raise ValueError("SECRET_KEY 不能为空，请在 .env 中设置至少32位随机字符串")
+        if len(v) < 32:
+            raise ValueError(f"SECRET_KEY 长度必须至少32位，当前仅 {len(v)} 位")
+        return v
+
     # ==================================================================
     # 数据库相关方法
     # ==================================================================
