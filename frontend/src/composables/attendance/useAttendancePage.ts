@@ -1,0 +1,234 @@
+import { attendanceService } from '@/services'
+import { ApiResponseWrapper } from '@/services/core/errorHandler'
+import { scoringRulesService } from '@/services/core/scoringRulesService'
+import { formatDateParam } from '@/utils/common/attendanceFormatters'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+export function useAttendancePage() {
+  const router = useRouter()
+  const toast = useToast()
+
+  const currentRoleType = ref('dps')
+  const currentRoleLabel = computed(() => {
+    const map: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
+    return map[currentRoleType.value] || '输出'
+  })
+
+  const currentRuleVersion = ref(0)
+
+  const fetchCurrentRuleVersion = async () => {
+    try {
+      const versions = await scoringRulesService.getVersions(0, 1)
+      if (versions && versions.length > 0) {
+        currentRuleVersion.value = versions[0].version
+      }
+    } catch (e) {
+      console.error('获取评分规则版本失败', e)
+    }
+  }
+
+  const loading = ref(false)
+  const dateRange = ref<Date[] | null>(null)
+  const searchQuery = ref('')
+  const filterMap = ref<string | null>(null)
+  const filterProfession = ref<string | null>(null)
+
+  const filterOptions = ref({
+    maps: [] as string[],
+    professions: [] as string[]
+  })
+
+  const accountList = ref<any[]>([])
+  const pagination = ref({ page: 1, pageSize: 20, total: 0 })
+  const currentSort = ref({ field: 'attendance_count', order: 'desc' })
+
+  const statCards = ref({
+    totalAccounts: 0,
+    totalDuration: 0,
+    totalDamage: 0,
+    totalDowned: 0
+  })
+
+  const scoreBreakdownVisible = ref(false)
+  const scoreBreakdownLoading = ref(false)
+  const scoreBreakdownData = ref<any>(null)
+  const scoreBreakdownAccount = ref('')
+
+  const scoringRulesVisible = ref(false)
+  const scoringRulesLoading = ref(false)
+  const scoringRulesData = ref<Record<string, any>>({})
+  const scoringRulesActiveTab = ref(0)
+
+  const openScoringRulesDialog = async () => {
+    scoringRulesVisible.value = true
+    scoringRulesLoading.value = true
+    scoringRulesData.value = {}
+    try {
+      const result = await scoringRulesService.getRules()
+      if (result) {
+        scoringRulesData.value = result
+      }
+    } catch (e: any) {
+      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分规则失败', life: 5000 })
+    } finally {
+      scoringRulesLoading.value = false
+    }
+  }
+
+  const fetchFilters = async () => {
+    try {
+      const result = await ApiResponseWrapper.wrap(
+        attendanceService.getFilters(),
+        { showErrorMessage: false }
+      )
+      if (result.success && result.data) {
+        filterOptions.value.maps = result.data.maps || []
+        filterOptions.value.professions = result.data.professions || []
+      }
+    } catch (e) {
+      console.error('获取筛选选项失败', e)
+    }
+  }
+
+  const fetchAccounts = async () => {
+    loading.value = true
+    try {
+      const params: any = {
+        page: pagination.value.page,
+        page_size: pagination.value.pageSize,
+        sort_by: currentSort.value.field,
+        sort_order: currentSort.value.order
+      }
+      if (dateRange.value && dateRange.value.length === 2) {
+        const start = dateRange.value[0]
+        const end = dateRange.value[1]
+        if (start) params.start_date = formatDateParam(start)
+        if (end) params.end_date = formatDateParam(end)
+      }
+      if (searchQuery.value.trim()) {
+        params.search = searchQuery.value.trim()
+      }
+      if (filterMap.value) {
+        params.map_name = filterMap.value
+      }
+      if (filterProfession.value) {
+        params.profession = filterProfession.value
+      }
+      const result = await ApiResponseWrapper.wrap(
+        attendanceService.getAccounts(params),
+        { showErrorMessage: true }
+      )
+      if (result.success && result.data) {
+        const data = result.data
+        accountList.value = data.items || []
+        pagination.value.total = data.total || 0
+        statCards.value.totalAccounts = pagination.value.total
+        statCards.value.totalDuration = accountList.value.reduce((sum, item) => sum + (item.total_duration_sec || 0), 0)
+        statCards.value.totalDamage = accountList.value.reduce((sum, item) => sum + (item.total_damage || 0), 0)
+        statCards.value.totalDowned = accountList.value.reduce((sum, item) => sum + (item.total_downed || 0), 0)
+      } else {
+        accountList.value = []
+        pagination.value.total = 0
+        toast.add({ severity: 'warn', summary: '提示', detail: '暂无数据', life: 3000 })
+      }
+    } catch (e: any) {
+      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取数据失败', life: 5000 })
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const openDetail = (account: string) => {
+    router.push({ name: 'attendance-detail', params: { account } })
+  }
+
+  const openScoreBreakdown = async (account: string) => {
+    scoreBreakdownAccount.value = account
+    scoreBreakdownVisible.value = true
+    scoreBreakdownLoading.value = true
+    scoreBreakdownData.value = null
+    try {
+      let startDate: string | null = null
+      let endDate: string | null = null
+      if (dateRange.value && dateRange.value.length === 2) {
+        if (dateRange.value[0]) startDate = formatDateParam(dateRange.value[0])
+        if (dateRange.value[1]) endDate = formatDateParam(dateRange.value[1])
+      }
+      const result = await ApiResponseWrapper.wrap(
+        attendanceService.getAccountScoreBreakdown(account, startDate, endDate),
+        { showErrorMessage: true }
+      )
+      if (result.success && result.data) {
+        scoreBreakdownData.value = result.data
+      } else {
+        toast.add({ severity: 'warn', summary: '提示', detail: '暂无评分数据', life: 3000 })
+      }
+    } catch (e: any) {
+      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分维度详情失败', life: 5000 })
+    } finally {
+      scoreBreakdownLoading.value = false
+    }
+  }
+
+  const onPageChange = (event: { page: number }) => {
+    pagination.value.page = (event.page || 0) + 1
+    fetchAccounts()
+  }
+
+  const onSort = (event: { sortField: string; sortOrder: number }) => {
+    if (event.sortField) {
+      currentSort.value.field = event.sortField
+      currentSort.value.order = event.sortOrder === 1 ? 'asc' : 'desc'
+      fetchAccounts()
+    }
+  }
+
+  const resetFilters = () => {
+    dateRange.value = null
+    searchQuery.value = ''
+    filterMap.value = null
+    filterProfession.value = null
+    pagination.value.page = 1
+    currentSort.value = { field: 'attendance_count', order: 'desc' }
+    fetchAccounts()
+  }
+
+  onMounted(() => {
+    fetchFilters()
+    fetchAccounts()
+    fetchCurrentRuleVersion()
+  })
+
+  return {
+    currentRoleType,
+    currentRoleLabel,
+    currentRuleVersion,
+    loading,
+    dateRange,
+    searchQuery,
+    filterMap,
+    filterProfession,
+    filterOptions,
+    accountList,
+    pagination,
+    currentSort,
+    statCards,
+    scoreBreakdownVisible,
+    scoreBreakdownLoading,
+    scoreBreakdownData,
+    scoreBreakdownAccount,
+    scoringRulesVisible,
+    scoringRulesLoading,
+    scoringRulesData,
+    scoringRulesActiveTab,
+    openScoringRulesDialog,
+    openDetail,
+    openScoreBreakdown,
+    onPageChange,
+    onSort,
+    resetFilters,
+    fetchAccounts
+  }
+}

@@ -1,0 +1,126 @@
+/* ============================================ 
+   基础样式 (Base Styles)
+   ============================================ */
+
+/* Google Fonts - 通过 @import 本地化管理 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-size: 14px;
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 主题过渡动画 */
+  :root {
+    --theme-transition-duration: 0.3s;
+    --theme-transition-easing: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  :root.theme-transition,
+  :root.theme-transition * {
+    transition: 
+      background-color var(--theme-transition-duration) var(--theme-transition-easing),
+      color var(--theme-transition-duration) var(--theme-transition-easing),
+      border-color var(--theme-transition-duration) var(--theme-transition-easing),
+      box-shadow var(--theme-transition-duration) var(--theme-transition-easing),
+      fill var(--theme-transition-duration) var(--theme-transition-easing),
+      stroke var(--theme-transition-duration) var(--theme-transition-easing);
+  }
+
+  body {
+    font-family: var(--font-family);
+    background: var(--color-bg);
+    color: var(--color-text);
+    line-height: var(--line-height-normal);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: background-color var(--theme-transition-duration) var(--theme-transition-easing);
+  }
+
+  /* 背景纹理 - 根据主题动态变化 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 0% 0%, var(--color-primary-alpha-10) 0%, transparent 50%),
+      radial-gradient(ellipse at 100% 100%, var(--color-ai-alpha-10) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+    opacity: 0.8;
+    transition: opacity var(--theme-transition-duration) var(--theme-transition-easing);
+  }
+
+  /* 焦点样式 - 无障碍 */
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  /* 选择文本 */
+  ::selection {
+    background: var(--color-primary-alpha-20);
+    color: var(--color-text);
+  }
+
+  /* 链接样式 */
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  a:hover {
+    color: var(--color-primary-light);
+  }
+
+  /* 标题样式 */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: var(--color-text);
+    font-weight: 600;
+    line-height: var(--line-height-tight);
+  }
+
+  h1 {
+    font-size: var(--font-size-4xl);
+  }
+
+  h2 {
+    font-size: var(--font-size-3xl);
+  }
+
+  h3 {
+    font-size: var(--font-size-2xl);
+  }
+
+  h4 {
+    font-size: var(--font-size-xl);
+  }
+
+  h5 {
+    font-size: var(--font-size-lg);
+  }
+
+  h6 {
+    font-size: var(--font-size-base);
+  }
+}

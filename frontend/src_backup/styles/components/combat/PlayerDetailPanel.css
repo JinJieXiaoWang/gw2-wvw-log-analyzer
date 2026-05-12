@@ -1,0 +1,14 @@
+.player-detail-dialog :deep(.p-dialog-header) {
+  background: var(--surface-100);
+  border-bottom: 1px solid var(--border-color);
+}
+.player-detail-dialog :deep(.p-dialog-content) {
+  background: var(--surface-0);
+  padding: 1rem;
+}
+.player-detail-dialog :deep(.p-card) {
+  background: rgba(var(--surface-100), 0.5);
+}
+.space-y-5 > * + * {
+  margin-top: 1.25rem;
+}

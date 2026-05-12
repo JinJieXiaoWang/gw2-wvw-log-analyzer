@@ -1,0 +1,162 @@
+/* === 主布局样式 === */
+
+
+.main-layout {
+  @apply min-h-screen flex flex-col;
+}
+
+.main-content {
+  @apply flex-1 p-6;
+}
+
+/* === 导航菜单 === */
+.nav-link {
+  @apply flex items-center gap-3 px-4 py-2.5 rounded-lg;
+  @apply text-neutral-text-secondary transition-all duration-200;
+}
+
+.nav-link:hover {
+  @apply text-neutral-text bg-neutral-card;
+}
+
+.nav-link-active {
+  background-color: var(--color-primary-alpha-10);
+  @apply text-primary border-l-2 border-primary;
+}
+
+.nav-link-active:hover {
+  background-color: var(--color-primary-alpha-10);
+}
+
+/* === 标签页 === */
+.tabs {
+  @apply flex border-b border-neutral-border;
+}
+
+.tab {
+  @apply px-5 py-3 text-sm font-medium text-neutral-text-secondary;
+  @apply border-b-2 border-transparent;
+  @apply transition-all duration-200;
+  @apply cursor-pointer;
+}
+
+.tab:hover {
+  @apply text-neutral-text;
+}
+
+.tab-active {
+  @apply text-primary;
+  @apply border-b-primary;
+}
+
+/* === 工具提示 === */
+.tooltip {
+  @apply absolute z-50 px-3 py-2 text-sm;
+  @apply bg-neutral-card text-neutral-text rounded-lg shadow-lg;
+  border: 1px solid var(--color-border);
+  @apply pointer-events-none opacity-0 transition-opacity duration-200;
+}
+
+.tooltip-visible {
+  @apply opacity-100;
+}
+
+/* === 空状态 === */
+.empty-state {
+  @apply flex flex-col items-center justify-center py-16 px-6 text-center;
+}
+
+.empty-state-icon {
+  @apply w-20 h-20 mb-6 rounded-2xl flex items-center justify-center;
+  @apply bg-neutral-card border border-neutral-border;
+  @apply text-neutral-text-secondary;
+}
+
+.empty-state-title {
+  @apply text-lg font-semibold text-neutral-text mb-2;
+}
+
+.empty-state-description {
+  @apply text-sm text-neutral-text-secondary max-w-sm;
+}
+
+/* === 加载骨架屏 === */
+.skeleton {
+  @apply bg-neutral-bg rounded animate-pulse;
+}
+
+.skeleton-text {
+  @apply h-4 skeleton rounded;
+}
+
+.skeleton-title {
+  @apply h-6 skeleton rounded;
+}
+
+.skeleton-avatar {
+  @apply w-12 h-12 skeleton rounded-full;
+}
+
+.skeleton-card {
+  @apply skeleton rounded-xl;
+}
+
+/* === 进度条 === */
+.progress {
+  @apply h-2 bg-neutral-bg rounded-full overflow-hidden;
+}
+
+.progress-bar {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+}
+
+.progress-primary {
+  @apply progress-bar bg-gradient-to-r from-primary to-primary-light;
+  box-shadow: 0 0 10px rgba(22, 93, 255, 0.5);
+}
+
+.progress-success {
+  @apply progress-bar bg-gradient-to-r from-status-success to-green-400;
+  box-shadow: 0 0 10px rgba(0, 214, 143, 0.5);
+}
+
+.progress-ai {
+  @apply progress-bar;
+  background: linear-gradient(90deg, var(--color-ai-dark), var(--color-ai), var(--color-ai-light));
+  box-shadow: 0 0 15px rgba(0, 229, 192, 0.5);
+}
+
+/* 游戏化进度条 */
+.game-progress {
+  @apply h-3 bg-neutral-bg rounded-full overflow-hidden relative;
+}
+
+.game-progress-bar {
+  @apply h-full rounded-full transition-all duration-500 ease-out;
+  position: relative;
+}
+
+.game-progress-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  animation: progress-shine 2s ease-in-out infinite;
+}
+
+@keyframes progress-shine {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.game-progress-primary {
+  @apply game-progress-bar;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light));
+  box-shadow: 0 0 12px rgba(22, 93, 255, 0.5);
+}
+
+.game-progress-legendary {
+  @apply game-progress-bar;
+  background: linear-gradient(90deg, var(--rarity-legendary), var(--rarity-exotic), var(--color-primary-light));
+  box-shadow: 0 0 15px rgba(76, 19, 157, 0.5);
+}

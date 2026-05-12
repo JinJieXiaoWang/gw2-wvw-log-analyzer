@@ -1,0 +1,221 @@
+<template>
+  <div class="relative min-h-screen p-6 overflow-hidden">
+    <!-- 背景装饰 -->
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+      <div
+        class="absolute rounded-full blur-[80px] opacity-15 animate-pulse"
+        style="width: 600px; height: 600px; background: linear-gradient(135deg, var(--color-primary), var(--color-ai)); top: -200px; right: -100px;"
+      />
+      <div
+        class="absolute rounded-full blur-[80px] opacity-15 animate-pulse"
+        style="width: 400px; height: 400px; background: linear-gradient(135deg, var(--color-secondary), var(--color-error)); bottom: -100px; left: -100px; animation-delay: 1s;"
+      />
+      <div
+        class="absolute inset-0"
+        style="background-image: linear-gradient(rgba(22,93,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(22,93,255,0.03) 1px, transparent 1px); background-size: 50px 50px;"
+      />
+    </div>
+
+    <div class="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-6">
+      <PageHeader
+        title="评分规则配置"
+        subtitle="为不同角色类型定制评分维度和权重"
+        icon="pi pi-sliders-h"
+        icon-gradient="bg-gradient-to-br from-primary via-ai to-secondary"
+      />
+
+      <Message
+        severity="info"
+        class="shadow-sm"
+      >
+        <div class="flex items-start gap-3">
+          <i class="pi pi-calculator mt-0.5 text-info-500" />
+          <div class="text-sm leading-relaxed">
+            <strong>评分自动计算机制：</strong>当日志导入完成后，系统会根据当前生效的评分规则版本，结合玩家的职业和角色定位，<strong>自动计算</strong>每个玩家的 AI 评分与等级。修改规则后，可通过"应用到历史数据"按钮重新计算历史日志。
+          </div>
+        </div>
+      </Message>
+
+      <!-- 角色类型卡片 -->
+      <ScoringRoleCards
+        :roles="roleTypes"
+        :active-role="activeRole"
+        :colors="roleColors"
+        :gradients="roleGradients"
+        :rule-counts="ruleCounts"
+        :unsaved-roles="changedRoles"
+        :progress="weightProgress"
+        @switch="switchRole"
+      />
+
+      <!-- 规则范围 -->
+      <RuleScopeSelector
+        v-model:selected-profession="selectedProfession"
+        v-model:selected-base-profession="selectedBaseProfession"
+        :scope="ruleScope"
+        :cascade-professions="cascadeProfessions"
+        @change-scope="switchScope"
+        @base-profession-change="onBaseProfessionChange"
+        @profession-change="onProfessionChange"
+      />
+
+      <!-- 规则编辑器 -->
+      <ScoringRulesEditor
+        :active-role="activeRole"
+        :active-role-label="activeRoleLabel"
+        :active-role-icon="activeRoleIcon"
+        :role-colors="roleColors"
+        :role-gradients="roleGradients"
+        :rule-scope="ruleScope"
+        :selected-profession="selectedProfession"
+        :editable-rules="editableRules"
+        :loading="loading"
+        :saving="saving"
+        :resetting="resetting"
+        :recalculating="recalculating"
+        :can-recalculate="canRecalculate"
+        :current-profession-has-rules="currentProfessionHasRules"
+        :deleting-profession="deletingProfession"
+        :total-weight="totalWeight"
+        :weight-status-class="weightStatusClass"
+        :has-unsaved-changes="hasUnsavedChanges(activeRole)"
+        :can-write="canWrite"
+        :new-rule-dimension="newRuleDimension"
+        :new-rule-weight="newRuleWeight"
+        :new-rule-desc="newRuleDesc"
+        :available-dimensions="availableDimensions"
+        :get-dimension-icon="getDimensionIcon"
+        :get-dimension-color="getDimensionColor"
+        :get-dimension-label="getDimensionLabel"
+        @recalculate="confirmRecalculate"
+        @delete-profession="confirmDeleteProfessionRules"
+        @reset="confirmReset"
+        @save="saveChanges"
+        @move-up="moveUp"
+        @move-down="moveDown"
+        @mark-changed="markChanged"
+        @remove="removeRule"
+        @add="addRule"
+      />
+
+      <!-- 职业定位管理 -->
+      <ProfessionRoleEditor
+        :role-types="roleTypes"
+        :profession-role-mapping="professionRoleMapping"
+        :is-edit-mode="roleEditMode"
+        :can-write="canWrite"
+        :scoring-mode="scoringMode"
+        @toggle-edit="toggleRoleEditMode"
+        @save="saveRoleMapping"
+        @profession-change="updateProfessionRole"
+      />
+
+      <!-- 评分等级 -->
+      <ScoringGradeCards :grades="gradeList" />
+
+      <!-- 重算任务 -->
+      <RecalcTaskPanel
+        :task="recalcTask"
+        :severity="recalcStatusSeverity"
+        @close="recalcTask = null"
+      />
+
+      <!-- 版本历史 -->
+      <VersionHistoryTable
+        :versions="versionHistory"
+        :format-date="formatDate"
+      />
+    </div>
+
+    <ConfirmDialog />
+    <Toast />
+  </div>
+</template>
+
+<script setup lang="ts">
+import PageHeader from '@/layout/components/PageHeader.vue'
+import Message from 'primevue/message'
+import ConfirmDialog from 'primevue/confirmdialog'
+import Toast from 'primevue/toast'
+import RuleScopeSelector from '@/components/settings/scoring/RuleScopeSelector.vue'
+import ProfessionRoleEditor from '@/components/settings/scoring/ProfessionRoleEditor.vue'
+import ScoringRulesEditor from '@/components/settings/scoring/ScoringRulesEditor.vue'
+import ScoringRoleCards from '@/components/settings/scoring/ScoringRoleCards.vue'
+import ScoringGradeCards from '@/components/settings/scoring/ScoringGradeCards.vue'
+import RecalcTaskPanel from '@/components/settings/scoring/RecalcTaskPanel.vue'
+import VersionHistoryTable from '@/components/settings/scoring/VersionHistoryTable.vue'
+import { ref, computed } from 'vue'
+import { useScoringRules } from '@/composables/scoring/useScoringRules'
+import { usePermission } from '@/composables/system/usePermission'
+
+const { can } = usePermission()
+const canWrite = can('write')
+
+const {
+  roleTypes, activeRole, loading, saving, resetting, currentRules, editableRules,
+  changedRoles, allDimensions, newRuleDimension, newRuleWeight, newRuleDesc,
+  ruleScope, selectedProfession, professionOptions, professionRulesMap,
+  deletingProfession, cascadeProfessions, selectedBaseProfession,
+  recalculating, recalcTask, versionHistory,
+  roleColors, roleGradients, activeRoleLabel, activeRoleIcon,
+  canRecalculate, currentProfessionHasRules, recalcStatusSeverity,
+  totalWeight, availableDimensions, weightStatusClass, gradeList,
+  hasUnsavedChanges, getWeightProgress, getDimensionIcon, getDimensionColor, getDimensionLabel,
+  switchRole, markChanged, moveUp, moveDown, removeRule, addRule,
+  saveChanges, confirmReset, switchScope, onBaseProfessionChange, onProfessionChange,
+  fetchProfessions, fetchVersions, confirmRecalculate, confirmDeleteProfessionRules,
+  formatDate,
+} = useScoringRules()
+
+const ruleCounts = computed(() => {
+  const map: Record<string, number> = {}
+  for (const key of Object.keys(currentRules.value)) {
+    map[key] = currentRules.value[key]?.length || 0
+  }
+  return map
+})
+
+const weightProgress = computed(() => {
+  const map: Record<string, number> = {}
+  for (const role of roleTypes.value) {
+    map[role.type] = getWeightProgress(role.type)
+  }
+  return map
+})
+
+// 职业定位管理（暂保留在视图层）
+const scoringMode = ref<'role_based' | 'profession_based'>('role_based')
+const roleEditMode = ref(false)
+const professionRoleMapping = ref([
+  { profession: 'Guardian', role: 'support', roleLabel: '辅助', icon: 'pi pi-sun', eliteSpecs: ['Dragonhunter', 'Firebrand', 'Willbender', 'Luminary'], currentRole: 'support' },
+  { profession: 'Warrior', role: 'dps', roleLabel: '输出', icon: 'pi pi-bolt', eliteSpecs: ['Berserker', 'Spellbreaker', 'Bladesworn', 'Paragon'], currentRole: 'dps' },
+  { profession: 'Engineer', role: 'support', roleLabel: '辅助', icon: 'pi pi-cog', eliteSpecs: ['Scrapper', 'Holosmith', 'Mechanist', 'Amalgam'], currentRole: 'support' },
+  { profession: 'Ranger', role: 'dps', roleLabel: '输出', icon: 'pi pi-user', eliteSpecs: ['Druid', 'Soulbeast', 'Untamed', 'Galeshot'], currentRole: 'dps' },
+  { profession: 'Thief', role: 'dps', roleLabel: '输出', icon: 'pi pi-eye', eliteSpecs: ['Daredevil', 'Deadeye', 'Specter', 'Antiquary'], currentRole: 'dps' },
+  { profession: 'Elementalist', role: 'dps', roleLabel: '输出', icon: 'pi pi-sitemap', eliteSpecs: ['Tempest', 'Weaver', 'Catalyst', 'Evoker'], currentRole: 'dps' },
+  { profession: 'Mesmer', role: 'support', roleLabel: '辅助', icon: 'pi pi-star', eliteSpecs: ['Chronomancer', 'Mirage', 'Virtuoso', 'Troubadour'], currentRole: 'support' },
+  { profession: 'Necromancer', role: 'support', roleLabel: '辅助', icon: 'pi pi-exclamation-triangle', eliteSpecs: ['Reaper', 'Scourge', 'Harbinger', 'Ritualist'], currentRole: 'support' },
+  { profession: 'Revenant', role: 'support', roleLabel: '辅助', icon: 'pi pi-moon', eliteSpecs: ['Herald', 'Renegade', 'Vindicator', 'Conduit'], currentRole: 'support' },
+])
+
+function toggleRoleEditMode() {
+  roleEditMode.value = !roleEditMode.value
+  if (roleEditMode.value) {
+    professionRoleMapping.value.forEach(p => { p.currentRole = p.role })
+  } else {
+    professionRoleMapping.value.forEach(p => { p.currentRole = p.role })
+  }
+}
+
+function updateProfessionRole(prof: any) {
+  // 提示预览模式
+}
+
+function saveRoleMapping() {
+  professionRoleMapping.value.forEach(p => { p.role = p.currentRole })
+  roleEditMode.value = false
+}
+</script>
+
+<style scoped>
+</style>
