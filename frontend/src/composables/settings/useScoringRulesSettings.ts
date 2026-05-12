@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/scoring/scoringRulesService'
+import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/core/scoringRulesService'
 import { configManager } from '@/services/core/configManager'
 
 export const ROLE_TYPES = [

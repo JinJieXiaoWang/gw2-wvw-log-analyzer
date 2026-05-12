@@ -6,20 +6,27 @@
           {{ selectedDictType.dict_name }}
           <span class="type-code">({{ selectedDictType.dict_type }})</span>
         </template>
-        <template v-else>请选择字典分类</template>
+        <template v-else>
+          请选择字典分类
+        </template>
       </h3>
     </div>
     <div class="toolbar-right">
       <IconField>
         <InputIcon class="pi pi-search" />
-        <InputText v-model="localSearch" placeholder="搜索数据..." size="small" :disabled="!selectedDictType" />
+        <InputText
+          v-model="localSearch"
+          placeholder="搜索数据..."
+          size="small"
+          :disabled="!selectedDictType"
+        />
       </IconField>
       <BaseSelect
         v-model="localStatus"
         :options="statusOptions"
         option-label="label"
         option-value="value"
-        placeholder="״̬ɸѡ"
+        placeholder="状态筛选"
         size="small"
         class="status-select"
         :disabled="!selectedDictType"
@@ -51,8 +58,8 @@ import { computed } from 'vue'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import type { DictType } from '@/services/system/dictionaryService'
 
 const props = defineProps<{

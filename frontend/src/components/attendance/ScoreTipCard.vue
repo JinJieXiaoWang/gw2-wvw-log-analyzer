@@ -3,9 +3,7 @@
     class="card flex items-center gap-3 animate-slide-in-up"
     style="animation-delay: 0.05s"
   >
-    <div
-      class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex
-             items-center justify-center">
+    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
       <i class="pi pi-info-circle text-primary" />
     </div>
     <div class="flex-1 min-w-0">

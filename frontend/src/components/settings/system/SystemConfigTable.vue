@@ -1,12 +1,8 @@
 <template>
-  <div
-    class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-2xl p-5 shadow-sm">
+  <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-600 to-gray-800 flex
-                 items-center justify-center">
+        <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-600 to-gray-800 flex items-center justify-center">
           <i class="pi pi-database text-white" />
         </div>
         <div>

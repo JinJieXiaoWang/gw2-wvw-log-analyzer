@@ -37,13 +37,18 @@
       </div>
     </div>
     <div class="mt-4 flex justify-center">
-      <button 
-        v-if="hasMore" 
-        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors" 
-        @click="loadMoreReports"
-      >
-        加载更多
-      </button>
+      <BaseLoadMore
+        v-if="reports.length > 0"
+        :load-callback="handleLoadMore"
+        :has-more="hasMore"
+        :show-no-more="true"
+        :show-load-more-button="true"
+        :show-loading="true"
+        :show-error="true"
+        no-more-text="没有更多AI报告了"
+        load-more-button-text="加载更多报告"
+        @load-more="handleLoadMore"
+      />
     </div>
   </div>
 </template>
@@ -51,11 +56,13 @@
 <script setup lang="ts">
 /**
  * AI报告列表组件
- * 功能：显ʾAI生成的报告列表
- * 作者：˧姐姐
+ * 功能：显示AI生成的报告列表，支持滚动加载
+ * 作者：System
  * 创建日期：2026-04-27
+ * 更新日期：2026-05-11 - 集成BaseLoadMore组件
  */
 
+import BaseLoadMore from '@/components/common/ui/overlay/BaseLoadMore.vue'
 import type { AiReport } from '@/api/ai/ai'
 
 defineProps<{
@@ -64,18 +71,16 @@ defineProps<{
   hasMore: boolean
 }>()
 
-// Emits
 const emit = defineEmits<{
   'view-report': [reportId: string]
   'load-more': []
 }>()
 
-// 事件处理
 const viewReport = (reportId: string) => {
   emit('view-report', reportId)
 }
 
-const loadMoreReports = () => {
+const handleLoadMore = async () => {
   emit('load-more')
 }
 </script>

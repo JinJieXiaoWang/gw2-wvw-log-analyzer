@@ -6,14 +6,14 @@
  */
 
 import type {
-  Plugin,
-  PluginMeta,
-  PluginRegistration,
-  PluginStatus,
-  PluginManagerConfig,
-  PluginAPI,
-  PluginContext,
-  RouteConfig
+    Plugin,
+    PluginAPI,
+    PluginContext,
+    PluginManagerConfig,
+    PluginMeta,
+    PluginRegistration,
+    PluginStatus,
+    RouteConfig
 } from '@/types/plugin'
 
 class PluginManager {
@@ -117,8 +117,6 @@ class PluginManager {
     this.plugins.set(id, registration)
     this.emitEvent('plugin:installed', plugin.meta)
 
-    console.log(`[PluginManager] Plugin ${id} v${plugin.meta.version} installed`)
-
     if (this.config.autoEnable && plugin.options.autoEnable !== false) {
       await this.enable(id)
     }
@@ -149,8 +147,6 @@ class PluginManager {
 
     this.plugins.delete(pluginId)
     this.emitEvent('plugin:uninstalled', pluginId)
-
-    console.log(`[PluginManager] Plugin ${pluginId} uninstalled`)
   }
 
   /**
@@ -183,8 +179,6 @@ class PluginManager {
       registration.status = 'enabled'
       registration.enabledAt = new Date()
       this.emitEvent('plugin:enabled', pluginId)
-
-      console.log(`[PluginManager] Plugin ${pluginId} enabled`)
     } catch (error) {
       registration.status = 'error'
       registration.error = error as Error
@@ -215,8 +209,6 @@ class PluginManager {
 
       registration.status = 'disabled'
       this.emitEvent('plugin:disabled', pluginId)
-
-      console.log(`[PluginManager] Plugin ${pluginId} disabled`)
     } catch (error) {
       console.error(`[PluginManager] Failed to disable plugin ${pluginId}:`, error)
       throw error

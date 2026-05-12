@@ -5,7 +5,7 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 export interface EiAnalysisFight {
   id: number
@@ -28,6 +28,8 @@ export interface EiAnalysisPlayer {
   id: number
   member_id: number
   account: string
+  account_name: string
+  name: string
   character_name: string
   profession: string
   group_id: number
@@ -132,6 +134,44 @@ export interface EiAnalysisEnemy {
   dead_count: number
 }
 
+export interface EiAnalysisGroup {
+  id: number
+  players: EiAnalysisPlayer[]
+  total_damage: number
+  avg_dps: number
+  avg_score: number | null
+  total_dead: number
+  total_downed: number
+  bar_width: number
+}
+
+export interface EiAnalysisStatAverages {
+  protection: number
+  stability: number
+  hitRate: number
+  skillCastUptime: number
+  stackDist: number
+  distToCom: number
+}
+
+export interface EiAnalysisDonut {
+  pd: string
+  cd: string
+  bd: string
+  co: number
+  bo: number
+  total: number
+  p: number
+  c: number
+  b: number
+}
+
+export interface EiAnalysisPercentages {
+  power: number
+  condi: number
+  breakbar: number
+}
+
 export interface EiAnalysisResponse {
   log_id: number
   fight: EiAnalysisFight
@@ -144,6 +184,15 @@ export interface EiAnalysisResponse {
   support_leaders: Record<string, EiAnalysisPlayer[]>
   defense_leaders: Record<string, EiAnalysisPlayer[]>
   dps_report_permalink?: string
+  // v2.2 预计算衍生字段
+  groups: EiAnalysisGroup[]
+  commanders: EiAnalysisPlayer[]
+  ungrouped_players: EiAnalysisPlayer[]
+  stat_averages: EiAnalysisStatAverages
+  top_dps_players: EiAnalysisPlayer[]
+  sorted_players: EiAnalysisPlayer[]
+  donut: EiAnalysisDonut
+  percentages: EiAnalysisPercentages
 }
 
 export interface SkillMapItem {

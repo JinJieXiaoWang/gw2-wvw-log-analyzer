@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 模块功能：性能监控API路由
 # 作者：帅妹妹丶.8297
 # 创建日期?2026-04-27
@@ -52,7 +52,7 @@ async def reset_performance_stats(
 ):
     # 功能：重置性能统计
     performance_monitor.reset()
-    return ApiResponse.success_response(message="性能统计已重?)
+    return ApiResponse.success_response(message="性能统计已重?)")
 
 
 @router.get("/benchmark", response_model=ApiResponse, summary="获取基准测试结果")

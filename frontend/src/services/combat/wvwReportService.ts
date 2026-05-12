@@ -7,7 +7,7 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 // =====================================================================
 // 工具函数：下划线转驼峰

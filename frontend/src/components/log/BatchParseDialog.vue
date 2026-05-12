@@ -2,10 +2,11 @@
   <BaseDialog
     :visible="visible"
     header="批量解析"
-    :modal="true"
-    :style="{ width: '450px' }"
-    class="custom-dialog"
-    confirm-label="开始解析" confirm-icon="pi pi-play" @confirm="startBatchParse" @update:visible="emit('update:visible', $event)"
+    width="450px"
+    confirm-label="开始解析"
+    confirm-icon="pi pi-play"
+    @confirm="startBatchParse"
+    @update:visible="emit('update:visible', $event)"
   >
     <div class="py-4">
       <div class="flex items-start gap-4 mb-4">
@@ -14,9 +15,11 @@
         </div>
         <div>
           <p class="text-neutral-text font-medium mb-1">
-            寮技濮嬫壒閲忚В鏋?          </p>
+            确认开始批量解析？
+          </p>
           <p class="text-neutral-text-secondary text-sm">
-            确定瑕佽В析鼼変腑鐨?<span class="text-primary font-bold">{{ selectedLogs.length }}</span> 个日志文件吗锛?          </p>
+            确定要解析选中的 <span class="text-primary font-bold">{{ selectedLogs.length }}</span> 个日志文件吗？
+          </p>
         </div>
       </div>
       <div
@@ -33,28 +36,18 @@
         </div>
       </div>
     </div>
-    <template #footer>
-      <BaseButton label="取消" class="btn-ghost"
-        @click="closeDialog"
-      />
-      <BaseButton
-        label="开始解析"
-        icon="pi pi-play"
-        class="btn-game"
-        @click="startBatchParse"
-      />
-    </template>
   </BaseDialog>
 </template>
 
 <script setup lang="ts">
 /**
  * 批量解析弹窗组件
- * 功能：处理批量解析日志文件 * 作者：xxx 创建日期：026-04-27
+ * 功能：处理批量解析日志文件
+ * 作者：帅姐姐
+ * 创建日期：2026-04-27
  */
 
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 
 // Props
 defineProps<{
@@ -72,10 +65,6 @@ const emit = defineEmits([
 ])
 
 // 事件处理
-const closeDialog = () => {
-  emit('update:visible', false)
-}
-
 const startBatchParse = () => {
   emit('start-batch-parse')
 }

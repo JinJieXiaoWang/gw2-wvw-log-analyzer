@@ -1,6 +1,6 @@
 ﻿# 模块功能：AI分析报告数据验证模式
 # 作者：系统
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：pydantic v2
 
 from datetime import datetime

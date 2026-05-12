@@ -6,14 +6,12 @@ import json
 import os
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy.orm import Session
-
 from app.models.scoring.scoring_rule import ScoringRule, ScoringRulePreset
 from app.models.scoring.scoring_rule_version import ScoringRuleVersion
 from app.schemas.scoring.scoring_rule import ScoringRuleResponse
-from app.utils.dict_utils import get_dict_options
+from app.utils.db.dict_utils import get_dict_options
 from app.utils.logger import logger
-
+from sqlalchemy.orm import Session
 
 # 系统默认评分规则配置
 # 所有角色类型都预定义默认规则，通过字典表 status 控制启用哪些
@@ -416,12 +414,14 @@ class ScoringRuleService:
 
     # ==================== 职业规则初始化 ====================
 
-    def init_profession_rules_from_json(self) -> Dict:
-        """从 professions.json 导入默认职业特定规则
+    def init_profession_rules_from_db(self) -> Dict:
+        """从数据库导入默认职业特定规则
         
         仅当 scoring_rule 表中没有任何职业特定规则时执行。
-        将 professions.json 中的 scoring_config 整数权重归一化为浮点权重。
+        将数据库中精英特长的 scoring_config 整数权重归一化为浮点权重。
         """
+        from app.services.game.profession_service import ProfessionService
+        
         # 检查是否已有职业特定规则
         existing_count = (
             self.db.query(ScoringRule)
@@ -431,61 +431,59 @@ class ScoringRuleService:
         if existing_count > 0:
             return {"initialized": False, "reason": "已有职业特定规则", "count": existing_count}
 
-        # 加载 professions.json
-        json_path = os.path.join(
-            os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-            "app", "data", "professions.json"
-        )
-        if not os.path.exists(json_path):
-            logger.warning(f"professions.json 不存在: {json_path}")
-            return {"initialized": False, "reason": "professions.json 不存在"}
-
         try:
-            with open(json_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
+            logger.debug("开始从数据库查询精英特长数据以初始化职业特定规则...")
+            
+            # 从数据库获取精英特长数据
+            prof_service = ProfessionService(self.db)
+            elite_specs = prof_service.get_all_specs(active_only=False)
+            
+            logger.debug(f"查询到 {len(elite_specs)} 个精英特长")
+            
+            total_created = 0
+
+            for spec in elite_specs:
+                spec_name = spec.get("spec_key")
+                scoring_config = spec.get("scoring_config")
+                
+                if not scoring_config or not spec_name:
+                    continue
+
+                default_role = spec.get("default_role", "dps")
+
+                # 归一化权重
+                total_weight = sum(scoring_config.values())
+                if total_weight <= 0:
+                    continue
+
+                sort_order = 1
+                for dimension, weight in scoring_config.items():
+                    normalized_weight = round(weight / total_weight, 4)
+                    rule = ScoringRule(
+                        role_type=default_role,
+                        profession=spec_name,
+                        dimension=dimension,
+                        weight=normalized_weight,
+                        description=f"{spec_name} 默认 {dimension} 权重",
+                        sort_order=sort_order,
+                        is_active=True,
+                    )
+                    self.db.add(rule)
+                    sort_order += 1
+                    total_created += 1
+
+            self.db.commit()
+            logger.info(f"从数据库导入职业特定规则: 共 {total_created} 条")
+            return {"initialized": True, "count": total_created}
+            
         except Exception as e:
-            logger.error(f"加载 professions.json 失败: {e}")
-            return {"initialized": False, "reason": f"加载失败: {e}"}
-
-        elite_specs = data.get("elite_specs", {})
-        total_created = 0
-
-        for spec_name, spec_data in elite_specs.items():
-            scoring_config = spec_data.get("scoring_config")
-            if not scoring_config:
-                continue
-
-            default_role = spec_data.get("default_role", "dps")
-
-            # 归一化权重
-            total_weight = sum(scoring_config.values())
-            if total_weight <= 0:
-                continue
-
-            sort_order = 1
-            for dimension, weight in scoring_config.items():
-                normalized_weight = round(weight / total_weight, 4)
-                rule = ScoringRule(
-                    role_type=default_role,
-                    profession=spec_name,
-                    dimension=dimension,
-                    weight=normalized_weight,
-                    description=f"{spec_name} 默认 {dimension} 权重",
-                    sort_order=sort_order,
-                    is_active=True,
-                )
-                self.db.add(rule)
-                sort_order += 1
-                total_created += 1
-
-        self.db.commit()
-        logger.info(f"从 professions.json 导入职业特定规则: 共 {total_created} 条")
-        return {"initialized": True, "count": total_created}
+            logger.error(f"从数据库导入职业特定规则失败: {e}", exc_info=True)
+            return {"initialized": False, "reason": f"数据库查询失败: {e}"}
 
     def get_role_types_data(self) -> List[Dict[str, Any]]:
         """获取所有启用的角色类型配置（含描述、颜色等前端展示字段）"""
-        from app.services.game_data.profession_service import ProfessionService
         from app.constants.scoring import ROLE_DESCRIPTIONS
+        from app.services.game.profession_service import ProfessionService
 
         prof_service = ProfessionService(self.db)
         role_types = prof_service.get_all_role_types()

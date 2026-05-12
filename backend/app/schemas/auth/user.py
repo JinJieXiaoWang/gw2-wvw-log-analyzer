@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：用户数据验证Schema
 # 作者：系统
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：Pydantic v2
 
 from datetime import datetime
@@ -12,9 +12,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class UserBase(BaseModel):
     # 功能：用户基础Schema
-    username: str = Field(..., min_length=3, max_length=50, description="用户?)
+    username: str = Field(..., min_length=3, max_length=50, description="用户名")
     email: Optional[str] = Field(None, description="邮箱")
-    is_active: bool = Field(True, description="是否激?)
+    is_active: bool = Field(True, description="是否激活")
     is_predefined: bool = Field(False, description="是否为预置管理员")
     role: str = Field("operator", description="角色: operator/super_admin/user")
 
@@ -29,7 +29,7 @@ class UserUpdate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     email: Optional[str] = Field(None, description="邮箱")
-    is_active: Optional[bool] = Field(None, description="是否激?)
+    is_active: Optional[bool] = Field(None, description="是否激活")
     role: Optional[str] = Field(None, description="角色")
 
 
@@ -39,8 +39,8 @@ class PasswordChange(BaseModel):
 
     current_password: Optional[str] = Field(None, description="当前密码")
     old_password: Optional[str] = Field(None, description="当前密码（兼容旧字段名）")
-    new_password: str = Field(..., min_length=6, description="新密?)
-    confirm_password: Optional[str] = Field(None, description="确认新密?)
+    new_password: str = Field(..., min_length=6, description="新密码")
+    confirm_password: Optional[str] = Field(None, description="确认新密码")
 
 
 class UserResponse(UserBase):

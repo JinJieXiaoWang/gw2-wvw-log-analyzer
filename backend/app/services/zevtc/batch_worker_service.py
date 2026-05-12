@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：批量解析任务执行服?
+# 模块功能：批量解析任务执行服务
 # 说明：实际解析执行逻辑（子进程隔离、线程池、错误处理）
 
 import concurrent.futures
@@ -83,7 +83,7 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
 
         log = log_service.get_log_by_id(db, log_id)
         if not log:
-            raise ValueError(f"日志不存? {log_id}")
+            raise ValueError(f"日志不存在 {log_id}")
 
         log_service.update_parse_status(db, log_id, "parsing")
 
@@ -106,12 +106,12 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
 
 
 def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -> None:
-    """使用子进程隔离执行解析，主进程只负责状态更?
+    """使用子进程隔离执行解析，主进程只负责状态更新
 
     流程?
         1. 子进程执?import_log（独立内存空间）
         2. 子进程退出后内存完全释放
-        3. 主进程根据返回结果更新数据库状?
+        3. 主进程根据返回结果更新数据库状态
     """
     from app.config.database import SessionLocal
 
@@ -164,9 +164,9 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     if not result.get("success"):
         raise Exception(result.get("error", "日志导入失败"))
 
-    logger.info(f"[batch] log_id={log_id} 子进程导入成?)
+    logger.info(f"[batch] log_id={log_id} 子进程导入成功")
 
-    # 更新状?
+    # 更新状态
     db = SessionLocal()
     try:
         BatchParseService.update_task_item_status(db, task_id, log_id, "completed")
@@ -184,7 +184,7 @@ def parse_single_log_with_rate_limit(
     """
     # 解析前内存检?
     if not _check_memory_and_wait(f"parse_start_log_{log_id}"):
-        _handle_parse_error(task_id, log_id, "系统内存不足，跳过解?, "oom_risk")
+        _handle_parse_error(task_id, log_id, "系统内存不足，跳过解析", "oom_risk")
         with active_workers_lock:
             active_workers.discard((task_id, log_id))
         return
@@ -212,7 +212,7 @@ def parse_single_log_with_rate_limit(
             future.result(timeout=SINGLE_LOG_PARSE_TIMEOUT)
 
     except concurrent.futures.TimeoutError:
-        logger.error(f"[batch] log_id={log_id} 解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒），强制终?)
+        logger.error(f"[batch] log_id={log_id} 解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒），强制终止")
         _handle_parse_error(task_id, log_id, f"解析超时（{SINGLE_LOG_PARSE_TIMEOUT}秒）", "timeout")
 
     except Exception as e:
@@ -223,12 +223,12 @@ def parse_single_log_with_rate_limit(
     finally:
         with active_workers_lock:
             active_workers.discard((task_id, log_id))
-        # 解析完成后深度清理内?
+        # 解析完成后深度清理内存
         _deep_gc(f"parse_end_log_{log_id}")
 
 
 def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error_code: str = "unknown"):
-    """统一处理解析错误：分?+ 重试决策"""
+    """统一处理解析错误：分类 + 重试决策"""
     from app.config.database import SessionLocal
 
     db = SessionLocal()
@@ -243,7 +243,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
             error_code = "timeout"
         elif "parse" in error_str.lower() or "解析" in error_str:
             error_code = "parse_error"
-        elif "日志不存? in error_str or "正在解析? in error_str:
+        elif "日志不存在" in error_str or "正在解析" in error_str:
             error_code = "invalid_state"
 
         if error_code in ("parse_error", "invalid_state"):

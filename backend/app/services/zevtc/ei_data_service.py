@@ -7,13 +7,14 @@ from sqlalchemy.orm import Session
 
 from app.models.log.zevtc_data import EiPlayer, EiSkillMap, EiTarget
 from app.utils.logger import logger
+
 from .player_validator import resolve_commander_tag, should_skip_player
 
 
 def insert_ei_players(db: Session, log_id: int, ei_json: Dict[str, Any]):
     """插入/更新 EiPlayer（技能循环、stats、defenses、deathRecap 等）
-    过滤假玩?/ NPC，确?ei_player ?fight_stats 数据一致?
-    【优化】使?bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值?
+    过滤假玩家/ NPC，确保 ei_player 中 fight_stats 数据一致
+    【优化】使 bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值
     """
     db.execute(
         text("DELETE FROM ei_player WHERE log_id = :log_id"), {"log_id": log_id}
@@ -23,7 +24,7 @@ def insert_ei_players(db: Session, log_id: int, ei_json: Dict[str, Any]):
     mappings = []
     for idx, p in enumerate(ei_json.get("players", [])):
         if should_skip_player(p):
-            logger.info(f"[import] EiPlayer 跳过假玩?NPC: {p.get('account')} / {p.get('name')}")
+            logger.info(f"[import] EiPlayer 跳过假玩家/NPC: {p.get('account')} / {p.get('name')}")
             continue
 
         has_cmd = resolve_commander_tag(p)
@@ -55,7 +56,7 @@ def insert_ei_players(db: Session, log_id: int, ei_json: Dict[str, Any]):
 
 def insert_skill_maps(db: Session, log_id: int, ei_json: Dict[str, Any]):
     """插入/更新 EiSkillMap（技能映射，name 去除双引号）
-    【优化】使?bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值?
+    【优化】使 bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值
     """
     db.execute(
         text("DELETE FROM ei_skill_map WHERE log_id = :log_id"), {"log_id": log_id}
@@ -90,8 +91,8 @@ def insert_skill_maps(db: Session, log_id: int, ei_json: Dict[str, Any]):
 
 
 def insert_targets(db: Session, log_id: int, ei_json: Dict[str, Any]):
-    """插入/更新 EiTarget（敌方目标等?
-    【优化】使?bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值?
+    """插入/更新 EiTarget（敌方目标等）
+    【优化】使 bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值
     """
     db.execute(
         text("DELETE FROM ei_target WHERE log_id = :log_id"), {"log_id": log_id}

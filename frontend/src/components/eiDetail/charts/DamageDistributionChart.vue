@@ -1,17 +1,17 @@
 <template>
-  <div class="damage-distribution-card bg-neutral-card rounded-xl p-5">
-    <div class="card-header mb-4">
-      <h3 class="card-title flex items-center gap-2 text-base font-semibold text-neutral-text m-0">
-        <i class="pi pi-pie-chart text-[var(--color-accent)]" />
+  <div class="damage-distribution-card">
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="pi pi-pie-chart" />
         伤害分布
       </h3>
     </div>
-    <div class="card-content flex items-center gap-8">
-      <div class="donut-chart flex items-center gap-8">
-        <div class="chart-circle relative w-[140px] h-[140px]">
+    <div class="card-content">
+      <div class="donut-chart">
+        <div class="chart-circle">
           <svg
             viewBox="0 0 100 100"
-            class="donut-svg w-full h-full"
+            class="donut-svg"
           >
             <!-- 直伤部分 -->
             <circle
@@ -24,7 +24,7 @@
               :stroke-dasharray="powerDashArray"
               stroke-dashoffset="0"
               transform="rotate(-90 50 50)"
-              class="donut-segment transition-[stroke-dasharray] duration-500 ease-[ease]"
+              class="donut-segment"
             />
             <!-- 症状部分 -->
             <circle
@@ -37,7 +37,7 @@
               :stroke-dasharray="condiDashArray"
               :stroke-dashoffset="condiOffset"
               transform="rotate(-90 50 50)"
-              class="donut-segment transition-[stroke-dasharray] duration-500 ease-[ease]"
+              class="donut-segment"
             />
             <!-- 破甲部分 -->
             <circle
@@ -50,38 +50,38 @@
               :stroke-dasharray="breakbarDashArray"
               :stroke-dashoffset="breakbarOffset"
               transform="rotate(-90 50 50)"
-              class="donut-segment transition-[stroke-dasharray] duration-500 ease-[ease]"
+              class="donut-segment"
             />
           </svg>
-          <div class="chart-center absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 text-center">
-            <span class="center-value block text-xl font-bold text-neutral-text">{{ formatLargeNumber(total) }}</span>
-            <span class="center-label block text-xs text-neutral-text-secondary">总伤害</span>
+          <div class="chart-center">
+            <span class="center-value">{{ formatLargeNumber(total) }}</span>
+            <span class="center-label">总伤害</span>
           </div>
         </div>
-        <div class="chart-legend flex flex-col gap-3">
-          <div class="legend-item flex items-center gap-2">
+        <div class="chart-legend">
+          <div class="legend-item">
             <span
-              class="legend-color w-4 h-4 rounded-[4px]"
+              class="legend-color"
               :style="{ backgroundColor: powerColor }"
             />
-            <span class="legend-label text-sm text-neutral-text-secondary">直伤</span>
-            <span class="legend-value ml-[auto] text-sm font-semibold text-neutral-text">{{ powerPercent }}%</span>
+            <span class="legend-label">直伤</span>
+            <span class="legend-value">{{ powerPercent }}%</span>
           </div>
-          <div class="legend-item flex items-center gap-2">
+          <div class="legend-item">
             <span
-              class="legend-color w-4 h-4 rounded-[4px]"
+              class="legend-color"
               :style="{ backgroundColor: condiColor }"
             />
-            <span class="legend-label text-sm text-neutral-text-secondary">症状</span>
-            <span class="legend-value ml-[auto] text-sm font-semibold text-neutral-text">{{ condiPercent }}%</span>
+            <span class="legend-label">症状</span>
+            <span class="legend-value">{{ condiPercent }}%</span>
           </div>
-          <div class="legend-item flex items-center gap-2">
+          <div class="legend-item">
             <span
-              class="legend-color w-4 h-4 rounded-[4px]"
+              class="legend-color"
               :style="{ backgroundColor: breakbarColor }"
             />
-            <span class="legend-label text-sm text-neutral-text-secondary">破甲</span>
-            <span class="legend-value ml-[auto] text-sm font-semibold text-neutral-text">{{ breakbarPercent }}%</span>
+            <span class="legend-label">破甲</span>
+            <span class="legend-value">{{ breakbarPercent }}%</span>
           </div>
         </div>
       </div>
@@ -91,7 +91,6 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   powerDamage: number
@@ -99,9 +98,9 @@ const props = defineProps<{
   breakbarDamage: number
 }>()
 
-const powerColor = Colors.palette.blue
-const condiColor = Colors.palette.green
-const breakbarColor = Colors.palette.amber
+const powerColor = '#3b82f6'
+const condiColor = '#22c55e'
+const breakbarColor = '#f59e0b'
 
 const total = computed(() => {
   return props.powerDamage + props.condiDamage + props.breakbarDamage
@@ -157,3 +156,107 @@ function formatLargeNumber(num: number): string {
 }
 </script>
 
+<style scoped lang="css">
+.damage-distribution-card {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+}
+
+.card-header {
+  margin-bottom: 1rem;
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.card-title i {
+  color: var(--color-accent);
+}
+
+.card-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.donut-chart {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.chart-circle {
+  position: relative;
+  width: 140px;
+  height: 140px;
+}
+
+.donut-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.donut-segment {
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.chart-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.center-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.center-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.chart-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+}
+
+.legend-label {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.legend-value {
+  margin-left: auto;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+</style>

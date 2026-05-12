@@ -218,7 +218,7 @@ export function getProfessionColor(professionKey: string): string {
   // 如果缓存未加载，触发异步加载
   if (!isLoaded) {
     triggerLoadData()
-    return Colors.palette.gray
+    return '#6b7280'
   }
   
   // 先尝试查找基础职业
@@ -233,7 +233,7 @@ export function getProfessionColor(professionKey: string): string {
     return spec.color
   }
   
-  return Colors.palette.gray
+  return '#6b7280'
 }
 
 /**
@@ -428,7 +428,6 @@ export function getRoleByProfessionOrSpec(professionKey: string, specKey?: strin
 /**
  * 清空缓存
  */
-import { Colors } from '@/config/designTokens'
 export function clearCache(): void {
   isLoaded = false
   roleTypesCache = []

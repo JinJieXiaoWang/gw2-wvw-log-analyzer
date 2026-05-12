@@ -1,13 +1,23 @@
-﻿<template>
-  <aside class="sidebar" :class="{ collapsed }">
+<template>
+  <aside
+    class="sidebar"
+    :class="{ collapsed }"
+  >
     <div class="sidebar-header">
-      <h2 class="sidebar-title">字典分类</h2>
+      <h2 class="sidebar-title">
+        字典分类
+      </h2>
       <span class="dict-count">{{ filteredDictTypes.length }} 个分类</span>
     </div>
     <div class="search-box">
       <IconField>
         <InputIcon class="pi pi-search" />
-        <InputText v-model="localSearch" placeholder="搜索分类..." size="small" class="w-full" />
+        <InputText
+          v-model="localSearch"
+          placeholder="搜索分类..."
+          size="small"
+          class="w-full"
+        />
       </IconField>
     </div>
     <div class="dict-type-list">
@@ -30,7 +40,11 @@
           />
         </div>
       </div>
-      <EmptyState v-if="filteredDictTypes.length === 0" icon="pi pi-inbox" title="暂无分类" />
+      <EmptyState
+        v-if="filteredDictTypes.length === 0"
+        icon="pi pi-inbox"
+        title="暂无分类"
+      />
     </div>
   </aside>
 </template>
@@ -40,7 +54,7 @@ import { computed } from 'vue'
 import InputText from 'primevue/inputtext'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import BaseTag from '@/components/common/ui/BaseTag.vue'
+import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import type { DictType } from '@/services/system/dictionaryService'
 
 const props = defineProps<{

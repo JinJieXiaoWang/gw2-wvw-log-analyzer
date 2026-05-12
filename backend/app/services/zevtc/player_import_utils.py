@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-"""玩家数据导入工具模块（members + fight_stats 公共逻辑?""
+"""玩家数据导入工具模块（members + fight_stats 公共逻辑）"""
 
 from datetime import date
 from typing import Any, Dict, List, Set, Tuple
@@ -9,15 +9,15 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.models.auth.account_character import AccountCharacter
-from app.models.log.fight_stats import FightStats
 from app.models.auth.member import Member
+from app.models.log.fight_stats import FightStats
 from app.utils.logger import logger
 
 
 def collect_needed_accounts_and_pairs(
     players: List[Dict[str, Any]],
 ) -> Tuple[Set[str], Set[Tuple[str, str]]]:
-    """从玩家列表中提取需要查询的 account ?account-character 对?""
+    """从玩家列表中提取需要查询的所有 account 和 account-character 对"""
     needed_accounts: Set[str] = set()
     needed_pairs: Set[Tuple[str, str]] = set()
     for p in players:
@@ -33,7 +33,7 @@ def fetch_existing_data(
     needed_accounts: Set[str],
     needed_pairs: Set[Tuple[str, str]],
 ) -> Tuple[Dict[Tuple[str, str], AccountCharacter], Dict[str, Member]]:
-    """批量预查询已存在?AccountCharacter ?Member 记录?""
+    """批量预查询已存在的 AccountCharacter 和 Member 记录"""
     existing_acs: Dict[Tuple[str, str], AccountCharacter] = {}
     if needed_pairs:
         existing_acs = {
@@ -66,10 +66,10 @@ def process_members_and_characters(
     db: Session,
     today: date = None,
 ) -> Tuple[List[AccountCharacter], Dict[str, Member]]:
-    """处理 Member ?AccountCharacter 的更?创建（内存字?O(1) 查找）?
+    """处理 Member 和 AccountCharacter 的更新/创建（内存字典 O(1) 查找）
 
-    过滤规则?
-    - 仅处理包?account 的记?
+    过滤规则：
+    - 仅处理包含 account 数据 的记录
     - 同一 fight 内同一 account 去重
 
     Returns:
@@ -122,7 +122,7 @@ def process_members_and_characters(
 
 
 def build_account_to_player(players: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
-    """构建 account -> player 映射（同一 account 仅保留第一条）?""
+    """构建 account -> player 映射（同一 account 仅保留第一条）"""
     account_to_player: Dict[str, Dict] = {}
     for p in players:
         account = p.get("account", "").strip()
@@ -136,7 +136,7 @@ def bulk_insert_fight_stats(
     fight_stats_mappings: List[Dict[str, Any]],
     fight_id: int,
 ) -> None:
-    """批量插入 fight_stats，失败时逐条回退插入口""
+    """批量插入 fight_stats，失败时逐条回退插入口"""
     if not fight_stats_mappings:
         return
     try:

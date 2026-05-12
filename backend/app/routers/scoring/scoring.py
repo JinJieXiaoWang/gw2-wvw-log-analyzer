@@ -26,7 +26,7 @@ from app.services.wvw.scoring_service import ScoringService
 from app.utils.error.exceptions import BadRequestException
 from app.utils.logger import logger
 
-router = APIRouter(prefix="/scoring", tags=["评分系统 ?实时计算与重?])
+router = APIRouter(prefix="/scoring", tags=["评分系统（实时计算与重算）"])
 
 
 @router.get(
@@ -34,10 +34,10 @@ router = APIRouter(prefix="/scoring", tags=["评分系统 ?实时计算与重?])
     response_model=ApiResponse,
     summary="获取当前评分规则配置",
     description=(
-        "读取 scoring_rule 数据表中的规则权重配置?
-        "若表为空或数据不足，自动回退到系统默认规则?
-        "返回结果包含各维度权重（?damage_weight、healing_weight 等）"
-        "以及阈值参数（min_score_threshold、max_score_cap）?
+        "读取 scoring_rule 数据表中的规则权重配置"
+        "若表为空或数据不足，自动回退到系统默认规则"
+        "返回结果包含各维度权重（damage_weight、healing_weight 等）"
+        "以及阈值参数（min_score_threshold、max_score_cap）"
     ),
 )
 async def get_scoring_rules(db: Session = Depends(get_db)) -> ApiResponse:
@@ -73,15 +73,15 @@ async def get_scoring_rules(db: Session = Depends(get_db)) -> ApiResponse:
 @router.get(
     "/fight/{fight_id}",
     response_model=ApiResponse,
-    summary="计算一场战斗的所有玩家评?,
+    summary="计算一场战斗的所有玩家评分",
     description=(
-        "根据指定的战?ID，查询该场战斗的所有玩家统计数据，"
-        "结合当前评分规则配置，逐人计算综合评分与各维度评分明细?
-        "计算结果包含总分、等级（S/A/B/C/D/F）、各维度得分及使用的规则配置?
+        "根据指定的战斗ID，查询该场战斗的所有玩家统计数据，"
+        "结合当前评分规则配置，逐人计算综合评分与各维度评分明细"
+        "计算结果包含总分、等级（S/A/B/C/D/F）、各维度得分及使用的规则配置"
     ),
 )
 async def calculate_fight_scores(
-    fight_id: int = Path(..., ge=1, description="战斗记录唯一标识（关系fights.id?),
+    fight_id: int = Path(..., ge=1, description="战斗记录唯一标识（关系fights.id）"),
     db: Session = Depends(get_db),
 ) -> ApiResponse:
     """
@@ -132,9 +132,9 @@ async def calculate_fight_scores(
     response_model=ApiResponse,
     summary="触发评分重算任务",
     description=(
-        "根据筛选条件触发历史评分数据的后台重算任务?
-        "任务在后台异步执行，通过返回?version_id 查询进度?
-        "支持按时间范围、职业、账号、战斗ID等条件筛选?
+        "根据筛选条件触发历史评分数据的后台重算任务"
+        "任务在后台异步执行，通过返回 version_id 查询进度"
+        "支持按时间范围、职业、账号、战斗ID等条件筛选"
     ),
 )
 async def trigger_recalculation(
@@ -163,7 +163,7 @@ async def trigger_recalculation(
     try:
         # 并发控制检?
         if ScoreRecalculationService.is_task_running(db):
-            raise BadRequestException("已有重算任务在执行中，请等待完成后再触发新任?)
+            raise BadRequestException("已有重算任务在执行中，请等待完成后再触发新任务")
 
         filters = request.filters.model_dump(exclude_none=True) if request.filters else {}
 
@@ -181,7 +181,7 @@ async def trigger_recalculation(
                 version_id=version.id,
                 version=version.version,
                 status=version.status,
-                message="重算任务已创?,
+                message="重算任务已创建",
             ).model_dump(),
         )
     except BadRequestException:
@@ -195,7 +195,7 @@ async def trigger_recalculation(
     "/recalculate/{version_id}",
     response_model=ApiResponse,
     summary="查询重算任务进度",
-    description="根据版本记录ID查询后台重算任务的执行进度和状态?,
+    description="根据版本记录ID查询后台重算任务的执行进度和状态",
 )
 async def get_recalculation_status(
     version_id: int = Path(..., ge=1, description="版本记录ID"),
@@ -215,7 +215,7 @@ async def get_recalculation_status(
     try:
         status = ScoreRecalculationService.get_task_status(db, version_id)
         if not status:
-            raise BadRequestException(f"版本记录 ID={version_id} 不存?)
+            raise BadRequestException(f"版本记录 ID={version_id} 不存在")
 
         return ApiResponse.success_response(
             message="获取重算进度成功",

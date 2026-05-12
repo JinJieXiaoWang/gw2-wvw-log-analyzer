@@ -49,29 +49,6 @@ export function throttle<T extends (...args: any[]) => any>(
   };
 }
 
-/**
- * 安全访问深层对象属性
- * @param obj 对象
- * @param path 属性路径
- * @param defaultValue 默认值
- */
-export function safeGet<T = any>(
-  obj: any,
-  path: string,
-  defaultValue?: T
-): T {
-  const keys = path.split('.');
-  let result: any = obj;
-  
-  for (const key of keys) {
-    if (result === null || result === undefined) {
-      return defaultValue as T;
-    }
-    result = result[key];
-  }
-  
-  return (result === undefined || result === null) ? defaultValue as T : result;
-}
 
 /**
  * 格式化时间
@@ -112,81 +89,8 @@ export function formatDate(
     .replace('ss', seconds);
 }
 
-/**
- * 获取相对时间描述
- * @param date Date对象或时间戳
- */
-export function getRelativeTime(date: Date | number | string): string {
-  let d: Date;
-  
-  if (date instanceof Date) {
-    d = date;
-  } else if (typeof date === 'number') {
-    d = new Date(date);
-  } else {
-    d = new Date(date);
-  }
-  
-  if (isNaN(d.getTime())) {
-    return '';
-  }
-  
-  const now = new Date();
-  const diff = now.getTime() - d.getTime();
-  
-  const seconds = Math.floor(diff / 1000);
-  const minutes = Math.floor(seconds / 60);
-  const hours = Math.floor(minutes / 60);
-  const days = Math.floor(hours / 24);
-  const months = Math.floor(days / 30);
-  const years = Math.floor(days / 365);
-  
-  if (years > 0) return `${years}年前`;
-  if (months > 0) return `${months}个月前`;
-  if (days > 0) return `${days}天前`;
-  if (hours > 0) return `${hours}小时前`;
-  if (minutes > 0) return `${minutes}分钟前`;
-  if (seconds > 10) return `${seconds}秒前`;
-  
-  return '刚刚';
-}
 
-/**
- * 生成唯一ID
- */
-export function generateId(): string {
-  return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-}
 
-/**
- * 深拷贝
- * @param obj 要拷贝的对象
- */
-export function deepClone<T>(obj: T): T {
-  if (obj === null || typeof obj !== 'object') {
-    return obj;
-  }
-  
-  if (obj instanceof Date) {
-    return new Date(obj.getTime()) as T;
-  }
-  
-  if (obj instanceof Array) {
-    return obj.map(item => deepClone(item)) as T;
-  }
-  
-  if (obj instanceof Object) {
-    const clonedObj: any = {};
-    for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
-        clonedObj[key] = deepClone(obj[key]);
-      }
-    }
-    return clonedObj as T;
-  }
-  
-  return obj;
-}
 
 /**
  * 数组去重
@@ -209,18 +113,6 @@ export function unique<T>(arr: T[], key?: keyof T): T[] {
   });
 }
 
-/**
- * 安全的JSON解析
- * @param str JSON字符串
- * @param defaultValue 默认值
- */
-export function safeJsonParse<T = any>(str: string, defaultValue?: T): T {
-  try {
-    return JSON.parse(str) as T;
-  } catch {
-    return defaultValue as T;
-  }
-}
 
 /**
  * 字节大小格式化
@@ -244,35 +136,8 @@ export function formatNumber(num: number): string {
   return num.toLocaleString();
 }
 
-/**
- * 睡眠函数
- * @param ms 毫秒数
- */
-export function sleep(ms: number): Promise<void> {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
-/**
- * 检查是否是有效的URL
- * @param url URL字符串
- */
-export function isValidUrl(url: string): boolean {
-  try {
-    new URL(url);
-    return true;
-  } catch {
-    return false;
-  }
-}
 
-/**
- * 检查是否是有效的邮箱
- * @param email 邮箱地址
- */
-export function isValidEmail(email: string): boolean {
-  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return regex.test(email);
-}
 
 /**
  * 格式化紧凑数字

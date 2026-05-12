@@ -1,36 +1,39 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：查询时评分服务（v1.0?# 作者：系统
-# 创建日期?2026-05-09
-# 说明?#   将评分计算从导入阶段移至查询阶段?#   导入时只保存原始数据，查询时根据当前评分规则实时计算?#   支持评分规则内存缓存（TTL 60s），避免频繁查库?
+# 模块功能：查询时评分服务（v1.0）
+# 作者：帅妹妹丶.8297
+# 创建日期：2026-05-09
+# 说明：
+#   将评分计算从导入阶段移至查询阶段
+#   导入时只保存原始数据，查询时根据当前评分规则实时计算
+#   支持评分规则内存缓存（TTL 60s），避免频繁查库
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy.orm import Session
-
 from app.constants.scoring import DEFAULT_FALLBACK_RULES, RULE_CACHE_TTL_SECONDS
 from app.models.log.fight_stats import FightStats
-from app.services.game_data.game_data_service import GameDataService
+from app.services.game.game_data_service import GameDataService
 from app.services.scoring.scoring_rule_service import ScoringRuleService
 from app.services.wvw.scoring_service import ScoringService
 from app.utils.logger import logger
+from sqlalchemy.orm import Session
 
 # 评分规则内存缓存: {(role_type, profession): (rules_dict, expire_time)}
 _rules_cache: Dict[Tuple[str, Optional[str]], Tuple[Dict[str, float], float]] = {}
 
 # 维度中文标签（向后兼容）
 DIMENSION_LABELS = {
-    "damage": "总伤?,
+    "damage": "总伤害",
     "power_damage": "直伤",
     "condition_damage": "症状伤害",
-    "healing": "治疗?,
+    "healing": "治疗量",
     "boons": "增益覆盖",
     "alacrity": "敏捷覆盖",
-    "quickness": "急速覆?,
+    "quickness": "急速覆盖",
     "survival": "生存能力",
     "strips": "破法",
-    "cleanses": "净?,
+    "cleanses": "净化",
     "kills": "击杀",
-    "breakbar": "蔑视?,
+    "breakbar": "蔑视",
     "damage_taken": "承受伤害",
     "blocked_count": "格挡",
     "evaded_count": "闪避",
@@ -38,7 +41,7 @@ DIMENSION_LABELS = {
 
 
 def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) -> Dict[str, float]:
-    """获取评分规则，优先使用内存缓?""
+    """获取评分规则，优先使用内存缓存"""
     global _rules_cache
     cache_key = (role_type, profession)
     now = time.time()
@@ -47,7 +50,8 @@ def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) ->
     if cached and cached[1] > now:
         return cached[0]
 
-    # 缓存未命中或过期，查?    service = ScoringRuleService(db)
+    # 缓存未命中或过期，查库获取最新规则
+    service = ScoringRuleService(db)
     rules = service.get_rules_for_scoring(role_type, profession)
 
     # 如果表为空，使用默认兜底规则
@@ -59,14 +63,14 @@ def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) ->
 
 
 def _clear_rules_cache():
-    """清空规则缓存（规则更新后调用?""
+    """清空规则缓存（规则更新后调用）"""
     global _rules_cache
     _rules_cache.clear()
-    logger.info("[score_query] 评分规则缓存已清?)
+    logger.info("[score_query] 评分规则缓存已清空")
 
 
 def _fight_stats_to_dict(stat: FightStats) -> Dict[str, Any]:
-    """?FightStats ORM 对象转为原始数据字典（用于评分计算）"""
+    """将 FightStats ORM 对象转为原始数据字典（用于评分计算）"""
     return {
         "damage": stat.damage or 0,
         "power_damage": stat.power_damage or 0,
@@ -89,7 +93,11 @@ def _fight_stats_to_dict(stat: FightStats) -> Dict[str, Any]:
 class PlayerScoreService:
     """玩家评分查询服务
 
-    设计原则?    - 原始数据 immutable，评分规则可?    - 每次查询都用当前规则实时计算，保证规则更新立即可?    - 同一场战斗内共享 max_values，减少重复计?    """
+    设计原则
+    - 原始数据 immutable，评分规则可配置
+    - 每次查询都用当前规则实时计算，保证规则更新立即可见
+    - 同一场战斗内共享 max_values，减少重复计算
+    """
 
     @staticmethod
     def calculate_single_score(
@@ -99,11 +107,14 @@ class PlayerScoreService:
         role_type: Optional[str] = None,
         profession: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """为单?FightStats 计算评分
+        """为单个 FightStats 计算评分
 
         Args:
-            db: 数据库会?            stat: FightStats 记录
-            max_values: 同场最大值（可选，不传则使?stat 自身值作?max?            role_type: 强制指定角色类型（None 则按职业自动判断?            profession: 强制指定职业（None 则使?stat.profession?
+            db: 数据库会话
+            stat: FightStats 记录
+            max_values: 同场最大值（可选，不传则使用 stat 自身值作 max）
+            role_type: 强制指定角色类型（None 则按职业自动判断）
+            profession: 强制指定职业（None 则使 stat.profession）
         Returns:
             {"total_score": float, "grade": str, "grade_label": str, "breakdown": dict}
         """
@@ -150,12 +161,15 @@ class PlayerScoreService:
         role_type: Optional[str] = None,
         profession: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """计算一场战斗中所有玩家的评分（查询接口主入口?
+        """计算一场战斗中所有玩家的评分（查询接口主入口）
         Args:
-            db: 数据库会?            fight_id: 战斗ID
+            db: 数据库会话
+            fight_id: 战斗ID
             role_type: 强制指定角色类型
             profession: 强制指定职业
 
+        Raises:
+            NotFoundException: 战斗不存在
         Returns:
             {
                 "fight_id": int,
@@ -218,10 +232,11 @@ class PlayerScoreService:
         db: Session,
         stats_list: List[FightStats],
     ) -> List[Dict[str, Any]]:
-        """为一?FightStats 附加评分字段（列表查询用?
+        """为一个 FightStats 附加评分字段（列表查询用）
         优化：按 fight_id 分组，同一场战斗共?max_values?
         Args:
-            db: 数据库会?            stats_list: FightStats 列表（可能来自多场战斗）
+            db: 数据库会话
+            stats_list: FightStats 列表（可能来自多场战斗）
 
         Returns:
             带评分字段的字典列表

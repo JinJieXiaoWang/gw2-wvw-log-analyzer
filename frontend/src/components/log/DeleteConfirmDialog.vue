@@ -1,9 +1,9 @@
 <template>
   <BaseDialog
     :visible="visible"
-    header="ȷ认删除"
+    header="确认删除"
     width="450px"
-    confirm-label="ɾ除"
+    confirm-label="删除"
     confirm-severity="danger"
     @update:visible="emit('update:visible', $event)"
     @confirm="deleteLog"
@@ -14,7 +14,7 @@
       </div>
       <div>
         <p class="text-neutral-text font-medium mb-1">
-          ȷ定要删除此日志吗？
+          确定要删除此日志吗？
         </p>
         <p class="text-sm text-neutral-text-secondary">
           此操作不可恢复，相关数据将永久删除。
@@ -26,13 +26,13 @@
 
 <script setup lang="ts">
 /**
- * ɾ除确认弹窗组件
+ * 删除确认弹窗组件
  * 功能：处理日志删除确认
- * 作者：˧姐姐
+ * 作者：帅姐姐
  * 创建日期：2026-04-27
  */
 
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 
 // Props
 defineProps<{

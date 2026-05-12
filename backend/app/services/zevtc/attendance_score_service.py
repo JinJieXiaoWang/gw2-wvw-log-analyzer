@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：出勤评分服?# 作者：系统
-# 创建日期?2026-05-04
+# 模块功能：出勤评分服务
+# 作者：系统
+# 创建日期：2026-05-04
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -18,14 +19,18 @@ def get_account_score_breakdown(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ) -> Optional[Dict[str, Any]]:
-    """获取账号的评分维度明细（用于前端模态框展示?
+    """获取账号的评分维度明细（用于前端模态框展示）
     严格依据 scoring_rule 表中当前启用的维度配置进行展示，
-    将该账号在统计周期内所?fight_stats ?score_breakdown 按维度求平均值?    根据该账号最常用的职业确定角色类型和规则配置?    """
-    from app.services.scoring.scoring_rule_service import ScoringRuleService, DIMENSION_LABELS
+    将该账号在统计周期内所有 fight_stats 中的 score_breakdown 按维度求平均值
+    根据该账号最常用的职业确定角色类型和规则配置    """
+    from app.services.game.game_data_service import GameDataService
+    from app.services.scoring.scoring_rule_service import (
+        DIMENSION_LABELS,
+        ScoringRuleService,
+    )
     from app.services.wvw.scoring_service import ScoringService
-    from app.services.game_data.game_data_service import GameDataService
 
-    # 查询该账号的所?FightStats（带日期筛选）
+    # 查询该账号的所有FightStats（带日期筛选）
     query = (
         db.query(FightStats)
         .join(Fight, FightStats.fight_id == Fight.id)
@@ -61,10 +66,12 @@ def get_account_score_breakdown(
     # 获取评分规则
     rules = ScoringService.get_scoring_rules(db, role_type, most_used_profession)
     
-    # 获取评分规则的维度详细信息（用于展示?    display_rules = rule_service.get_rules_for_profession(role_type, most_used_profession, active_only=True)
+    # 获取评分规则的维度详细信息（用于展示）
+    display_rules = rule_service.get_rules_for_profession(role_type, most_used_profession, active_only=True)
     display_rules_dict = {rule.dimension: rule for rule in display_rules}
 
-    # 按维度聚?    total_score_sum = 0.0
+    # 按维度聚集评分
+    total_score_sum = 0.0
     dimension_values: Dict[str, List[float]] = {}
 
     for stat in stats_list:
@@ -76,7 +83,8 @@ def get_account_score_breakdown(
     if not dimension_values:
         return None
 
-    # 构建维度详情 - 优先使用规则中的维度和描?    dimensions = {}
+    # 构建维度详情 - 优先使用规则中的维度和描述
+    dimensions = {}
     
     # 首先添加规则中定义的维度
     for rule in display_rules:
@@ -126,7 +134,7 @@ def _get_profession_and_role_type(
     stats_list: List[FightStats],
 ) -> Tuple[Optional[str], str]:
     """根据战斗统计数据确定最常用的职业和角色类型"""
-    from app.services.game_data.game_data_service import GameDataService
+    from app.services.game.game_data_service import GameDataService
 
     profession_count: Dict[str, int] = {}
     for stat in stats_list:
@@ -202,7 +210,7 @@ def _calculate_support_ability(
 
 
 def _calculate_mechanics_ability(total_avg_score: float) -> float:
-    """计算技能（机制）能力评?""
+    """计算技能（机制）能力评分"""
     utility_score = min(100, total_avg_score * 0.8 + 20)
     return round(utility_score, 1)
 
@@ -219,15 +227,17 @@ def _calculate_mobility_ability(
 def _apply_role_type_adjustments(
     abilities: Dict[str, float], role_type: str
 ) -> None:
-    """根据角色类型调整各维度权重（原地修改?""
+    """根据角色类型调整各维度权重（原地修改）"""
     if role_type == "support" or role_type == "healing":
         # 辅助/治疗职业：提升治疗和辅助权重
         abilities["healing"] = min(100, abilities["healing"] + 15)
         abilities["support"] = min(100, abilities["support"] + 10)
     elif role_type == "tank":
-        # 坦克职业：提升生存权?        abilities["survival"] = min(100, abilities["survival"] + 15)
+        # 坦克职业：提升生存权重
+        abilities["survival"] = min(100, abilities["survival"] + 15)
     elif role_type == "condition":
-        # 症状输出职业：输出评分调?        abilities["damage"] = min(100, abilities["damage"] + 5)
+        # 症状输出职业：输出评分调整
+        abilities["damage"] = min(100, abilities["damage"] + 5)
     # dps 保持不变
 
 
@@ -240,17 +250,19 @@ def _calculate_comprehensive_abilities(
 ) -> Dict[str, float]:
     """基于评分规则计算综合能力评分
 
-    维度?        - 输出：基于伤害和职业定位
+    维度： 输出、治疗、生存、辅助、技能、机动
+        - 输出：基于伤害和职业定位
         - 治疗：基于治疗量和职业定义        - 生存：基于死亡次数和KD
-        - 辅助：基于增益覆盖和技?        - 技能：基于评分和技能使?        - 机动：基于职业特?
+        - 辅助：基于增益覆盖和机制能力      - 技能：基于评分和技能能力        - 机动：基于职业特性
     Returns:
-        综合能力字典，各维度分数据-100?    """
+        综合能力字典，各维度分数据-100分    """
     default_abilities = _get_default_abilities()
 
     if not character_list:
         return default_abilities
 
-    # 获取该账号的所有战斗统计数据    stats_query = (
+    # 获取该账号的所有战斗统计数据
+    stats_query = (
         db.query(FightStats)
         .join(Fight, FightStats.fight_id == Fight.id)
         .filter(FightStats.account == account_name)
@@ -278,7 +290,8 @@ def _calculate_comprehensive_abilities(
     total_cleanses = sum(float(s.condition_cleanses or 0) for s in stats_list)
     total_avg_score = sum(float(s.ai_score or 0) for s in stats_list) / len(stats_list)
 
-    # 计算增益覆盖率平均?    avg_might = sum(float(s.might_uptime or 0) for s in stats_list) / len(stats_list)
+    # 计算增益覆盖率平均值
+    avg_might = sum(float(s.might_uptime or 0) for s in stats_list) / len(stats_list)
     avg_fury = sum(float(s.fury_uptime or 0) for s in stats_list) / len(stats_list)
     avg_alacrity = sum(float(s.alacrity_uptime or 0) for s in stats_list) / len(stats_list)
     avg_quickness = sum(float(s.quickness_uptime or 0) for s in stats_list) / len(stats_list)
@@ -287,7 +300,8 @@ def _calculate_comprehensive_abilities(
 
     fight_count = len(stats_list)
 
-    # 计算各维度分?    abilities: Dict[str, float] = {}
+    # 计算各维度分数
+    abilities: Dict[str, float] = {}
     abilities["damage"] = _calculate_damage_ability(total_damage, fight_count, total_avg_score)
     abilities["healing"] = _calculate_healing_ability(total_healing, fight_count, total_avg_score)
     abilities["survival"] = _calculate_survival_ability(total_kills, total_deaths, total_avg_score)

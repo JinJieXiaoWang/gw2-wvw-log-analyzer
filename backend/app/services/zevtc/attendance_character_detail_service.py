@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：角色出勤详情查询服?
+# 模块功能：角色出勤详情查询服务
 # 作者：系统
-# 创建日期?2026-05-04
+# 创建日期：2026-05-04
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -22,12 +22,12 @@ def get_character_detail(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ) -> Tuple[List[Dict[str, Any]], int, Dict[str, Any]]:
-    """获取指定角色的详细战斗记?
+    """获取指定角色的详细战斗记录
 
-    返回?
+    返回:
         - 战斗记录列表
         - 总数
-        - 该角色的汇总统计（attendance_count 按自然日去重?
+        - 该角色的汇总统计（attendance_count 按自然日去重）
     """
     query = (
         db.query(
@@ -79,7 +79,7 @@ def get_character_detail(
     if end_date:
         query = query.filter(Fight.start_time < end_date)
 
-    # 汇总统计（按自然日去重?
+    # 汇总统计（按自然日去重）
     agg = (
         db.query(
             func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),

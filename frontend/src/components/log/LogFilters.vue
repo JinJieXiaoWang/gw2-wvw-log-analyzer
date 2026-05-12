@@ -7,7 +7,7 @@
       <div class="flex-1 w-full">
         <InputText
           v-model="localFilters.search"
-          placeholder="搜索文件鍚?.."
+          placeholder="搜索日志"
           class="w-full"
         />
       </div>
@@ -35,14 +35,14 @@
 
 <script setup lang="ts">
 /**
- * 日志绛涢技夌粍浠?
- * 功能锛氭彁渚涙棩蹇楁悳绱㈠拰绛涢技夊姛鑳?
- * 作輼咃細甯呭帅姐建日期锛?026-04-27
+ * 日志筛选组件
+ * 功能：处理日志筛选
+ * 作者：帅姐姐
+ * 创建日期：2026-04-27
  */
-
 import { ref, computed, watch } from 'vue'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import InputText from 'primevue/inputtext'
 import { debounce } from '@/utils/core/helpers'
 
@@ -76,17 +76,17 @@ const hasActiveFilters = computed(() => {
   return localFilters.value.search || localFilters.value.status
 })
 
-// 防抖发射筛鼼夊彉鍖栵紝閬垮厤棰戠箒杈撳叆瑙﹀彂閲嶆覆鏌?
+// 防抖发射筛选值
 const emitDebounced = debounce((value: typeof localFilters.value) => {
   emit('update:filters', { ...value })
 }, 300)
 
-// 监听本地筛鼼夋潯浠跺彉鍖?
+// 监听本地筛选值变化
 watch(localFilters, (newValue) => {
   emitDebounced(newValue)
 }, { deep: true })
 
-// 娓呯┖筛鼼夋潯浠讹紙绔嬪嵆鐢熸晥锛屼笉璧伴槻鎶栵級
+// 清除筛选值
 const clearFilters = () => {
   localFilters.value = {
     search: '',

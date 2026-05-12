@@ -22,10 +22,20 @@
       <DictionaryManagementCore ref="dictManagementRef" />
     </template>
 
-    <BaseDialog v-model:visible="showInitDialog" header="初始化字典数据" width="500px" confirm-label="ȷ认初始化" confirm-severity="warning" :loading="initializing" @confirm="handleInitData">
+    <BaseDialog
+      v-model:visible="showInitDialog"
+      header="初始化字典数据"
+      width="500px"
+      confirm-label="确认初始化"
+      confirm-severity="warning"
+      :loading="initializing"
+      @confirm="handleInitData"
+    >
       <div class="init-dialog-content">
         <i class="pi pi-exclamation-triangle warning-icon" />
-        <p class="warning-text">此操作将重新初始化所有字典数据，可能会覆盖现有数据，是否继续？</p>
+        <p class="warning-text">
+          此操作将重新初始化所有字典数据，可能会覆盖现有数据，是否继续？
+        </p>
       </div>
     </BaseDialog>
   </div>
@@ -36,7 +46,7 @@ import { onMounted } from 'vue'
 import DictionaryManagementCore from './DictionaryManagement.vue'
 import DictOverviewView from './DictOverviewView.vue'
 import DictManagementHeader from './DictManagementHeader.vue'
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 import { useDictionaryWrapper } from '@/composables/common/useDictionaryWrapper'
 
 const {

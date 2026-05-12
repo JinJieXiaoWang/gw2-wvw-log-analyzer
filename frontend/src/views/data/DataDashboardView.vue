@@ -64,8 +64,6 @@
       :is-loading="isLoadingRecentFights"
     />
   </div>
-
-  <Toast />
 </template>
 
 <script setup lang="ts">
@@ -77,7 +75,7 @@
 
 import { ref, watch, onMounted } from 'vue'
 import Select from 'primevue/select'
-import PageHeader from '@/components/common/layout/PageHeader.vue'
+import PageHeader from '@/layout/components/PageHeader.vue'
 import StatCards from '@/components/dashboard/StatCards.vue'
 import DamageTrend from '@/components/dashboard/DamageTrend.vue'
 import ProfessionDistribution from '@/components/dashboard/ProfessionDistribution.vue'

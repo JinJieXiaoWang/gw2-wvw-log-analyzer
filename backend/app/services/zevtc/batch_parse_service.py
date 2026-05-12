@@ -24,8 +24,8 @@ from sqlalchemy.orm import Session
 
 from app.config.database import SessionLocal
 from app.core.zevtc.parser import ZevtcParseError
-from app.models.batch_parse import BatchParseTask, BatchParseTaskItem
-from app.models.log import Log
+from app.models.log.batch_parse import BatchParseTask, BatchParseTaskItem
+from app.models.log.log import Log
 from app.services.zevtc import log_service
 from app.utils.logger import logger
 

@@ -1,6 +1,6 @@
 ﻿# 模块功能：认证相关API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-28
+# 创建日期：2026-04-28
 # 依赖说明：FastAPI, Depends, HTTPException, status
 
 from datetime import timedelta
@@ -12,10 +12,10 @@ from app.config.database import get_db
 from app.schemas.auth.admin import AdminLogin, AdminResponse, LoginResponse
 from app.schemas.auth.common import ApiResponse
 from app.schemas.auth.user import PasswordChange
-from app.services import auth_service
 from app.services.auth.auth_service import (
     ACCESS_TOKEN_EXPIRE_HOURS,
     authenticate_admin,
+    change_admin_password_with_validation,
     create_access_token,
     decode_access_token,
     get_admin_by_id,
@@ -33,7 +33,7 @@ router = APIRouter(prefix="/auth", tags=["认证"])
 @router.post(
     "/login",
     response_model=ApiResponse,
-    summary="操作员登?,
+    summary="操作员登录",
     description="操作员登录接口，成功后返回JWT访问令牌",
 )
 async def login(
@@ -83,8 +83,8 @@ async def login(
 @router.post(
     "/logout",
     response_model=ApiResponse,
-    summary="操作员登?,
-    description="操作员登出接?,
+    summary="操作员登录",
+    description="操作员登出接口",
 )
 async def logout(current_admin=Depends(get_current_admin)):
     return ApiResponse.success_response(message="登出成功")
@@ -93,8 +93,8 @@ async def logout(current_admin=Depends(get_current_admin)):
 @router.get(
     "/status",
     response_model=ApiResponse,
-    summary="获取登录状?,
-    description="获取当前登录状?,
+    summary="获取登录状态",
+    description="获取当前登录状态",
 )
 async def get_login_status(
     authorization: str = Header(None), db: Session = Depends(get_db)
@@ -106,7 +106,7 @@ async def get_login_status(
         public_menus = menu_service.get_public_menus()
         return ApiResponse.success_response(
             data={"is_logged_in": False, "user": None, "permissions": ["read"], "menus": public_menus},
-            message="获取状态成?,
+            message="获取状态成功",
         )
     token = authorization[7:]
     payload = decode_access_token(token)
@@ -115,7 +115,7 @@ async def get_login_status(
         public_menus = menu_service.get_public_menus()
         return ApiResponse.success_response(
             data={"is_logged_in": False, "user": None, "permissions": ["read"], "menus": public_menus},
-            message="获取状态成?,
+            message="获取状态成功",
         )
     admin_id = int(payload.get("sub"))
     admin = get_admin_by_id(db, admin_id)
@@ -124,7 +124,7 @@ async def get_login_status(
         public_menus = menu_service.get_public_menus()
         return ApiResponse.success_response(
             data={"is_logged_in": False, "user": None, "permissions": ["read"], "menus": public_menus},
-            message="获取状态成?,
+            message="获取状态成功",
         )
     token_version = payload.get("tv")
     if token_version is not None and token_version != (admin.token_version or 0):
@@ -132,7 +132,7 @@ async def get_login_status(
         public_menus = menu_service.get_public_menus()
         return ApiResponse.success_response(
             data={"is_logged_in": False, "user": None, "permissions": ["read"], "menus": public_menus},
-            message="获取状态成?,
+            message="获取状态成功",
         )
     role = payload.get("role", "operator")
     permissions = get_user_permissions(role)
@@ -147,7 +147,7 @@ async def get_login_status(
     }
     return ApiResponse.success_response(
         data={"is_logged_in": True, "user": user_data, "permissions": permissions, "menus": menus},
-        message="获取状态成?,
+        message="获取状态成功",
     )
 
 
@@ -178,7 +178,7 @@ async def get_profile(current_admin=Depends(get_current_admin)):
     "/change-password",
     response_model=ApiResponse,
     summary="修改密码",
-    description="修改当前登录用户的密?,
+    description="修改当前登录用户的密码",
 )
 async def change_password(
     password_data: PasswordChange,
@@ -186,7 +186,7 @@ async def change_password(
     db: Session = Depends(get_db),
 ):
     current_password = password_data.current_password or password_data.old_password
-    auth_service.change_admin_password_with_validation(
+    change_admin_password_with_validation(
         db=db,
         admin=current_admin,
         current_password=current_password,

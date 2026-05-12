@@ -9,9 +9,7 @@
     <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-10 gap-3">
       <!-- 伤害构成 -->
       <div
-        class="card p-3 rounded-xl border-primary/20 bg-gradient-to-br from-primary/5
-               to-transparent hover:border-primary/40 hover:shadow-lg
-               hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
         @click="emit('show-damage-detail')"
       >
         <div class="flex flex-col items-center">
@@ -62,9 +60,7 @@
 
       <!-- 保护覆盖率 -->
       <div
-        class="card p-3 rounded-xl border-info/20 bg-gradient-to-br from-info/5
-               to-transparent hover:border-info/40 hover:shadow-lg hover:shadow-info/10
-               transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-info/20 bg-gradient-to-br from-info/5 to-transparent hover:border-info/40 hover:shadow-lg hover:shadow-info/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'protection', '保护覆盖率')"
       >
         <div class="flex flex-col items-center">
@@ -108,9 +104,7 @@
 
       <!-- 稳固覆盖率 -->
       <div
-        class="card p-3 rounded-xl border-warning/20 bg-gradient-to-br from-warning/5
-               to-transparent hover:border-warning/40 hover:shadow-lg
-               hover:shadow-warning/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-warning/20 bg-gradient-to-br from-warning/5 to-transparent hover:border-warning/40 hover:shadow-lg hover:shadow-warning/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'stability', '稳固覆盖率')"
       >
         <div class="flex flex-col items-center">
@@ -154,9 +148,7 @@
 
       <!-- 清症总数 -->
       <div
-        class="card p-3 rounded-xl border-success/20 bg-gradient-to-br from-success/5
-               to-transparent hover:border-success/40 hover:shadow-lg
-               hover:shadow-success/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-success/20 bg-gradient-to-br from-success/5 to-transparent hover:border-success/40 hover:shadow-lg hover:shadow-success/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'condition_cleanses', '清症统计')"
       >
         <div class="flex flex-col items-center">
@@ -174,9 +166,7 @@
 
       <!-- 削增益总数 -->
       <div
-        class="card p-3 rounded-xl border-error/20 bg-gradient-to-br from-error/5
-               to-transparent hover:border-error/40 hover:shadow-lg hover:shadow-error/10
-               transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-error/20 bg-gradient-to-br from-error/5 to-transparent hover:border-error/40 hover:shadow-lg hover:shadow-error/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'boon_strips', '削增益统计')"
       >
         <div class="flex flex-col items-center">
@@ -194,9 +184,7 @@
 
       <!-- 承伤总量 -->
       <div
-        class="card p-3 rounded-xl border-secondary/20 bg-gradient-to-br from-secondary/5
-               to-transparent hover:border-secondary/40 hover:shadow-lg
-               hover:shadow-secondary/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'damage_taken', '承伤统计')"
       >
         <div class="flex flex-col items-center">
@@ -214,9 +202,7 @@
 
       <!-- 命中率 -->
       <div
-        class="card p-3 rounded-xl border-primary/20 bg-gradient-to-br from-primary/5
-               to-transparent hover:border-primary/40 hover:shadow-lg
-               hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-primary/20 bg-gradient-to-br from-primary/5 to-transparent hover:border-primary/40 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'hitRate', '命中率统计')"
       >
         <div class="flex flex-col items-center">
@@ -260,9 +246,7 @@
 
       <!-- 击倒控制 -->
       <div
-        class="card p-3 rounded-xl border-warning/20 bg-gradient-to-br from-warning/5
-               to-transparent hover:border-warning/40 hover:shadow-lg
-               hover:shadow-warning/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-warning/20 bg-gradient-to-br from-warning/5 to-transparent hover:border-warning/40 hover:shadow-lg hover:shadow-warning/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'control', '击倒控制统计')"
       >
         <div class="flex flex-col items-center">
@@ -280,9 +264,7 @@
 
       <!-- 技能效率 -->
       <div
-        class="card p-3 rounded-xl border-secondary/20 bg-gradient-to-br from-secondary/5
-               to-transparent hover:border-secondary/40 hover:shadow-lg
-               hover:shadow-secondary/10 transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-secondary/20 bg-gradient-to-br from-secondary/5 to-transparent hover:border-secondary/40 hover:shadow-lg hover:shadow-secondary/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'efficiency', '技能效率统计')"
       >
         <div class="flex flex-col items-center">
@@ -300,9 +282,7 @@
 
       <!-- 位置协同 -->
       <div
-        class="card p-3 rounded-xl border-info/20 bg-gradient-to-br from-info/5
-               to-transparent hover:border-info/40 hover:shadow-lg hover:shadow-info/10
-               transition-all duration-300 cursor-pointer"
+        class="card p-3 rounded-xl border-info/20 bg-gradient-to-br from-info/5 to-transparent hover:border-info/40 hover:shadow-lg hover:shadow-info/10 transition-all duration-300 cursor-pointer"
         @click="emit('open-stat-detail', 'position', '位置协同统计')"
       >
         <div class="flex flex-col items-center">

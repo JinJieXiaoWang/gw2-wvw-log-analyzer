@@ -228,4 +228,4 @@ function getProfIcon(prof: string): string {
 }
 </script>
 
-
+<style scoped lang="css">@import './PlayerSummaryView.css';</style>

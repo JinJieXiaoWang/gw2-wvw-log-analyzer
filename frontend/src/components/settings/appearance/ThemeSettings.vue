@@ -2,17 +2,14 @@
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
     <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2
-             translate-x-1/4 pointer-events-none opacity-30"
+      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-ai-alpha-10) 0%, transparent 70%)"
     />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-        <div
-          class="w-12 h-12 rounded-xl bg-gradient-to-br from-ai/20 to-primary/10 flex
-                 items-center justify-center border border-ai/20">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-ai/20 to-primary/10 flex items-center justify-center border border-ai/20">
           <i class="pi pi-palette text-ai text-xl" />
         </div>
         <div>
@@ -39,8 +36,7 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div
-              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2
-                     transition-all duration-200 hover:-translate-y-0.5"
+              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2 transition-all duration-200 hover:-translate-y-0.5"
               :class="themeSettings.mode === 'dark'
                 ? 'border-primary shadow-lg shadow-primary/10'
                 : 'border-transparent hover:border-neutral-border-light'"
@@ -48,15 +44,11 @@
             >
               <div
                 v-if="themeSettings.mode === 'dark'"
-                  class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex
-                         items-center justify-center shadow-md"
+                class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md"
               >
                 <i class="pi pi-check text-white text-[10px]" />
               </div>
-              <div
-                class="w-14 h-14 rounded-xl bg-neutral-card border border-neutral-border flex
-                       items-center justify-center mx-auto mb-3 shadow-inner transition-transform
-                       duration-200 group-hover:scale-105">
+              <div class="w-14 h-14 rounded-xl bg-neutral-card border border-neutral-border flex items-center justify-center mx-auto mb-3 shadow-inner transition-transform duration-200 group-hover:scale-105">
                 <i class="pi pi-moon text-primary text-2xl" />
               </div>
               <p class="text-sm font-semibold text-neutral-text text-center">
@@ -67,8 +59,7 @@
               </p>
             </div>
             <div
-              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2
-                     transition-all duration-200 hover:-translate-y-0.5"
+              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2 transition-all duration-200 hover:-translate-y-0.5"
               :class="themeSettings.mode === 'light'
                 ? 'border-primary shadow-lg shadow-primary/10'
                 : 'border-transparent hover:border-neutral-border-light'"
@@ -76,15 +67,11 @@
             >
               <div
                 v-if="themeSettings.mode === 'light'"
-                  class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex
-                         items-center justify-center shadow-md"
+                class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md"
               >
                 <i class="pi pi-check text-white text-[10px]" />
               </div>
-              <div
-                class="w-14 h-14 rounded-xl bg-white border border-neutral-border flex
-                       items-center justify-center mx-auto mb-3 shadow-inner transition-transform
-                       duration-200 group-hover:scale-105">
+              <div class="w-14 h-14 rounded-xl bg-white border border-neutral-border flex items-center justify-center mx-auto mb-3 shadow-inner transition-transform duration-200 group-hover:scale-105">
                 <i class="pi pi-sun text-yellow-500 text-2xl" />
               </div>
               <p class="text-sm font-semibold text-neutral-text text-center">
@@ -116,8 +103,7 @@
               @click="themeSettings.primaryColor = color.value"
             >
               <div
-                class="w-14 h-14 rounded-2xl transition-all duration-200 flex items-center
-                       justify-center"
+                class="w-14 h-14 rounded-2xl transition-all duration-200 flex items-center justify-center"
                 :class="themeSettings.primaryColor === color.value
                   ? 'scale-110 shadow-lg'
                   : 'hover:scale-105'"

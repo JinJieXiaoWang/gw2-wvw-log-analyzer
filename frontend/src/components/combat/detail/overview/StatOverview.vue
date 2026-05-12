@@ -7,7 +7,6 @@
 
 import { computed } from 'vue'
 import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   players: EiAnalysisPlayer[]
@@ -54,12 +53,12 @@ const statAverages = computed(() => {
 })
 
 const statList = computed(() => [
-  { label: '保护覆盖', value: statAverages.value.protection, unit: '%', icon: 'pi pi-shield', color: Colors.palette.mint, threshold: 70 },
-  { label: '稳固覆盖', value: statAverages.value.stability, unit: '%', icon: 'pi pi-lock', color: Colors.primary.DEFAULT, threshold: 60 },
-  { label: '命中率', value: statAverages.value.hitRate, unit: '%', icon: 'pi pi-check', color: Colors.palette.orangeBright, threshold: 90 },
-  { label: '技能施放', value: statAverages.value.skillCastUptime, unit: '%', icon: 'pi pi-play', color: Colors.palette.roseBright, threshold: 70 },
-  { label: '堆叠距离', value: statAverages.value.stackDist, unit: '', icon: 'pi pi-users', color: Colors.palette.indigo, threshold: null },
-  { label: '指挥距离', value: statAverages.value.distToCom, unit: '', icon: 'pi pi-map-marker', color: Colors.palette.skyBlue, threshold: null },
+  { label: '保护覆盖', value: statAverages.value.protection, unit: '%', icon: 'pi pi-shield', color: '#00D68F', threshold: 70 },
+  { label: '稳固覆盖', value: statAverages.value.stability, unit: '%', icon: 'pi pi-lock', color: '#165DFF', threshold: 60 },
+  { label: '命中率', value: statAverages.value.hitRate, unit: '%', icon: 'pi pi-check', color: '#FFAA00', threshold: 90 },
+  { label: '技能施放', value: statAverages.value.skillCastUptime, unit: '%', icon: 'pi pi-play', color: '#FF4D6A', threshold: 70 },
+  { label: '堆叠距离', value: statAverages.value.stackDist, unit: '', icon: 'pi pi-users', color: '#6366F1', threshold: null },
+  { label: '指挥距离', value: statAverages.value.distToCom, unit: '', icon: 'pi pi-map-marker', color: '#00B4FF', threshold: null },
 ])
 
 const getValueColor = (item: typeof statList.value[0]) => {
@@ -77,8 +76,7 @@ const getValueColor = (item: typeof statList.value[0]) => {
       <div
         v-for="stat in statList"
         :key="stat.label"
-          class="text-center p-3 rounded-lg bg-neutral-bg/50 hover:bg-neutral-bg
-                 transition-colors"
+        class="text-center p-3 rounded-lg bg-neutral-bg/50 hover:bg-neutral-bg transition-colors"
       >
         <i
           :class="['pi', stat.icon, 'text-lg mb-2']"

@@ -1,15 +1,14 @@
 ﻿# 模块功能：字典工具函数（含缓存管理）
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-29
+# 创建日期：2026-04-29
 # 依赖说明：SQLAlchemy, typing
 
 from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy.orm import Session
-
-from app.models.game_data.dictionary import SysDictData, SysDictType
+from app.models.game.dictionary import SysDictData, SysDictType
 from app.utils.logger import logger
+from sqlalchemy.orm import Session
 
 # 全局字典缓存
 _dict_cache: Dict[str, List[Dict]] = {}
@@ -19,10 +18,11 @@ _dict_value_cache: Dict[str, Dict[str, str]] = {}  # type -> {label: value}
 
 @contextmanager
 def _get_dict_session(db: Optional[Session] = None):
-    """获取字典查询用的数据库会?
+    """获取字典查询用的数据库会话
     
-    优先使用调用方传入的 session，否则创建新?SessionLocal()?
-    新创建的 session 在上下文退出时自动关闭?
+    优先使用调用方传入的 session，否则创建新会话。
+    会话在上下文退出时自动关闭。
+    
     """
     if db is not None:
         yield db
@@ -36,14 +36,14 @@ def _get_dict_session(db: Optional[Session] = None):
 
 
 def clear_dict_cache() -> None:
-    # 功能：清空所有字典缓?
+    # 功能：清空所有字典缓存
     # 参数：无
     # 返回：无
     global _dict_cache, _dict_label_cache, _dict_value_cache
     _dict_cache = {}
     _dict_label_cache = {}
     _dict_value_cache = {}
-    logger.info("字典缓存已清?)
+    logger.info("字典缓存已清空")
 
 
 def clear_dict_type_cache(dict_type: str) -> None:
@@ -81,7 +81,7 @@ def set_dict_cache(dict_type: str, dict_data_list: List[Dict]) -> None:
         if label:
             _dict_value_cache[dict_type][label] = value
 
-    logger.debug(f"字典类型{dict_type}的缓存已更新，共{len(dict_data_list)}?)
+    logger.debug(f"字典类型{dict_type}的缓存已更新，共{len(dict_data_list)}条数据")
 
 
 def get_dict_cache(dict_type: Optional[str] = None) -> Any:
@@ -95,9 +95,9 @@ def get_dict_cache(dict_type: Optional[str] = None) -> Any:
 
 def load_dict_from_db(db: Session, dict_type: str) -> List[Dict]:
     # 功能：从数据库加载字典数据
-    # 参数：db - 数据库会?
+    # 参数：db - 数据库会话
     #       dict_type - 字典类型
-    # 返回：字典数据列?
+    # 返回：字典数据列表
     try:
         query = (
             db.query(SysDictData)
@@ -123,7 +123,7 @@ def load_dict_from_db(db: Session, dict_type: str) -> List[Dict]:
                 }
             )
 
-        logger.debug(f"从数据库加载字典类型{dict_type}，共{len(dict_data_list)}?)
+        logger.debug(f"从数据库加载字典类型{dict_type}，共{len(dict_data_list)}条数据")
         return dict_data_list
     except Exception as e:
         logger.error(f"从数据库加载字典类型{dict_type}失败: {str(e)}", exc_info=True)
@@ -159,7 +159,7 @@ def get_dict_datas(dict_type: str, db: Optional[Session] = None) -> List[Dict]:
     if cached_data is not None:
         return cached_data
 
-    # 如果没有缓存，尝试从数据库加?
+    # 如果没有缓存，尝试从数据库加载
     with _get_dict_session(db) as session:
         dict_data_list = load_dict_from_db(session, dict_type)
         set_dict_cache(dict_type, dict_data_list)
@@ -170,23 +170,23 @@ def get_dict_datas(dict_type: str, db: Optional[Session] = None) -> List[Dict]:
 def get_dict_label(dict_type: str, dict_value: str, separator: str = ",") -> str:
     # 功能：通过字典值获取标签（支持多值）
     # 参数：dict_type - 字典类型
-    #       dict_value - 字典值（可以是单个值或多个值用分隔符分开?
-    #       separator - 分隔?
-    # 返回：字典标?
+    #       dict_value - 字典值（可以是单个值或多个值用分隔符分隔）
+    #       separator - 分隔符
+    # 返回：字典标签
     try:
         if not dict_value:
             return ""
 
-        # 确保缓存已加?
+        # 确保缓存已加载
         if dict_type not in _dict_cache:
             get_dict_datas(dict_type)
 
-        # 处理单个?
+        # 处理单个值
         if separator not in dict_value:
             type_labels = _dict_label_cache.get(dict_type, {})
             return type_labels.get(dict_value, dict_value)
 
-        # 处理多个?
+        # 处理多个值
         values = dict_value.split(separator)
         labels = []
         type_labels = _dict_label_cache.get(dict_type, {})
@@ -207,13 +207,13 @@ def get_dict_value(dict_type: str, dict_label: str, separator: str = ",") -> str
     # 功能：通过字典标签获取值（支持多标签）
     # 参数：dict_type - 字典类型
     #       dict_label - 字典标签
-    #       separator - 分隔?
-    # 返回：字典?
+    #       separator - 分隔符
+    # 返回：字典值
     try:
         if not dict_label:
             return ""
 
-        # 确保缓存已加?
+        # 确保缓存已加载
         if dict_type not in _dict_cache:
             get_dict_datas(dict_type)
 
@@ -258,7 +258,7 @@ def get_dict_options(dict_type: str) -> List[Dict[str, Any]]:
 def get_dict_categories(db: Optional[Session] = None) -> List[Dict]:
     # 功能：获取所有字典分类（字典类型列表?
     # 参数：db - 数据库会话（可选）
-    # 返回：字典类型列?
+    # 返回：字典类型列表
     try:
         with _get_dict_session(db) as session:
             query = (
@@ -291,7 +291,7 @@ def get_dict_item_by_value(
 ) -> Optional[Dict]:
     # 功能：通过值获取字典项详情
     # 参数：dict_type - 字典类型
-    #       dict_value - 字典?
+    #       dict_value - 字典值
     #       db - 数据库会话（可选）
     # 返回：字典项详情或None
     dict_datas = get_dict_datas(dict_type, db)
@@ -304,8 +304,8 @@ def get_dict_item_by_value(
 def get_dict_item_by_code(
     dict_code: int, db: Optional[Session] = None
 ) -> Optional[Dict]:
-    # 功能：通过编码获取字典项详?
-    # 参数：dict_code - 字典项编?
+    # 功能：通过编码获取字典项详情
+    # 参数：dict_code - 字典项编码
     #       db - 数据库会话（可选）
     # 返回：字典项详情或None
     try:

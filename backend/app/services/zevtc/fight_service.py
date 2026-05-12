@@ -10,10 +10,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session, joinedload
 
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.zevtc_data import EiPlayer, EiSkillMap
-from app.services.score_query_service import PlayerScoreService
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.zevtc_data import EiPlayer, EiSkillMap
+from app.services.scoring.score_query_service import PlayerScoreService
 from app.utils.logger import logger
 
 

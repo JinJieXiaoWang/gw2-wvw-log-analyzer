@@ -15,8 +15,7 @@
           <!-- 玩家信息 + 武器配置 -->
           <div class="flex items-center gap-3 mb-3">
             <div
-              class="w-10 h-10 rounded-full flex items-center justify-center text-white
-                     font-bold shrink-0"
+              class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold shrink-0"
               :style="{ backgroundColor: getProfessionColor(player.profession) }"
             >
               {{ player.name.charAt(0) }}
@@ -67,7 +66,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   players: any[];
@@ -106,7 +104,7 @@ function formatWeapons(weapons: string[]): string {
 }
 
 function getSkillColor(skillId: number): string {
-  const colors = [Colors.palette.red, Colors.palette.orange, Colors.palette.amber, Colors.palette.lime, Colors.palette.emerald, Colors.palette.cyan, Colors.palette.blue, Colors.palette.violet, Colors.palette.fuchsia, Colors.palette.crimson];
+  const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef', '#f43f5e'];
   return colors[Math.abs(skillId) % colors.length];
 }
 </script>

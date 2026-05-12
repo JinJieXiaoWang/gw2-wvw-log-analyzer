@@ -111,7 +111,6 @@ const loadTrend = async () => {
 
 const viewReport = (reportId: string) => {
   // 查看报告详情的逻辑
-  console.log('查看报告:', reportId)
 }
 
 const analyzeFight = async (fightId: string) => {
@@ -119,7 +118,6 @@ const analyzeFight = async (fightId: string) => {
     const response = await aiApi.analyzeFight(fightId)
     if (response.success) {
       // 处理分析结果
-      console.log('战斗分析结果:', response.data)
       // 重新加载报告列表
       page.value = 1
       loadReports()
@@ -134,7 +132,6 @@ const analyzeMember = async (memberId: string) => {
     const response = await aiApi.analyzeMember(memberId)
     if (response.success) {
       // 处理分析结果
-      console.log('成员分析结果:', response.data)
       // 重新加载报告列表
       page.value = 1
       loadReports()
@@ -149,7 +146,6 @@ const analyzeBuild = async (buildId: string) => {
     const response = await aiApi.analyzeBuild(buildId)
     if (response.success) {
       // 处理分析结果
-      console.log('Build分析结果:', response.data)
       // 重新加载报告列表
       page.value = 1
       loadReports()

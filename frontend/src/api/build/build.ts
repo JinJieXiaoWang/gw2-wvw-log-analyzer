@@ -6,7 +6,7 @@
  */
 
 import { apiFactory } from '@/services/core/apiService';
-import { API_ENDPOINTS } from '@/constants/apiEndpoints';
+import { API_ENDPOINTS } from '@/config/apiEndpoints';
 import type { BuildEntry, BuildCreateDto, BuildUpdateDto } from '@/types/buildLibrary';
 
 // 类型定义

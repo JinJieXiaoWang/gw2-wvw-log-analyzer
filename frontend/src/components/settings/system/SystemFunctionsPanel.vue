@@ -4,13 +4,11 @@
     <div class="card relative overflow-hidden border border-neutral-border">
       <!-- 背景装饰 -->
       <div
-        class="absolute top-0 right-0 w-72 h-72 rounded-full -translate-y-1/2
-               translate-x-1/4 pointer-events-none"
+        class="absolute top-0 right-0 w-72 h-72 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none"
         :style="{ background: `radial-gradient(circle, ${accentColor}08 0%, transparent 70%)` }"
       />
       <div
-        class="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/3
-               -translate-x-1/4 pointer-events-none"
+        class="absolute bottom-0 left-0 w-48 h-48 rounded-full translate-y-1/3 -translate-x-1/4 pointer-events-none"
         :style="{ background: `radial-gradient(circle, ${accentColor}05 0%, transparent 70%)` }"
       />
 
@@ -58,8 +56,7 @@
           <div
             v-for="stat in stats"
             :key="stat.label"
-              class="bg-neutral-bg rounded-xl p-4 text-center border border-neutral-border
-                     transition-all duration-200 hover:border-neutral-border-light"
+            class="bg-neutral-bg rounded-xl p-4 text-center border border-neutral-border transition-all duration-200 hover:border-neutral-border-light"
             :style="{ boxShadow: `0 0 16px ${accentColor}08` }"
           >
             <div
@@ -107,13 +104,10 @@
         <div
           v-for="feature in features"
           :key="feature.title"
-            class="flex items-start gap-3 p-4 bg-neutral-bg rounded-xl border
-                   border-neutral-border transition-all duration-200
-                   hover:border-neutral-border-light group"
+          class="flex items-start gap-3 p-4 bg-neutral-bg rounded-xl border border-neutral-border transition-all duration-200 hover:border-neutral-border-light group"
         >
           <div
-            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0
-                   transition-all duration-200"
+            class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200"
             :style="{ backgroundColor: accentColor + '12' }"
           >
             <i

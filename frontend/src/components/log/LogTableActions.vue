@@ -1,10 +1,22 @@
 <template>
   <div class="table-actions flex items-center gap-2">
-    <a v-if="data.dpsReportPermalink" :href="data.dpsReportPermalink" target="_blank" class="no-underline">
-      <BaseButton v-tooltip.top="'查看 EI 报告'" icon="pi pi-external-link" size="small" text class="action-btn" />
+    <a
+      v-if="data.dpsReportPermalink"
+      :href="data.dpsReportPermalink"
+      target="_blank"
+      class="no-underline"
+    >
+      <BaseButton
+        v-tooltip.top="'查看 EI 报告'"
+        icon="pi pi-external-link"
+        size="small"
+        text
+        class="action-btn"
+      />
     </a>
     <BaseButton
-      v-tooltip.top="'查看详情'"
+      :disabled="!isParsed"
+      :v-tooltip.top="isParsed ? '查看详情' : '日志未解析，请先解析后再查看详情'"
       icon="pi pi-eye"
       size="small"
       text
@@ -34,12 +46,17 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import { computed } from 'vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
-defineProps<{
+const props = defineProps<{
   data: any
   parsing: boolean
 }>()
+
+const isParsed = computed(() => {
+  return props.data.status === 'success' || props.data.status === 'completed'
+})
 
 defineEmits<{
   (e: 'view', data: any): void

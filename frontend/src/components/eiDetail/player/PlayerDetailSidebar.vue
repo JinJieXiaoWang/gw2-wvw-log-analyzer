@@ -66,4 +66,4 @@ function getProfIcon(prof: string): string {
 }
 </script>
 
-
+<style scoped>@import './PlayerDetailSidebar.css';</style>

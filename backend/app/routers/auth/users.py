@@ -1,8 +1,8 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：用户管理API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-27
-# 更新日期?2026-05-12
+# 创建日期：2026-04-27
+# 更新日期：2026-05-12
 # 依赖说明：FastAPI, JWT认证
 
 from typing import Optional
@@ -15,7 +15,12 @@ from app.config.status_codes import HTTP_200_OK
 from app.constants.roles import ROLES
 from app.models.auth.sys_user import SysUser
 from app.schemas.auth.common import ApiResponse
-from app.schemas.auth.user import UserCreate, UserProfileResponse, UserResponse, UserUpdate
+from app.schemas.auth.user import (
+    UserCreate,
+    UserProfileResponse,
+    UserResponse,
+    UserUpdate,
+)
 from app.services.auth.auth_service import (
     get_current_admin,
     get_user_permissions,
@@ -44,7 +49,7 @@ async def get_users_route(
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
     role: Optional[str] = Query(None, description="角色过滤"),
-    is_active: Optional[bool] = Query(None, description="活跃状态过?),
+    is_active: Optional[bool] = Query(None, description="活跃状态过滤"),
     db: Session = Depends(get_db),
     admin: SysUser = Depends(require_super_admin),
 ):
@@ -65,7 +70,7 @@ async def get_users_route(
     "/profile",
     response_model=ApiResponse,
     summary="获取当前用户资料",
-    description="获取当前登录用户的详细信?,
+    description="获取当前登录用户的详细信息",
 )
 async def get_user_profile(current_admin=Depends(get_current_admin)):
     return ApiResponse.success_response(
@@ -82,7 +87,7 @@ async def get_user_profile(current_admin=Depends(get_current_admin)):
     "/{user_id}",
     response_model=ApiResponse,
     summary="获取指定用户",
-    description="获取指定用户的详细信息，仅超级管理员可访?,
+    description="获取指定用户的详细信息，仅超级管理员可访问",
 )
 async def get_user(
     user_id: int,
@@ -91,7 +96,7 @@ async def get_user(
 ):
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="获取用户成功", data=UserResponse.model_validate(user)
     )
@@ -101,7 +106,7 @@ async def get_user(
     "",
     response_model=ApiResponse,
     summary="创建用户",
-    description="创建新用户，仅超级管理员可访?,
+    description="创建新用户，仅超级管理员可访问",
 )
 async def create_user_route(
     user_data: UserCreate,
@@ -138,7 +143,7 @@ async def update_user_route(
     "/{user_id}",
     response_model=ApiResponse,
     summary="删除用户",
-    description="删除指定用户，仅超级管理员可访问，不能删除自己，预置管理员禁止删?,
+    description="删除指定用户，仅超级管理员可访问，不能删除自己，预置管理员禁止删除",
 )
 async def delete_user_route(
     user_id: int,
@@ -147,7 +152,7 @@ async def delete_user_route(
 ):
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
     username = user.username
     delete_user(db, user_id, admin.id)
     logger.info(f"管理?{admin.username} 删除了用?{username}")

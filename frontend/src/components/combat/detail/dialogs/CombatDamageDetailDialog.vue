@@ -79,9 +79,7 @@ const visible = defineModel<boolean>('visible', { default: false })
           </div>
         </div>
         <div class="flex-1 space-y-4">
-          <div
-            class="flex items-center justify-between p-4 rounded-xl bg-primary/10 border
-                   border-primary/20">
+          <div class="flex items-center justify-between p-4 rounded-xl bg-primary/10 border border-primary/20">
             <div class="flex items-center gap-3">
               <span class="w-4 h-4 rounded-full bg-primary" />
               <span class="text-sm font-semibold text-neutral-text">直伤</span>
@@ -95,9 +93,7 @@ const visible = defineModel<boolean>('visible', { default: false })
               </p>
             </div>
           </div>
-          <div
-            class="flex items-center justify-between p-4 rounded-xl bg-success/10 border
-                   border-success/20">
+          <div class="flex items-center justify-between p-4 rounded-xl bg-success/10 border border-success/20">
             <div class="flex items-center gap-3">
               <span class="w-4 h-4 rounded-full bg-success" />
               <span class="text-sm font-semibold text-neutral-text">症状</span>
@@ -111,9 +107,7 @@ const visible = defineModel<boolean>('visible', { default: false })
               </p>
             </div>
           </div>
-          <div
-            class="flex items-center justify-between p-4 rounded-xl bg-secondary/10 border
-                   border-secondary/20">
+          <div class="flex items-center justify-between p-4 rounded-xl bg-secondary/10 border border-secondary/20">
             <div class="flex items-center gap-3">
               <span class="w-4 h-4 rounded-full bg-secondary" />
               <span class="text-sm font-semibold text-neutral-text">破甲</span>

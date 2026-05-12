@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 defineProps<{
   message?: string

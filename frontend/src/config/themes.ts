@@ -67,7 +67,7 @@ export const GameThemes: ThemeConfig[] = [
     id: 'guildwars',
     name: '激战2经典',
     description: '原始游戏风格，深色魔幻主题',
-    icon: 'pi-swords',
+    icon: 'pi-shield',
     previewGradient: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
     preset: 'aura',
     colors: {
@@ -103,7 +103,7 @@ export const GameThemes: ThemeConfig[] = [
     id: 'flame-legion',
     name: '烈焰军团',
     description: '火元素主题，热情奔放的战斗风格',
-    icon: 'pi-fire',
+    icon: 'pi-bolt',
     previewGradient: 'linear-gradient(135deg, #1a0a0a 0%, #2d1313 50%, #4a1919 100%)',
     preset: 'aura',
     colors: {
@@ -139,7 +139,7 @@ export const GameThemes: ThemeConfig[] = [
     id: 'frost-dragon',
     name: '冰霜巨龙',
     description: '冰元素主题，冷峻高贵的冰霜风格',
-    icon: 'pi-snowflake',
+    icon: 'pi-sparkles',
     previewGradient: 'linear-gradient(135deg, #0a1420 0%, #0d1f30 50%, #0a2a40 100%)',
     preset: 'aura',
     colors: {

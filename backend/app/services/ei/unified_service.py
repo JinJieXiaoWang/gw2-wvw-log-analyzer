@@ -17,9 +17,9 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.ei_report import EiReport
-from app.models.log import Log
-from app.models.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget
+from app.models.log.ei_report import EiReport
+from app.models.log.log import Log
+from app.models.log.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget
 from app.services.ei.report_service import get_full_graph_data, get_full_log_data
 from app.utils.logger import logger
 

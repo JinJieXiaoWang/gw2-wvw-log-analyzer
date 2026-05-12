@@ -1,5 +1,9 @@
 <template>
-  <Textarea v-bind="$attrs" v-model="modelValue" class="w-full" />
+  <Textarea
+    v-bind="$attrs"
+    v-model="modelValue"
+    class="w-full"
+  />
 </template>
 
 <script setup lang="ts">

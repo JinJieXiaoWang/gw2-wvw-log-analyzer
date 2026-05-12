@@ -90,8 +90,7 @@ const kpiList = computed(() => {
     <div
       v-for="kpi in kpiList"
       :key="kpi.label"
-        class="card p-4 rounded-xl bg-gradient-to-br border border-transparent
-               hover:border-primary/20 transition-all"
+      class="card p-4 rounded-xl bg-gradient-to-br border border-transparent hover:border-primary/20 transition-all"
       :class="kpi.bg"
     >
       <div class="flex items-center gap-2 mb-2">

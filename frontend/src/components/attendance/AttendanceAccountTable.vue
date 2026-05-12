@@ -5,9 +5,7 @@
   >
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
-        <div
-          class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-status-success/30
-                 flex items-center justify-center">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-status-success/30 flex items-center justify-center">
           <i class="pi pi-list text-primary" />
         </div>
         <div>
@@ -37,9 +35,7 @@
       >
         <template #body="{ data }">
           <div class="flex items-center gap-2">
-            <div
-              class="w-8 h-8 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 flex
-                     items-center justify-center text-white text-xs font-bold">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 flex items-center justify-center text-white text-xs font-bold">
               {{ data.account.charAt(0).toUpperCase() }}
             </div>
             <span class="font-medium text-neutral-text">{{ data.account }}</span>

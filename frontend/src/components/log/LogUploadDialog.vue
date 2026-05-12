@@ -8,7 +8,14 @@
     class="custom-dialog"
     @update:visible="onVisibleChange"
   >
-    <input ref="fileInput" type="file" accept=".zevtc" multiple class="hidden" @change="onFileSelect">
+    <input
+      ref="fileInput"
+      type="file"
+      accept=".zevtc"
+      multiple
+      class="hidden"
+      @change="onFileSelect"
+    >
 
     <div class="py-4">
       <UploadDropZone
@@ -31,7 +38,10 @@
       />
 
       <!-- 总体进度 -->
-      <div v-if="isUploading || uploadComplete" class="mt-4">
+      <div
+        v-if="isUploading || uploadComplete"
+        class="mt-4"
+      >
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm text-neutral-text-secondary">
             <span v-if="uploadPhase === 'uploading'">正在上传 {{ currentUploadIndex + 1 }}/{{ selectedFiles.length }}</span>
@@ -41,13 +51,25 @@
           <span class="text-sm text-neutral-text font-medium">{{ Math.round(overallProgress) }}%</span>
         </div>
         <div class="h-2 bg-neutral-border rounded-full overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-500 ease-out" :class="progressBarClass" :style="{ width: overallProgress + '%' }" />
+          <div
+            class="h-full rounded-full transition-all duration-500 ease-out"
+            :class="progressBarClass"
+            :style="{ width: overallProgress + '%' }"
+          />
         </div>
-        <p v-if="uploadPhase === 'processing'" class="text-xs text-status-warning mt-2 flex items-center gap-1">
+        <p
+          v-if="uploadPhase === 'processing'"
+          class="text-xs text-status-warning mt-2 flex items-center gap-1"
+        >
           <i class="pi pi-spin pi-spinner" />
           文件已上传至服务器，正在解析和处理中，请稍候.....
         </p>
-        <p v-if="currentError" class="text-xs text-status-error mt-2">{{ currentError }}</p>
+        <p
+          v-if="currentError"
+          class="text-xs text-status-error mt-2"
+        >
+          {{ currentError }}
+        </p>
       </div>
 
       <UploadResultSummary
@@ -60,7 +82,12 @@
     </div>
 
     <template #footer>
-      <BaseButton label="取消" class="btn-ghost" :disabled="isUploading && uploadPhase !== 'completed'" @click="closeDialog" />
+      <BaseButton
+        label="取消"
+        class="btn-ghost"
+        :disabled="isUploading && uploadPhase !== 'completed'"
+        @click="closeDialog"
+      />
       <BaseButton
         v-if="!uploadComplete"
         label="开始上传"
@@ -70,7 +97,14 @@
         :loading="isUploading"
         @click="uploadFiles"
       />
-      <BaseButton v-else label="完成" icon="pi pi-check" class="btn-game" severity="success" @click="closeDialog" />
+      <BaseButton
+        v-else
+        label="完成"
+        icon="pi pi-check"
+        class="btn-game"
+        severity="success"
+        @click="closeDialog"
+      />
     </template>
   </Dialog>
 </template>
@@ -78,16 +112,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import { useLogUpload } from '@/composables/log/useLogUpload'
 import UploadDropZone from './upload/UploadDropZone.vue'
 import UploadFileList from './upload/UploadFileList.vue'
 import UploadResultSummary from './upload/UploadResultSummary.vue'
 
-defineProps<{ visible: boolean }>()
+const visible = defineModel<boolean>('visible', { default: false })
 
 const emit = defineEmits<{
-  (e: 'update:visible', value: boolean): void
   (e: 'upload-success'): void
 }>()
 
@@ -109,12 +142,12 @@ const progressBarClass = computed(() => {
 
 const onVisibleChange = (val: boolean) => {
   if (!val && isUploading.value) return
-  emit('update:visible', val)
+  visible.value = val
 }
 
 const closeDialog = () => {
   if (isUploading.value && uploadPhase.value !== 'completed') return
-  emit('update:visible', false)
+  visible.value = false
   setTimeout(() => reset(), 300)
 }
 </script>

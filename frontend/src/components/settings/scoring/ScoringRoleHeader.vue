@@ -1,8 +1,6 @@
 <template>
   <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-    <div
-      class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex
-             items-center justify-center border border-primary/20">
+    <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/20">
       <i class="pi pi-chart-line text-primary text-xl" />
     </div>
     <div>
@@ -43,9 +41,7 @@
         v-if="hasUnsavedChanges(role.type)"
         class="absolute top-2 right-2"
       >
-        <span
-          class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium
-                 bg-warning/20 text-warning">已修改</span>
+        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-warning/20 text-warning">已修改</span>
       </div>
     </button>
   </div>

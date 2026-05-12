@@ -1,5 +1,8 @@
 <template>
-  <div class="flex flex-col items-center justify-center py-12 px-4 text-center gap-3" v-bind="$attrs">
+  <div
+    class="flex flex-col items-center justify-center py-12 px-4 text-center gap-3"
+    v-bind="$attrs"
+  >
     <div
       class="mb-2"
       :class="iconSizeClass"

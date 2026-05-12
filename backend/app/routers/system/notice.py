@@ -1,25 +1,24 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """通知路由
 
 提供通知列表查询、未读数、标记已读等接口
-支持游客访问（返回空数据?
+支持游客访问（返回空数据）
 """
 
 from typing import Optional
 
-from fastapi import APIRouter, Depends, Query
-from sqlalchemy.orm import Session
-
 from app.config.database import get_db
-from app.services.auth.auth_service import get_current_admin, get_current_user_optional
 from app.models.auth.sys_user import SysUser
 from app.schemas.auth.common import ApiResponse
+from app.services.auth.auth_service import get_current_admin, get_current_user_optional
 from app.services.system.notice_service import NoticeService
+from fastapi import APIRouter, Depends, Query
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/notices", tags=["通知"])
 
 
-@router.get("/unread-count", response_model=ApiResponse, summary="获取未读通知?)
+@router.get("/unread-count", response_model=ApiResponse, summary="获取未读通知")
 async def get_unread_count(
     db: Session = Depends(get_db),
     current_user: Optional[SysUser] = Depends(get_current_user_optional),
@@ -27,7 +26,7 @@ async def get_unread_count(
     if not current_user:
         return ApiResponse(success=True, message="游客无未读通知", data={"count": 0})
     count = NoticeService.get_unread_count(db, current_user.id)
-    return ApiResponse(success=True, message="获取未读通知数成?, data={"count": count})
+    return ApiResponse(success=True, message="获取未读通知数成功", data={"count": count})
 
 
 @router.get("", response_model=ApiResponse, summary="获取通知列表")
@@ -67,4 +66,4 @@ async def mark_all_read(
     current_user: SysUser = Depends(get_current_admin),
 ):
     count = NoticeService.mark_all_as_read(db, current_user.id)
-    return ApiResponse(success=True, message=f"已标?{count} 条通知为已?, data={"count": count})
+    return ApiResponse(success=True, message=f"已标记 {count} 条通知为已读", data={"count": count})

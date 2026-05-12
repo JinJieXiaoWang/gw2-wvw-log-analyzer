@@ -34,6 +34,7 @@
    --color-ai: #00E5C0;
    --color-ai-light: #33FFE0;
    --color-ai-dark: #00B894;
+   --color-ai-alpha-5: rgba(0, 229, 192, 0.05);
    --color-ai-alpha-10: rgba(0, 229, 192, 0.1);
    --color-ai-alpha-20: rgba(0, 229, 192, 0.2);
    --color-ai-alpha-30: rgba(0, 229, 192, 0.3);
@@ -298,6 +299,19 @@
      16. AI 额外透明度变量 (Legacy Compatibility)
      ========================================================================== */
    --color-ai-alpha-30: rgba(0, 229, 192, 0.3);
+   /* ==========================================================================
+     17. 默认中性变量 (Fallback - 深色模式默认)
+     ========================================================================== */
+   --neutral-bg: var(--color-bg);
+   --neutral-bg-secondary: var(--color-bg-secondary);
+   --neutral-card: var(--color-card);
+   --neutral-card-hover: var(--color-card-hover);
+   --neutral-border: var(--color-border);
+   --neutral-border-light: var(--color-border-light);
+   --neutral-text: var(--color-text);
+   --neutral-text-secondary: var(--color-text-secondary);
+   --neutral-text-disabled: var(--color-text-disabled);
+   --neutral-text-inverse: var(--color-text-inverse);
 }
 
 /* ==========================================================================

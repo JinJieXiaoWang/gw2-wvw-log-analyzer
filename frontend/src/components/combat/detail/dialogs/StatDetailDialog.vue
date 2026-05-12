@@ -8,9 +8,7 @@
   >
     <div class="space-y-4">
       <!-- 统计ժҪ -->
-      <div
-        class="flex items-center gap-4 p-3 rounded-xl bg-neutral-bg-secondary border
-               border-neutral-border/50">
+      <div class="flex items-center gap-4 p-3 rounded-xl bg-neutral-bg-secondary border border-neutral-border/50">
         <div class="flex items-center gap-2">
           <i class="pi pi-users text-primary" /><span class="text-sm text-neutral-text">共 {{ data.statDetailList.length }} 人</span>
         </div>
@@ -114,16 +112,21 @@ interface StatDialogData {
   statDetailAverage: number
 }
 
-const visible = defineModel<boolean>('visible', { default: false })
-
 const props = defineProps<{
+  visible: boolean
   title: string
   data: StatDialogData
 }>()
 
 const emit = defineEmits<{
+  'update:visible': [value: boolean]
   'player-click': [player: EiAnalysisPlayer]
 }>()
+
+const visible = computed({
+  get: () => props.visible,
+  set: (v) => emit('update:visible', v)
+})
 
 const unitSuffix = computed(() => {
   const t = props.data.currentStatType

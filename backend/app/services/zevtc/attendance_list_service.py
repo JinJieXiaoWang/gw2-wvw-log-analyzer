@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：出勤列表查询服?
+# 模块功能：出勤列表查询服务
 # 作者：系统
-# 创建日期?2026-05-04
+# 创建日期：2026-05-04
 
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Tuple
@@ -32,7 +32,7 @@ def get_account_attendance_list(
     出勤次数 = 该账号在统计周期内有多少个不同的自然日有战斗记录
     （同一自然日内无论多少日志/多少角色，只?1 次账号出勤）
 
-    返回字段?
+    返回字段：
         account, character_count, attendance_count, total_duration_sec,
         total_damage, total_healing, total_kills, total_deaths,
         kd_ratio, avg_score, last_attendance

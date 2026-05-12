@@ -21,13 +21,9 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div
-        class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-               dark:border-surface-700 rounded-2xl p-5 shadow-sm">
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex
-                   items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
             <i class="pi pi-cog text-white" />
           </div>
           <div>
@@ -36,9 +32,7 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div
-            class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                   rounded-lg">
+          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded flex items-center justify-center bg-blue-100 dark:bg-blue-900/30">
                 <i class="pi pi-chart-line text-blue-600 dark:text-blue-400" />
@@ -57,13 +51,9 @@
               @change="markChanged('scoring_mode')"
             />
           </div>
-          <div
-            class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                   rounded-lg">
+          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <div class="flex items-center gap-3">
-              <div
-                class="w-8 h-8 rounded flex items-center justify-center bg-green-100
-                       dark:bg-green-900/30">
+              <div class="w-8 h-8 rounded flex items-center justify-center bg-green-100 dark:bg-green-900/30">
                 <i class="pi pi-server text-green-600 dark:text-green-400" />
               </div>
               <div>
@@ -80,13 +70,9 @@
         </div>
       </div>
 
-      <div
-        class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-               dark:border-surface-700 rounded-2xl p-5 shadow-sm">
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex
-                   items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
             <i class="pi pi-bolt text-white" />
           </div>
           <div>
@@ -95,13 +81,9 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div
-            class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                   rounded-lg">
+          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <div class="flex items-center gap-3">
-              <div
-                class="w-8 h-8 rounded flex items-center justify-center bg-purple-100
-                       dark:bg-purple-900/30">
+              <div class="w-8 h-8 rounded flex items-center justify-center bg-purple-100 dark:bg-purple-900/30">
                 <i class="pi pi-spinner text-purple-600 dark:text-purple-400" />
               </div>
               <div>
@@ -117,9 +99,7 @@
               @blur="markChanged('parse_parallel')"
             />
           </div>
-          <div
-            class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                   rounded-lg">
+          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
             <div class="flex items-center gap-3">
               <div class="w-8 h-8 rounded flex items-center justify-center bg-teal-100 dark:bg-teal-900/30">
                 <i class="pi pi-calendar text-teal-600 dark:text-teal-400" />
@@ -141,13 +121,9 @@
         </div>
       </div>
 
-      <div
-        class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-               dark:border-surface-700 rounded-2xl p-5 shadow-sm">
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex
-                   items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
             <i class="pi pi-file-export text-white" />
           </div>
           <div>
@@ -155,9 +131,7 @@
             <span class="text-xs text-color-secondary">数据导出的默认格式</span>
           </div>
         </div>
-        <div
-          class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                 rounded-lg">
+        <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded flex items-center justify-center bg-cyan-100 dark:bg-cyan-900/30">
               <i class="pi pi-file text-cyan-600 dark:text-cyan-400" />
@@ -178,13 +152,9 @@
         </div>
       </div>
 
-      <div
-        class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-               dark:border-surface-700 rounded-2xl p-5 shadow-sm">
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
         <div class="flex items-center gap-3 mb-4">
-          <div
-            class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-pink-600 flex
-                   items-center justify-center">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center">
             <i class="pi pi-database text-white" />
           </div>
           <div>
@@ -192,9 +162,7 @@
             <span class="text-xs text-color-secondary">数据备份与维护设置</span>
           </div>
         </div>
-        <div
-          class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-                 rounded-lg">
+        <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded flex items-center justify-center bg-red-100 dark:bg-red-900/30">
               <i class="pi pi-history text-red-600 dark:text-red-400" />
@@ -348,4 +316,5 @@ function handleBooleanChange(config: any, value: boolean) {
 onMounted(() => loadConfigs())
 </script>
 
-
+<style scoped>
+</style>

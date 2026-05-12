@@ -23,11 +23,10 @@
     </p>
     <div class="flex items-center justify-center gap-3 mt-3">
       <slot name="actions">
-        <Button
+        <BaseButton
           v-if="showAction"
           :label="actionText"
           :icon="actionIcon"
-          :class="actionButtonClass"
           :outlined="actionOutlined"
           @click="$emit('action')"
         />
@@ -43,7 +42,7 @@
  * 创建时间：2026-04-27
  * 更新时间：2026-05-10 - 增强无障碍支持 */
 
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 interface Props {
   icon?: string

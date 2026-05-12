@@ -1,6 +1,6 @@
 <template>
   <Dialog
-    v-model:visible="visible"
+    :visible="visible"
     :header="title"
     :style="{ width: '400px' }"
     :modal="true"
@@ -32,7 +32,7 @@
         label="取消"
         variant="secondary"
         size="small"
-        @click="visible = false"
+        @click="$emit('update:visible', false)"
       />
       <BaseButton
         label="保存"
@@ -52,9 +52,8 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
-const visible = defineModel<boolean>('visible', { required: true })
-
 defineProps<{
+  visible: boolean
   title: string
   form: any
   roleOptions: { label: string; value: string }[]
@@ -62,6 +61,7 @@ defineProps<{
 }>()
 
 defineEmits<{
+  'update:visible': [boolean]
   save: []
 }>()
 </script>

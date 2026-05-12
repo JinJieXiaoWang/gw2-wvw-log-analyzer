@@ -1,5 +1,8 @@
 <template>
-  <InputNumber v-bind="$attrs" v-model="modelValue" />
+  <InputNumber
+    v-bind="$attrs"
+    v-model="modelValue"
+  />
 </template>
 
 <script setup lang="ts">

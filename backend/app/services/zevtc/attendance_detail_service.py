@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：出勤详情查询服?
+# 模块功能：出勤详情查询服务
 # 作者：系统
-# 创建日期?2026-05-04
+# 创建日期：2026-05-04
 
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Tuple
@@ -10,9 +10,9 @@ from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
 from app.models.auth.account_character import AccountCharacter
+from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
-from app.models.auth.member import Member
 
 from .attendance_score_service import _calculate_comprehensive_abilities
 
@@ -20,7 +20,7 @@ from .attendance_score_service import _calculate_comprehensive_abilities
 def _query_account_base_info(
     db: Session, account_name: str
 ) -> Tuple[Optional[Member], List[AccountCharacter]]:
-    """查询账号基本信息和角色列?""
+    """查询账号基本信息和角色列表"""
     member = db.query(Member).filter(Member.account_name == account_name).first()
     characters = (
         db.query(AccountCharacter)
@@ -37,7 +37,7 @@ def _query_character_stats(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ):
-    """查询每个角色的出勤统计（按角色名分组?""
+    """查询每个角色的出勤统计（按角色名分组）"""
     char_stats_query = (
         db.query(
             FightStats.character_name,
@@ -129,7 +129,7 @@ def _query_recent_fights(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ):
-    """查询最?20 条战斗记?""
+    """查询最?20 条战斗记录"""
     recent_query = (
         db.query(
             Fight.id.label("fight_id"),
@@ -165,7 +165,8 @@ def _query_recent_fights(
 
 
 def _query_attendance_trend(db: Session, account_name: str) -> List[int]:
-    """查询最?7 天出勤趋?""
+    """查询最?7 天出勤趋势"""
+    # 7 天前的日期
     today = datetime.now().date()
     trend_dates = [(today - timedelta(days=i)) for i in range(6, -1, -1)]
     trend_start_dt = datetime.combine(trend_dates[0], datetime.min.time())
@@ -213,7 +214,7 @@ def _build_character_list(
 
 
 def _build_recent_records(recent_fights) -> List[Dict[str, Any]]:
-    """组装最近战斗记录列?""
+    """组装最近战斗记录列表"""
     recent_records = []
     for rf in recent_fights:
         recent_records.append(
@@ -245,7 +246,7 @@ def _build_recent_records(recent_fights) -> List[Dict[str, Any]]:
 
 
 def _build_summary_dict(summary, recent_records: List[Dict[str, Any]]) -> Dict[str, Any]:
-    """组装账号汇总统计字?""
+    """组装账号汇总统计字典"""
     total_kills = int(summary.total_kills or 0)
     total_deaths = int(summary.total_deaths or 0)
     server_name = recent_records[0]["server_name"] if recent_records else None
@@ -271,17 +272,17 @@ def get_account_detail(
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ) -> Optional[Dict[str, Any]]:
-    """获取指定账号的出勤详?
+    """获取指定账号的出勤详情    
 
-    包含?
-        - 账号汇总统计（attendance_count 按自然日去重?
+    包含：
+        - 账号汇总统计（attendance_count 按自然日去重）
         - 该账号下所有角色的出勤统计（每个角色独立按自然日去重）
-        - 最?20 条战斗记?
+        - 最近20 条战斗记录
     """
     # 账号基本信息
     member, _ = _query_account_base_info(db, account_name)
 
-    # 每个角色的出勤统?
+    # 每个角色的出勤统计（按角色名分组）
     char_stats = _query_character_stats(db, account_name, start_date, end_date)
 
     # 获取每个角色最新战斗的职业
@@ -294,19 +295,19 @@ def get_account_detail(
     if not summary or (summary.attendance_count or 0) == 0:
         return None
 
-    # 最近战斗记?
+    # 最近战斗记录（按自然日去重）
     recent_fights = _query_recent_fights(db, account_name, start_date, end_date)
 
     # 组装角色数据
     character_list = _build_character_list(char_stats, latest_professions)
 
-    # 组装最近战斗记?
+    # 组装最近战斗记录
     recent_records = _build_recent_records(recent_fights)
 
-    # 组装汇总统?
+    # 组装汇总统计字典
     summary_dict, server_name = _build_summary_dict(summary, recent_records)
 
-    # 最?天出勤趋?
+    # 最近7天出勤趋势
     attendance_trend = _query_attendance_trend(db, account_name)
 
     # 计算综合能力评分

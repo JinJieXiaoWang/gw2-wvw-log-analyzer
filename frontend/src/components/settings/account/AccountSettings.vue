@@ -2,17 +2,14 @@
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
     <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2
-             translate-x-1/4 pointer-events-none opacity-30"
+      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-primary-alpha-10) 0%, transparent 70%)"
     />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-        <div
-          class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex
-                 items-center justify-center border border-primary/20">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/20">
           <i class="pi pi-user text-primary text-xl" />
         </div>
         <div>
@@ -28,16 +25,10 @@
       <!-- 头像区域 -->
       <div class="flex items-start gap-6 mb-8">
         <div class="relative group">
-          <div
-            class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex
-                   items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20
-                   transition-transform duration-300 group-hover:scale-105">
+          <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
             <span class="text-white text-3xl font-bold">A</span>
           </div>
-          <div
-            class="absolute inset-0 rounded-2xl bg-neutral-card/80 opacity-0
-                   group-hover:opacity-100 transition-opacity duration-200 flex items-center
-                   justify-center cursor-pointer backdrop-blur-sm">
+          <div class="absolute inset-0 rounded-2xl bg-neutral-card/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer backdrop-blur-sm">
             <i class="pi pi-camera text-neutral-text text-xl" />
           </div>
         </div>

@@ -1,99 +1,152 @@
 <template>
-  <Dialog v-model:visible="localVisible" :header="`评分规则配置 - ${currentRoleLabel}`" :style="{ width: '640px', maxWidth: '95vw' }" :modal="true" :draggable="false" class="scoring-rules-dialog">
-    <LoadingState v-if="loading" text="加载规则..." />
+  <Dialog
+    v-model:visible="localVisible"
+    :header="'评分规则配置 — ' + roleLabel"
+    :style="{ width: '640px', maxWidth: '95vw' }"
+    modal
+    :draggable="false"
+    class="scoring-rules-dialog"
+  >
+    <LoadingState
+      v-if="loading"
+      text="加载评分规则中..."
+    />
     <div v-else>
-      <TabView v-model:active-index="activeTab">
-        <TabPanel v-for="tab in ROLE_TABS" :key="tab.key" :value="tab.key" :header="tab.label">
-          <div class="space-y-3">
-            <div v-if="rulesData[tab.key]?.rules?.length" class="text-xs text-neutral-text-secondary mb-2">
-              {{ rulesData[tab.key].rules.length }} 个人评分维度
-            </div>
-            <div v-for="rule in (rulesData[tab.key]?.rules || [])" :key="rule.id || rule.dimension" class="card p-3 rounded-lg border border-neutral-border/40" :class="rule.is_active ? '' : 'opacity-50'">
-              <div class="flex items-center justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="text-sm font-semibold text-neutral-text">{{ rule.dimension }}</span>
-                    <BaseTag v-if="!rule.is_active" value="已禁用" severity="secondary" class="text-[10px] px-1 py-0" />
-                  </div>
-                  <p v-if="rule.description" class="text-xs text-neutral-text-secondary truncate">{{ rule.description }}</p>
-                </div>
-                <div class="flex items-center gap-3 shrink-0">
-                  <span class="text-lg font-bold text-primary">{{ (rule.weight * 100).toFixed(0) }}%</span>
-                  <div class="w-24">
-                    <div class="h-2 rounded-full bg-neutral-bg overflow-hidden">
-                      <div class="h-full rounded-full bg-primary transition-all" :style="{ width: Math.min(rule.weight * 100, 100) + '%' }" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div v-if="!rulesData[tab.key]?.rules?.length" class="text-center py-8 text-neutral-text-secondary text-sm">
-              <i class="pi pi-info-circle text-lg mb-2 block" />暂无{{ tab.label }}角色的评分规则
-            </div>
-          </div>
+      <TabView v-model:active-index="localActiveTab">
+        <TabPanel
+          header="输出"
+          value="0"
+        >
+          <RuleList
+            :rules="rulesData.dps?.rules || []"
+            empty-text="暂无输出角色的评分规则"
+          />
+        </TabPanel>
+        <TabPanel
+          header="辅助"
+          value="1"
+        >
+          <RuleList
+            :rules="rulesData.support?.rules || []"
+            empty-text="暂无辅助角色的评分规则"
+          />
+        </TabPanel>
+        <TabPanel
+          header="承伤"
+          value="2"
+        >
+          <RuleList
+            :rules="rulesData.tank?.rules || []"
+            empty-text="暂无承伤角色的评分规则"
+          />
         </TabPanel>
       </TabView>
 
       <div class="mt-4 pt-4 border-t border-neutral-border/30">
-        <p class="text-xs text-neutral-text-secondary mb-2">评分等级说明</p>
+        <p class="text-xs text-neutral-text-secondary mb-2">
+          评分等级说明
+        </p>
         <div class="flex flex-wrap gap-2">
-          <BaseTag value="S 绾?(>=90)" severity="success" class="text-[10px]" />
-          <BaseTag value="A 绾?(>=80)" severity="info" class="text-[10px]" />
-          <BaseTag value="B 绾?(>=70)" severity="warn" class="text-[10px]" />
-          <BaseTag value="C 绾?(>=60)" severity="secondary" class="text-[10px]" />
-          <BaseTag value="D 绾?(>=50)" severity="danger" class="text-[10px]" />
-          <BaseTag value="F 绾?(<40)" severity="danger" class="text-[10px]" />
+          <Tag
+            value="S 级 (≥90)"
+            severity="success"
+            class="text-[10px]"
+          />
+          <Tag
+            value="A 级 (≥80)"
+            severity="info"
+            class="text-[10px]"
+          />
+          <Tag
+            value="B 级 (≥70)"
+            severity="warn"
+            class="text-[10px]"
+          />
+          <Tag
+            value="C 级 (≥60)"
+            severity="secondary"
+            class="text-[10px]"
+          />
+          <Tag
+            value="D 级 (≥40)"
+            severity="danger"
+            class="text-[10px]"
+          />
+          <Tag
+            value="F 级 (<40)"
+            severity="danger"
+            class="text-[10px]"
+          />
         </div>
       </div>
 
       <div class="mt-4 pt-4 border-t border-neutral-border/30 flex items-center justify-between">
         <div class="flex items-center gap-2">
           <i class="pi pi-tag text-xs text-neutral-text-secondary" />
-          <span class="text-xs text-neutral-text-secondary">当前规则版本: <span class="font-semibold text-primary">v{{ currentRuleVersion }}</span></span>
+          <span class="text-xs text-neutral-text-secondary">
+            当前规则版本: <span class="font-semibold text-primary">v{{ ruleVersion }}</span>
+          </span>
         </div>
-        <BaseButton label="前往管理页面" icon="pi pi-external-link" size="small" text class="text-xs" @click="goManage" />
+        <BaseButton
+          label="前往管理"
+          icon="pi pi-external-link"
+          size="small"
+          text
+          @click="goToRulesManagement"
+        />
       </div>
     </div>
   </Dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+/**
+ * 评分规则查看对话框组件
+ * 功能：展示输出/辅助/承伤三种角色的评分规则配置
+ */
+
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Dialog from 'primevue/dialog'
 import TabView from 'primevue/tabview'
 import TabPanel from 'primevue/tabpanel'
-import LoadingState from '@/components/common/ui/LoadingState.vue'
-import BaseTag from '@/components/common/ui/BaseTag.vue'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import Tag from 'primevue/tag'
+import LoadingState from '@/components/common/ui/feedback/LoadingState.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import RuleList from './RuleList.vue'
 
-const ROLE_TABS = [
-  { key: 'dps', label: '输出' },
-  { key: 'support', label: '辅助' },
-  { key: 'tank', label: '承伤' }
-]
+const router = useRouter()
 
 const props = defineProps<{
   visible: boolean
   loading: boolean
   rulesData: Record<string, any>
-  currentRoleLabel: string
-  currentRuleVersion: number
+  ruleVersion: number
+  activeTab: number
+  roleType: string
 }>()
 
 const emit = defineEmits<{
   'update:visible': [value: boolean]
+  'update:activeTab': [value: number]
 }>()
-
-const router = useRouter()
-const activeTab = ref(0)
 
 const localVisible = computed({
   get: () => props.visible,
   set: v => emit('update:visible', v)
 })
 
-function goManage() {
+const localActiveTab = computed({
+  get: () => props.activeTab,
+  set: v => emit('update:activeTab', v)
+})
+
+const roleLabel = computed(() => {
+  const map: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
+  return map[props.roleType] || '输出'
+})
+
+const goToRulesManagement = () => {
   router.push('/scoring-rules')
 }
 </script>

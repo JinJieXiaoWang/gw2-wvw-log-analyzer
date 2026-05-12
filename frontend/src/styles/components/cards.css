@@ -1,6 +1,4 @@
 /* === 卡片系统 === */
-@import '../variablesUnified.css';
-
 @layer components {
   .card {
     @apply relative bg-neutral-card rounded-xl p-6;

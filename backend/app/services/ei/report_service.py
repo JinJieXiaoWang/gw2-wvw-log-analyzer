@@ -18,8 +18,8 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.ei_report import EiReport
-from app.models.log import Log
+from app.models.log.ei_report import EiReport
+from app.models.log.log import Log
 from app.utils.logger import logger
 
 EI_REPORT_DIR = Path("uploads/ei_reports")

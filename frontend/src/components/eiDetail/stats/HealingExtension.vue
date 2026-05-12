@@ -1,72 +1,68 @@
 <template>
-  <div class="healing-extension flex flex-col gap-6">
+  <div class="healing-extension">
     <!-- 标题 -->
-    <div class="section-header mb-4">
-      <h2 class="section-title flex items-center gap-2 text-lg font-semibold text-neutral-text m-0 mb-1">
-        <i class="pi pi-heart text-[var(--color-accent)]" />
+    <div class="section-header">
+      <h2 class="section-title">
+        <i class="pi pi-heart" />
         治疗统计
       </h2>
-      <div class="section-subtitle text-sm text-neutral-text-secondary">
+      <div class="section-subtitle">
         显示团队治疗数据和屏障统计
       </div>
     </div>
 
     <!-- 统计概览卡片 -->
-    <div class="stats-overview grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
-      <div class="stat-card healing flex items-center gap-4 p-5 bg-neutral-card rounded-xl border border-neutral-border">
-        <div class="stat-icon w-[52px] h-[52px] flex items-center justify-center rounded-xl bg-[linear-gradient(135deg,#22c55e,#16a34a)]">
-          <i class="pi pi-heart text-2xl text-white" />
+    <div class="stats-overview">
+      <div class="stat-card healing">
+        <div class="stat-icon">
+          <i class="pi pi-heart" />
         </div>
-        <div class="stat-info flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">总治疗量</span>
-          <span class="stat-value text-2xl font-bold text-neutral-text">{{ formatLargeNumber(totalHealing) }}</span>
-        </div>
-      </div>
-      <div class="stat-card barrier flex items-center gap-4 p-5 bg-neutral-card rounded-xl border border-neutral-border">
-        <div class="stat-icon w-[52px] h-[52px] flex items-center justify-center rounded-xl bg-[linear-gradient(135deg,#3b82f6,#1d4ed8)]">
-          <i class="pi pi-shield text-2xl text-white" />
-        </div>
-        <div class="stat-info flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">总屏障量</span>
-          <span class="stat-value text-2xl font-bold text-neutral-text">{{ formatLargeNumber(totalBarrier) }}</span>
+        <div class="stat-info">
+          <span class="stat-label">总治疗量</span>
+          <span class="stat-value">{{ formatLargeNumber(totalHealing) }}</span>
         </div>
       </div>
-      <div class="stat-card hps flex items-center gap-4 p-5 bg-neutral-card rounded-xl border border-neutral-border">
-        <div class="stat-icon w-[52px] h-[52px] flex items-center justify-center rounded-xl bg-[linear-gradient(135deg,#8b5cf6,#6d28d9)]">
-          <i class="pi pi-gauge text-2xl text-white" />
+      <div class="stat-card barrier">
+        <div class="stat-icon">
+          <i class="pi pi-shield" />
         </div>
-        <div class="stat-info flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">平均HPS</span>
-          <span class="stat-value text-2xl font-bold text-neutral-text">{{ formatLargeNumber(avgHps) }}</span>
+        <div class="stat-info">
+          <span class="stat-label">总屏障量</span>
+          <span class="stat-value">{{ formatLargeNumber(totalBarrier) }}</span>
         </div>
       </div>
-      <div class="stat-card overheal flex items-center gap-4 p-5 bg-neutral-card rounded-xl border border-neutral-border">
-        <div class="stat-icon w-[52px] h-[52px] flex items-center justify-center rounded-xl bg-[linear-gradient(135deg,#f59e0b,#d97706)]">
-          <i class="pi pi-chart-pie text-2xl text-white" />
+      <div class="stat-card hps">
+        <div class="stat-icon">
+          <i class="pi pi-gauge" />
         </div>
-        <div class="stat-info flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">过量治疗</span>
-          <span class="stat-value text-2xl font-bold text-neutral-text">{{ overhealPercent }}%</span>
+        <div class="stat-info">
+          <span class="stat-label">平均HPS</span>
+          <span class="stat-value">{{ formatLargeNumber(avgHps) }}</span>
+        </div>
+      </div>
+      <div class="stat-card overheal">
+        <div class="stat-icon">
+          <i class="pi pi-chart-pie" />
+        </div>
+        <div class="stat-info">
+          <span class="stat-label">过量治疗</span>
+          <span class="stat-value">{{ overhealPercent }}%</span>
         </div>
       </div>
     </div>
 
     <!-- 治疗/屏障分布图表 -->
-    <div class="chart-section bg-neutral-card rounded-xl border border-neutral-border p-5">
-      <div class="chart-header flex items-center justify-between mb-5">
-        <h3 class="chart-title text-base font-semibold text-neutral-text m-0">
+    <div class="chart-section">
+      <div class="chart-header">
+        <h3 class="chart-title">
           治疗与屏障分布
         </h3>
-        <div class="chart-tabs flex gap-2">
+        <div class="chart-tabs">
           <button
             v-for="tab in distributionTabs"
             :key="tab.key"
-            class="chart-tab py-2 px-3 border-none rounded-lg text-[0.8125rem] cursor-pointer transition-all duration-200"
-            :class="[
-              activeDistributionTab === tab.key
-                ? 'bg-[var(--color-accent)] text-white'
-                : 'bg-neutral-card-hover text-neutral-text-secondary hover:bg-neutral-border'
-            ]"
+            class="chart-tab"
+            :class="{ active: activeDistributionTab === tab.key }"
             @click="activeDistributionTab = tab.key"
           >
             {{ tab.label }}
@@ -74,33 +70,33 @@
         </div>
       </div>
       <div class="chart-container">
-        <div class="bar-chart flex flex-col gap-3">
+        <div class="bar-chart">
           <div
             v-for="(player, index) in sortedHealers.slice(0, 10)"
             :key="player.instanceID"
-            class="bar-item flex items-center gap-3"
+            class="bar-item"
           >
-            <div class="bar-rank w-7 h-7 flex items-center justify-center bg-neutral-card-hover rounded-full text-xs font-semibold text-neutral-text-secondary">
+            <div class="bar-rank">
               {{ index + 1 }}
             </div>
-            <div class="bar-info w-[150px] flex flex-col">
-              <span class="bar-name text-sm font-medium text-neutral-text">{{ player.name }}</span>
-              <span class="bar-profession text-xs text-neutral-text-secondary">{{ getProfessionName(player.profession) }}</span>
+            <div class="bar-info">
+              <span class="bar-name">{{ player.name }}</span>
+              <span class="bar-profession">{{ getProfessionName(player.profession) }}</span>
             </div>
-            <div class="bar-wrapper flex-1 h-5 bg-neutral-card-hover rounded-sm relative overflow-hidden">
+            <div class="bar-wrapper">
               <div
-                class="bar-fill absolute top-0 h-full transition-[width] duration-300 left-0 bg-[linear-gradient(90deg,#22c55e,#16a34a)] rounded-l-sm"
+                class="bar-fill healing-bar"
                 :style="{ width: getHealingPercent(player) + '%' }"
               />
               <div
-                class="bar-fill absolute top-0 h-full transition-[width] duration-300 bg-[linear-gradient(90deg,#3b82f6,#1d4ed8)] rounded-r-sm"
+                class="bar-fill barrier-bar"
                 :style="{
                   width: getBarrierPercent(player) + '%',
                   left: getHealingPercent(player) + '%'
                 }"
               />
             </div>
-            <div class="bar-value w-[100px] text-right text-sm font-semibold text-neutral-text">
+            <div class="bar-value">
               {{ formatLargeNumber(getPlayerHealing(player) + getPlayerBarrier(player)) }}
             </div>
           </div>
@@ -109,35 +105,35 @@
     </div>
 
     <!-- 治疗技能统计 -->
-    <div class="skill-section bg-neutral-card rounded-xl border border-neutral-border p-5">
-      <div class="section-header mb-4">
-        <h3 class="section-title flex items-center gap-2 text-lg font-semibold text-neutral-text m-0 mb-1">
-          <i class="pi pi-sword text-[var(--color-accent)]" />
+    <div class="skill-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-sword" />
           治疗技能统计
         </h3>
       </div>
-      <div class="skill-grid grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4">
+      <div class="skill-grid">
         <div
           v-for="skill in healingSkills"
           :key="skill.id"
-          class="skill-card bg-neutral-card-hover rounded-lg p-4"
+          class="skill-card"
         >
-          <div class="skill-header flex justify-between items-center mb-3">
-            <span class="skill-name text-sm font-semibold text-neutral-text">{{ skill.name }}</span>
-            <span class="skill-count text-xs text-green-500 font-medium">{{ skill.count }} 次</span>
+          <div class="skill-header">
+            <span class="skill-name">{{ skill.name }}</span>
+            <span class="skill-count">{{ skill.count }} 次</span>
           </div>
-          <div class="skill-stats flex gap-4">
-            <div class="skill-stat flex flex-col gap-0.5">
-              <span class="stat-label text-[0.7rem] text-[var(--color-text-tertiary)]">治疗量</span>
-              <span class="stat-value text-sm font-semibold text-neutral-text">{{ formatLargeNumber(skill.healing) }}</span>
+          <div class="skill-stats">
+            <div class="skill-stat">
+              <span class="stat-label">治疗量</span>
+              <span class="stat-value">{{ formatLargeNumber(skill.healing) }}</span>
             </div>
-            <div class="skill-stat flex flex-col gap-0.5">
-              <span class="stat-label text-[0.7rem] text-[var(--color-text-tertiary)]">过量%</span>
-              <span class="stat-value text-sm font-semibold text-neutral-text">{{ skill.overhealPercent }}%</span>
+            <div class="skill-stat">
+              <span class="stat-label">过量%</span>
+              <span class="stat-value">{{ skill.overhealPercent }}%</span>
             </div>
-            <div class="skill-stat flex flex-col gap-0.5">
-              <span class="stat-label text-[0.7rem] text-[var(--color-text-tertiary)]">目标数</span>
-              <span class="stat-value text-sm font-semibold text-neutral-text">{{ skill.targets }}</span>
+            <div class="skill-stat">
+              <span class="stat-label">目标数</span>
+              <span class="stat-value">{{ skill.targets }}</span>
             </div>
           </div>
         </div>
@@ -145,16 +141,16 @@
     </div>
 
     <!-- 玩家治疗详情表格 -->
-    <div class="table-section bg-neutral-card rounded-xl border border-neutral-border overflow-hidden">
-      <div class="section-header flex items-center justify-between p-4 px-5 bg-neutral-card-hover border-b border-neutral-border mb-0">
-        <h3 class="section-title flex items-center gap-2 text-lg font-semibold text-neutral-text m-0 mb-1">
-          <i class="pi pi-users text-[var(--color-accent)]" />
+    <div class="table-section">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-users" />
           玩家治疗详情
         </h3>
-        <div class="table-controls flex gap-3">
+        <div class="table-controls">
           <select
             v-model="sortBy"
-            class="sort-dropdown py-2 px-3 border border-neutral-border rounded-lg bg-neutral-card-hover text-neutral-text text-sm"
+            class="sort-dropdown"
           >
             <option value="healing">
               治疗量
@@ -171,51 +167,50 @@
           </select>
         </div>
       </div>
-      <div class="table-wrapper overflow-x-auto">
-        <table class="healing-table w-full border-collapse">
+      <div class="table-wrapper">
+        <table class="healing-table">
           <thead>
             <tr>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">#</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">玩家</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">职业</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">治疗量</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">屏障量</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">HPS</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">过量%</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">暴击%</th>
-              <th class="py-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider">治疗技能</th>
+              <th>#</th>
+              <th>玩家</th>
+              <th>职业</th>
+              <th>治疗量</th>
+              <th>屏障量</th>
+              <th>HPS</th>
+              <th>过量%</th>
+              <th>暴击%</th>
+              <th>治疗技能</th>
             </tr>
           </thead>
           <tbody>
             <tr
               v-for="(player, index) in sortedHealers"
               :key="player.instanceID"
-              class="hover:bg-neutral-card-hover transition-colors duration-200"
             >
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ index + 1 }}</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">
-                <div class="player-cell flex items-center gap-2">
+              <td>{{ index + 1 }}</td>
+              <td>
+                <div class="player-cell">
                   <img
                     :src="getProfIcon(player.profession)"
-                    class="player-avatar w-7 h-7 rounded-full"
+                    class="player-avatar"
                   >
-                  <span class="player-name text-sm font-medium text-neutral-text">{{ player.name }}</span>
+                  <span class="player-name">{{ player.name }}</span>
                 </div>
               </td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">
+              <td>
                 <span
-                  class="profession-badge py-1 px-2 rounded text-xs font-medium text-white"
+                  class="profession-badge"
                   :style="{ backgroundColor: getProfessionColor(player.profession) }"
                 >
                   {{ getProfessionName(player.profession) }}
                 </span>
               </td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ formatLargeNumber(getPlayerHealing(player)) }}</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ formatLargeNumber(getPlayerBarrier(player)) }}</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ formatLargeNumber(getPlayerHps(player)) }}</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ getPlayerOverhealPercent(player) }}%</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ getPlayerCritPercent(player) }}%</td>
-              <td class="py-3 px-4 text-left border-b border-neutral-border text-sm">{{ player.healingSkillsCount || '-' }}</td>
+              <td>{{ formatLargeNumber(getPlayerHealing(player)) }}</td>
+              <td>{{ formatLargeNumber(getPlayerBarrier(player)) }}</td>
+              <td>{{ formatLargeNumber(getPlayerHps(player)) }}</td>
+              <td>{{ getPlayerOverhealPercent(player) }}%</td>
+              <td>{{ getPlayerCritPercent(player) }}%</td>
+              <td>{{ player.healingSkillsCount || '-' }}</td>
             </tr>
           </tbody>
         </table>
@@ -339,3 +334,6 @@ function formatLargeNumber(num: number): string {
   return num.toString()
 }
 </script>
+
+<style scoped>@import './HealingExtension.css';</style>
+</style>

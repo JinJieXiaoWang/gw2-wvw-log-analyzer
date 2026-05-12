@@ -50,7 +50,7 @@
             {{ fmtSize(selectedFile.size) }}
           </p>
         </div>
-        <Button
+        <BaseButton
           label="开始测试"
           icon="pi pi-play"
           :loading="loading"
@@ -266,7 +266,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import ProgressSpinner from 'primevue/progressspinner'
 import { apiFactory } from '@/services/core/apiService'
 import { useToast } from 'primevue/usetoast'

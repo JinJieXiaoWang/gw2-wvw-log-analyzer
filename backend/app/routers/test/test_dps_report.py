@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 dps.report API 测试接口
 用于验证 EI 解析能力和响应速度
@@ -189,7 +189,7 @@ async def test_dps_report(file: UploadFile = File(...)):
         logger.error("[dps.report测试] 请求超时")
         return ApiResponse(
             success=False,
-            message="dps.report 请求超时（可能排队中?,
+            message="dps.report 请求超时（可能排队中?,",
             code=504,
             data=None,
         )

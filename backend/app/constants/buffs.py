@@ -23,7 +23,8 @@ STATIC_BUFF_NAMES = {
     13797: "Geomancy",
 }
 
-# EI JSON Buff ID ?内部关键字映射（用于战斗数据提取?BUFF_ID_MAP = {
+# EI JSON Buff ID ?内部关键字映射（用于战斗数据提取）
+BUFF_ID_MAP = {
     725: "might",
     726: "fury",
     740: "quickness",

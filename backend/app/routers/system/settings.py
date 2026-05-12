@@ -1,19 +1,22 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 模块功能：设置管理API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-27
-# 更新日期?2026-05-05 - 持久化层?app_config.json 迁移?sys_config ?
+# 创建日期：2026-04-27
+# 更新日期：2026-05-05 - 持久化层从 app_config.json 迁移到 sys_config 表
 # 依赖说明：FastAPI
-
-from fastapi import APIRouter, Depends
-from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 from app.models.auth.sys_user import SysUser
 from app.schemas.auth.common import ApiResponse
-from app.schemas.settings.settings import SettingsUpdate, build_settings_response, build_settings_response_from_defaults
+from app.schemas.settings.settings import (
+    SettingsUpdate,
+    build_settings_response,
+    build_settings_response_from_defaults,
+)
 from app.services.auth.auth_service import get_current_admin
 from app.services.system.sys_config_service import SysConfigService
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
 router = APIRouter(prefix="/settings", tags=["设置管理"])
 
@@ -36,7 +39,7 @@ async def update_settings(
     current_admin: SysUser = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    """更新系统设置（写?sys_config 表）"""
+    """更新系统设置（写入 sys_config 表）"""
     service = SysConfigService(db)
     update_data = settings_update.model_dump(exclude_unset=True)
 
@@ -55,7 +58,7 @@ async def reset_settings(
     current_admin: SysUser = Depends(get_current_admin),
     db: Session = Depends(get_db),
 ):
-    """重置为默认设?""
+    """重置为默认设置"""
     from app.services.system.sys_config_service import DEFAULT_CONFIGS
 
     service = SysConfigService(db)

@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-"""数据库修复工?""
+"""数据库修复工具"""
 
 import logging
 from typing import Any, Dict, List, Optional
@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 def _fix_server_defaults(engine):
     """
-    修复?MODIFY COLUMN 覆盖掉的 server_default（MySQL?
+    修复 MySQL 中通过?MODIFY COLUMN 覆盖掉的 server_default（MySQL 5.7+ 特性）
     
     策略：通过 INFORMATION_SCHEMA 读取当前列的完整定义?
     重建 ALTER TABLE ... MODIFY COLUMN ... 语句，确保不丢失任何现有属性?
@@ -256,18 +256,18 @@ def _log_initialization_summary(stats: Dict[str, Any]):
             logger.error(f"  - {error}")
 
     if not stats["errors"]:
-        logger.info("?数据库初始化成功?)
+        logger.info("✓ 数据库初始化成功")
     else:
-        logger.warning("⚠️ 数据库初始化完成，但有部分错?)
+        logger.warning("⚠️ 数据库初始化完成，但有部分错")
 
     logger.info("=" * 60)
 
 
 def _format_mysql_default(default_value: Any) -> str:
     """
-    ?MySQL INFORMATION_SCHEMA.COLUMNS.COLUMN_DEFAULT 格式化为 SQL DEFAULT 子句?
+    将 MySQL 中的 INFORMATION_SCHEMA.COLUMNS.COLUMN_DEFAULT 格式化为 SQL DEFAULT 子句?
     
-    关键处理?
+    关键处理：
     - CURRENT_TIMESTAMP / NULL ?不加引号
     - 数字 ?不加引号
     - 字符??加单引号并转?

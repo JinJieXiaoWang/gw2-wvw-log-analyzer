@@ -1,6 +1,6 @@
 /**
- * API服务层
- * 功能：提供标准化的API接口调用，包含请求拦截器和响应处理
+ * API 服务层
+ * 功能：提供标准化的 API 接口调用，包含请求拦截器和响应处理
  * 作者：System
  * 创建日期：2024-01-15
  */
@@ -10,6 +10,10 @@ import type { ApiResponse, ApiError, PaginationParams, PaginatedResponse } from 
 import { getToken, clearToken } from '@/utils/auth/tokenManager'
 
 export type { ApiResponse, ApiError, PaginationParams, PaginatedResponse }
+
+// 记录连续失败次数
+let consecutiveFailures = 0
+let hasTriggeredUnavailable = false
 
 class ApiFactory {
   private client: AxiosInstance
@@ -38,11 +42,41 @@ class ApiFactory {
 
     // 响应拦截器：统一错误处理和 401 处理
     this.client.interceptors.response.use(
-      (response) => response.data,
+      (response) => {
+        // 成功响应，重置失败计数
+        consecutiveFailures = 0
+        if (hasTriggeredUnavailable) {
+          hasTriggeredUnavailable = false
+          window.dispatchEvent(new CustomEvent('backend:available'))
+        }
+        return response.data
+      },
       (error) => {
         const response = error.response?.data || {}
         const message = response.message || error.message || '请求失败'
         
+        // 检测网络错误或连接失败
+        const isNetworkError = !error.response || 
+          error.code === 'ERR_NETWORK' ||
+          error.message?.includes('Network Error') ||
+          error.message?.includes('timeout') ||
+          error.response?.status === 0
+        
+        if (isNetworkError) {
+          consecutiveFailures++
+          
+          // 如果连续失败3次，触发服务不可用警告
+          if (consecutiveFailures >= 3 && !hasTriggeredUnavailable) {
+            hasTriggeredUnavailable = true
+            window.dispatchEvent(new CustomEvent('backend:unavailable', {
+              detail: { message: '无法连接到后端服务器，请检查服务是否正常运行' }
+            }))
+          }
+        } else {
+          // 有响应但出错，重置连续失败计数（服务是可用的）
+          consecutiveFailures = 0
+        }
+
         // 401 未授权：清除 Token 并触发登出事件，由应用层决定是否跳转
         // 避免在公开页面上因游客访问而强制跳转到登录页
         if (error.response?.status === 401) {
@@ -69,19 +103,19 @@ class ApiFactory {
     return this.client
   }
 
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.client.get(url, config)
   }
 
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.client.post(url, data, config)
   }
 
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.client.put(url, data, config)
   }
 
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
+  async delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<ApiResponse<T>> {
     return this.client.delete(url, config)
   }
 }

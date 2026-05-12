@@ -11,37 +11,37 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import text
 from app.config.settings import settings
 from app.config.database import init_db, get_db_context
-from app.services.auth_service import init_predefined_admin
+from app.services.auth.auth_service import init_predefined_admin
 import app.models  # 确保所有模型类注册到 Base.metadata
-from app.services.build_data_initializer import BuildDataInitializer
 from app.services.zevtc.batch_parse_service import start_workers, stop_workers
 from app.core.task_scheduler import start_scheduler, stop_scheduler
 from app.routers.auth import router as auth_router
-from app.routers.users import router as users_router
-from app.routers.monitor import router as monitor_router
+from app.routers.auth.users import router as users_router
+from app.routers.system.monitor import router as monitor_router
 from app.routers.logs import router as logs_router
-from app.routers.fights import router as fights_router
-from app.routers.ei_analysis import router as ei_analysis_router
-from app.routers.attendance import router as attendance_router
+from app.routers.logs.fights import router as fights_router
+from app.routers.logs.ei_analysis import router as ei_analysis_router
+from app.routers.scoring.attendance import router as attendance_router
 from app.routers.ai import router as ai_router
-from app.routers.dashboard import router as dashboard_router
+from app.routers.system.dashboard import router as dashboard_router
 
 from app.routers.scoring import router as scoring_router
-from app.routers.scoring_rules import router as scoring_rules_router
-from app.routers.game_data import router as game_data_router
-from app.routers.bdcode import router as bdcode_router
+from app.routers.scoring.scoring_rules import router as scoring_rules_router
+from app.routers.game import router as game_data_router
+from app.routers.game.bdcode import router as bdcode_router
+from app.routers.game.professions import router as professions_router
 from app.routers.dictionary import router as dictionary_router
-from app.routers.settings import router as settings_router
-from app.routers.monitoring import router as monitoring_router
+from app.routers.system.settings import router as settings_router
+from app.routers.system.monitoring import router as monitoring_router
 from app.routers.storage import router as storage_router
-from app.routers.builds import router as builds_router
-from app.routers.test_dps_report import router as test_dps_report_router
-from app.routers.memory_monitor import router as memory_monitor_router
-from app.routers.notice import router as notice_router
-from app.routers.config import router as config_router
+from app.routers.game.builds import router as builds_router
+from app.routers.test.test_dps_report import router as test_dps_report_router
+from app.routers.system.memory_monitor import router as memory_monitor_router
+from app.routers.system.notice import router as notice_router
+from app.routers.system.config import router as config_router
 from app.utils.logger import logger
-from app.utils.exceptions import AppException
-from app.utils.exception_handler import register_exception_handlers
+from app.utils.error.exceptions import AppException
+from app.utils.error.exception_handler import register_exception_handlers
 
 
 @asynccontextmanager
@@ -71,53 +71,11 @@ async def lifespan(app: FastAPI):
             if lock_acquired:
                 logger.info("获取初始化锁成功，开始执行数据初始化")
                 try:
-                    init_predefined_admin(db)
-                    logger.info("预置管理员账号初始化完成")
+                    # 统一数据初始化入口（包含所有数据初始化）
+                    from app.data.init_all import initialize_all
 
-                    # 初始化字典数据
-                    from app.database.dict_init import DictionaryDataInitializer
-
-                    dict_init = DictionaryDataInitializer(db)
-                    dict_result = dict_init.init_all_dictionaries()
-                    logger.info(f"字典数据初始化完成: {dict_result}")
-
-                    # 加载字典缓存
-                    from app.utils.dict_utils import load_all_dictionaries
-
-                    load_all_dictionaries(db)
-                    logger.info("字典缓存加载完成")
-
-                    # 初始化评分规则（如果表为空）
-                    from app.services.scoring_rule_service import ScoringRuleService
-
-                    scoring_service = ScoringRuleService(db)
-                    scoring_init = scoring_service.init_default_rules_if_empty()
-                    if scoring_init["initialized"]:
-                        logger.info(f"评分规则初始化完成: {scoring_init}")
-                    else:
-                        logger.info(f"评分规则已存在，跳过初始化: {scoring_init}")
-
-                    # 初始化评分规则版本表
-                    version_init = scoring_service.init_version_if_empty()
-                    if version_init["initialized"]:
-                        logger.info(f"评分规则版本表初始化完成: {version_init}")
-                    else:
-                        logger.info(f"评分规则版本表已存在，跳过初始化: {version_init}")
-
-                    # 从 professions.json 导入默认职业特定规则
-                    profession_init = scoring_service.init_profession_rules_from_json()
-                    if profession_init["initialized"]:
-                        logger.info(f"职业特定规则初始化完成: {profession_init}")
-                    else:
-                        logger.info(f"职业特定规则已存在或无需初始化: {profession_init}")
-
-                    # 初始化 Build 图书馆数据（表为空时自动导入 GW2.txt）
-                    build_init = BuildDataInitializer(db)
-                    build_result = build_init.init_builds()
-                    if build_result["initialized"]:
-                        logger.info(f"Build 图书馆数据初始化完成: 导入 {build_result['count']} 条配置")
-                    elif build_result["errors"]:
-                        logger.warning(f"Build 图书馆数据初始化有警告: {build_result['errors']}")
+                    init_result = initialize_all(db)
+                    logger.info(f"统一数据初始化完成: {init_result}")
                 finally:
                     try:
                         db.execute(text("SELECT RELEASE_LOCK('gw2_init_lock')"))
@@ -166,6 +124,7 @@ app.include_router(logs_router, prefix=settings.API_PREFIX)
 app.include_router(ai_router, prefix=settings.API_PREFIX)
 app.include_router(dashboard_router, prefix=settings.API_PREFIX)
 app.include_router(game_data_router, prefix=settings.API_PREFIX)
+app.include_router(professions_router, prefix=settings.API_PREFIX)
 
 app.include_router(bdcode_router)
 app.include_router(attendance_router, prefix=settings.API_PREFIX)

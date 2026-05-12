@@ -1,6 +1,12 @@
 /* === 样式入口文件 === */
 
+/* PrimeVue v4 核心主题 */
+/* @import './primeuix/themes/aura'; */
+/* 图标库 */
+@import 'primeicons/primeicons.css';
+
 /* 统一CSS变量系统（包含PrimeVue/Aura桥接） */
+/* 确保是这一行，而不是旧版的 @tailwind base; 等 */
 @import './variablesUnified.css';
 
 /* 基础样式 */

@@ -12,8 +12,8 @@ from sqlalchemy import and_, desc
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
-from app.models.log import Log
-from app.models.storage import StorageCleanupRecord, StorageMonitorRecord
+from app.models.log.log import Log
+from app.models.system.storage import StorageCleanupRecord, StorageMonitorRecord
 from app.utils.logger import logger
 
 

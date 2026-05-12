@@ -56,7 +56,7 @@ def check_login_attempts(username: str, client_ip: str) -> Optional[str]:
         attempt_data = login_attempts[key]
         if attempt_data["locked_until"] and now < attempt_data["locked_until"]:
             remaining = int((attempt_data["locked_until"] - now).total_seconds() // 60)
-            return f"账户已锁定，请{remaining}分钟后重?
+            return f"账户已锁定，请{remaining}分钟后重试"
         if attempt_data["attempts"] >= MAX_LOGIN_ATTEMPTS:
             login_attempts[key]["locked_until"] = now + LOCKOUT_DURATION
             login_attempts[key]["attempts"] = 0
@@ -91,15 +91,15 @@ def authenticate_admin(db: Session, username: str, password: str, client_ip: str
         logger.warning(f"登录失败：{lockout_msg} - {username}")
         return {"locked": lockout_msg}
     if not admin:
-        logger.warning(f"登录失败：用户名不存?- {username}")
+        logger.warning(f"登录失败：用户名不存在 - {username}")
         return None
     if not verify_password(password, admin.password_hash):
-        logger.warning(f"登录失败：密码错?- {username}")
+        logger.warning(f"登录失败：密码错误 - {username}")
         return None
     reset_login_attempts(username, client_ip)
     admin.last_login = datetime.now(UTC)
     db.commit()
-    logger.info(f"管理员登录成? {username}")
+    logger.info(f"管理员登录成功: {username}")
     return admin
 
 
@@ -108,7 +108,7 @@ def create_admin(db: Session, username: str, password: str) -> SysUser:
     db.add(admin)
     db.commit()
     db.refresh(admin)
-    logger.info(f"管理员创建成? {username}")
+    logger.info(f"管理员创建成功: {username}")
     return admin
 
 
@@ -135,7 +135,7 @@ def decode_access_token(token: str) -> Optional[dict]:
         )
         return payload
     except jwt.ExpiredSignatureError:
-        logger.warning("JWT token已过?)
+        logger.warning("JWT token已过期")
         return None
     except jwt.InvalidTokenError:
         logger.warning("JWT token无效")
@@ -151,7 +151,7 @@ def change_admin_password(db: Session, admin_id: int, current_password: str, new
     admin.password_hash = get_password_hash(new_password)
     admin.token_version = (admin.token_version or 0) + 1
     db.commit()
-    logger.info(f"管理员密码修改成? {admin.username}")
+    logger.info(f"管理员密码修改成功: {admin.username}")
     return True
 
 
@@ -173,9 +173,9 @@ def init_predefined_admin(db: Session) -> SysUser:
         PREDEFINED_PASSWORD = secrets.token_urlsafe(16)
         password_source = "随机生成"
         logger.warning("=" * 60)
-        logger.warning("【安全提示】ADMIN_INITIAL_PASSWORD 未在 .env 中配置)
-        logger.warning("系统已自动生成随机强密码，请妥善保存?)
-        logger.warning(f"  用户?: {PREDEFINED_USERNAME}")
+        logger.warning("【安全提示】ADMIN_INITIAL_PASSWORD 未在 .env 中配置")
+        logger.warning("系统已自动生成随机强密码，请妥善保存")
+        logger.warning(f"  用户名: {PREDEFINED_USERNAME}")
         logger.warning(f"  密码   : {PREDEFINED_PASSWORD}")
         logger.warning("=" * 60)
     else:
@@ -193,9 +193,9 @@ def init_predefined_admin(db: Session) -> SysUser:
                 existing_admin.token_version = (existing_admin.token_version or 0) + 1
                 updated = True
                 logger.warning("=" * 60)
-                logger.warning("【密码同步】ADMIN_PASSWORD_SYNC 已启?)
-                logger.warning(f"预置管理?{PREDEFINED_USERNAME} 的密码已更新为配置?)
-                logger.warning("所有现有登录令牌已失效，请使用新密码重新登?)
+                logger.warning("【密码同步】ADMIN_PASSWORD_SYNC 已启用")
+                logger.warning(f"预置管理员 {PREDEFINED_USERNAME} 的密码已更新为配置值")
+                logger.warning("所有现有登录令牌已失效，请使用新密码重新登录")
                 logger.warning("=" * 60)
         if updated:
             db.commit()
@@ -239,20 +239,20 @@ async def get_current_admin(
     authorization: str = Header(None), db: Session = Depends(get_db)
 ) -> SysUser:
     if not authorization:
-        raise UnauthorizedException(detail="未提供认证令?)
+        raise UnauthorizedException(detail="未提供认证令牌")
     if not authorization.startswith("Bearer "):
-        raise UnauthorizedException(detail="无效的认证令牌格?)
+        raise UnauthorizedException(detail="无效的认证令牌格式")
     token = authorization[7:]
     payload = decode_access_token(token)
     if not payload or "sub" not in payload:
-        raise UnauthorizedException(detail="无效的认证令?)
+        raise UnauthorizedException(detail="无效的认证令牌")
     admin_id = int(payload.get("sub"))
     admin = get_admin_by_id(db, admin_id)
     if not admin or not admin.is_active:
-        raise UnauthorizedException(detail="用户不存在或已禁?)
+        raise UnauthorizedException(detail="用户不存在或已禁用")
     token_version = payload.get("tv")
     if token_version is not None and token_version != (admin.token_version or 0):
-        raise UnauthorizedException(detail="认证令牌已失效，请重新登?)
+        raise UnauthorizedException(detail="认证令牌已失效，请重新登录")
     return admin
 
 
@@ -291,30 +291,30 @@ def change_admin_password_with_validation(
     new_password: str,
     confirm_password: Optional[str] = None,
 ) -> None:
-    """修改管理员密码（包含完整校验逻辑?
+    """修改管理员密码（包含完整校验逻辑）
 
     Args:
-        db: 数据库会?
-        admin: 当前管理员对?
+        db: 数据库会话
+        admin: 当前管理员对象
         current_password: 当前密码
-        new_password: 新密?
+        new_password: 新密码
         confirm_password: 确认密码（可选）
 
     Raises:
-        BadRequestException: 校验失败时抛?
+        BadRequestException: 校验失败时抛出
     """
     if not current_password:
-        raise BadRequestException(detail="请提供当前密?)
+        raise BadRequestException(detail="请提供当前密码")
     if confirm_password is not None and new_password != confirm_password:
-        raise BadRequestException(detail="两次输入的密码不一?)
+        raise BadRequestException(detail="两次输入的密码不一致")
     if len(new_password) < 6:
-        raise BadRequestException(detail="新密码长度至??)
+        raise BadRequestException(detail="新密码长度至少6位")
     if not verify_password(current_password, admin.password_hash):
         raise BadRequestException(detail="当前密码错误")
     admin.password_hash = get_password_hash(new_password)
     admin.token_version = (admin.token_version or 0) + 1
     db.commit()
-    logger.info(f"用户 {admin.username} 修改了密?)
+    logger.info(f"用户 {admin.username} 修改了密码")
 
 
 def require_permission(permission: str):

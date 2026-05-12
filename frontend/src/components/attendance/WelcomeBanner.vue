@@ -16,24 +16,23 @@
           </div>
         </div>
         <div class="flex gap-3">
-          <Button
+          <BaseButton
             label="评分规则"
             icon="pi pi-chart-line"
-            class="btn-ghost"
+            variant="ghost"
             size="small"
             @click="emit('view-scoring-rules')"
           />
-          <Button
+          <BaseButton
             label="导出Excel"
             icon="pi pi-file-excel"
-            class="btn-game"
-            severity="secondary"
+            variant="secondary"
             @click="exportExcel"
           />
-          <Button
+          <BaseButton
             label="导出CSV"
             icon="pi pi-file-pdf"
-            class="btn-game"
+            variant="game"
             @click="exportCSV"
           />
         </div>
@@ -50,7 +49,7 @@
  * 创建日期：2026-04-27
  */
 
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 // Emits
 const emit = defineEmits<{

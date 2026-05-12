@@ -12,14 +12,10 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div
-    class="card p-4 bg-gradient-to-r from-neutral-card to-neutral-bg-secondary
-           border-neutral-border/50 rounded-xl">
+  <div class="card p-4 bg-gradient-to-r from-neutral-card to-neutral-bg-secondary border-neutral-border/50 rounded-xl">
     <div class="flex flex-wrap items-center justify-between gap-4">
       <div class="flex flex-wrap items-center gap-6">
-        <div
-          class="flex items-center gap-2 group cursor-pointer hover:text-primary
-                 transition-colors">
+        <div class="flex items-center gap-2 group cursor-pointer hover:text-primary transition-colors">
           <div class="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
             <i class="pi pi-clock text-primary" />
           </div>
@@ -32,9 +28,7 @@ const props = defineProps<{
             </p>
           </div>
         </div>
-        <div
-          class="flex items-center gap-2 group cursor-pointer hover:text-primary
-                 transition-colors">
+        <div class="flex items-center gap-2 group cursor-pointer hover:text-primary transition-colors">
           <div class="p-2 rounded-lg bg-success/10 group-hover:bg-success/20 transition-colors">
             <i class="pi pi-users text-success" />
           </div>
@@ -47,9 +41,7 @@ const props = defineProps<{
             </p>
           </div>
         </div>
-        <div
-          class="flex items-center gap-2 group cursor-pointer hover:text-primary
-                 transition-colors">
+        <div class="flex items-center gap-2 group cursor-pointer hover:text-primary transition-colors">
           <div class="p-2 rounded-lg bg-info/10 group-hover:bg-info/20 transition-colors">
             <i class="pi pi-map text-info" />
           </div>
@@ -62,9 +54,7 @@ const props = defineProps<{
             </p>
           </div>
         </div>
-        <div
-          class="flex items-center gap-2 group cursor-pointer hover:text-primary
-                 transition-colors">
+        <div class="flex items-center gap-2 group cursor-pointer hover:text-primary transition-colors">
           <div class="p-2 rounded-lg bg-secondary/10 group-hover:bg-secondary/20 transition-colors">
             <i class="pi pi-calendar text-secondary" />
           </div>

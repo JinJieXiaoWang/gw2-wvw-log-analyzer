@@ -6,7 +6,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/scoring/scoringRulesService'
+import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/core/scoringRulesService'
 import { dictionaryService, type ProfessionCascade } from '@/services/system/dictionaryService'
 import { configManager } from '@/services/core/configManager'
 import { ROLE_ICON_MAP, ROLE_GRADIENT_MAP, DEFAULT_ROLE_TYPES, DIMENSION_ICONS, DIMENSION_COLORS } from '@/utils/combat/scoringConstants'

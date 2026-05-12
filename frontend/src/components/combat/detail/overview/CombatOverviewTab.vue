@@ -52,8 +52,7 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
         <div
           v-for="(count, prof) in summary?.profession_distribution"
           :key="prof"
-            class="flex flex-col items-center p-2 rounded-lg bg-neutral-bg/50
-                   hover:bg-neutral-bg-secondary transition-all"
+          class="flex flex-col items-center p-2 rounded-lg bg-neutral-bg/50 hover:bg-neutral-bg-secondary transition-all"
         >
           <span
             class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mb-1"
@@ -93,8 +92,7 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
           class="flex items-center gap-4"
         >
           <span
-            class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                   text-white flex-shrink-0"
+            class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white flex-shrink-0"
             :style="{ backgroundColor: groupColor(g.id) }"
           >{{ g.id }}</span>
           <div class="flex-1 min-w-0">

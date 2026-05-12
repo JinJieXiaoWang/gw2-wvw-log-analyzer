@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：出勤数据导出服?# 作者：系统
-# 创建日期?2026-05-12
+# 模块功能：出勤数据导出服务
+# 作者：系统
+# 创建日期：2026-05-12
 # 依赖说明：pandas, openpyxl
 
 import csv
@@ -17,7 +18,7 @@ async def export_account_detail(
     account_name: str,
     export_format: str = "csv",
 ) -> StreamingResponse:
-    """导出账号出勤详情?Excel ?CSV 格式
+    """导出账号出勤详情Excel 或 CSV 格式
 
     Args:
         detail_data: 账号详情数据
@@ -25,7 +26,8 @@ async def export_account_detail(
         export_format: 导出格式，csv ?excel
 
     Returns:
-        StreamingResponse: 文件流响?    """
+        StreamingResponse: 文件流响应
+    """
     if export_format.lower() == "excel":
         return _export_excel(detail_data, account_name)
     else:
@@ -33,7 +35,7 @@ async def export_account_detail(
 
 
 def _export_excel(detail_data: dict, account_name: str) -> StreamingResponse:
-    """导出?Excel 格式"""
+    """导出账号出勤详情Excel 格式"""
     output = BytesIO()
     writer = pd.ExcelWriter(output, engine="openpyxl")
 
@@ -41,8 +43,8 @@ def _export_excel(detail_data: dict, account_name: str) -> StreamingResponse:
         "账号": detail_data.get("summary", {}).get("account_name", ""),
         "出勤天数": detail_data.get("summary", {}).get("attendance_count", 0),
         "参战次数": detail_data.get("summary", {}).get("fight_count", 0),
-        "总时??": detail_data.get("summary", {}).get("total_duration_sec", 0),
-        "总伤?: detail_data.get("summary", {}).get("total_damage", 0),
+        "总时长": detail_data.get("summary", {}).get("total_duration_sec", 0),
+        "总伤害": detail_data.get("summary", {}).get("total_damage", 0),
         "平均评分": detail_data.get("summary", {}).get("avg_score", 0),
     }])
     summary_df.to_excel(writer, sheet_name="摘要", index=False)
@@ -55,7 +57,7 @@ def _export_excel(detail_data: dict, account_name: str) -> StreamingResponse:
     recent_fights = detail_data.get("recent_fights", [])
     if recent_fights:
         fights_df = pd.DataFrame(recent_fights)
-        fights_df.to_excel(writer, sheet_name="最近战?, index=False)
+        fights_df.to_excel(writer, sheet_name="最近战斗记录", index=False)
 
     writer.close()
     output.seek(0)
@@ -70,16 +72,16 @@ def _export_excel(detail_data: dict, account_name: str) -> StreamingResponse:
 
 
 def _export_csv(detail_data: dict, account_name: str) -> StreamingResponse:
-    """导出?CSV 格式"""
+    """导出账号出勤详情CSV 格式"""
     output = StringIO()
     writer = csv.writer(output)
 
-    writer.writerow(["字段", "?])
+    writer.writerow(["字段", "值"])
     writer.writerow(["账号", detail_data.get("summary", {}).get("account_name", "")])
     writer.writerow(["出勤天数", detail_data.get("summary", {}).get("attendance_count", 0)])
     writer.writerow(["参战次数", detail_data.get("summary", {}).get("fight_count", 0)])
-    writer.writerow(["总时??", detail_data.get("summary", {}).get("total_duration_sec", 0)])
-    writer.writerow(["总伤?, detail_data.get("summary", {}).get("total_damage", 0)])
+    writer.writerow(["总时长", detail_data.get("summary", {}).get("total_duration_sec", 0)])
+    writer.writerow(["总伤害", detail_data.get("summary", {}).get("total_damage", 0)])
     writer.writerow(["平均评分", detail_data.get("summary", {}).get("avg_score", 0)])
 
     output.seek(0)

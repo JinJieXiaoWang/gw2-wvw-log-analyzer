@@ -1,9 +1,0 @@
-{
-  "version": "1.0.0",
-  "last_updated": "2026-04-27",
-  "description": "GW2 WvW日志系统游戏数据",
-  "data_files": {
-    "professions": "职业与精英特长数据",
-    "buffs": "Buff效果数据"
-  }
-}

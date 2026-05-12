@@ -72,7 +72,7 @@ class EiGraphDataResponse(ApiResponse):
 # 导入请求/响应
 # =====================================================================
 class EiImportRequest(BaseModel):
-    html_path: str = Field(..., description="EI HTML 文件路径（服务器本地路径?)
+    html_path: str = Field(..., description="EI HTML 文件路径（服务器本地路径）")
     report_type: str = Field("detailed_wvw", description="报告类型")
 
 

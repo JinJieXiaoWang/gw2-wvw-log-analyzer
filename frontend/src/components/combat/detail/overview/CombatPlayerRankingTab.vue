@@ -70,8 +70,7 @@ const emit = defineEmits<{
         <div
           v-for="p in summary.enemy_players.slice(0, 10)"
           :key="p.id"
-            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-error/10 border
-                   border-error/20"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-error/10 border border-error/20"
         >
           <img
             :src="getProfessionIconUrl(p.profession)"

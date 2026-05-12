@@ -93,14 +93,11 @@ const getScoreClass = (score: number | null | undefined) => {
         <div
           v-for="g in groups"
           :key="g.id"
-            class="p-3 rounded-lg bg-neutral-bg/50 border border-transparent
-                   hover:border-primary/20 transition-all"
+          class="p-3 rounded-lg bg-neutral-bg/50 border border-transparent hover:border-primary/20 transition-all"
         >
           <div class="flex items-center justify-between mb-2">
             <div class="flex items-center gap-2">
-              <span
-                class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center
-                       justify-center font-bold">
+              <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">
                 {{ g.id }}
               </span>
               <span class="text-sm text-neutral-text">小队 {{ g.id }}</span>

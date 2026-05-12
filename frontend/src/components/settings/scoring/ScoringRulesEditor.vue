@@ -1,13 +1,10 @@
 <template>
-  <div
-    class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-2xl p-6 shadow-lg">
+  <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-6 shadow-lg">
     <!-- 头部 -->
     <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-5">
       <div class="flex items-center gap-4">
         <div
-          class="w-12 h-12 rounded-lg flex items-center justify-center text-xl text-white
-                 shadow-lg shrink-0"
+          class="w-12 h-12 rounded-lg flex items-center justify-center text-xl text-white shadow-lg shrink-0"
           :style="{ background: `linear-gradient(135deg, ${roleColors[activeRole]}, ${roleGradients[activeRole]})`, boxShadow: `0 8px 24px -8px ${roleColors[activeRole]}` }"
         >
           <i :class="activeRoleIcon" />
@@ -23,8 +20,7 @@
           <div class="flex items-center gap-3 mt-1 flex-wrap">
             <span class="text-sm text-color-secondary">权重总和</span>
             <div
-              class="flex items-baseline gap-1 px-3 py-0.5 rounded-full text-sm font-bold
-                     transition-colors"
+              class="flex items-baseline gap-1 px-3 py-0.5 rounded-full text-sm font-bold transition-colors"
               :class="weightStatusClass === 'optimal' ? 'bg-green-500/10 text-green-500' : weightStatusClass === 'warning' ? 'bg-orange-500/10 text-orange-500' : 'bg-red-500/10 text-red-500'"
             >
               <span class="text-base">{{ totalWeight.toFixed(2) }}</span>
@@ -80,9 +76,7 @@
     </div>
 
     <!-- 权重可视化条 -->
-    <div
-      class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full mb-5
-             overflow-hidden">
+    <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full mb-5 overflow-hidden">
       <div
         class="h-full rounded-full transition-all duration-300"
         :class="weightStatusClass === 'optimal' ? 'bg-green-500' : weightStatusClass === 'warning' ? 'bg-orange-500' : 'bg-red-500'"

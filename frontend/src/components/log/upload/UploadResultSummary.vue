@@ -1,16 +1,35 @@
 <template>
-  <div v-if="complete && files.length > 0" class="mt-4 p-4 rounded-xl border" :class="resultClass">
+  <div
+    v-if="complete && files.length > 0"
+    class="mt-4 p-4 rounded-xl border"
+    :class="resultClass"
+  >
     <div class="flex items-center gap-2 mb-2">
-      <i class="text-lg" :class="iconClass" />
+      <i
+        class="text-lg"
+        :class="iconClass"
+      />
       <span class="font-semibold text-neutral-text">{{ resultTitle }}</span>
     </div>
     <div class="text-sm text-neutral-text-secondary space-y-1">
       <p>成功: <span class="text-status-success font-medium">{{ successCount }}</span> 个</p>
-      <p v-if="failedCount > 0">ʧ败: <span class="text-status-error font-medium">{{ failedCount }}</span> 个</p>
-      <div v-if="failedItems.length > 0" class="mt-2">
-        <p class="text-xs text-status-error">ʧ败文件:</p>
+      <p v-if="failedCount > 0">
+        ʧ败: <span class="text-status-error font-medium">{{ failedCount }}</span> 个
+      </p>
+      <div
+        v-if="failedItems.length > 0"
+        class="mt-2"
+      >
+        <p class="text-xs text-status-error">
+          ʧ败文件:
+        </p>
         <ul class="text-xs text-status-error mt-1 space-y-0.5 max-h-24 overflow-y-auto">
-          <li v-for="item in failedItems" :key="item.name">{{ item.name }}: {{ item.error }}</li>
+          <li
+            v-for="item in failedItems"
+            :key="item.name"
+          >
+            {{ item.name }}: {{ item.error }}
+          </li>
         </ul>
       </div>
     </div>

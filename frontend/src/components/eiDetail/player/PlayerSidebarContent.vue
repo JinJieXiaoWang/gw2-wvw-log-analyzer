@@ -158,4 +158,4 @@ function fmt(num: number) {
 }
 </script>
 
-
+<style scoped>@import './PlayerDetailSidebar.css';</style>

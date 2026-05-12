@@ -9,10 +9,7 @@
         v-model="form.username"
         type="text"
         placeholder="请输入用户名"
-          class="w-full px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 bg-slate-700/50 border
-                 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2
-                 focus:ring-blue-500 focus:border-blue-500 transition-all text-base
-                 sm:text-lg"
+        class="w-full px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 bg-slate-700/50 border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-lg"
         :class="errors.username ? 'border-red-500' : 'border-slate-600'"
         :disabled="loading"
         @blur="emit('validateUsername')"
@@ -38,10 +35,7 @@
         v-model="form.password"
         type="password"
         placeholder="请输入密码"
-          class="w-full px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 bg-slate-700/50 border
-                 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2
-                 focus:ring-blue-500 focus:border-blue-500 transition-all text-base
-                 sm:text-lg"
+        class="w-full px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 bg-slate-700/50 border rounded-xl text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-base sm:text-lg"
         :class="errors.password ? 'border-red-500' : 'border-slate-600'"
         :disabled="loading"
         @blur="emit('validatePassword')"
@@ -72,12 +66,7 @@
     <button
       type="submit"
       :disabled="loading || !isValid"
-        class="w-full py-3 sm:py-4 px-6 bg-gradient-to-r from-blue-600 to-blue-700
-               hover:from-blue-500 hover:to-blue-600 disabled:from-slate-600
-               disabled:to-slate-600 disabled:cursor-not-allowed text-white font-semibold
-               rounded-xl transition-all duration-200 flex items-center justify-center
-               gap-2 text-base sm:text-lg shadow-lg shadow-blue-500/25
-               hover:shadow-blue-500/40"
+      class="w-full py-3 sm:py-4 px-6 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2 text-base sm:text-lg shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40"
     >
       <svg
         v-if="loading"

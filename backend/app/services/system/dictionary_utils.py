@@ -3,7 +3,7 @@
 
 from typing import Any, Dict, Optional
 
-from app.models.game_data.dictionary import SysDictData, SysDictType
+from app.models.game.dictionary import SysDictData, SysDictType
 
 
 def dict_type_to_dict(dict_type: SysDictType) -> Dict[str, Any]:

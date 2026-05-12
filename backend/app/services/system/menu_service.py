@@ -1,6 +1,6 @@
-﻿# 模块功能：菜单管理服?
+﻿# 模块功能：菜单管理服务
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-05-11
+# 创建日期：2026-05-11
 # 依赖说明：SQLAlchemy, Pydantic, Cache
 
 from typing import Dict, List, Optional, Tuple
@@ -18,7 +18,7 @@ CACHE_TTL = 3600
 
 
 class MenuService:
-    """菜单管理服务?""
+    """菜单管理服务"""
 
     def __init__(self, db: Session):
         self.db = db
@@ -34,10 +34,10 @@ class MenuService:
             SysMenu.parent_id == parent_id
         ).first()
         if existing:
-            raise ValueError(f"菜单名称 '{menu_name}' 已存?)
+            raise ValueError(f"菜单名称 '{menu_name}' 已存在")
 
         if parent_id != 0 and not self.get_menu_by_id(parent_id):
-            raise ValueError(f"父菜单ID {parent_id} 不存?)
+            raise ValueError(f"父菜单ID {parent_id} 不存在")
 
         menu = SysMenu(
             menu_name=menu_name,
@@ -86,12 +86,12 @@ class MenuService:
                 SysMenu.menu_id != menu_id
             ).first()
             if existing:
-                raise ValueError(f"菜单名称 '{new_name}' 已存?)
+                raise ValueError(f"菜单名称 '{new_name}' 已存在")
 
         new_parent_id = menu_update.get("parent_id")
         if new_parent_id is not None and new_parent_id != menu.parent_id:
             if new_parent_id != 0 and not self.get_menu_by_id(new_parent_id):
-                raise ValueError(f"父菜单ID {new_parent_id} 不存?)
+                raise ValueError(f"父菜单ID {new_parent_id} 不存在")
 
         fields = [
             "menu_name", "parent_id", "order_num", "path", "component",
@@ -111,7 +111,7 @@ class MenuService:
         return menu
 
     def delete_menu(self, menu_id: int) -> bool:
-        """删除菜单（级联删除子菜单?""
+        """删除菜单（级联删除子菜单）"""
         menu = self.get_menu_by_id(menu_id)
         if not menu:
             return False
@@ -153,7 +153,7 @@ class MenuService:
         return total, items
 
     def get_all_menus(self) -> List[SysMenu]:
-        """获取所有菜单（按父ID和排序号排序?""
+        """获取所有菜单（按父ID和排序号排序）"""
         cache_key = f"{CACHE_PREFIX}all"
         cached = self.cache.get(cache_key)
         if cached:
@@ -210,7 +210,7 @@ class MenuService:
         return any(perm in user_permissions for perm in required_perms)
 
     def get_all_permissions(self) -> List[str]:
-        """获取所有权限标?""
+        """获取所有权限标识"""
         permissions = set()
         for menu in self.get_all_menus():
             if menu.perms:
@@ -219,7 +219,7 @@ class MenuService:
         return sorted(list(permissions))
 
     def sync_permissions(self, role: str) -> List[str]:
-        """同步用户角色的权限列表（从菜单表获取?""
+        """同步用户角色的权限列表（从菜单表获取）"""
         if role == "super_admin":
             return self.get_all_permissions()
         permissions = set()
@@ -229,11 +229,11 @@ class MenuService:
         return sorted(list(permissions))
 
     def _clear_cache(self):
-        """清除所有菜单相关缓?""
+        """清除所有菜单相关缓存"""
         keys_to_delete = [key for key in self.cache.cache if key.startswith(CACHE_PREFIX)]
         for key in keys_to_delete:
             self.cache.delete(key)
-        logger.debug("菜单缓存已清?)
+        logger.debug("菜单缓存已清除")
 
     def batch_update_menus(self, menus_data: List[dict], update_by: str = "") -> int:
         """批量更新菜单"""
@@ -252,7 +252,7 @@ class MenuService:
             updated_count += 1
         if updated_count > 0:
             self.db.commit()
-            logger.info(f"批量更新菜单成功: {updated_count} ?)
+            logger.info(f"批量更新菜单成功: {updated_count} 条")
             self._clear_cache()
         return updated_count
 
@@ -286,7 +286,7 @@ class MenuService:
         return menu.menu_id, True
 
     def init_default_menus(self, init_by: str = "system") -> int:
-        """初始化默认菜单数据""
+        """初始化默认菜单数据"""
         key_to_id = {}
         created_count = 0
 
@@ -312,5 +312,5 @@ class MenuService:
 
         self.db.commit()
         self._clear_cache()
-        logger.info(f"初始化默认菜单完成，共创?{created_count} 条菜?)
+        logger.info(f"初始化默认菜单完成，共创建 {created_count} 条菜单")
         return created_count

@@ -2,55 +2,55 @@
   <div class="tab-content">
     <div
       v-if="isLoading"
-      class="loading-content flex flex-col items-center justify-center p-12 gap-4"
+      class="loading-content"
     >
       <i class="pi pi-spin pi-spinner text-2xl text-primary" />
-      <span class="loading-text text-sm">正在加载循环数据...</span>
+      <span class="loading-text">正在加载循环数据...</span>
     </div>
     <div
       v-else-if="error"
-      class="error-content flex flex-col items-center justify-center p-12 gap-4"
+      class="error-content"
     >
       <i class="pi pi-exclamation-triangle text-2xl text-status-error" />
-      <span class="error-text text-sm text-status-error">{{ error }}</span>
+      <span class="error-text">{{ error }}</span>
     </div>
     <div
       v-else
       class="rotation-content"
     >
-      <h4 class="section-title flex items-center gap-2 text-sm font-semibold text-neutral-text-secondary uppercase tracking-[0.05em] m-[0 0 0.875rem 0]">
-        <i class="pi pi-repeat text-primary" />
+      <h4 class="section-title">
+        <i class="pi pi-repeat" />
         技能循环序列
       </h4>
-      <div class="rotation-timeline relative pl-6 mb-6">
+      <div class="rotation-timeline">
         <div
           v-for="(action, index) in data"
           :key="index"
-          class="timeline-item relative p-[0.75rem 0] pl-4 flex items-start gap-3"
+          class="timeline-item"
           :class="{ 'is-ideal': action.isIdeal }"
         >
-          <div class="timeline-dot absolute left-[-28px] top-[50%] -translate-y-1/2 w-5 h-5 flex items-center justify-center bg-neutral-bg-secondary rounded-full text-xs text-neutral-text-secondary">
+          <div class="timeline-dot">
             <i :class="action.icon" />
           </div>
-          <div class="timeline-content flex-1 min-w-0">
-            <div class="timeline-header flex justify-between items-center gap-2 mb-1 max-sm:flex-col max-sm:items-start">
-              <span class="timeline-skill text-[0.9375rem] font-semibold text-neutral-text">{{ action.skillName }}</span>
-              <span class="timeline-time text-xs text-neutral-text-secondary whitespace-nowrap">{{ action.timestamp }}</span>
+          <div class="timeline-content">
+            <div class="timeline-header">
+              <span class="timeline-skill">{{ action.skillName }}</span>
+              <span class="timeline-time">{{ action.timestamp }}</span>
             </div>
-            <div class="timeline-type text-xs text-neutral-text-secondary">
+            <div class="timeline-type">
               {{ action.type }}
             </div>
           </div>
         </div>
       </div>
-      <div class="rotation-stats flex gap-6 p-4 bg-neutral-bg-secondary rounded-lg">
-        <div class="rotation-stat flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">循环准确率</span>
-          <span class="stat-value text-lg font-bold text-success">{{ accuracy }}%</span>
+      <div class="rotation-stats">
+        <div class="rotation-stat">
+          <span class="stat-label">循环准确率</span>
+          <span class="stat-value rotation-accuracy">{{ accuracy }}%</span>
         </div>
-        <div class="rotation-stat flex flex-col gap-1">
-          <span class="stat-label text-xs text-neutral-text-secondary">理想循环匹配</span>
-          <span class="stat-value text-lg font-bold text-neutral-text">{{ idealMatches }}/{{ totalActions }}</span>
+        <div class="rotation-stat">
+          <span class="stat-label">理想循环匹配</span>
+          <span class="stat-value">{{ idealMatches }}/{{ totalActions }}</span>
         </div>
       </div>
     </div>
@@ -140,6 +140,40 @@ watch(() => player, () => {
 </script>
 
 <style scoped>
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.875rem 0;
+}
+.section-title i {
+  color: var(--color-primary);
+}
+.loading-content, .error-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  gap: 1rem;
+}
+.loading-text, .error-text {
+  font-size: 0.875rem;
+}
+.error-text {
+  color: var(--color-error);
+}
+.rotation-timeline {
+  position: relative;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--color-border);
+  margin-bottom: 1.5rem;
+}
 .rotation-timeline::before, .rotation-timeline::after {
   content: '';
   position: absolute;
@@ -156,12 +190,91 @@ watch(() => player, () => {
   bottom: 0;
   background-color: var(--color-border);
 }
+.timeline-item {
+  position: relative;
+  padding: 0.75rem 0;
+  padding-left: 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
 .timeline-item:not(:last-child) {
   border-bottom: 1px dashed var(--color-border);
+}
+.timeline-dot {
+  position: absolute;
+  left: -28px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-bg-secondary);
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
 }
 .timeline-item.is-ideal .timeline-dot {
   background-color: var(--color-success);
   border-color: var(--color-success);
   color: white;
+}
+.timeline-content {
+  flex: 1;
+  min-width: 0;
+}
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+.timeline-skill {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.timeline-time {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+.timeline-type {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.rotation-stats {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.5rem;
+}
+.rotation-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.rotation-stat .stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.rotation-stat .stat-value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.rotation-stat .stat-value.rotation-accuracy {
+  color: var(--color-success);
+}
+@media (max-width: 640px) {
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

@@ -4,9 +4,7 @@
     class="mt-5"
   >
     <div
-      class="bg-surface-100 dark:bg-surface-800 border-2 border-dashed
-             border-surface-300 dark:border-surface-600 rounded-xl p-5 transition-colors
-             hover:border-primary-400 hover:bg-primary-500/5"
+      class="bg-surface-100 dark:bg-surface-800 border-2 border-dashed border-surface-300 dark:border-surface-600 rounded-xl p-5 transition-colors hover:border-primary-400 hover:bg-primary-500/5"
     >
       <div class="flex items-center gap-2 mb-4 font-semibold text-color-secondary">
         <i class="pi pi-plus-circle text-primary-500" />

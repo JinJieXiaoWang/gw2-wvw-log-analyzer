@@ -1,12 +1,9 @@
 <template>
   <div
-    class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-2xl p-5 shadow-sm"
+    class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm"
   >
     <div class="flex items-center gap-3 mb-4">
-      <div
-        class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex
-               items-center justify-center">
+      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
         <i class="pi pi-trash text-white" />
       </div>
       <div>
@@ -15,13 +12,9 @@
       </div>
     </div>
     <div class="space-y-4">
-      <div
-        class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-               rounded-lg">
+      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
         <div class="flex items-center gap-3">
-          <div
-            class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100
-                   dark:bg-emerald-900/30">
+          <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-bars text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
@@ -38,13 +31,9 @@
           @blur="markChanged('cache_menu_ttl')"
         />
       </div>
-      <div
-        class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-               rounded-lg">
+      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
         <div class="flex items-center gap-3">
-          <div
-            class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100
-                   dark:bg-emerald-900/30">
+          <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-sync text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
@@ -57,13 +46,9 @@
           @change="markChanged('auto_cleanup_enabled')"
         />
       </div>
-      <div
-        class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800
-               rounded-lg">
+      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
         <div class="flex items-center gap-3">
-          <div
-            class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100
-                   dark:bg-emerald-900/30">
+          <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-calendar text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>

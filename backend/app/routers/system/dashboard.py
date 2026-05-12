@@ -1,9 +1,9 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 模块功能：数据看板API路由 v2.0
 # 作者：系统
-# 创建日期?2026-04-27
-# 更新日期?2026-05-12
-# 说明：基?fights / fight_stats / members / evtc_log 真实数据模型重构
+# 创建日期：2026-04-27
+# 更新日期：2026-05-12
+# 说明：基于 fights / fight_stats / members / evtc_log 真实数据模型重构
 
 from typing import Any, Dict, List, Optional
 
@@ -30,16 +30,16 @@ async def get_overview(
 ):
     """获取数据看板核心KPI概览
 
-    返回指标?
-    - total_fights: 总战斗场?
-    - total_participations: 总参与人?
-    - total_damage: 总伤?
-    - total_healing: 总治?
-    - active_accounts: 活跃账号?
+    返回指标：
+    - total_fights: 总战斗场次
+    - total_participations: 总参与人次
+    - total_damage: 总伤害
+    - total_healing: 总治疗
+    - active_accounts: 活跃账号数
     - total_characters: 角色总数
-    - parsed_logs: 解析日志?
+    - parsed_logs: 解析日志数
     - avg_ai_score: 平均AI评分
-    - change: 环比变化（fights/damage/healing/accounts?
+    - change: 环比变化（fights/damage/healing/accounts）
     """
     data = dashboard_service.get_overview(db, days)
     return ApiResponse(success=True, message="获取概览成功", data=data)
@@ -64,14 +64,14 @@ async def get_trends(
     Args:
         metric: 指标类型
             - fights: 每日战斗场次
-            - damage: 每日总伤?
-            - healing: 每日总治?
-            - kills: 每日击杀?
-            - active_accounts: 每日活跃账号?
+            - damage: 每日总伤害
+            - healing: 每日总治疗
+            - kills: 每日击杀数
+            - active_accounts: 每日活跃账号数
 
     Returns:
         dates: 日期列表
-        values: 对应数值列?
+        values: 对应数值列表
     """
     data = dashboard_service.get_trends(db, days, metric)
     return ApiResponse(success=True, message="获取趋势成功", data=data)
@@ -91,10 +91,10 @@ async def get_profession_distribution(
     days: int = Query(30, ge=1, le=365, description="统计天数"),
     db: Session = Depends(get_db),
 ):
-    """获取职业分布数据（饼?柱状图用?
+    """获取职业分布数据（饼图/柱状图用）
 
-    按角色最新战斗的职业统计，不因转职而拆分同一角色?
-    返回每个职业的出场角色数和总伤害?
+    按角色最新战斗的职业统计，不因转职而拆分同一角色
+    返回每个职业的出场角色数和总伤害
     """
     data = dashboard_service.get_profession_distribution(db, days)
     return ApiResponse(success=True, message="获取职业分布成功", data=data)
@@ -112,10 +112,10 @@ async def get_map_stats(
 ):
     """获取地图统计（出场热度）
 
-    返回各地图的?
+    返回各地图的：
     - fight_count: 战斗场次
     - avg_duration_sec: 平均时长
-    - total_damage: 总伤?
+    - total_damage: 总伤害
     - avg_player_count: 平均参与人数
     """
     data = dashboard_service.get_map_stats(db, days)
@@ -138,16 +138,16 @@ async def get_top_players(
     limit: int = Query(20, ge=1, le=100, description="返回数量"),
     db: Session = Depends(get_db),
 ):
-    """获取玩家排行（按 account 维度聚合?
+    """获取玩家排行（按 account 维度聚合）
 
     返回每个账号的：
-    - fight_count: 参与战斗?
-    - total_damage: 总伤?
+    - fight_count: 参与战斗数
+    - total_damage: 总伤害
     - avg_dps: 平均DPS
-    - total_healing: 总治?
-    - total_kills: 击杀?
-    - total_deaths: 死亡?
-    - kd_ratio: K/D?
+    - total_healing: 总治疗
+    - total_kills: 击杀数
+    - total_deaths: 死亡数
+    - kd_ratio: K/D比
     - avg_ai_score: 平均AI评分
     """
     data = dashboard_service.get_top_players(db, days, sort_by, limit)
@@ -155,38 +155,38 @@ async def get_top_players(
 
 
 # =====================================================================
-# 6. 最近战?
+# 6. 最近战斗
 # =====================================================================
 
-@router.get("/recent-fights", response_model=ApiResponse, summary="获取最近战?)
+@router.get("/recent-fights", response_model=ApiResponse, summary="获取最近战斗")
 @handle_api_errors
 async def get_recent_fights(
     limit: int = Query(10, ge=1, le=50, description="返回数量"),
     db: Session = Depends(get_db),
 ):
-    """获取最近战斗记?
+    """获取最近战斗记录
 
-    返回最近的上传日志中的战斗记录?
+    返回最近的上传日志中的战斗记录列表
     """
     data = dashboard_service.get_recent_fights(db, limit)
-    return ApiResponse(success=True, message="获取最近战斗成?, data=data)
+    return ApiResponse(success=True, message="获取最近战斗成功", data=data)
 
 
 # =====================================================================
-# 7. 解析状态分?
+# 7. 解析状态分布
 # =====================================================================
 
 @router.get(
-    "/parse-status", response_model=ApiResponse, summary="获取解析状态分?
+    "/parse-status", response_model=ApiResponse, summary="获取解析状态分布"
 )
 @handle_api_errors
 async def get_parse_status(db: Session = Depends(get_db)):
-    """获取日志解析状态分?
+    """获取日志解析状态分布
 
-    返回各解析状态（pending/parsing/completed/failed/partial）的占比?
+    返回各解析状态（pending/parsing/completed/failed/partial）的占比
     """
     data = dashboard_service.get_parse_status_distribution(db)
-    return ApiResponse(success=True, message="获取解析状态成?, data=data)
+    return ApiResponse(success=True, message="获取解析状态成功", data=data)
 
 
 # =====================================================================
@@ -205,7 +205,7 @@ async def get_ai_score_distribution(
 ):
     """获取AI评分分布
 
-    ?S(90-100) / A(80-90) / B(70-80) / C(60-70) / D(0-60) 分段统计?
+    按 S(90-100) / A(80-90) / B(70-80) / C(60-70) / D(0-60) 分段统计
     """
     data = dashboard_service.get_ai_score_distribution(db, days)
     return ApiResponse(success=True, message="获取评分分布成功", data=data)
@@ -215,15 +215,15 @@ async def get_ai_score_distribution(
 # 9. Buff 概览
 # =====================================================================
 
-@router.get("/buff-overview", response_model=ApiResponse, summary="获取Buff覆盖率概?)
+@router.get("/buff-overview", response_model=ApiResponse, summary="获取Buff覆盖率概览")
 @handle_api_errors
 async def get_buff_overview(
     days: int = Query(30, ge=1, le=365, description="统计天数"),
     db: Session = Depends(get_db),
 ):
-    """获取平均 Buff 覆盖率概?
+    """获取平均 Buff 覆盖率概览
 
-    返回 might / fury / quickness / alacrity / protection / stability 的平均覆盖率?
+    返回 might / fury / quickness / alacrity / protection / stability 的平均覆盖率
     """
     data = dashboard_service.get_buff_overview(db, days)
     return ApiResponse(success=True, message="获取Buff概览成功", data=data)

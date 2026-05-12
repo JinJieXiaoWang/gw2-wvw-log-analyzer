@@ -4,8 +4,7 @@
       <div
         v-for="(k, idx) in data.kpiList"
         :key="k.label"
-          class="card p-4 rounded-xl border border-neutral-border/50 hover:border-primary/30
-                 transition-all hover:shadow-lg group"
+        class="card p-4 rounded-xl border border-neutral-border/50 hover:border-primary/30 transition-all hover:shadow-lg group"
         :class="k.bg"
         :style="{ animationDelay: `${idx * 100}ms` }"
       >
@@ -40,8 +39,7 @@
         <div
           v-for="s in statCards"
           :key="s.key"
-            class="card p-3 rounded-xl border hover:shadow-lg transition-all cursor-pointer
-                   flex flex-col items-center"
+          class="card p-3 rounded-xl border hover:shadow-lg transition-all cursor-pointer flex flex-col items-center"
           :class="[s.border, s.bg]"
           @click="emit('open-stat-detail', s.category, s.dialogTitle)"
         >
@@ -281,7 +279,6 @@ import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
 import { getProfessionColor, getProfessionName } from '@/utils/profession/professionUtils'
 import { computed, ref } from 'vue'
 import FightPlayerStatsTable from '@/components/combat/detail/tables/FightPlayerStatsTable.vue'
-import { Colors } from '@/config/designTokens'
 
 interface OverviewData {
   summary: EiAnalysisResponse | null
@@ -309,12 +306,12 @@ const statCards = computed(() => {
   const sa = d.statAverages
   return [
     { type: 'multi-ring' as const, key: 'damage', label: '输出伤害', category: 'damage_output' as StatCategory, dialogTitle: '输出伤害统计', value: fmtCompact(d.donut.total), icon: 'pi pi-chart-pie', color: 'primary', border: 'border-primary/20', bg: 'bg-gradient-to-br from-primary/5 to-transparent' },
-    { type: 'ring' as const, key: 'protection', label: '保护', category: 'protection' as StatCategory, dialogTitle: '保护覆盖率', value: sa.protection.toFixed(0) + '%', icon: 'pi pi-shield', color: 'info', ringColor: Colors.palette.blue, percent: sa.protection, border: 'border-info/20', bg: 'bg-gradient-to-br from-info/5 to-transparent' },
-    { type: 'ring' as const, key: 'stability', label: '稳固', category: 'stability' as StatCategory, dialogTitle: '稳固覆盖率', value: sa.stability.toFixed(0) + '%', icon: 'pi pi-lock', color: 'warning', ringColor: Colors.palette.amber, percent: sa.stability, border: 'border-warning/20', bg: 'bg-gradient-to-br from-warning/5 to-transparent' },
+    { type: 'ring' as const, key: 'protection', label: '保护', category: 'protection' as StatCategory, dialogTitle: '保护覆盖率', value: sa.protection.toFixed(0) + '%', icon: 'pi pi-shield', color: 'info', ringColor: '#3b82f6', percent: sa.protection, border: 'border-info/20', bg: 'bg-gradient-to-br from-info/5 to-transparent' },
+    { type: 'ring' as const, key: 'stability', label: '稳固', category: 'stability' as StatCategory, dialogTitle: '稳固覆盖率', value: sa.stability.toFixed(0) + '%', icon: 'pi pi-lock', color: 'warning', ringColor: '#f59e0b', percent: sa.stability, border: 'border-warning/20', bg: 'bg-gradient-to-br from-warning/5 to-transparent' },
     { type: 'icon' as const, key: 'cleanses', label: '清症', category: 'condition_cleanses' as StatCategory, dialogTitle: '清症统计', value: fmtCompact(d.agg.total_condition_cleanses), icon: 'pi pi-heart', color: 'success', border: 'border-success/20', bg: 'bg-gradient-to-br from-success/5 to-transparent' },
     { type: 'icon' as const, key: 'strips', label: '削增益', category: 'boon_strips' as StatCategory, dialogTitle: '削增益统计', value: fmtCompact(d.agg.total_boon_strips), icon: 'pi pi-minus-circle', color: 'error', border: 'border-error/20', bg: 'bg-gradient-to-br from-error/5 to-transparent' },
     { type: 'icon' as const, key: 'taken', label: '承伤', category: 'damage_taken' as StatCategory, dialogTitle: '承伤统计', value: fmtCompact(d.agg.total_damage_taken), icon: 'pi pi-exclamation-triangle', color: 'secondary', border: 'border-secondary/20', bg: 'bg-gradient-to-br from-secondary/5 to-transparent' },
-    { type: 'ring' as const, key: 'hitRate', label: '命中率', category: 'hitRate' as StatCategory, dialogTitle: '命中率统计', value: sa.hitRate.toFixed(1) + '%', icon: 'pi pi-bolt', color: 'primary', ringColor: Colors.primary.DEFAULT, percent: sa.hitRate, border: 'border-primary/20', bg: 'bg-gradient-to-br from-primary/5 to-transparent' },
+    { type: 'ring' as const, key: 'hitRate', label: '命中率', category: 'hitRate' as StatCategory, dialogTitle: '命中率统计', value: sa.hitRate.toFixed(1) + '%', icon: 'pi pi-bolt', color: 'primary', ringColor: '#165DFF', percent: sa.hitRate, border: 'border-primary/20', bg: 'bg-gradient-to-br from-primary/5 to-transparent' },
     { type: 'icon' as const, key: 'control', label: '击倒', category: 'control' as StatCategory, dialogTitle: '击倒与控制能力统计', value: String(d.agg.total_downed || 0), icon: 'pi pi-arrow-down', color: 'warning', border: 'border-warning/20', bg: 'bg-gradient-to-br from-warning/5 to-transparent' },
     { type: 'icon' as const, key: 'efficiency', label: '施法占比', category: 'efficiency' as StatCategory, dialogTitle: '技能效率统计', value: (sa.skillCastUptime?.toFixed(0) ?? '0') + '%', icon: 'pi pi-cog', color: 'secondary', border: 'border-secondary/20', bg: 'bg-gradient-to-br from-secondary/5 to-transparent' },
     { type: 'icon' as const, key: 'position', label: '堆叠距离', category: 'position' as StatCategory, dialogTitle: '位置协同统计', value: sa.stackDist?.toFixed(0) ?? '0', icon: 'pi pi-map-marker', color: 'info', border: 'border-info/20', bg: 'bg-gradient-to-br from-info/5 to-transparent' },

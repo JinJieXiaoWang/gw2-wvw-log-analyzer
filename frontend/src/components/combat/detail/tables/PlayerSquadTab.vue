@@ -18,9 +18,7 @@
     <!-- 主内容区 -->
     <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
       <!-- 宸︿晶锛氭帓行榜 -->
-      <div
-        class="xl:col-span-3 card rounded-xl border-neutral-border/50 overflow-hidden flex
-               flex-col h-full">
+      <div class="xl:col-span-3 card rounded-xl border-neutral-border/50 overflow-hidden flex flex-col h-full">
         <div class="p-4 border-b border-neutral-border/50 flex-shrink-0">
           <h4 class="text-sm font-semibold text-neutral-text flex items-center gap-2">
             <i

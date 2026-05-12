@@ -2,17 +2,14 @@
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
     <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2
-             translate-x-1/4 pointer-events-none opacity-30"
+      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-success-alpha-10) 0%, transparent 70%)"
     />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-        <div
-          class="w-12 h-12 rounded-xl bg-gradient-to-br from-success/20 to-primary/10 flex
-                 items-center justify-center border border-success/20">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-success/20 to-primary/10 flex items-center justify-center border border-success/20">
           <i class="pi pi-file-export text-status-success text-xl" />
         </div>
         <div>
@@ -41,8 +38,7 @@
             <div
               v-for="format in exportFormats"
               :key="format.id"
-                class="group relative p-4 bg-neutral-bg rounded-xl cursor-pointer text-center
-                       border-2 transition-all duration-200 hover:-translate-y-0.5"
+              class="group relative p-4 bg-neutral-bg rounded-xl cursor-pointer text-center border-2 transition-all duration-200 hover:-translate-y-0.5"
               :class="exportSettings.defaultFormat === format.id
                 ? 'border-primary shadow-lg shadow-primary/10'
                 : 'border-transparent hover:border-neutral-border-light'"
@@ -51,14 +47,12 @@
               <!-- 选中指示器 -->
               <div
                 v-if="exportSettings.defaultFormat === format.id"
-                  class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex
-                         items-center justify-center shadow-md"
+                class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md"
               >
                 <i class="pi pi-check text-white text-[10px]" />
               </div>
               <div
-                class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2
-                       transition-all duration-200"
+                class="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-2 transition-all duration-200"
                 :class="exportSettings.defaultFormat === format.id ? 'bg-primary/15' : 'bg-neutral-card group-hover:bg-primary/5'"
               >
                 <i

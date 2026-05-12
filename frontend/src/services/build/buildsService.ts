@@ -1,6 +1,6 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
 
 export interface BuildsListParams {
   page?: number

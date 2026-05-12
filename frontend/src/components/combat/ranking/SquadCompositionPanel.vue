@@ -1,9 +1,7 @@
 <template>
   <div class="space-y-4">
     <!-- 指挥官区域 -->
-    <div
-      class="card p-4 rounded-xl border-yellow-500/20 bg-gradient-to-br
-             from-yellow-500/5 to-transparent">
+    <div class="card p-4 rounded-xl border-yellow-500/20 bg-gradient-to-br from-yellow-500/5 to-transparent">
       <h4 class="text-sm font-semibold text-neutral-text mb-3 flex items-center gap-2">
         <div class="p-1 rounded bg-yellow-500/20">
           <i class="pi pi-star-fill text-yellow-500 text-xs" />
@@ -14,9 +12,7 @@
         <div
           v-for="cmd in commanders"
           :key="cmd.id"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border
-                   border-yellow-500/30 hover:border-yellow-500/50 transition-all
-                   cursor-pointer"
+          class="flex items-center gap-2 px-3 py-2 rounded-lg bg-yellow-500/10 border border-yellow-500/30 hover:border-yellow-500/50 transition-all cursor-pointer"
           @click="$emit('open-player-dialog', cmd)"
         >
           <img
@@ -35,8 +31,7 @@
         </div>
         <div
           v-if="commanders.length === 0"
-            class="flex items-center gap-2 text-neutral-text-secondary text-xs px-3 py-2
-                   rounded-lg bg-neutral-bg-secondary"
+          class="flex items-center gap-2 text-neutral-text-secondary text-xs px-3 py-2 rounded-lg bg-neutral-bg-secondary"
         >
           <i class="pi pi-info-circle" />
           <span>无指挥官</span>
@@ -56,8 +51,7 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span
-              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                     text-white"
+              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
               :style="{ backgroundColor: groupColor(g.id) }"
             >{{ g.id || '?' }}</span>
             <span class="text-sm font-semibold text-neutral-text">小队 {{ g.id || '未分组' }}</span>
@@ -91,16 +85,14 @@
             >
             <div
               v-if="p.has_commander_tag"
-                class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-500 rounded-full flex
-                       items-center justify-center"
+              class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-500 rounded-full flex items-center justify-center"
             >
               <i class="pi pi-star-fill text-[6px] text-yellow-900" />
             </div>
           </div>
           <div
             v-if="g.players.length > 5"
-              class="w-6 h-6 rounded-full bg-neutral-bg flex items-center justify-center
-                     text-[10px] text-neutral-text-secondary"
+            class="w-6 h-6 rounded-full bg-neutral-bg flex items-center justify-center text-[10px] text-neutral-text-secondary"
           >
             +{{ g.players.length - 5 }}
           </div>
@@ -142,8 +134,7 @@
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-2">
             <span
-              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                     bg-neutral-bg text-neutral-text-secondary"
+              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold bg-neutral-bg text-neutral-text-secondary"
             >?</span>
             <span class="text-sm font-semibold text-neutral-text-secondary">未分组 ({{ ungroupedPlayers.length }})</span>
           </div>
@@ -156,23 +147,20 @@
           >
             <img
               :src="getProfessionIconUrl(p.profession)"
-                class="w-6 h-6 rounded-full border border-neutral-border/50 cursor-pointer
-                       hover:border-primary/50 transition-colors"
+              class="w-6 h-6 rounded-full border border-neutral-border/50 cursor-pointer hover:border-primary/50 transition-colors"
               :alt="getProfessionName(p.profession)"
               @click="$emit('open-player-dialog', p)"
             >
             <div
               v-if="p.has_commander_tag"
-                class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-500 rounded-full flex
-                       items-center justify-center"
+              class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-yellow-500 rounded-full flex items-center justify-center"
             >
               <i class="pi pi-star-fill text-[6px] text-yellow-900" />
             </div>
           </div>
           <div
             v-if="ungroupedPlayers.length > 8"
-              class="w-6 h-6 rounded-full bg-neutral-bg flex items-center justify-center
-                     text-[10px] text-neutral-text-secondary"
+            class="w-6 h-6 rounded-full bg-neutral-bg flex items-center justify-center text-[10px] text-neutral-text-secondary"
           >
             +{{ ungroupedPlayers.length - 8 }}
           </div>

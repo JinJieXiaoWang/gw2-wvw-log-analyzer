@@ -1,19 +1,36 @@
 <template>
   <div class="view-mode-bar">
     <div class="mode-tabs">
-      <button class="mode-tab" :class="{ active: viewMode === 'simple' }" @click="$emit('update:viewMode', 'simple')">
+      <button
+        class="mode-tab"
+        :class="{ active: viewMode === 'simple' }"
+        @click="$emit('update:viewMode', 'simple')"
+      >
         <i class="pi pi-th-large" /> 简单循环
       </button>
-      <button class="mode-tab" :class="{ active: viewMode === 'advanced' }" @click="$emit('update:viewMode', 'advanced')">
+      <button
+        class="mode-tab"
+        :class="{ active: viewMode === 'advanced' }"
+        @click="$emit('update:viewMode', 'advanced')"
+      >
         <i class="pi pi-chart-bar" /> 高级时间轴
       </button>
     </div>
-    <div v-if="viewMode === 'simple'" class="simple-filters">
+    <div
+      v-if="viewMode === 'simple'"
+      class="simple-filters"
+    >
       <label class="filter-check">
-        <input v-model="localShowAuto" type="checkbox"> <span>显示普攻</span>
+        <input
+          v-model="localShowAuto"
+          type="checkbox"
+        > <span>显示普攻</span>
       </label>
       <label class="filter-check">
-        <input v-model="localShowInstant" type="checkbox"> <span>显示瞬发</span>
+        <input
+          v-model="localShowInstant"
+          type="checkbox"
+        > <span>显示瞬发</span>
       </label>
     </div>
   </div>

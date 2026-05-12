@@ -31,17 +31,17 @@ export interface Fight {
 export interface FightStats {
   fightId: string
   totalDamage: number
-  totalHealing: number
+  totalDamageTaken: number
   totalDeaths: number
   totalKills: number
+  totalDowned: number
   averageDamage: number
-  averageHealing: number
   winRate: number
   playerStats: Array<{
     accountName: string
     profession: string
     damage: number
-    healing: number
+    damageTaken: number
     deaths: number
     kills: number
     downed: number

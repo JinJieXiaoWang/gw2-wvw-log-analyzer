@@ -14,13 +14,15 @@ class LogBase(BaseModel):
 
 
 class LogCreate(LogBase):
-    # 功能：日志创建模型（内部使用?    file_path: str
+    # 功能：日志创建模型（内部使用?
+    file_path: str
     file_size_compressed: Optional[int] = None
     file_size_raw: Optional[int] = None
 
 
 class LogUpdate(BaseModel):
-    # 功能：日志更新模型    parse_status: Optional[str] = None
+    # 功能：日志更新模型
+    parse_status: Optional[str] = None
     parse_time_ms: Optional[int] = None
     parsed_at: Optional[datetime] = None
     error_message: Optional[str] = None
@@ -28,7 +30,8 @@ class LogUpdate(BaseModel):
 
 
 class LogResponse(LogBase):
-    # 功能：日志响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：日志响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     log_uuid: Optional[str] = None
@@ -47,11 +50,13 @@ class LogResponse(LogBase):
 
 
 class LogDetailResponse(LogResponse):
-    # 功能：日志详情响应模型    fights: List["FightResponse"] = []
+    # 功能：日志详情响应模型
+    fights: List["FightResponse"] = []
 
 
 class LogListResponse(BaseModel):
-    # 功能：日志列表响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：日志列表响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     items: List[LogResponse]
     total: int
@@ -60,7 +65,8 @@ class LogListResponse(BaseModel):
 
 
 class ParseProgressResponse(BaseModel):
-    # 功能：解析进度响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：解析进度响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     stage: str
     progress: int
@@ -73,7 +79,8 @@ class ParseProgressResponse(BaseModel):
 
 
 class ParseResultResponse(BaseModel):
-    # 功能：解析结果响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：解析结果响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     success: bool
     log_id: int
@@ -84,7 +91,8 @@ class ParseResultResponse(BaseModel):
 
 
 class PlayerStatsResponse(BaseModel):
-    # 功能：玩家统计响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：玩家统计响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     account_name: str
     name: str
@@ -108,7 +116,8 @@ class PlayerStatsResponse(BaseModel):
 
 
 class FightInfoResponse(BaseModel):
-    # 功能：战斗信息响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：战斗信息响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     map_name: str
     server_name: str
@@ -125,7 +134,8 @@ class FightInfoResponse(BaseModel):
 
 
 class BuffUptimeResponse(BaseModel):
-    # 功能：BUFF覆盖率响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：BUFF覆盖率响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     buff_name: str
     uptime_ms: int
@@ -133,7 +143,8 @@ class BuffUptimeResponse(BaseModel):
 
 
 class SkillRotationResponse(BaseModel):
-    # 功能：技能循环响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：技能循环响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     skill_id: int
     skill_name: str
@@ -142,7 +153,8 @@ class SkillRotationResponse(BaseModel):
 
 
 class ValidationReportResponse(BaseModel):
-    # 功能：数据验证报告响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：数据验证报告响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     passed: bool
     errors: List[str]

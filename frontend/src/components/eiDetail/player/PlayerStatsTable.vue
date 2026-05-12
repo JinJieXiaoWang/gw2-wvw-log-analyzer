@@ -1,13 +1,13 @@
 <template>
-  <div class="player-stats-table bg-neutral-card rounded-[var(--radius-lg)] p-[var(--spacing-lg)] shadow-[var(--shadow-card)]">
-    <div class="table-header flex flex-col items-start gap-[var(--spacing-md)] md:flex-row md:justify-between md:items-center mb-[var(--spacing-lg)]">
-      <h3 class="table-title text-[var(--font-size-lg)] font-semibold text-neutral-text flex items-center gap-[var(--spacing-sm)]">
+  <div class="player-stats-table">
+    <div class="table-header">
+      <h3 class="table-title">
         <i class="pi pi-list" />
         玩家统计
       </h3>
-      <div class="table-tools flex gap-[var(--spacing-md)]">
-        <div class="sort-selector flex items-center gap-[var(--spacing-sm)]">
-          <span class="label text-[var(--font-size-sm)] text-neutral-text-secondary">排序:</span>
+      <div class="table-tools">
+        <div class="sort-selector">
+          <span class="label">排序:</span>
           <Button
             v-for="sort in sortOptions"
             :key="sort.key"
@@ -20,120 +20,120 @@
       </div>
     </div>
 
-    <div class="table-container overflow-x-auto">
-      <table class="w-full border-collapse">
+    <div class="table-container">
+      <table>
         <thead>
           <tr>
-            <th class="rank-col w-12 p-[var(--spacing-md)] text-left text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="rank-col">
               #
             </th>
-            <th class="player-col min-w-[200px] p-[var(--spacing-md)] text-left text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="player-col">
               玩家
             </th>
-            <th class="prof-col w-[100px] p-[var(--spacing-md)] text-left text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="prof-col">
               职业
             </th>
-            <th class="score-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="score-col">
               评分
             </th>
-            <th class="dmg-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="dmg-col">
               总伤害
             </th>
-            <th class="dps-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="dps-col">
               DPS
             </th>
-            <th class="power-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="power-col">
               直伤
             </th>
-            <th class="condi-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="condi-col">
               症状
             </th>
-            <th class="cc-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="cc-col">
               CC
             </th>
-            <th class="down-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="down-col">
               倒地
             </th>
-            <th class="death-col text-right p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border">
+            <th class="death-col">
               死亡
             </th>
-            <th class="actions-col w-12 text-center p-[var(--spacing-md)] text-[var(--font-size-xs)] font-semibold text-neutral-text-secondary uppercase tracking-wide border-b-2 border-neutral-border" />
+            <th class="actions-col" />
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="(player, index) in sortedPlayers"
             :key="player.instanceID"
-            class="player-row border-b border-neutral-border-light transition-colors duration-200 hover:bg-[var(--color-hover)]"
+            class="player-row"
             :class="{
-              'bg-[var(--color-selected)]': selectedId === player.instanceID,
-              'bg-[rgba(255,193,7,0.1)]': player.hasCommanderTag
+              selected: selectedId === player.instanceID,
+              commander: player.hasCommanderTag
             }"
             @click="$emit('select-player', player.instanceID)"
           >
-            <td class="rank-col w-12 p-[var(--spacing-md)] text-[var(--font-size-sm)]">
+            <td class="rank-col">
               <span
-                class="rank-badge inline-flex items-center justify-center w-7 h-7 rounded-full font-semibold text-[var(--font-size-xs)] bg-neutral-border text-neutral-text-secondary"
+                class="rank-badge"
                 :class="getRankClass(index)"
               >
                 {{ index + 1 }}
               </span>
             </td>
-            <td class="player-col min-w-[200px] p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <div class="player-info flex items-center gap-[var(--spacing-md)]">
+            <td class="player-col">
+              <div class="player-info">
                 <img
                   :src="getIconUrl(player.profession)"
                   :alt="player.profession"
-                  class="prof-icon w-8 h-8 rounded-full object-cover bg-neutral-border"
+                  class="prof-icon"
                   @error="handleIconError($event)"
                 >
-                <div class="player-name-group flex flex-col">
-                  <span class="player-name font-medium text-neutral-text flex items-center gap-[var(--spacing-xs)]">
+                <div class="player-name-group">
+                  <span class="player-name">
                     {{ player.name }}
                     <span
                       v-if="player.hasCommanderTag"
-                      class="commander-tag text-[#ffc107]"
+                      class="commander-tag"
                     >
                       <i class="pi pi-star-fill" />
                     </span>
                   </span>
-                  <span class="account-name text-[var(--font-size-xs)] text-neutral-text-secondary">{{ player.account }}</span>
+                  <span class="account-name">{{ player.account }}</span>
                 </div>
               </div>
             </td>
-            <td class="prof-col w-[100px] p-[var(--spacing-md)] text-[var(--font-size-sm)]">
+            <td class="prof-col">
               <span 
-                class="prof-name inline-block py-1 px-3 rounded-[var(--radius-md)] text-[var(--font-size-xs)] font-medium text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.2)]"
+                class="prof-name"
                 :style="{ backgroundColor: getColor(player.profession) }"
               >
                 {{ getName(player.profession) }}
               </span>
             </td>
-            <td class="score-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="score-value font-semibold text-primary">{{ player.total_score }}</span>
+            <td class="score-col">
+              <span class="score-value">{{ player.total_score }}</span>
             </td>
-            <td class="dmg-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="damage-value font-medium text-neutral-text">{{ formatDamage(getPlayerDamage(player)) }}</span>
+            <td class="dmg-col">
+              <span class="damage-value">{{ formatDamage(getPlayerDamage(player)) }}</span>
             </td>
-            <td class="dps-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="dps-value font-medium text-neutral-text">{{ player.dps }}</span>
+            <td class="dps-col">
+              <span class="dps-value">{{ player.dps }}</span>
             </td>
-            <td class="power-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="power-value font-medium text-neutral-text">{{ formatDamage(getPlayerPowerDamage(player)) }}</span>
+            <td class="power-col">
+              <span class="power-value">{{ formatDamage(getPlayerPowerDamage(player)) }}</span>
             </td>
-            <td class="condi-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="condi-value font-medium text-neutral-text">{{ formatDamage(getPlayerCondiDamage(player)) }}</span>
+            <td class="condi-col">
+              <span class="condi-value">{{ formatDamage(getPlayerCondiDamage(player)) }}</span>
             </td>
-            <td class="cc-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="cc-value text-neutral-text-secondary">{{ player.cc || 0 }}</span>
+            <td class="cc-col">
+              <span class="cc-value">{{ player.cc || 0 }}</span>
             </td>
-            <td class="down-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="down-value text-neutral-text-secondary">{{ player.downs || 0 }}</span>
+            <td class="down-col">
+              <span class="down-value">{{ player.downs || 0 }}</span>
             </td>
-            <td class="death-col text-right p-[var(--spacing-md)] text-[var(--font-size-sm)]">
-              <span class="death-value text-neutral-text-secondary">{{ player.deaths || 0 }}</span>
+            <td class="death-col">
+              <span class="death-value">{{ player.deaths || 0 }}</span>
             </td>
-            <td class="actions-col w-12 text-center p-[var(--spacing-md)] text-[var(--font-size-sm)]">
+            <td class="actions-col">
               <BaseButton
                 size="small"
                 icon="pi pi-eye"
@@ -153,7 +153,6 @@ import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import { formatDamage } from '@/types/eliteInsights'
 import { useProfession } from '@/composables/useProfession'
 import type { Player } from '@/types/eliteInsights'
-import { Colors } from '@/config/designTokens'
 
 interface Props {
   players: Player[]
@@ -225,9 +224,9 @@ function getPlayerCondiDamage(player: Player): number {
 }
 
 function getRankClass(index: number): string {
-  if (index === 0) return 'bg-[#ffc107] text-[#1a1a2e]'
-  if (index === 1) return 'bg-[#9e9e9e] text-[#1a1a2e]'
-  if (index === 2) return 'bg-[#795548] text-white'
+  if (index === 0) return 'gold'
+  if (index === 1) return 'silver'
+  if (index === 2) return 'bronze'
   return ''
 }
 
@@ -255,7 +254,7 @@ function getName(key: string): string {
 }
 
 function getColor(key: string): string {
-  if (!key) return Colors.palette.gray
+  if (!key) return '#6b7280'
   
   const profession = professions.find(p => p.profession_key === key)
   if (profession && profession.color) return profession.color
@@ -263,7 +262,7 @@ function getColor(key: string): string {
   const spec = eliteSpecs.find(s => s.spec_key === key)
   if (spec && spec.color) return spec.color
   
-  return Colors.palette.gray
+  return '#6b7280'
 }
 
 function getIconUrl(key: string): string {
@@ -301,6 +300,4 @@ onMounted(() => {
 })
 </script>
 
-
-
-
+<style scoped>@import './PlayerStatsTable.css';</style>

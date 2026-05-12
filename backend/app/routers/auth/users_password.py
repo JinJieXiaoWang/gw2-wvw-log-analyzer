@@ -28,7 +28,7 @@ router = APIRouter(prefix="/users", tags=["用户管理"])
     "/change-password",
     response_model=ApiResponse,
     summary="修改密码",
-    description="修改当前登录用户的密?,
+    description="修改当前登录用户的密码",
 )
 async def change_password(
     password_data: PasswordChange,
@@ -43,7 +43,7 @@ async def change_password(
         new_password=password_data.new_password,
         confirm_password=password_data.confirm_password,
     )
-    logger.info(f"用户 {current_admin.username} 修改了密?)
+    logger.info(f"用户 {current_admin.username} 修改了密码")
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="密码修改成功", data=None
     )
@@ -53,7 +53,7 @@ async def change_password(
     "/{user_id}/reset-password",
     response_model=ApiResponse,
     summary="重置用户密码",
-    description="重置指定用户的密码，仅超级管理员可访?,
+    description="重置指定用户的密码，仅超级管理员可访问",
 )
 async def reset_user_password_route(
     user_id: int,
@@ -62,7 +62,7 @@ async def reset_user_password_route(
 ):
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
     username = user.username
     new_password = reset_user_password(db, user_id)
     logger.warning(
@@ -79,8 +79,8 @@ async def reset_user_password_route(
 @router.post(
     "/{user_id}/toggle-active",
     response_model=ApiResponse,
-    summary="切换用户活跃状?,
-    description="切换指定用户的活跃状态，仅超级管理员可访?,
+    summary="切换用户活跃状态",
+    description="切换指定用户的活跃状态，仅超级管理员可访问",
 )
 async def toggle_user_active_route(
     user_id: int,
@@ -89,10 +89,10 @@ async def toggle_user_active_route(
 ):
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
     username = user.username
     is_active = toggle_user_active(db, user_id, admin.id)
-    status = "激? if is_active else "禁用"
+    status = "激活" if is_active else "禁用"
     logger.info(f"管理?{admin.username} {status}了用?{username}")
     return ApiResponse.success_response(
         code=HTTP_200_OK, message=f"用户已{status}", data={"is_active": is_active}

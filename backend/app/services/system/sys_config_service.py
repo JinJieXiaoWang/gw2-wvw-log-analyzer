@@ -14,12 +14,12 @@ from app.utils.logger import logger
 DEFAULT_CONFIGS = [
     # 界面与系统基础
     {"config_key": "theme", "config_value": "light", "config_name": "界面主题", "config_type": "Y"},
-    {"config_key": "default_server", "config_value": "Tarnished Coast", "config_name": "默认服务?, "config_type": "Y"},
+    {"config_key": "default_server", "config_value": "Tarnished Coast", "config_name": "默认服务器", "config_type": "Y"},
     {"config_key": "system.name", "config_value": "GW2 WVW日志分析系统", "config_name": "系统名称", "config_type": "Y"},
     {"config_key": "system.version", "config_value": "1.0.0", "config_name": "系统版本", "config_type": "Y"},
 
     # 解析与上?
-    {"config_key": "parse_parallel", "config_value": "1", "config_name": "解析并行?, "config_type": "Y"},
+    {"config_key": "parse_parallel", "config_value": "1", "config_name": "解析并行数", "config_type": "Y"},
     {"config_key": "export_format", "config_value": "json", "config_name": "导出格式", "config_type": "Y"},
     {"config_key": "upload.max_file_size", "config_value": "50", "config_name": "最大上传文件大?MB)", "config_type": "Y"},
     {"config_key": "upload.allowed_extensions", "config_value": '[".zevtc", ".evtc"]', "config_name": "允许上传的文件扩展名", "config_type": "Y"},
@@ -36,10 +36,10 @@ DEFAULT_CONFIGS = [
     {"config_key": "auto_cleanup.retention_days", "config_value": "30", "config_name": "日志保留天数", "config_type": "Y"},
 
     # 水印与评?
-    {"config_key": "watermark_enabled", "config_value": "false", "config_name": "页面水印开?, "config_type": "N"},
+    {"config_key": "watermark_enabled", "config_value": "false", "config_name": "页面水印开关", "config_type": "N"},
     {"config_key": "watermark_text", "config_value": "", "config_name": "水印内容", "config_type": "N"},
-    {"config_key": "watermark_screenshot_enabled", "config_value": "true", "config_name": "截图水印开?, "config_type": "N"},
-    {"config_key": "scoring_mode", "config_value": "role_based", "config_name": "评分模式", "remark": "role_based=按角色定位评? profession_based=按职业评?, "config_type": "Y"},
+    {"config_key": "watermark_screenshot_enabled", "config_value": "true", "config_name": "截图水印开关", "config_type": "N"},
+    {"config_key": "scoring_mode", "config_value": "role_based", "config_name": "评分模式", "remark": "role_based=按角色定位评分 profession_based=按职业评分", "config_type": "Y"},
 ]
 
 
@@ -51,7 +51,7 @@ class SysConfigService:
 
     @staticmethod
     def init_default_configs(db: Session):
-        """初始化默认配置（数据库为空时插入口""
+        """初始化默认配置（数据库为空时插入）"""
         for cfg in DEFAULT_CONFIGS:
             exists = (
                 db.query(SysConfig)
@@ -61,7 +61,7 @@ class SysConfigService:
             if not exists:
                 db.add(SysConfig(**cfg))
         db.commit()
-        logger.info(f"[SysConfig] 初始化默认配置完成，?{len(DEFAULT_CONFIGS)} ?)
+        logger.info(f"[SysConfig] 初始化默认配置完成，共 {len(DEFAULT_CONFIGS)} 条")
 
     def get_config(self, key: str, default: Any = None) -> Any:
         """读取单个配置值，自动尝试 JSON 解析"""
@@ -98,7 +98,7 @@ class SysConfigService:
         return result
 
     def get_all_settings(self) -> Dict[str, Any]:
-        """读取所有系统设置（兼容现有接口?""
+        """读取所有系统设置（兼容现有接口）"""
         items = self.db.query(SysConfig).all()
         result = {}
         for item in items:
@@ -106,7 +106,7 @@ class SysConfigService:
         return result
 
     def set_config(self, key: str, value: Any, config_name: str = "", config_type: str = "N") -> bool:
-        """设置单个配置?""
+        """设置单个配置"""
         try:
             str_value = self._stringify_value(value)
             item = (

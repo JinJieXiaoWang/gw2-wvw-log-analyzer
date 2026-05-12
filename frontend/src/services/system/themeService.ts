@@ -6,8 +6,8 @@
  * 更新：2026-04-30 - 添加性能优化、防抖机制和性能监控
  */
 
-import type { ThemeConfig } from '@/constants/themes';
-import { GameThemes, getThemeById, getDefaultTheme, DEFAULT_THEME_ID } from '@/constants/themes';
+import type { ThemeConfig } from '@/config/themes';
+import { GameThemes, getThemeById, getDefaultTheme, DEFAULT_THEME_ID } from '@/config/themes';
 
 const STORAGE_KEY = 'gw2_wvw_theme_id';
 

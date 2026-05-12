@@ -1,18 +1,13 @@
 <template>
   <div class="relative">
     <button
-      class="relative p-2.5 hover:bg-neutral-bg rounded-xl transition-all
-             hover:scale-105 group notification-btn"
+      class="relative p-2.5 hover:bg-neutral-bg rounded-xl transition-all hover:scale-105 group notification-btn"
       @click="show = !show"
     >
-      <i
-        class="pi pi-bell text-neutral-text-secondary group-hover:text-primary
-               transition-colors text-xl" />
+      <i class="pi pi-bell text-neutral-text-secondary group-hover:text-primary transition-colors text-xl" />
       <span
         v-if="unreadCount > 0"
-          class="absolute -top-1 -right-1 min-w-[20px] h-5 bg-gradient-to-r
-                 from-status-error to-secondary text-white text-xs font-bold rounded-full
-                 flex items-center justify-center px-1.5 shadow-lg animate-pulse"
+        class="absolute -top-1 -right-1 min-w-[20px] h-5 bg-gradient-to-r from-status-error to-secondary text-white text-xs font-bold rounded-full flex items-center justify-center px-1.5 shadow-lg animate-pulse"
       >
         {{ unreadCount > 99 ? '99+' : unreadCount }}
       </span>
@@ -25,13 +20,9 @@
     >
       <div
         v-if="show"
-          class="notification-dropdown absolute top-full mt-2 right-0 w-80 sm:w-96
-                 bg-neutral-card border border-neutral-border rounded-xl shadow-2xl
-                 shadow-neutral-shadow/50 overflow-hidden z-50"
+        class="notification-dropdown absolute top-full mt-2 right-0 w-80 sm:w-96 bg-neutral-card border border-neutral-border rounded-xl shadow-2xl shadow-neutral-shadow/50 overflow-hidden z-50"
       >
-        <div
-          class="px-4 py-3 border-b border-neutral-border bg-gradient-to-r from-primary/5
-                 to-secondary/5 flex items-center justify-between">
+        <div class="px-4 py-3 border-b border-neutral-border bg-gradient-to-r from-primary/5 to-secondary/5 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div class="w-2 h-2 rounded-full bg-primary animate-pulse" />
             <span class="text-base font-bold text-neutral-text">通知中心</span>
@@ -48,8 +39,7 @@
           <div
             v-for="notification in notifications"
             :key="notification.notice_id"
-              class="px-4 py-3 hover:bg-neutral-bg/50 border-b border-neutral-border/50
-                     last:border-b-0 transition-colors cursor-pointer"
+            class="px-4 py-3 hover:bg-neutral-bg/50 border-b border-neutral-border/50 last:border-b-0 transition-colors cursor-pointer"
             :class="{ 'bg-primary/5': !notification.is_read }"
             @click.stop="$emit('click', notification)"
           >

@@ -2,8 +2,8 @@
 """
 统一数据初始化入口
 
-功能：项目启动时唯一的初始化入口，按顺序执行所有表的种子数据导入口
-所有数据以 Python 内嵌字典?seeds.py 压缩包形式维护，不再依赖任何外部文件?
+功能：项目启动时唯一的初始化执行所有表的执行所有表的种子数据导入口
+所有数据以 Python 内嵌字典.py 压缩包形式维护，不再依赖任何外部文件
 
 初始化顺序：
 1. 系统菜单 (sys_menu)
@@ -12,10 +12,10 @@
 4. 基础职业 (gw_profession)
 5. 精英特长 (gw_elite_specialization)
 6. 游戏静态数据(gw_skill / gw_specialization / gw_trait / gw_skill_palette / gw_buff)
-7. Build 图书?(build)
+7. Build 图书馆(build)
 
-作? 帅妹妹丶.8297
-创建日期: 22026-05-12
+作者： 帅妹妹丶.8297
+创建日期: 2026-05-12
 """
 
 from datetime import datetime
@@ -24,20 +24,23 @@ from typing import Any, Dict, List
 from sqlalchemy.orm import Session
 
 from app.data import seed_data
-from app.models.game_data.build import Build
-from app.models.game_data.dictionary import SysDictData, SysDictType
-from app.models.game_data.game_static_data import (
+from app.models.game.build import Build
+from app.models.game.dictionary import SysDictData, SysDictType
+from app.models.game.game_static_data import (
     GwBuff,
     GwSkill,
     GwSkillPalette,
     GwSpecialization,
     GwTrait,
 )
-from app.models.game_data.profession import GwEliteSpecialization, GwProfession, GwRoleType
+from app.models.game.profession import (
+    GwEliteSpecialization,
+    GwProfession,
+    GwRoleType,
+)
 from app.models.system.sys_menu import SysMenu
-from app.services.game_data.build_service import create_build
+from app.services.game.build_service import create_build
 from app.utils.logger import logger
-
 
 # =============================================================================
 # 系统菜单种子数据
@@ -55,7 +58,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "home",
         "perms": None,
-        "remark": "数据总览首页（公开?,
+        "remark": "数据总览首页（公开）",
     },
     {
         "menu_name": "日志管理",
@@ -69,7 +72,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "log",
         "perms": None,
-        "remark": "日志管理页面（公开?,
+        "remark": "日志管理页面（公开）",
     },
     {
         "menu_name": "出勤统计",
@@ -83,10 +86,10 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "users",
         "perms": None,
-        "remark": "出勤统计页面（公开?,
+        "remark": "出勤统计页面（公开）",
     },
     {
-        "menu_name": "技能循?,
+        "menu_name": "技能循环分析",
         "parent_id": 0,
         "order_num": 4,
         "path": "/skill-analysis",
@@ -97,10 +100,10 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "activity",
         "perms": None,
-        "remark": "技能循环分析页面（公开?,
+        "remark": "技能循环分析页面（公开）",
     },
     {
-        "menu_name": "配置图书?,
+        "menu_name": "配置图书馆",
         "parent_id": 0,
         "order_num": 5,
         "path": "/builds",
@@ -111,7 +114,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "book",
         "perms": None,
-        "remark": "配置图书馆页面（公开?,
+        "remark": "配置图书馆页面（公开）",
     },
     {
         "menu_name": "Build解析",
@@ -125,7 +128,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "code",
         "perms": None,
-        "remark": "Build代码解析页面（公开?,
+        "remark": "Build代码解析页面（公开）",
     },
     {
         "menu_name": "系统管理",
@@ -139,7 +142,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "settings",
         "perms": "manage_users",
-        "remark": "系统管理目录（管理员?,
+        "remark": "系统管理目录（管理员）",
     },
     {
         "menu_name": "系统设置",
@@ -153,7 +156,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "cog",
         "perms": "manage_users",
-        "remark": "系统设置页面（管理员?,
+        "remark": "系统设置页面（管理员）",
     },
     {
         "menu_name": "评分规则",
@@ -167,7 +170,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "award",
         "perms": "manage_users",
-        "remark": "评分规则页面（管理员?,
+        "remark": "评分规则页面（管理员）",
     },
     {
         "menu_name": "字典管理",
@@ -181,7 +184,7 @@ _SYS_MENU_SEED = [
         "status": "0",
         "icon": "list",
         "perms": "manage_users",
-        "remark": "字典管理页面（管理员?,
+        "remark": "字典管理页面（管理员）",
     },
     {
         "menu_name": "职业管理",
@@ -247,12 +250,12 @@ _SYS_DICT_DATA_SEED = {
         ("healing", "治疗", "#00ced1"),
         ("boons", "增益", "#ffd700"),
         ("alacrity", "敏捷", "#87ceeb"),
-        ("quickness", "急?, "#da70d6"),
+        ("quickness", "急速", "#da70d6"),
         ("survival", "生存", "#4169e1"),
         ("strips", "破法", "#ff1745"),
-        ("cleanses", "净?, "#1aff1a"),
+        ("cleanses", "清症", "#1aff1a"),
         ("kills", "击杀", "#00bfff"),
-        ("breakbar", "蔑视?, "#b0c4de"),
+        ("breakbar", "蔑视", "#b0c4de"),
     ],
     "game_mode": [
         ("wvw", "世界之战", "#6b21a8"),
@@ -298,7 +301,7 @@ _ROLE_TYPE_SEED = [
 _PROFESSION_SEED = [
     {
         "profession_key": "Guardian",
-        "profession_name": "守护?,
+        "profession_name": "守护者",
         "profession_name_en": "Guardian",
         "color": "#ffc107",
         "icon": "Guardian.png",
@@ -318,7 +321,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Engineer",
-        "profession_name": "工程?,
+        "profession_name": "工程师",
         "profession_name_en": "Engineer",
         "color": "#795548",
         "icon": "Engineer.png",
@@ -338,7 +341,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Thief",
-        "profession_name": "潜行?,
+        "profession_name": "潜行者",
         "profession_name_en": "Thief",
         "color": "#607d8b",
         "icon": "Thief.png",
@@ -348,7 +351,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Elementalist",
-        "profession_name": "元素?,
+        "profession_name": "元素使",
         "profession_name_en": "Elementalist",
         "color": "#e91e63",
         "icon": "Elementalist.png",
@@ -358,7 +361,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Mesmer",
-        "profession_name": "幻术?,
+        "profession_name": "幻术师",
         "profession_name_en": "Mesmer",
         "color": "#9c27b0",
         "icon": "Mesmer.png",
@@ -368,7 +371,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Necromancer",
-        "profession_name": "唤灵?,
+        "profession_name": "唤灵师",
         "profession_name_en": "Necromancer",
         "color": "#00bcd4",
         "icon": "Necromancer.png",
@@ -378,7 +381,7 @@ _PROFESSION_SEED = [
     },
     {
         "profession_key": "Revenant",
-        "profession_name": "魂武?,
+        "profession_name": "魂武者",
         "profession_name_en": "Revenant",
         "color": "#3f51b5",
         "icon": "Revenant.png",
@@ -396,7 +399,7 @@ _ELITE_SPEC_SEED = [
     # Guardian
     {
         "spec_key": "Dragonhunter",
-        "spec_name": "猎龙?,
+        "spec_name": "猎龙者",
         "spec_name_en": "Dragonhunter",
         "profession_key": "Guardian",
         "color": "#ffc107",
@@ -408,7 +411,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Firebrand",
-        "spec_name": "燃火?,
+        "spec_name": "燃火者",
         "spec_name_en": "Firebrand",
         "profession_key": "Guardian",
         "color": "#ff7043",
@@ -428,7 +431,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Willbender",
-        "spec_name": "破锋?,
+        "spec_name": "破锋者",
         "spec_name_en": "Willbender",
         "profession_key": "Guardian",
         "color": "#ffa726",
@@ -440,7 +443,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Luminary",
-        "spec_name": "圣辉?,
+        "spec_name": "圣辉者",
         "spec_name_en": "Luminary",
         "profession_key": "Guardian",
         "color": "#ffca28",
@@ -462,7 +465,7 @@ _ELITE_SPEC_SEED = [
     # Warrior
     {
         "spec_key": "Berserker",
-        "spec_name": "狂战?,
+        "spec_name": "狂战士",
         "spec_name_en": "Berserker",
         "profession_key": "Warrior",
         "color": "#ff5722",
@@ -474,7 +477,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Spellbreaker",
-        "spec_name": "破法?,
+        "spec_name": "破法者",
         "spec_name_en": "Spellbreaker",
         "profession_key": "Warrior",
         "color": "#ff7043",
@@ -492,7 +495,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Bladesworn",
-        "spec_name": "誓剑?,
+        "spec_name": "誓剑士",
         "spec_name_en": "Bladesworn",
         "profession_key": "Warrior",
         "color": "#ff8a65",
@@ -504,7 +507,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Paragon",
-        "spec_name": "圣言?,
+        "spec_name": "圣言者",
         "spec_name_en": "Paragon",
         "profession_key": "Warrior",
         "color": "#ffa726",
@@ -526,7 +529,7 @@ _ELITE_SPEC_SEED = [
     # Engineer
     {
         "spec_key": "Scrapper",
-        "spec_name": "机械?,
+        "spec_name": "机械师",
         "spec_name_en": "Scrapper",
         "profession_key": "Engineer",
         "color": "#795548",
@@ -547,7 +550,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Holosmith",
-        "spec_name": "全息?,
+        "spec_name": "全息师",
         "spec_name_en": "Holosmith",
         "profession_key": "Engineer",
         "color": "#8d6e63",
@@ -559,7 +562,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Mechanist",
-        "spec_name": "玉偃?,
+        "spec_name": "玉偃师",
         "spec_name_en": "Mechanist",
         "profession_key": "Engineer",
         "color": "#a1887f",
@@ -580,7 +583,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Amalgam",
-        "spec_name": "流金?,
+        "spec_name": "流金师",
         "spec_name_en": "Amalgam",
         "profession_key": "Engineer",
         "color": "#bcaaa4",
@@ -599,7 +602,7 @@ _ELITE_SPEC_SEED = [
     # Ranger
     {
         "spec_key": "Druid",
-        "spec_name": "德鲁?,
+        "spec_name": "德鲁伊",
         "spec_name_en": "Druid",
         "profession_key": "Ranger",
         "color": "#4caf50",
@@ -620,7 +623,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Soulbeast",
-        "spec_name": "魂兽?,
+        "spec_name": "魂兽师",
         "spec_name_en": "Soulbeast",
         "profession_key": "Ranger",
         "color": "#66bb6a",
@@ -632,7 +635,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Untamed",
-        "spec_name": "狂兽?,
+        "spec_name": "狂兽师",
         "spec_name_en": "Untamed",
         "profession_key": "Ranger",
         "color": "#81c784",
@@ -644,7 +647,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Galeshot",
-        "spec_name": "风行?,
+        "spec_name": "风行者",
         "spec_name_en": "Galeshot",
         "profession_key": "Ranger",
         "color": "#a5d6a7",
@@ -657,7 +660,7 @@ _ELITE_SPEC_SEED = [
     # Thief
     {
         "spec_key": "Daredevil",
-        "spec_name": "独行?,
+        "spec_name": "独行侠",
         "spec_name_en": "Daredevil",
         "profession_key": "Thief",
         "color": "#607d8b",
@@ -669,7 +672,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Deadeye",
-        "spec_name": "神枪?,
+        "spec_name": "神枪手",
         "spec_name_en": "Deadeye",
         "profession_key": "Thief",
         "color": "#78909c",
@@ -681,7 +684,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Specter",
-        "spec_name": "缚影?,
+        "spec_name": "缚影者",
         "spec_name_en": "Specter",
         "profession_key": "Thief",
         "color": "#90a4ae",
@@ -699,7 +702,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Antiquary",
-        "spec_name": "彩戏?,
+        "spec_name": "彩戏师",
         "spec_name_en": "Antiquary",
         "profession_key": "Thief",
         "color": "#b0bec5",
@@ -720,7 +723,7 @@ _ELITE_SPEC_SEED = [
     # Elementalist
     {
         "spec_key": "Tempest",
-        "spec_name": "暴风?,
+        "spec_name": "暴风使",
         "spec_name_en": "Tempest",
         "profession_key": "Elementalist",
         "color": "#e91e63",
@@ -741,7 +744,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Weaver",
-        "spec_name": "编织?,
+        "spec_name": "编织者",
         "spec_name_en": "Weaver",
         "profession_key": "Elementalist",
         "color": "#ec407a",
@@ -753,7 +756,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Catalyst",
-        "spec_name": "元晶?,
+        "spec_name": "元晶师",
         "spec_name_en": "Catalyst",
         "profession_key": "Elementalist",
         "color": "#f06292",
@@ -765,7 +768,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Evoker",
-        "spec_name": "唤元?,
+        "spec_name": "唤元师",
         "spec_name_en": "Evoker",
         "profession_key": "Elementalist",
         "color": "#f48fb1",
@@ -845,7 +848,7 @@ _ELITE_SPEC_SEED = [
     # Necromancer
     {
         "spec_key": "Reaper",
-        "spec_name": "夺魂?,
+        "spec_name": "夺魂者",
         "spec_name_en": "Reaper",
         "profession_key": "Necromancer",
         "color": "#00bcd4",
@@ -857,7 +860,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Scourge",
-        "spec_name": "灾厄?,
+        "spec_name": "灾厄师",
         "spec_name_en": "Scourge",
         "profession_key": "Necromancer",
         "color": "#26c6da",
@@ -878,7 +881,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Harbinger",
-        "spec_name": "先驱?,
+        "spec_name": "先驱者",
         "spec_name_en": "Harbinger",
         "profession_key": "Necromancer",
         "color": "#4dd0e1",
@@ -890,7 +893,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Ritualist",
-        "spec_name": "祭祀?,
+        "spec_name": "祭祀者",
         "spec_name_en": "Ritualist",
         "profession_key": "Necromancer",
         "color": "#80deea",
@@ -912,7 +915,7 @@ _ELITE_SPEC_SEED = [
     # Revenant
     {
         "spec_key": "Herald",
-        "spec_name": "预告?,
+        "spec_name": "预告者",
         "spec_name_en": "Herald",
         "profession_key": "Revenant",
         "color": "#3f51b5",
@@ -933,7 +936,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Renegade",
-        "spec_name": "龙魂?,
+        "spec_name": "龙魂使",
         "spec_name_en": "Renegade",
         "profession_key": "Revenant",
         "color": "#5c6bc0",
@@ -951,7 +954,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Vindicator",
-        "spec_name": "裁决?,
+        "spec_name": "裁决者",
         "spec_name_en": "Vindicator",
         "profession_key": "Revenant",
         "color": "#7986cb",
@@ -963,7 +966,7 @@ _ELITE_SPEC_SEED = [
     },
     {
         "spec_key": "Conduit",
-        "spec_name": "契灵?,
+        "spec_name": "契灵使",
         "spec_name_en": "Conduit",
         "profession_key": "Revenant",
         "color": "#9fa8da",
@@ -986,14 +989,14 @@ _ELITE_SPEC_SEED = [
 
 
 # =============================================================================
-# 初始化实?
+# 初始化系统菜单
 # =============================================================================
 
 
 def _init_sys_menu(db: Session) -> int:
-    """初始化系统菜?""
+    """初始化系统菜单"""
     if db.query(SysMenu).count() > 0:
-        logger.info("sys_menu 已有数据，跳?)
+        logger.info("sys_menu 已有数据，跳过")
         return 0
     now = datetime.now()
     for record in _SYS_MENU_SEED:
@@ -1007,12 +1010,12 @@ def _init_sys_menu(db: Session) -> int:
             )
         )
     db.commit()
-    logger.info(f"sys_menu 初始化完成 {len(_SYS_MENU_SEED)} ?)
+    logger.info(f"sys_menu 初始化完成 {len(_SYS_MENU_SEED)} 条记录")
     return len(_SYS_MENU_SEED)
 
 
 def _init_sys_dict_type(db: Session) -> int:
-    """初始化字典类型（?role / scoring_dimension / game_mode?""
+    """初始化字典类型（role / scoring_dimension / game_mode?"""
     created = 0
     for record in _SYS_DICT_TYPE_SEED:
         existing = (
@@ -1024,12 +1027,12 @@ def _init_sys_dict_type(db: Session) -> int:
             db.add(SysDictType(**record))
             created += 1
     db.commit()
-    logger.info(f"sys_dict_type 初始化完成 {created} ?)
+    logger.info(f"sys_dict_type 初始化完成 {created} 条记录")
     return created
 
 
 def _init_sys_dict_data(db: Session) -> int:
-    """初始化字典数据（role / scoring_dimension / game_mode?""
+    """初始化字典数据（role / scoring_dimension / game_mode）"""
     created = 0
     for dict_type, items in _SYS_DICT_DATA_SEED.items():
         for idx, (value, label, color) in enumerate(items):
@@ -1055,12 +1058,12 @@ def _init_sys_dict_data(db: Session) -> int:
                 )
                 created += 1
     db.commit()
-    logger.info(f"sys_dict_data 初始化完成 {created} ?)
+    logger.info(f"sys_dict_data 初始化完成 {created} 条记录")
     return created
 
 
 def _init_role_types(db: Session) -> int:
-    """初始化角色定义""
+    """初始化角色定义"""
     created = 0
     for record in _ROLE_TYPE_SEED:
         existing = (
@@ -1072,7 +1075,7 @@ def _init_role_types(db: Session) -> int:
             db.add(GwRoleType(**record))
             created += 1
     db.commit()
-    logger.info(f"gw_role_type 初始化完成 {created} ?)
+    logger.info(f"gw_role_type 初始化完成 {created} 条记录")
     return created
 
 
@@ -1089,12 +1092,12 @@ def _init_professions(db: Session) -> int:
             db.add(GwProfession(**record))
             created += 1
     db.commit()
-    logger.info(f"gw_profession 初始化完成 {created} ?)
+    logger.info(f"gw_profession 初始化完成 {created} 条")
     return created
 
 
 def _init_elite_specializations(db: Session) -> int:
-    """初始化精英特?""
+    """初始化精英特性线"""
     created = 0
     for record in _ELITE_SPEC_SEED:
         existing = (
@@ -1106,12 +1109,12 @@ def _init_elite_specializations(db: Session) -> int:
             db.add(GwEliteSpecialization(**record))
             created += 1
     db.commit()
-    logger.info(f"gw_elite_specialization 初始化完成 {created} ?)
+    logger.info(f"gw_elite_specialization 初始化完成 {created} 条")
     return created
 
 
 def _init_game_static_data(db: Session) -> Dict[str, int]:
-    """初始化游戏静态数据（?seed_data 解压导入口""
+    """初始化游戏静态数据（seed_data 解压导入口）"""
     results = {}
 
     # gw_skill
@@ -1139,7 +1142,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
                 db.commit()
         db.commit()
         results["gw_skill"] = len(data)
-        logger.info(f"gw_skill 导入完成: {len(data)} ?)
+        logger.info(f"gw_skill 导入完成: {len(data)} 条")
     else:
         results["gw_skill"] = 0
 
@@ -1161,7 +1164,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
             )
         db.commit()
         results["gw_specialization"] = len(data)
-        logger.info(f"gw_specialization 导入完成: {len(data)} ?)
+        logger.info(f"gw_specialization 导入完成: {len(data)} 条")
     else:
         results["gw_specialization"] = 0
 
@@ -1187,7 +1190,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
                 db.commit()
         db.commit()
         results["gw_trait"] = len(data)
-        logger.info(f"gw_trait 导入完成: {len(data)} ?)
+        logger.info(f"gw_trait 导入完成: {len(data)} 条")
     else:
         results["gw_trait"] = 0
 
@@ -1207,7 +1210,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
                 db.commit()
         db.commit()
         results["gw_skill_palette"] = len(data)
-        logger.info(f"gw_skill_palette 导入完成: {len(data)} ?)
+        logger.info(f"gw_skill_palette 导入完成: {len(data)} 条")
     else:
         results["gw_skill_palette"] = 0
 
@@ -1230,7 +1233,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
             )
         db.commit()
         results["gw_buff"] = len(data.get("buffs", {}))
-        logger.info(f"gw_buff 导入完成: {len(data.get('buffs', {}))} ?)
+        logger.info(f"gw_buff 导入完成: {len(data.get('buffs', {}))} 条")
     else:
         results["gw_buff"] = 0
 
@@ -1238,8 +1241,8 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
 
 def _init_builds(db: Session) -> Dict[str, Any]:
-    """初初始化Build 图书馆数据（?seed_data 解压导入口""
-    from app.services.game_data.bdcode_service import get_bdcode_service
+    """初始化Build 图书馆数据（seed_data 解压导入口）"""
+    from app.services.game.bdcode_service import get_bdcode_service
 
     existing = db.query(Build).count()
     if existing > 0:
@@ -1284,7 +1287,7 @@ def _init_builds(db: Session) -> Dict[str, Any]:
                 or not db_data["bd_code"]
                 or not db_data["profession"]
             ):
-                raise ValueError("缺少必填字段（title/bd_code/profession?)
+                raise ValueError("缺少必填字段（title/bd_code/profession?）")
 
             # 如果 JSON 中没有解析特性线但有 BD Code，尝试解?
             if not db_data["trait_lines"] and db_data["bd_code"]:
@@ -1348,7 +1351,7 @@ def _init_builds(db: Session) -> Dict[str, Any]:
 
 
 def init_dictionary_data(db: Session) -> Dict[str, Any]:
-    """初始化字典数据（role / scoring_dimension / game_mode?""
+    """初始化字典数据（role / scoring_dimension / game_mode）"""
     types_created = _init_sys_dict_type(db)
     data_created = _init_sys_dict_data(db)
     return {
@@ -1377,6 +1380,91 @@ def init_dictionary_data(db: Session) -> Dict[str, Any]:
 # =============================================================================
 
 
+def _init_admin(db: Session) -> Dict[str, Any]:
+    """初始化预置管理员账号"""
+    from app.services.auth.auth_service import init_predefined_admin
+
+    admin = init_predefined_admin(db)
+    return {"initialized": True, "username": admin.username}
+
+
+def _init_scoring_rules(db: Session) -> Dict[str, Any]:
+    """初始化评分规则、版本表及职业特定规则"""
+    from app.models.game.profession import GwEliteSpecialization
+    from app.models.scoring.scoring_rule import ScoringRule
+    from app.services.scoring.scoring_rule_service import ScoringRuleService
+
+    scoring_service = ScoringRuleService(db)
+    results = {}
+
+    # 初始化默认评分规则
+    scoring_init = scoring_service.init_default_rules_if_empty()
+    results["default_rules"] = scoring_init
+
+    # 初始化评分规则版本表
+    version_init = scoring_service.init_version_if_empty()
+    results["version"] = version_init
+
+    # 从数据库精英特长数据导入默认职业特定规则
+    existing_count = (
+        db.query(ScoringRule)
+        .filter(ScoringRule.profession.isnot(None))
+        .count()
+    )
+    
+    if existing_count > 0:
+        results["profession_rules"] = {"initialized": False, "reason": "已有职业特定规则", "count": existing_count}
+    else:
+        # 从数据库读取所有精英特长
+        elite_specs = db.query(GwEliteSpecialization).all()
+        total_created = 0
+        
+        for spec in elite_specs:
+            scoring_config = spec.scoring_config
+            if not scoring_config or not isinstance(scoring_config, dict):
+                continue
+            
+            default_role = spec.default_role or "dps"
+            
+            # 归一化权重
+            total_weight = sum(scoring_config.values())
+            if total_weight <= 0:
+                continue
+            
+            sort_order = 1
+            for dimension, weight in scoring_config.items():
+                normalized_weight = round(weight / total_weight, 4)
+                rule = ScoringRule(
+                    role_type=default_role,
+                    profession=spec.spec_key,
+                    dimension=dimension,
+                    weight=normalized_weight,
+                    description=f"{spec.spec_name} 默认 {dimension} 权重",
+                    sort_order=sort_order,
+                    is_active=True,
+                )
+                db.add(rule)
+                sort_order += 1
+                total_created += 1
+        
+        db.commit()
+        if total_created > 0:
+            logger.info(f"从数据库精英特长导入职业特定规则: 共 {total_created} 条")
+            results["profession_rules"] = {"initialized": True, "count": total_created}
+        else:
+            results["profession_rules"] = {"initialized": False, "reason": "没有可用的评分配置数据"}
+
+    return results
+
+
+def _load_dictionaries(db: Session) -> Dict[str, Any]:
+    """加载字典缓存"""
+    from app.utils.db.dict_utils import load_all_dictionaries
+
+    load_all_dictionaries(db)
+    return {"initialized": True}
+
+
 def initialize_all(db: Session) -> Dict[str, Any]:
     """
     执行所有数据初始化
@@ -1387,11 +1475,14 @@ def initialize_all(db: Session) -> Dict[str, Any]:
     3. gw_role_type
     4. gw_profession
     5. gw_elite_specialization
-    6. 游戏静态数据（gw_skill / gw_spec / gw_trait / gw_palette / gw_buff?
-    7. build ?
+    6. 游戏静态数据（gw_skill / gw_spec / gw_trait / gw_palette / gw_buff）
+    7. build
+    8. 预置管理员
+    9. 评分规则
+    10. 字典缓存
     """
     logger.info("=" * 60)
-    logger.info("开始执行统一数据初初始化)
+    logger.info("开始执行统一数据初始化")
     logger.info("=" * 60)
 
     results = {
@@ -1403,6 +1494,9 @@ def initialize_all(db: Session) -> Dict[str, Any]:
         "gw_elite_specialization": _init_elite_specializations(db),
         "game_static": _init_game_static_data(db),
         "builds": _init_builds(db),
+        "admin": _init_admin(db),
+        "scoring_rules": _init_scoring_rules(db),
+        "dictionaries": _load_dictionaries(db),
     }
 
     def _extract_count(v):
@@ -1418,6 +1512,6 @@ def initialize_all(db: Session) -> Dict[str, Any]:
 
     total = sum(_extract_count(v) for v in results.values())
     logger.info("=" * 60)
-    logger.info(f"统一数据初始化完成，共导入{total} 条记?)
+    logger.info(f"统一数据初始化完成，共导入{total} 条记录")
     logger.info("=" * 60)
     return results

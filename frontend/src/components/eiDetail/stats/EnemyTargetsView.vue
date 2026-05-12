@@ -54,8 +54,7 @@
           <div
             v-for="target in enemyPlayers"
             :key="target.instanceID"
-              class="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-bg border
-                     border-neutral-border"
+            class="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-bg border border-neutral-border"
           >
             <img
               v-if="target.icon"

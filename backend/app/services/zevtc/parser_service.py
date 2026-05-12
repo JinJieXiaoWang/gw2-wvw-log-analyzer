@@ -19,7 +19,7 @@ from app.core.zevtc.parser import (
     ZevtcParseError,
     parse_zevtc_file,
 )
-from app.models.log import Log
+from app.models.log.log import Log
 from app.utils.logger import logger
 
 

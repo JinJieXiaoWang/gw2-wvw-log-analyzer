@@ -1,32 +1,32 @@
 <template>
   <div
     v-if="visible && player"
-    class="modal-overlay fixed top-0 left-0 right-0 bottom-0 bg-black/[0.6] flex items-center justify-center z-[1000] p-4"
+    class="modal-overlay"
     @click="emit('close')"
   >
     <div
-      class="modal-content bg-neutral-card rounded-2xl w-full max-w-[600px] max-h-[90vh] overflow-hidden flex flex-col"
+      class="modal-content"
       @click.stop
     >
       <!-- 头部 -->
-      <div class="modal-header flex items-center justify-between p-5 bg-neutral-card-hover">
-        <div class="player-header-info flex items-center gap-4">
+      <div class="modal-header">
+        <div class="player-header-info">
           <img
             :src="getProfIcon(player.profession)"
-            class="player-avatar w-14 h-14 rounded-full"
+            class="player-avatar"
           >
-          <div class="player-details flex flex-col gap-2">
-            <h3 class="player-name text-xl font-semibold text-neutral-text m-0">
+          <div class="player-details">
+            <h3 class="player-name">
               {{ player.name }}
             </h3>
-            <div class="player-meta flex items-center gap-2">
+            <div class="player-meta">
               <span
-                class="profession-badge p-[0.25rem 0.75rem] rounded-md text-[0.8125rem] font-medium text-white"
+                class="profession-badge"
                 :style="{ backgroundColor: getProfessionColor(player.profession) }"
               >{{ getProfessionName(player.profession) }}</span>
               <span
                 v-if="player.hasCommanderTag"
-                class="commander-badge text-amber-500 text-base"
+                class="commander-badge"
               >
                 <i class="pi pi-star-fill" />
               </span>
@@ -34,7 +34,7 @@
           </div>
         </div>
         <button
-          class="modal-close-btn w-9 h-9 flex items-center justify-center bg-transparent rounded-md text-neutral-text-secondary cursor-pointer hover:bg-neutral-border hover:text-neutral-text"
+          class="modal-close-btn"
           @click="emit('close')"
         >
           <i class="pi pi-times" />
@@ -42,21 +42,21 @@
       </div>
 
       <!-- 标签 -->
-      <div class="modal-tabs flex bg-neutral-bg-secondary">
+      <div class="modal-tabs">
         <button
           v-for="tab in tabs"
           :key="tab.key"
-          class="tab-btn flex-1 flex items-center justify-center gap-2 p-[0.875rem 1rem] bg-transparent text-neutral-text-secondary text-sm font-medium cursor-pointer relative hover:text-neutral-text hover:bg-neutral-card-hover"
-          :class="{ 'text-neutral-primary bg-neutral-card': activeTab === tab.key }"
+          class="tab-btn"
+          :class="{ active: activeTab === tab.key }"
           @click="activeTab = tab.key"
         >
           <i :class="tab.icon" />
-          <span class="max-sm:hidden">{{ tab.label }}</span>
+          <span>{{ tab.label }}</span>
         </button>
       </div>
 
       <!-- 内容 -->
-      <div class="modal-body p-5 overflow-y-auto flex-1">
+      <div class="modal-body">
         <PlayerStatsTab
           v-if="activeTab === 'stats'"
           :player="player"
@@ -107,6 +107,138 @@ function getProfIcon(prof: string): string {
 </script>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+.modal-content {
+  background-color: var(--color-card);
+  border-radius: 1rem;
+  border: 1px solid var(--color-border);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: slideUp 0.3s ease-out;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background-color: var(--color-card-hover);
+  border-bottom: 1px solid var(--color-border);
+}
+.player-header-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.player-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+.player-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.player-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+.player-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.profession-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: white;
+}
+.commander-badge {
+  color: #f59e0b;
+  font-size: 1rem;
+}
+.modal-close-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  border-radius: 0.375rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.modal-close-btn:hover {
+  background-color: var(--color-border);
+  color: var(--color-text);
+}
+.modal-body {
+  padding: 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+.modal-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+}
+.tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.tab-btn:hover {
+  color: var(--color-text);
+  background-color: var(--color-card-hover);
+}
+.tab-btn.active {
+  color: var(--color-primary);
+  background-color: var(--color-card);
+}
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background-color: var(--color-primary);
+  border-radius: 1px;
+}
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -114,5 +246,10 @@ function getProfIcon(prof: string): string {
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
+}
+@media (max-width: 640px) {
+  .tab-btn span {
+    display: none;
+  }
 }
 </style>

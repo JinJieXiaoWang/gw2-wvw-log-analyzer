@@ -1,5 +1,8 @@
 <template>
-  <Checkbox v-bind="$attrs" v-model="modelValue" />
+  <Checkbox
+    v-bind="$attrs"
+    v-model="modelValue"
+  />
 </template>
 
 <script setup lang="ts">

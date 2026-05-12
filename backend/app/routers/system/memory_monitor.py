@@ -25,7 +25,7 @@ router = APIRouter(prefix="/memory", tags=["memory-monitor"])
 
 @router.get("/status", response_model=ApiResponse)
 async def get_memory_status():
-    """获取当前内存状?""
+    """获取当前内存状态"""
     memory_stats = get_memory_stats()
     cache = get_cache()
     cache_stats = cache.get_stats()
@@ -57,7 +57,7 @@ async def get_cache_statistics():
 
 @router.post("/cache/clear", response_model=ApiResponse)
 async def clear_all_cache():
-    """清空所有缓?""
+    """清空所有缓存"""
     cache = get_cache()
     item_count = cache.size()
     cache.clear()
@@ -69,7 +69,7 @@ async def clear_all_cache():
 
 @router.delete("/cache/{key_pattern}", response_model=ApiResponse)
 async def delete_cache_by_pattern(key_pattern: str):
-    """按模式删除缓?""
+    """按模式删除缓存"""
     from app.utils.cache.enhanced_cache import delete_cache
     deleted_count = delete_cache(key_pattern)
     
@@ -80,7 +80,7 @@ async def delete_cache_by_pattern(key_pattern: str):
 
 @router.get("/check", response_model=ApiResponse)
 async def check_memory_status():
-    """检查内存是否超?""
+    """检查内存是否超限"""
     is_over_limit = check_memory_limit(action="api_check")
     
     return ApiResponse.success_response(

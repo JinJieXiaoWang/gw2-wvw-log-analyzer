@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：战斗分析响应Schema定义（兼容ZEVTC分析服务?# 作者：系统
-# 创建日期?2026-05-01
+# 模块功能：战斗分析响应Schema定义（兼容ZEVTC分析服务）
+# 作者：系统
+# 创建日期：2026-05-01
 # 依赖说明：Pydantic
 
 from typing import Any, Dict, List, Optional

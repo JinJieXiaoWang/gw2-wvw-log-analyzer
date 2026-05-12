@@ -32,9 +32,7 @@ const emit = defineEmits<{
   >
     <div class="space-y-4">
       <!-- 统计摘要 -->
-      <div
-        class="flex items-center gap-4 p-3 rounded-xl bg-neutral-bg-secondary border
-               border-neutral-border/50">
+      <div class="flex items-center gap-4 p-3 rounded-xl bg-neutral-bg-secondary border border-neutral-border/50">
         <div class="flex items-center gap-2">
           <i class="pi pi-users text-primary" />
           <span class="text-sm text-neutral-text">共 {{ statDetailList.length }} 人</span>

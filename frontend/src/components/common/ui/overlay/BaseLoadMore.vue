@@ -1,12 +1,12 @@
 <template>
-  <div class="load-more-container w-full">
+  <div class="load-more-container">
     <slot
       :is-loading="isLoading"
       :has-more="hasMore"
       :error="error"
     />
     
-    <div class="load-more-trigger flex justify-center items-center p-[16px 0] mt-2">
+    <div class="load-more-trigger">
       <LoadingState
         v-if="isLoading && showLoading"
         :text="loadingText"
@@ -16,7 +16,7 @@
       
       <div
         v-else-if="isError && showError"
-        class="load-more-error p-3"
+        class="load-more-error"
       >
         <div class="flex flex-col items-center gap-3 text-center">
           <i class="pi pi-exclamation-circle text-error text-2xl" />
@@ -42,13 +42,13 @@
         :icon="showIcon ? 'pi pi-chevron-down' : undefined"
         severity="secondary"
         outlined
-        class="load-more-button min-w-[140px]"
+        class="load-more-button"
         @click="handleLoadMore"
       />
       
       <div
         v-else-if="!hasMore && showNoMore"
-        class="load-more-no-more p-[12px 0] w-full"
+        class="load-more-no-more"
       >
         <div class="flex items-center gap-3 text-neutral-text-secondary">
           <div class="h-px flex-1 bg-neutral-border" />
@@ -150,4 +150,29 @@ defineExpose({
 })
 </script>
 
+<style scoped>
+.load-more-container {
+  width: 100%;
+}
 
+.load-more-trigger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 0;
+  margin-top: 8px;
+}
+
+.load-more-error {
+  padding: 12px;
+}
+
+.load-more-no-more {
+  padding: 12px 0;
+  width: 100%;
+}
+
+.load-more-button {
+  min-width: 140px;
+}
+</style>

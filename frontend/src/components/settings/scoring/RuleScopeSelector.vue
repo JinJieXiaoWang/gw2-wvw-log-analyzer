@@ -1,12 +1,8 @@
 <template>
-  <div
-    class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4
-           bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-xl p-4">
+  <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4">
     <div class="flex bg-surface-100 dark:bg-surface-800 rounded-lg p-1">
       <button
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex
-               items-center gap-2"
+        class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2"
         :class="scope === 'generic'
           ? 'bg-primary-500 text-white shadow-sm'
           : 'text-color-secondary hover:text-color'"
@@ -16,8 +12,7 @@
         通用规则
       </button>
       <button
-        class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex
-               items-center gap-2"
+        class="px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 flex items-center gap-2"
         :class="scope === 'profession'
           ? 'bg-primary-500 text-white shadow-sm'
           : 'text-color-secondary hover:text-color'"
@@ -112,7 +107,6 @@
 import { computed } from 'vue'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import type { ProfessionCascade } from '@/services/system/dictionaryService'
-import { Colors } from '@/config/designTokens'
 
 interface Props {
   scope: 'generic' | 'profession'
@@ -136,7 +130,7 @@ const filteredEliteSpecs = computed(() => {
 
 function getProfessionColor(value: string): string {
   const prof = props.cascadeProfessions.find(p => p.value === value)
-  return prof?.color || Colors.palette.gray
+  return prof?.color || '#6b7280'
 }
 
 function getProfessionLabel(value: string): string {
@@ -149,7 +143,7 @@ function getSpecColor(value: string): string {
     const spec = prof.elite_specs.find(s => s.value === value)
     if (spec) return spec.color
   }
-  return Colors.palette.gray
+  return '#6b7280'
 }
 
 function getSpecLabel(value: string): string {

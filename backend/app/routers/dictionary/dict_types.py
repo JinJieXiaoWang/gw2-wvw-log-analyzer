@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：字典类型管理API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-29
+# 创建日期：2026-04-29
 # 依赖说明：FastAPI, JWT认证
 
 from typing import Optional
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.config.status_codes import HTTP_200_OK
 from app.schemas.auth.common import ApiResponse
-from app.schemas.game_data.dictionary import (
+from app.schemas.game.dictionary import (
     DictTypeCreate,
     DictTypeResponse,
     DictTypeUpdate,
@@ -33,7 +33,7 @@ router = APIRouter(prefix="/dictionary/types", tags=["字典类型管理"])
     "",
     response_model=ApiResponse,
     summary="获取字典类型列表",
-    description="获取所有字典类型，支持分页和状态筛?,
+    description="获取所有字典类型，支持分页和状态筛选",
 )
 async def get_dict_types(
     page: int = Query(1, ge=1, description="页码"),
@@ -72,7 +72,7 @@ async def get_all_dict_types(
     "/{dict_id}",
     response_model=ApiResponse,
     summary="获取单个字典类型",
-    description="获取指定的字典类型详?,
+    description="获取指定的字典类型详情",
 )
 async def get_dict_type(
     dict_id: int,
@@ -82,7 +82,7 @@ async def get_dict_type(
     service = DictionaryService(db)
     dict_type = service.get_dict_type_by_id(dict_id)
     if not dict_type:
-        raise NotFoundException(f"字典类型不存?)
+        raise NotFoundException(f"字典类型不存在")
     return ApiResponse.success_response(
         code=HTTP_200_OK,
         message="获取字典类型成功",
@@ -104,7 +104,7 @@ async def create_dict_type(
     service = DictionaryService(db)
     existing = service.get_dict_type_by_code(dict_type_data.dict_type)
     if existing:
-        raise BadRequestException(f"字典类型编码已存?)
+        raise BadRequestException(f"字典类型编码已存在")
 
     dict_type = service.create_dict_type(
         dict_type_data.dict_type,
@@ -138,7 +138,7 @@ async def update_dict_type(
     service = DictionaryService(db)
     existing = service.get_dict_type_by_id(dict_id)
     if not existing:
-        raise NotFoundException(f"字典类型不存?)
+        raise NotFoundException(f"字典类型不存在")
 
     dict_type = service.update_dict_type(
         dict_id,
@@ -149,7 +149,7 @@ async def update_dict_type(
     )
 
     if not dict_type:
-        raise NotFoundException(f"字典类型不存?)
+        raise NotFoundException(f"字典类型不存在")
 
     logger.info(f"管理?{current_admin.username} 更新了字典类ID={dict_id}")
 
@@ -164,7 +164,7 @@ async def update_dict_type(
     "/{dict_id}",
     response_model=ApiResponse,
     summary="删除字典类型",
-    description="删除字典类型及关联的字典?,
+    description="删除字典类型及关联的字典项",
 )
 async def delete_dict_type(
     dict_id: int,
@@ -176,7 +176,7 @@ async def delete_dict_type(
     try:
         success = service.delete_dict_type(dict_id)
         if not success:
-            raise NotFoundException(f"字典类型不存?)
+            raise NotFoundException(f"字典类型不存在")
 
         logger.info(f"管理?{current_admin.username} 删除了字典类ID={dict_id}")
 

@@ -10,19 +10,32 @@
     <div class="dialog-form">
       <div class="form-row">
         <label class="form-label">分类名称 *</label>
-        <InputText v-model="localForm.dict_name" placeholder="请输入分类名称" class="w-full" />
+        <InputText
+          v-model="localForm.dict_name"
+          placeholder="请输入分类名称"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">分类编码 *</label>
-        <InputText v-model="localForm.dict_type" placeholder="请输入分类编码" :disabled="!!editingType" class="w-full" />
+        <InputText
+          v-model="localForm.dict_type"
+          placeholder="请输入分类编码"
+          :disabled="!!editingType"
+          class="w-full"
+        />
         <small class="form-hint">编码一旦创建不可修改</small>
       </div>
       <div class="form-row">
         <label class="form-label">排序</label>
-        <InputNumber v-model="localForm.sort_order" :min="0" class="w-full" />
+        <InputNumber
+          v-model="localForm.sort_order"
+          :min="0"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
-        <label class="form-label">״̬</label>
+        <label class="form-label">状态</label>
         <BaseSelect
           v-model="localForm.status"
           :options="statusOptions"
@@ -32,8 +45,13 @@
         />
       </div>
       <div class="form-row">
-        <label class="form-label">备ע</label>
-        <Textarea v-model="localForm.remark" placeholder="请输入备注说明" rows="3" class="w-full" />
+        <label class="form-label">备注</label>
+        <Textarea
+          v-model="localForm.remark"
+          placeholder="请输入备注说明"
+          rows="3"
+          class="w-full"
+        />
       </div>
     </div>
   </BaseDialog>
@@ -44,8 +62,8 @@ import { ref, watch, computed } from 'vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import type { DictType } from '@/services/system/dictionaryService'
 
 interface TypeForm {

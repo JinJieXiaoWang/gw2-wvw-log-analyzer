@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+﻿﻿# -*- coding: utf-8 -*-
 """数据看板概览服务"""
 
 from datetime import datetime, timedelta
@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 
 from app.models.auth.account_character import AccountCharacter
 from app.models.auth.member import Member
-from app.models.log import Log
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
 from app.utils.logger import logger
 
 
@@ -25,7 +25,7 @@ def _get_date_range(days: int) -> Tuple[Optional[datetime], datetime]:
 
 
 def _apply_time_filter(query, start_date: Optional[datetime], end_date: datetime):
-    """为查询应用时间范围过滤（基于 Fight.start_time?""
+    """为查询应用时间范围过滤（基于 Fight.start_time）"""
     if start_date:
         query = query.filter(Fight.start_time >= start_date)
     query = query.filter(Fight.start_time <= end_date)

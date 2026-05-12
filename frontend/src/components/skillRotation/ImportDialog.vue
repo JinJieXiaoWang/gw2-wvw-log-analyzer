@@ -29,14 +29,14 @@
       </div>
     </div>
     <template #footer>
-      <Button
+      <BaseButton
         label="取消"
-        class="btn-ghost"
+        variant="ghost"
         @click="closeDialog"
       />
-      <Button
+      <BaseButton
         label="导入"
-        class="btn-game"
+        variant="game"
         @click="importRotation"
       />
     </template>
@@ -53,7 +53,7 @@
 
 import { ref } from 'vue'
 import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import Textarea from 'primevue/textarea'
 
 // Props

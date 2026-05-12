@@ -210,7 +210,6 @@ export async function loadDictMapping(
   // 如果API返回为空，使用硬编码数据
   if (!options || options.length === 0) {
     options = getHardcodedOptions(normalizedType)
-    console.log(`[DictMapping] 使用硬编码字典数据: ${normalizedType}`)
   }
   
   // 构建并缓存

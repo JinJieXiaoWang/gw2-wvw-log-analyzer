@@ -18,12 +18,12 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <Button
+        <BaseButton
           v-for="m in metricOptions"
           :key="m.value"
           :label="m.label"
           size="small"
-          :class="metric === m.value ? 'btn-game' : 'btn-ghost'"
+          :variant="metric === m.value ? 'game' : 'ghost'"
           @click="switchMetric(m.value)"
         />
       </div>
@@ -56,12 +56,12 @@
  * 更新：2026-05-04 - 集成 ECharts + 真实 API
  */
 
-import { computed } from 'vue'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { BarChart, LineChart } from 'echarts/charts'
+import { DataZoomComponent, GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent, LegendComponent, DataZoomComponent } from 'echarts/components'
+import { computed } from 'vue'
 import VChart from 'vue-echarts'
 
 use([CanvasRenderer, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent])
@@ -78,21 +78,21 @@ const emit = defineEmits<{
 
 const metricOptions = [
   { label: '伤害', value: 'damage' },
-  { label: '治疗', value: 'healing' },
+  { label: '击倒人数', value: 'downed' },
   { label: '场次', value: 'fights' },
   { label: '活跃', value: 'active_accounts' },
 ]
 
 const metricColors: Record<string, string> = {
   damage: '#ef4444',
-  healing: '#22c55e',
+  downed: '#f59e0b',
   fights: '#3b82f6',
   active_accounts: '#a855f7',
 }
 
 const metricLabels: Record<string, string> = {
   damage: '总伤害',
-  healing: '总治疗',
+  downed: '击倒人数',
   fights: '战斗场次',
   active_accounts: '活跃账号',
 }

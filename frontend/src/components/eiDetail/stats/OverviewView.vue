@@ -14,9 +14,7 @@
           场均 {{ formatNumber(avgDamage) }}
         </p>
       </div>
-      <div
-        class="card bg-gradient-to-br from-status-warning/20 to-status-warning/5
-               border-status-warning/30">
+      <div class="card bg-gradient-to-br from-status-warning/20 to-status-warning/5 border-status-warning/30">
         <div class="flex items-center gap-3 mb-2">
           <i class="pi pi-shield text-status-warning text-xl" />
           <span class="text-sm text-neutral-text-secondary">总承伤</span>
@@ -40,9 +38,7 @@
           场均 {{ avgKills }}
         </p>
       </div>
-      <div
-        class="card bg-gradient-to-br from-status-error/20 to-status-error/5
-               border-status-error/30">
+      <div class="card bg-gradient-to-br from-status-error/20 to-status-error/5 border-status-error/30">
         <div class="flex items-center gap-3 mb-2">
           <i class="pi pi-times-circle text-status-error text-xl" />
           <span class="text-sm text-neutral-text-secondary">死亡数</span>
@@ -68,8 +64,7 @@
           <div
             v-for="(player, idx) in topDpsPlayers"
             :key="player.instanceID"
-              class="flex items-center gap-4 p-3 rounded-lg hover:bg-neutral-bg/50
-                     transition-colors cursor-pointer"
+            class="flex items-center gap-4 p-3 rounded-lg hover:bg-neutral-bg/50 transition-colors cursor-pointer"
             @click="$emit('select-player', player.instanceID)"
           >
             <div

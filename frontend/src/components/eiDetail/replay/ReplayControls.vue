@@ -113,4 +113,4 @@ function formatTime(seconds: number): string {
 }
 </script>
 
-
+<style scoped>@import './CombatReplay.css';</style>

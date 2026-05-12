@@ -7,19 +7,18 @@
 
 import { computed } from 'vue'
 import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   players: EiAnalysisPlayer[]
 }>()
 
 const buffStats = computed(() => [
-  { label: '力量', key: 'might_uptime', icon: '🔥', color: Colors.palette.roseBright },
-  { label: '狂怒', key: 'fury_uptime', icon: '⚡', color: Colors.palette.orangeBright },
-  { label: '保护', key: 'protection_uptime', icon: '🛡️', color: Colors.palette.mint },
-  { label: '急速', key: 'quickness_uptime', icon: '⏱️', color: Colors.primary.DEFAULT },
-  { label: '敏捷', key: 'alacrity_uptime', icon: '⏩', color: Colors.palette.indigo },
-  { label: '稳固', key: 'stability_uptime', icon: '🔒', color: Colors.palette.salmon },
+  { label: '力量', key: 'might_uptime', icon: '🔥', color: '#FF4D6A' },
+  { label: '狂怒', key: 'fury_uptime', icon: '⚡', color: '#FFAA00' },
+  { label: '保护', key: 'protection_uptime', icon: '🛡️', color: '#00D68F' },
+  { label: '急速', key: 'quickness_uptime', icon: '⏱️', color: '#165DFF' },
+  { label: '敏捷', key: 'alacrity_uptime', icon: '⏩', color: '#6366F1' },
+  { label: '稳固', key: 'stability_uptime', icon: '🔒', color: '#FF8A65' },
 ])
 
 const buffCoverage = computed(() => {

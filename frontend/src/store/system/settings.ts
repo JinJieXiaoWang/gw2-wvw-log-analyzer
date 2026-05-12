@@ -8,7 +8,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 import { ThemeService } from '@/services/system/themeService'
-import { DEFAULT_THEME_ID } from '@/constants/themes'
+import { DEFAULT_THEME_ID } from '@/config/themes'
 import { settingsService } from '@/services'
 
 export type ThemeMode = 'light' | 'dark' | 'system'

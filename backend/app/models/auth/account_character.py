@@ -7,21 +7,20 @@
 
 from datetime import date
 
+from app.config.database import Base
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.config.database import Base
-
-
+"""账号角色映射模型"""
 class AccountCharacter(Base):
-    """账号角色映射??存储同一account下的所有角色信?""
+    """账号角色映射模型，存储同一account下的所有角色映信息"""
 
     __tablename__ = "account_characters"
     __table_args__ = (
         Index("uk_account_character", "account_name", "character_name", unique=True),
         Index("idx_account_name", "account_name"),
         Index("idx_character_name", "character_name"),
-        {"comment": "账号角色映射?},
+        {"comment": "账号角色映射表"},
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="映射ID")
@@ -29,7 +28,7 @@ class AccountCharacter(Base):
     character_name = Column(String(100), nullable=False, index=True, comment="角色名称")
     profession = Column(String(50), nullable=True, comment="职业")
     first_seen_date = Column(Date, nullable=False, comment="首次出现日期")
-    last_seen_date = Column(Date, nullable=False, comment="最后出现日期)
+    last_seen_date = Column(Date, nullable=False, comment="最后出现日期")
     seen_count = Column(Integer, default=1, comment="出现次数")
 
     def __repr__(self):

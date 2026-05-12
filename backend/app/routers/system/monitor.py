@@ -33,7 +33,7 @@ async def get_error_stats(current_admin: SysUser = Depends(get_current_admin)):
 
 @router.get("/errors/report", response_model=ApiResponse, summary="获取完整错误报告")
 async def get_error_report_api(current_admin: SysUser = Depends(get_current_admin)):
-    """获取详细的错误报?""
+    """获取详细的错误报告"""
     try:
         report = get_error_report()
         return ApiResponse(success=True, message="获取错误报告成功", data=report)
@@ -44,11 +44,11 @@ async def get_error_report_api(current_admin: SysUser = Depends(get_current_admi
 
 @router.post("/errors/clear", response_model=ApiResponse, summary="清空错误统计")
 async def clear_error_stats(current_admin: SysUser = Depends(get_current_admin)):
-    """清空所有错误统?""
+    """清空所有错误统计"""
     try:
         ErrorMonitor.clear_stats()
-        logger.info(f"管理?{current_admin.username} 清空了错误统?)
-        return ApiResponse(success=True, message="错误统计已清?)
+        logger.info(f"管理员 {current_admin.username} 清空了错误统计")
+        return ApiResponse(success=True, message="错误统计已清空")
     except Exception as e:
         logger.error(f"清空错误统计失败: {e}")
         raise
@@ -58,7 +58,7 @@ async def clear_error_stats(current_admin: SysUser = Depends(get_current_admin))
 async def export_errors(
     limit: int = 100, current_admin: SysUser = Depends(get_current_admin)
 ):
-    """导出错误到文?""
+    """导出错误到文件"""
     try:
         import os
         from datetime import datetime
@@ -70,7 +70,7 @@ async def export_errors(
         success = export_errors_to_file(filepath, limit)
 
         if success:
-            logger.info(f"管理?{current_admin.username} 导出了错误记?)
+            logger.info(f"管理员 {current_admin.username} 导出了错误记录")
             return ApiResponse(
                 success=True,
                 message="错误导出成功",
@@ -83,9 +83,9 @@ async def export_errors(
         raise
 
 
-@router.get("/health", response_model=ApiResponse, summary="健康检?)
+@router.get("/health", response_model=ApiResponse, summary="健康检查")
 async def health_check():
-    """简单的健康检查端?""
+    """简单的健康检查端点"""
     return ApiResponse(
         success=True,
         message="系统运行正常",

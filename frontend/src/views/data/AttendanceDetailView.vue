@@ -1,16 +1,13 @@
 <template>
   <div class="space-y-6">
     <!-- 页面头部 -->
-    <div
-      class="bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 rounded-xl
-             p-6 border border-primary/20">
+    <div class="bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 rounded-xl p-6 border border-primary/20">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-3">
             <router-link
               to="/attendance"
-                class="p-2 rounded-lg bg-neutral-card/50 hover:bg-primary/10 transition-all
-                       duration-200 text-neutral-text-secondary hover:text-primary group"
+              class="p-2 rounded-lg bg-neutral-card/50 hover:bg-primary/10 transition-all duration-200 text-neutral-text-secondary hover:text-primary group"
             >
               <i class="pi pi-arrow-left group-hover:translate-x-[-2px] transition-transform" />
             </router-link>
@@ -50,8 +47,7 @@
     <!-- 加载状态 -->
     <div
       v-if="loading"
-        class="card flex items-center justify-center py-16 bg-neutral-card/50
-               border-neutral-border/50"
+      class="card flex items-center justify-center py-16 bg-neutral-card/50 border-neutral-border/50"
     >
       <div class="flex flex-col items-center gap-4">
         <div class="relative">
@@ -66,15 +62,10 @@
 
     <template v-else-if="detailData">
       <!-- 快速信息 -->
-      <div
-        class="card p-4 bg-gradient-to-r from-neutral-card to-neutral-bg-secondary
-               border-neutral-border/50 rounded-xl">
+      <div class="card p-4 bg-gradient-to-r from-neutral-card to-neutral-bg-secondary border-neutral-border/50 rounded-xl">
         <div class="flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-4">
-            <div
-              class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex
-                     items-center justify-center shadow-lg shadow-primary/20 border-2
-                     border-primary/30">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 border-2 border-primary/30">
               <span class="text-2xl font-bold text-white">{{ account?.charAt(0) || '?' }}</span>
             </div>
             <div>
@@ -90,9 +81,7 @@
             </div>
           </div>
           <div class="flex flex-wrap items-center gap-6">
-            <div
-              class="flex items-center gap-2 group cursor-pointer transition-colors
-                     hover:text-primary">
+            <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-primary">
               <div class="p-2 rounded-lg transition-colors bg-primary/10 group-hover:bg-primary/20">
                 <i class="pi pi-calendar-check text-primary" />
               </div>
@@ -101,9 +90,7 @@
                 <p class="text-sm font-semibold text-neutral-text">{{ summary.attendance_count || 0 }}</p>
               </div>
             </div>
-            <div
-              class="flex items-center gap-2 group cursor-pointer transition-colors
-                     hover:text-secondary">
+            <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-secondary">
               <div class="p-2 rounded-lg transition-colors bg-secondary/10 group-hover:bg-secondary/20">
                 <i class="pi pi-clock text-secondary" />
               </div>
@@ -112,12 +99,8 @@
                 <p class="text-sm font-semibold text-neutral-text">{{ formatDuration(summary.total_duration_sec || 0) }}</p>
               </div>
             </div>
-            <div
-              class="flex items-center gap-2 group cursor-pointer transition-colors
-                     hover:text-status-error">
-              <div
-                class="p-2 rounded-lg transition-colors bg-status-error/10
-                       group-hover:bg-status-error/20">
+            <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-status-error">
+              <div class="p-2 rounded-lg transition-colors bg-status-error/10 group-hover:bg-status-error/20">
                 <i class="pi pi-bolt text-status-error" />
               </div>
               <div>
@@ -125,12 +108,8 @@
                 <p class="text-sm font-semibold text-neutral-text">{{ formatNumber(summary.total_damage || 0) }}</p>
               </div>
             </div>
-            <div
-              class="flex items-center gap-2 group cursor-pointer transition-colors
-                     hover:text-status-success">
-              <div
-                class="p-2 rounded-lg transition-colors bg-status-success/10
-                       group-hover:bg-status-success/20">
+            <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-status-success">
+              <div class="p-2 rounded-lg transition-colors bg-status-success/10 group-hover:bg-status-success/20">
                 <i class="pi pi-trophy text-status-success" />
               </div>
               <div>

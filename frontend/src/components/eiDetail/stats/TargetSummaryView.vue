@@ -1,7 +1,7 @@
 <template>
-  <div class="target-summary-view flex flex-col gap-6">
+  <div class="target-summary-view">
     <!-- 目标统计卡片 -->
-    <div class="targets-grid grid grid-cols-[repeat(auto-fit, minmax(320px, 1fr))] gap-4">
+    <div class="targets-grid">
       <TargetStatsCard
         v-for="target in targets"
         :key="target.instanceID"
@@ -10,55 +10,55 @@
     </div>
 
     <!-- 目标伤害贡献 -->
-    <div class="damage-contribution card bg-neutral-card rounded-xl overflow-hidden p-5">
-      <div class="section-header mb-4">
-        <h3 class="section-title flex items-center gap-2 text-base font-semibold text-neutral-text m-0">
-          <i class="pi pi-chart-bar text-[var(--color-error)]" />
+    <div class="damage-contribution card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-chart-bar" />
           目标伤害贡献
         </h3>
       </div>
-      <div class="contribution-list flex flex-col gap-4">
+      <div class="contribution-list">
         <div
           v-for="target in targetsWithDamage"
           :key="target.instanceID"
-          class="contribution-item p-4 bg-neutral-card-hover rounded-lg"
+          class="contribution-item"
         >
-          <div class="target-info-row flex items-center gap-3 mb-3">
+          <div class="target-info-row">
             <img
               v-if="target.icon"
               :src="target.icon"
-              class="target-icon-sm w-8 h-8 rounded-md"
+              class="target-icon-sm"
               alt=""
             >
-            <span class="target-name text-sm font-semibold text-neutral-text flex-1">{{ target.name }}</span>
+            <span class="target-name">{{ target.name }}</span>
             <span
-              class="target-status-badge text-xs p-[0.25rem 0.5rem] rounded-full bg-green-500/[0.1] text-green-500"
-              :class="{ dead: target.finalHealth === 0, 'bg-red-500/10 text-red-500': target.finalHealth === 0, 'bg-green-500/[0.1] text-green-500': target.finalHealth !== 0 }"
+              class="target-status-badge"
+              :class="{ dead: target.finalHealth === 0 }"
             >
               {{ target.finalHealth === 0 ? '已击杀' : '存活' }}
             </span>
           </div>
-          <div class="damage-bar-row flex items-center gap-3 mb-3">
-            <div class="damage-bar-track flex-1 h-2 border-neutral-border rounded-[4px] overflow-hidden">
+          <div class="damage-bar-row">
+            <div class="damage-bar-track">
               <div
-                class="damage-bar-fill h-full bg-[linear-gradient(90deg, var(--color-error), var(--color-secondary))] rounded-[4px]"
+                class="damage-bar-fill"
                 :style="{ width: getDamagePercent(target) + '%' }"
               />
             </div>
-            <span class="damage-value text-sm font-semibold text-neutral-text w-20 text-right">{{ formatDamage(getTargetDamage(target)) }}</span>
+            <span class="damage-value">{{ formatDamage(getTargetDamage(target)) }}</span>
           </div>
-          <div class="player-contributions flex flex-wrap gap-3">
+          <div class="player-contributions">
             <div
               v-for="contrib in getTopContributors(target)"
               :key="contrib.playerId"
-              class="contrib-player flex items-center gap-1.5 p-[0.375rem 0.625rem] bg-neutral-bg rounded-md text-[0.8125rem]"
+              class="contrib-player"
             >
               <span
-                class="contrib-dot w-2 h-2 rounded-full"
+                class="contrib-dot"
                 :style="{ backgroundColor: contrib.color }"
               />
-              <span class="contrib-name text-neutral-text">{{ contrib.name }}</span>
-              <span class="contrib-dmg text-neutral-text-secondary font-medium">{{ formatDamage(contrib.damage) }}</span>
+              <span class="contrib-name">{{ contrib.name }}</span>
+              <span class="contrib-dmg">{{ formatDamage(contrib.damage) }}</span>
             </div>
           </div>
         </div>
@@ -108,4 +108,149 @@ function getTopContributors(target: Target) {
 }
 </script>
 
+<style scoped lang="css">
+.target-summary-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
+.targets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.damage-contribution {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  padding: 1.25rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.section-title i {
+  color: var(--color-error);
+}
+
+.contribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.contribution-item {
+  padding: 1rem;
+  background-color: var(--color-card-hover);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+
+.target-info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.target-icon-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 0.375rem;
+}
+
+.target-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  flex: 1;
+}
+
+.target-status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+}
+
+.target-status-badge.dead {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.damage-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.damage-bar-track {
+  flex: 1;
+  height: 8px;
+  background-color: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.damage-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-error), var(--color-secondary));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+.damage-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  width: 80px;
+  text-align: right;
+}
+
+.player-contributions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.contrib-player {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.625rem;
+  background-color: var(--color-bg);
+  border-radius: 0.375rem;
+  font-size: 0.8125rem;
+}
+
+.contrib-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.contrib-name {
+  color: var(--color-text);
+}
+
+.contrib-dmg {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+</style>

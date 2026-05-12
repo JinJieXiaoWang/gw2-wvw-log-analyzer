@@ -6,7 +6,7 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 // 字段转换工具函数：snake_case -> camelCase
 export function snakeToCamel(str: string): string {

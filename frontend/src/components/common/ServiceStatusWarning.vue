@@ -1,15 +1,15 @@
 <template>
   <div
     v-if="showWarning"
-    class="service-warning fixed top-0 left-0 right-0 z-[1000] bg-[linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)]"
+    class="service-warning"
   >
-    <div class="warning-content flex items-center justify-center gap-3 p-[12px 24px] max-w-[1200px] m-[0 auto] max-md:py-2.5 max-md:px-4">
-      <i class="pi pi-exclamation-triangle warning-icon text-[20px] text-[#d97706]" />
-      <span class="warning-text text-[14px] font-medium text-[#78350f] max-md:text-[13px]">
+    <div class="warning-content">
+      <i class="pi pi-exclamation-triangle warning-icon" />
+      <span class="warning-text">
         {{ warningMessage }}
       </span>
       <button
-        class="close-btn flex items-center justify-center w-7 h-7 bg-black/[0.05] rounded-full cursor-pointer text-[#92400e] hover:bg-black/10 hover:text-[#78350f]"
+        class="close-btn"
         @click="dismissWarning"
       >
         <i class="pi pi-times" />
@@ -68,4 +68,65 @@ onUnmounted(() => {
 })
 </script>
 
+<style scoped>
+.service-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-bottom: 2px solid #f59e0b;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.15);
+}
 
+.warning-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 12px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.warning-icon {
+  font-size: 20px;
+  color: #d97706;
+}
+
+.warning-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #78350f;
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  cursor: pointer;
+  color: #92400e;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #78350f;
+}
+
+@media (max-width: 768px) {
+  .warning-content {
+    padding: 10px 16px;
+  }
+
+  .warning-text {
+    font-size: 13px;
+  }
+}
+</style>

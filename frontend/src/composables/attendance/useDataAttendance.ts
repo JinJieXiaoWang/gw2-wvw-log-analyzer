@@ -1,10 +1,10 @@
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { attendanceService } from '@/services'
-import { scoringRulesService } from '@/services/scoring/scoringRulesService'
+import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { configManager } from '@/services/core/configManager'
-import { formatDateParam } from '@/utils/attendance/attendanceFormatters'
+import { formatDateParam } from '@/utils/common/attendanceFormatters'
 
 const ROLE_LABEL_MAP: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
 
@@ -41,7 +41,7 @@ export function useDataAttendance() {
   const pagination = ref({ page: 1, pageSize: 20, total: 0 })
   const currentSort = ref({ field: 'attendance_count', order: 'desc' })
 
-  const statCards = ref({ totalAccounts: 0, totalDuration: 0, totalDamage: 0, totalHealing: 0 })
+  const statCards = ref({ totalAccounts: 0, totalDuration: 0, totalDamage: 0, totalDowned: 0 })
 
   // 详情
   const detailVisible = ref(false)
@@ -85,8 +85,9 @@ export function useDataAttendance() {
     try {
       const result = await ApiResponseWrapper.wrap(attendanceService.getFilters(), { showErrorMessage: false })
       if (result.success && result.data) {
-        filterOptions.value.maps = result.data.maps || []
-        filterOptions.value.professions = result.data.professions || []
+        const data = result.data as any
+        filterOptions.value.maps = data.maps || []
+        filterOptions.value.professions = data.professions || []
       }
     } catch (e) { console.error('获取筛选选项失败', e) }
   }
@@ -113,13 +114,13 @@ export function useDataAttendance() {
     try {
       const result = await ApiResponseWrapper.wrap(attendanceService.getAccounts(buildParams()), { showErrorMessage: true })
       if (result.success && result.data) {
-        const data = result.data
+        const data = result.data as any
         accountList.value = data.items || []
         pagination.value.total = data.total || 0
         statCards.value.totalAccounts = pagination.value.total
         statCards.value.totalDuration = accountList.value.reduce((s, i) => s + (i.total_duration_sec || 0), 0)
         statCards.value.totalDamage = accountList.value.reduce((s, i) => s + (i.total_damage || 0), 0)
-        statCards.value.totalHealing = accountList.value.reduce((s, i) => s + (i.total_healing || 0), 0)
+        statCards.value.totalDowned = accountList.value.reduce((s, i) => s + (i.total_downed || 0), 0)
       } else {
         accountList.value = []
         pagination.value.total = 0

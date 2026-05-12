@@ -133,8 +133,7 @@ const emit = defineEmits<{
             <div
               v-for="(f, idx) in playerRotation.consumables.food"
               :key="`food-${idx}`"
-                class="flex items-center gap-2 px-2 py-1 rounded bg-status-success/10 text-xs
-                       text-neutral-text"
+              class="flex items-center gap-2 px-2 py-1 rounded bg-status-success/10 text-xs text-neutral-text"
             >
               <img
                 v-if="f.icon"
@@ -146,8 +145,7 @@ const emit = defineEmits<{
             <div
               v-for="(u, idx) in playerRotation.consumables.utility"
               :key="`util-${idx}`"
-                class="flex items-center gap-2 px-2 py-1 rounded bg-primary/10 text-xs
-                       text-neutral-text"
+              class="flex items-center gap-2 px-2 py-1 rounded bg-primary/10 text-xs text-neutral-text"
             >
               <img
                 v-if="u.icon"
@@ -198,8 +196,7 @@ const emit = defineEmits<{
                 >
                 <div
                   v-else
-                    class="w-8 h-8 rounded bg-neutral-bg flex items-center justify-center text-xs
-                           text-neutral-text-secondary"
+                  class="w-8 h-8 rounded bg-neutral-bg flex items-center justify-center text-xs text-neutral-text-secondary"
                 >
                   ?
                 </div>
@@ -238,8 +235,7 @@ const emit = defineEmits<{
           <!-- 悬浮提示 -->
           <div
             v-if="hoveredSkill && tooltipPosition"
-              class="fixed z-50 p-3 rounded-lg bg-neutral-card border border-neutral-border
-                     shadow-xl pointer-events-none"
+            class="fixed z-50 p-3 rounded-lg bg-neutral-card border border-neutral-border shadow-xl pointer-events-none"
             :style="{ left: tooltipPosition.x + 'px', top: tooltipPosition.y + 'px' }"
           >
             <div class="flex items-center gap-2 mb-2">

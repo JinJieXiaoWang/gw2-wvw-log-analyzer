@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：字典数据管理API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-29
+# 创建日期：2026-04-29
 # 依赖说明：FastAPI, JWT认证
 
 import json
@@ -14,7 +14,7 @@ from sqlalchemy.orm import Session
 from app.config.database import get_db
 from app.config.status_codes import HTTP_200_OK
 from app.schemas.auth.common import ApiResponse
-from app.schemas.game_data.dictionary import (
+from app.schemas.game.dictionary import (
     DictDataCreate,
     DictDataResponse,
     DictDataUpdate,
@@ -33,14 +33,14 @@ router = APIRouter(prefix="/dictionary", tags=["字典数据管理"])
 @router.get(
     "/data",
     response_model=ApiResponse,
-    summary="获取字典项列?,
-    description="获取字典项列表，支持按字典类型筛?,
+    summary="获取字典项列表",
+    description="获取字典项列表，支持按字典类型筛选",
 )
 async def get_dict_data(
     dict_type: str = Query(..., description="字典类型编码"),
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(50, ge=1, le=200, description="每页数量"),
-    status: Optional[int] = Query(None, description="状态筛?),
+    status: Optional[int] = Query(None, description="状态筛选"),
     db: Session = Depends(get_db),
     current_admin=Depends(get_current_admin),
 ):
@@ -49,14 +49,14 @@ async def get_dict_data(
         dict_type, status=status, page=page, page_size=page_size
     )
     return ApiResponse.success_response(
-        code=HTTP_200_OK, message="获取字典项成?, data=result
+        code=HTTP_200_OK, message="获取字典项成功", data=result
     )
 
 
 @router.get(
     "/data/{dict_code}",
     response_model=ApiResponse,
-    summary="获取单个字典?,
+    summary="获取单个字典项详情",
     description="获取指定的字典项详情",
 )
 async def get_dict_data_detail(
@@ -70,7 +70,7 @@ async def get_dict_data_detail(
         raise NotFoundException(f"字典项不存在")
     return ApiResponse.success_response(
         code=HTTP_200_OK,
-        message="获取字典项成?,
+        message="获取字典项成功",
         data=DictDataResponse.model_validate(dict_data),
     )
 
@@ -79,7 +79,7 @@ async def get_dict_data_detail(
     "/options/{dict_type}",
     response_model=ApiResponse,
     summary="获取字典选项",
-    description="获取指定字典类型的下拉选项（公开接口?,
+    description="获取指定字典类型的下拉选项（公开接口）",
 )
 async def get_dict_options(dict_type: str, db: Session = Depends(get_db)):
     service = DictionaryService(db)
@@ -92,8 +92,8 @@ async def get_dict_options(dict_type: str, db: Session = Depends(get_db)):
 @router.post(
     "/data",
     response_model=ApiResponse,
-    summary="创建字典?,
-    description="创建新的字典?,
+    summary="创建字典项",
+    description="创建新的字典项",
 )
 async def create_dict_data(
     dict_data_data: DictDataCreate,
@@ -103,10 +103,10 @@ async def create_dict_data(
     service = DictionaryService(db)
     dict_type_obj = service.get_dict_type_by_code(dict_data_data.dict_type)
     if not dict_type_obj:
-        raise NotFoundException(f"字典类型 {dict_data_data.dict_type} 不存?)
+        raise NotFoundException(f"字典类型 {dict_data_data.dict_type} 不存在")
 
     if service.check_dict_value_exists(dict_data_data.dict_type, dict_data_data.dict_value):
-        raise BadRequestException(f"字典项?{dict_data_data.dict_value} 已存?)
+        raise BadRequestException(f"字典项 {dict_data_data.dict_value} 已存在")
 
     dict_data = service.create_dict_data(
         dict_type=dict_data_data.dict_type,
@@ -125,7 +125,7 @@ async def create_dict_data(
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,
-        message="创建字典项成?,
+        message="创建字典项成功",
         data=DictDataResponse.model_validate(dict_data),
     )
 
@@ -133,8 +133,8 @@ async def create_dict_data(
 @router.put(
     "/data/{dict_code}",
     response_model=ApiResponse,
-    summary="更新字典?,
-    description="更新字典项信?,
+    summary="更新字典项",
+    description="更新指定的字典项",
 )
 async def update_dict_data(
     dict_code: int,
@@ -167,7 +167,7 @@ async def update_dict_data(
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,
-        message="更新字典项成?,
+        message="更新字典项成功",
         data=DictDataResponse.model_validate(dict_data),
     )
 
@@ -175,7 +175,7 @@ async def update_dict_data(
 @router.delete(
     "/data/{dict_code}",
     response_model=ApiResponse,
-    summary="删除字典?,
+    summary="删除字典项",
     description="删除指定的字典项",
 )
 async def delete_dict_data(
@@ -195,7 +195,7 @@ async def delete_dict_data(
     logger.info(f"管理?{current_admin.username} 删除了字典项 ID={dict_code}")
 
     return ApiResponse.success_response(
-        code=HTTP_200_OK, message="删除字典项成?, data=None
+        code=HTTP_200_OK, message="删除字典项成功", data=None
     )
 
 
@@ -226,7 +226,7 @@ async def reload_dict_cache(
 ):
     from app.utils.db.dict_utils import load_all_dictionaries
     load_all_dictionaries(db)
-    logger.info(f"管理?{current_admin.username} 刷新了字典缓?)
+    logger.info(f"管理?{current_admin.username} 刷新了字典缓存")
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="刷新字典缓存成功", data=None
     )
@@ -235,8 +235,8 @@ async def reload_dict_cache(
 @router.post(
     "/init",
     response_model=ApiResponse,
-    summary="初始化字典数据,
-    description="初始化系统预置字典数据,
+    summary="初始化字典数据",
+    description="初始化系统预置字典数据",
 )
 async def init_dictionary_data(
     db: Session = Depends(get_db), current_admin=Depends(require_super_admin)
@@ -245,5 +245,5 @@ async def init_dictionary_data(
     result = init_dictionary_data(db)
     logger.info(f"管理?{current_admin.username} 初始化了字典数据")
     return ApiResponse.success_response(
-        code=HTTP_200_OK, message="初始化字典数据成?, data=result
+        code=HTTP_200_OK, message="初始化字典数据成功", data=result
     )

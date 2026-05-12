@@ -169,4 +169,4 @@ const condiPercent = computed(() => {
 })
 </script>
 
-
+<style scoped lang="css">@import './TeamSummaryCard.css';</style>

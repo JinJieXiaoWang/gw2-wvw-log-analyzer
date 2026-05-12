@@ -1,12 +1,16 @@
 <template>
-  <ProgressBar v-bind="$attrs" :value="value" />
+  <ProgressBar
+    v-bind="$attrs"
+    :value="value"
+  />
 </template>
 
 <script setup lang="ts">
 /**
  * BaseProgressBar - 基础进度条组件
- * 功能：对 PrimeVue ProgressBar 的封装
+ * 功能：对 PrimeVue ProgressBar 的封装，支持透传所有原生 props
  */
+
 import ProgressBar from 'primevue/progressbar'
 
 interface Props {

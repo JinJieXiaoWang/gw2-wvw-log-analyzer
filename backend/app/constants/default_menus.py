@@ -16,7 +16,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "home",
         "perms": None,
-        "remark": "数据总览首页（公开?
+        "remark": "数据总览首页（公开）",
     },
     # 日志管理 - 公开访问
     {
@@ -31,7 +31,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "log",
         "perms": None,
-        "remark": "日志管理目录（公开?
+        "remark": "日志管理目录（公开）",
     },
     {
         "key": "logs_list",
@@ -46,7 +46,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "file",
         "perms": None,
-        "remark": "日志列表页面（公开?
+        "remark": "日志列表页面（公开）",
     },
     {
         "key": "logs_upload",
@@ -61,7 +61,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "upload",
         "perms": "upload",
-        "remark": "上传日志页面（需登录?
+        "remark": "上传日志页面（需登录）",
     },
     {
         "key": "logs_detail",
@@ -76,7 +76,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "file-text",
         "perms": None,
-        "remark": "日志详情页面（公开?
+        "remark": "日志详情页面（公开）",
     },
     # 出勤统计 - 公开访问
     {
@@ -92,12 +92,12 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "users",
         "perms": None,
-        "remark": "出勤统计页面（公开?
+        "remark": "出勤统计页面（公开）",
     },
-    # 技能循环分?- 公开访问
+    # 技能循环分析 ?- 公开访问
     {
         "key": "skill_analysis",
-        "menu_name": "技能循?,
+        "menu_name": "技能循环分析",
         "parent_key": None,
         "order_num": 4,
         "path": "/skill-analysis",
@@ -108,7 +108,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "activity",
         "perms": None,
-        "remark": "技能循环分析页面（公开?
+        "remark": "技能循环分析页面（公开）",
     },
     # Build管理 - 公开访问
     {
@@ -123,11 +123,11 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "code",
         "perms": None,
-        "remark": "Build管理目录（公开?
+        "remark": "Build管理目录（公开）",
     },
     {
         "key": "builds_library",
-        "menu_name": "配置图书?,
+        "menu_name": "配置图书",
         "parent_key": "builds_dir",
         "order_num": 1,
         "path": "/builds",
@@ -138,7 +138,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "book",
         "perms": None,
-        "remark": "配置图书馆页面（公开?
+        "remark": "配置图书馆页面（公开）",
     },
     {
         "key": "builds_parse",
@@ -153,9 +153,10 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "code",
         "perms": None,
-        "remark": "Build代码解析页面（公开?
+        "remark": "Build代码解析页面（公开?）",
     },
-    # 系统管理 - 需管理员权?    {
+    # 系统管理 - 需管理员权限
+    {
         "key": "system_dir",
         "menu_name": "系统管理",
         "parent_key": None,
@@ -167,7 +168,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "settings",
         "perms": "manage_users",
-        "remark": "系统管理目录（管理员?
+        "remark": "系统管理目录（管理员）",
     },
     {
         "key": "settings",
@@ -182,7 +183,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "cog",
         "perms": "manage_users",
-        "remark": "系统设置页面（管理员?
+        "remark": "系统设置页面（管理员）",
     },
     {
         "key": "scoring_rules",
@@ -197,7 +198,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "award",
         "perms": "manage_users",
-        "remark": "评分规则页面（管理员?
+        "remark": "评分规则页面（管理员）",
     },
     {
         "key": "dictionary",
@@ -212,7 +213,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "list",
         "perms": "manage_users",
-        "remark": "字典管理页面（管理员?
+        "remark": "字典管理页面（管理员）",
     },
     {
         "key": "professions",
@@ -227,6 +228,6 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "users",
         "perms": "manage_users",
-        "remark": "职业、精英特长、角色定位管理（管理员）"
+        "remark": "职业、精英特长、角色定位管理（管理员）",
     },
 ]

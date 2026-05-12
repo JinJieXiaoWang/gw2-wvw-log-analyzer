@@ -21,9 +21,7 @@
     >
       <!-- 伤害细分 -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div
-          class="card p-4 rounded-xl bg-gradient-to-br from-primary/10 to-transparent
-                 border-primary/20">
+        <div class="card p-4 rounded-xl bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">直伤总量</span>
             <div class="p-1.5 rounded-lg bg-primary/20">
@@ -45,9 +43,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="card p-4 rounded-xl bg-gradient-to-br from-success/10 to-transparent
-                 border-success/20">
+        <div class="card p-4 rounded-xl bg-gradient-to-br from-success/10 to-transparent border-success/20">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">症状总量</span>
             <div class="p-1.5 rounded-lg bg-success/20">
@@ -69,9 +65,7 @@
             </div>
           </div>
         </div>
-        <div
-          class="card p-4 rounded-xl bg-gradient-to-br from-secondary/10 to-transparent
-                 border-secondary/20">
+        <div class="card p-4 rounded-xl bg-gradient-to-br from-secondary/10 to-transparent border-secondary/20">
           <div class="flex items-center justify-between mb-3">
             <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">破甲总量</span>
             <div class="p-1.5 rounded-lg bg-secondary/20">

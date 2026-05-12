@@ -199,4 +199,4 @@ function formatLargeNumber(num: number): string {
 }
 </script>
 
-
+<style scoped>@import '../stats/StatsView.css';</style>

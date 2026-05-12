@@ -8,7 +8,6 @@
 import { computed } from 'vue'
 import type { EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   agg: EiAnalysisAggregate
@@ -32,9 +31,9 @@ const donut = computed(() => {
 })
 
 const damageItems = computed(() => [
-  { label: '直伤', value: props.agg.total_power_damage, percent: donut.value.p, color: Colors.palette.roseBright },
-  { label: '症状', value: props.agg.total_condi_damage, percent: donut.value.c, color: Colors.palette.orangeBright },
-  { label: '破甲', value: props.agg.total_breakbar_damage, percent: donut.value.b, color: Colors.primary.DEFAULT },
+  { label: '直伤', value: props.agg.total_power_damage, percent: donut.value.p, color: '#FF4D6A' },
+  { label: '症状', value: props.agg.total_condi_damage, percent: donut.value.c, color: '#FFAA00' },
+  { label: '破甲', value: props.agg.total_breakbar_damage, percent: donut.value.b, color: '#165DFF' },
 ])
 </script>
 

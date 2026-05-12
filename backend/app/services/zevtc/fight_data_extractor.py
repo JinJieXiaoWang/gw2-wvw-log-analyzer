@@ -5,11 +5,12 @@ from typing import Any, Dict, List
 
 from app.constants.buffs import BUFF_ID_MAP
 from app.utils.logger import logger
+
 from .player_validator import resolve_commander_tag, should_skip_player
 
 
 def extract_uptime(bu: dict) -> float:
-    """兼容多种 buffUptimes 结构提取 uptime?""
+    """兼容多种 buffUptimes 结构提取 uptime"""
     uptime = bu.get("uptime")
     if uptime is not None:
         return uptime
@@ -20,7 +21,7 @@ def extract_uptime(bu: dict) -> float:
 
 
 def extract_player_healing(player: Dict) -> int:
-    """从EI JSON中提取玩家的治疗量，支持多种格式?""
+    """从EI JSON中提取玩家的治疗量，支持多种格式"""
     support = player.get("support", [{}])
     if support and isinstance(support, list):
         healing = support[0].get("healing")
@@ -42,7 +43,7 @@ def extract_player_healing(player: Dict) -> int:
 
 
 def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
-    """提取战斗级标量数据（直接?EI JSON）?""
+    """提取战斗级标量数据（直接从EI JSON）"""
     ei_duration_ms = ei_json.get("durationMS", 0)
     duration_sec = max(1, int(ei_duration_ms / 1000))
 
@@ -69,7 +70,7 @@ def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
     parsed_end = parse_ei_time(ei_end)
 
     if not parsed_start:
-        logger.warning(f"[import] 无法解析开始时? {ei_start}，使用当前时?)
+        logger.warning(f"[import] 无法解析开始时间 {ei_start}，使用当前时间")
         parsed_start = datetime.now(timezone.utc)
     if not parsed_end:
         parsed_end = parsed_start
@@ -94,7 +95,7 @@ def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def extract_player_stats(ei_json: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """提取每个玩家的标量统计（直接?EI JSON）?""
+    """提取每个玩家的标量统计（直接从EI JSON）"""
     results = []
 
     for ei_p in ei_json.get("players", []):
@@ -201,9 +202,10 @@ def extract_player_stats(ei_json: Dict[str, Any]) -> List[Dict[str, Any]]:
 
 
 def parse_ei_time(time_str: str) -> datetime:
-    """?EI 时间字符串解析为 datetime
+    """将 EI 时间字符串解析为 datetime
 
-    支持格式?        - ISO 8601: 22026-04-14T11:29:53.1234567-04:00
+    支持格式:
+        - ISO 8601: 22026-04-14T11:29:53.1234567-04:00
         - EI 自定义 22026-04-14 11:29:53 +00:00
         - 纯日期 22026-04-14
     """
@@ -235,7 +237,7 @@ def parse_ei_time(time_str: str) -> datetime:
 def build_fight_stats_mappings(
     fight_id: int, member_map: Dict[str, Any], account_to_player: Dict[str, Dict]
 ) -> List[Dict[str, Any]]:
-    """根据 member_map ?player 数据构建 fight_stats 批量插入映射?""
+    """根据 member_map 和 player_map 数据构建 fight_stats 批量插入映射"""
     mappings = []
     for account, member in member_map.items():
         if account not in account_to_player:

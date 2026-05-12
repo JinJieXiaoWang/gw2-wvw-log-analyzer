@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="card bg-surface-800/50 border border-neutral-border/30 rounded-2xl
-           overflow-hidden">
-    <div
-      class="card-header flex items-center justify-between p-4 border-b
-             border-neutral-border/20">
+  <div class="card bg-surface-800/50 border border-neutral-border/30 rounded-2xl overflow-hidden">
+    <div class="card-header flex items-center justify-between p-4 border-b border-neutral-border/20">
       <div class="flex items-center gap-2">
         <i class="pi pi-users text-primary text-lg" />
         <h3 class="font-semibold text-neutral-text">
@@ -15,8 +11,7 @@
       <button
         v-if="characters.length > 6"
         type="button"
-          class="text-xs text-primary hover:text-primary/80 flex items-center gap-1
-                 transition-colors"
+        class="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
         @click="showAll = !showAll"
       >
         <span>{{ showAll ? '收起' : '查看全部' }}</span>
@@ -28,14 +23,12 @@
         <div
           v-for="char in displayCharacters"
           :key="char.character_name"
-            class="group p-4 rounded-xl bg-surface-700/50 border border-neutral-border/20
-                   hover:border-primary/40 transition-all duration-300 cursor-pointer"
+          class="group p-4 rounded-xl bg-surface-700/50 border border-neutral-border/20 hover:border-primary/40 transition-all duration-300 cursor-pointer"
           @click="emit('select', char)"
         >
           <div class="flex items-start gap-3">
             <div
-              class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold
-                     text-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
+              class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0 transition-transform duration-300 group-hover:scale-110"
               :style="{ background: getProfessionGradient(char.profession) }"
             >
               {{ char.character_name?.charAt(0) || '?' }}

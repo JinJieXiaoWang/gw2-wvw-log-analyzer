@@ -190,4 +190,4 @@ function formatLargeNumber(num: number): string {
 }
 </script>
 
-
+<style scoped lang="css">@import './PlayerStatsDetail.css';</style>

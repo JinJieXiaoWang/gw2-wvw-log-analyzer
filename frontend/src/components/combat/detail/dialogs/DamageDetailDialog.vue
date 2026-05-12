@@ -213,11 +213,17 @@ interface DamageDialogData {
   topDpsPlayers: EiAnalysisPlayer[]
 }
 
-const visible = defineModel<boolean>('visible', { default: false })
-
 const props = defineProps<{
+  visible: boolean
   data: DamageDialogData
 }>()
+
+const emit = defineEmits<{ 'update:visible': [value: boolean] }>()
+
+const visible = computed({
+  get: () => props.visible,
+  set: (v) => emit('update:visible', v)
+})
 
 const legendItems = computed(() => [
   { label: 'ֱ直伤', value: fmtCompact(props.data.agg.total_power_damage), percent: props.data.donut.p, dotClass: 'bg-primary', borderClass: 'border-primary/20', bgClass: 'bg-primary/10', valueClass: 'text-primary' },

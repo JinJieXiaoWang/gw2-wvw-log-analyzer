@@ -2,17 +2,14 @@
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
     <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2
-             translate-x-1/4 pointer-events-none opacity-30"
+      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
       style="background: radial-gradient(circle, var(--color-primary-alpha-10) 0%, transparent 70%)"
     />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-        <div
-          class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex
-                 items-center justify-center border border-primary/20">
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center border border-primary/20">
           <i class="pi pi-circle-on text-primary text-xl" />
         </div>
         <div>
@@ -160,6 +157,7 @@ const saveWatermarkSettings = () => {
 .fade-leave-active {
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

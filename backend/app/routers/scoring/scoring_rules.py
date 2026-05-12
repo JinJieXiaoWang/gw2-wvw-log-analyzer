@@ -1,5 +1,5 @@
-﻿# -*- coding: utf-8 -*-
-# 模块功能：评分规则管?API 路由
+# -*- coding: utf-8 -*-
+# 模块功能：评分规则管理 API 路由
 # 说明：提供评分规则的 CRUD、职业特定规则管理与版本管理
 
 from typing import List, Optional
@@ -43,15 +43,15 @@ async def get_role_types(
 
 @router.get("/rules", response_model=ApiResponse, summary="获取评分规则列表")
 async def get_scoring_rules(
-    role_type: Optional[str] = Query(None, description="角色类型筛?),
-    profession: Optional[str] = Query(None, description="职业特定规则筛?),
+    role_type: Optional[str] = Query(None, description="角色类型筛选"),
+    profession: Optional[str] = Query(None, description="职业特定规则筛选"),
     active_only: bool = Query(True, description="仅返回启用的规则"),
     db: Session = Depends(get_db),
 ):
-    """获取评分规则，支持按角色类型和职业筛?
-    
-    - ?profession ?null 或不传时，返回通用规则
-    - ?profession 有值时，返回该职业的特定规则（如不存在则返回空列表?
+    """获取评分规则，支持按角色类型和职业筛选
+
+    - 当 profession 为 null 或不传时，返回通用规则
+    - 当 profession 有值时，返回该职业的特定规则（如不存在则返回空列表）
     """
     service = ScoringRuleService(db)
     data = service.get_scoring_rules_data(
@@ -68,11 +68,11 @@ async def get_scoring_rule(
     rule_id: int,
     db: Session = Depends(get_db),
 ):
-    """获取指定ID的评分规则详?""
+    """获取指定ID的评分规则详情"""
     service = ScoringRuleService(db)
     rule = service.get_rule_by_id(rule_id)
     if not rule:
-        raise NotFoundException(f"评分规则 ID={rule_id} 不存?)
+        raise NotFoundException(f"评分规则 ID={rule_id} 不存在")
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,
@@ -111,7 +111,7 @@ async def update_scoring_rule(
     service = ScoringRuleService(db)
     rule = service.update_rule(rule_id, rule_data.model_dump(exclude_unset=True))
     if not rule:
-        raise NotFoundException(f"评分规则 ID={rule_id} 不存?)
+        raise NotFoundException(f"评分规则 ID={rule_id} 不存在")
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,
@@ -130,7 +130,7 @@ async def delete_scoring_rule(
     service = ScoringRuleService(db)
     success = service.delete_rule(rule_id)
     if not success:
-        raise NotFoundException(f"评分规则 ID={rule_id} 不存?)
+        raise NotFoundException(f"评分规则 ID={rule_id} 不存在")
 
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="删除评分规则成功", data=None
@@ -140,14 +140,14 @@ async def delete_scoring_rule(
 @router.post("/rules/batch", response_model=ApiResponse, summary="批量更新评分规则")
 async def batch_update_scoring_rules(
     batch_data: ScoringRuleBatchUpdate,
-    auto_bump_version: bool = Query(True, description="是否自动递增规则版本),
+    auto_bump_version: bool = Query(True, description="是否自动递增规则版本"),
     db: Session = Depends(get_db),
     current_admin: SysUser = Depends(require_super_admin),
 ):
-    """批量更新某个角色类型的所有评分规则（先删后插?
-    
+    """批量更新某个角色类型的所有评分规则（先删后插）
+
     - 支持更新通用规则（profession=null）或职业特定规则（profession有值）
-    - 批量更新后自动递增规则版本号（可通过 auto_bump_version 控制?
+    - 批量更新后自动递增规则版本号（可通过 auto_bump_version 控制）
     """
     service = ScoringRuleService(db)
     rules_data = [r.model_dump() for r in batch_data.rules]
@@ -171,9 +171,9 @@ async def batch_update_scoring_rules(
     )
 
 
-@router.post("/rules/reset", response_model=ApiResponse, summary="重置为默认规则)
+@router.post("/rules/reset", response_model=ApiResponse, summary="重置为默认规则")
 async def reset_scoring_rules(
-    role_type: Optional[str] = Query(None, description="指定角色类型，不指定则重置所?),
+    role_type: Optional[str] = Query(None, description="指定角色类型，不指定则重置所有"),
     db: Session = Depends(get_db),
     current_admin: SysUser = Depends(require_super_admin),
 ):
@@ -202,7 +202,7 @@ async def get_scoring_dimensions(
 @router.post(
     "/rules/profession/{profession}",
     response_model=ApiResponse,
-    summary="创建/更新职业特定规则?,
+    summary="创建/更新职业特定规则",
 )
 async def upsert_profession_rules(
     profession: str,
@@ -210,8 +210,8 @@ async def upsert_profession_rules(
     db: Session = Depends(get_db),
     current_admin: SysUser = Depends(require_super_admin),
 ):
-    """为指定职业创建或更新完整规则?
-    
+    """为指定职业创建或更新完整规则
+
     - 如果该职业已有规则，先删除旧规则再插入新规则
     - 自动递增规则版本
     """
@@ -223,7 +223,7 @@ async def upsert_profession_rules(
 
     # 递增版本
     version = service.bump_version(
-        description=f"更新职业 {profession} ?{batch_data.role_type} 评分规则"
+        description=f"更新职业 {profession} 的 {batch_data.role_type} 评分规则"
     )
 
     return ApiResponse.success_response(
@@ -240,23 +240,23 @@ async def upsert_profession_rules(
 )
 async def delete_profession_rules(
     profession: str,
-    role_type: Optional[str] = Query(None, description="指定角色类型，不指定则删除该职业所有规则),
+    role_type: Optional[str] = Query(None, description="指定角色类型，不指定则删除该职业所有规则"),
     db: Session = Depends(get_db),
     current_admin: SysUser = Depends(require_super_admin),
 ):
-    """删除指定职业的所有特定规则""
+    """删除指定职业的所有特定规则"""
     service = ScoringRuleService(db)
     count = service.delete_profession_rules(profession, role_type)
     return ApiResponse.success_response(
         code=HTTP_200_OK,
-        message=f"已删除职?{profession} ?{count} 条特定规则,
+        message=f"已删除职业 {profession} 的 {count} 条特定规则",
         data={"profession": profession, "deleted_count": count},
     )
 
 
-@router.get("/professions", response_model=ApiResponse, summary="获取已配置职业规则列?)
+@router.get("/professions", response_model=ApiResponse, summary="获取已配置职业规则列表")
 async def get_professions_with_rules(
-    role_type: Optional[str] = Query(None, description="按角色类型筛?),
+    role_type: Optional[str] = Query(None, description="按角色类型筛选"),
     db: Session = Depends(get_db),
 ):
     """获取已配置职业特定规则的职业列表"""
@@ -299,7 +299,7 @@ async def get_rule_version(
     service = ScoringRuleService(db)
     data = service.get_version_with_progress(version_id)
     if not data:
-        raise NotFoundException(f"版本记录 ID={version_id} 不存?)
+        raise NotFoundException(f"版本记录 ID={version_id} 不存在")
 
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="获取版本详情成功", data=data
@@ -312,7 +312,7 @@ async def bump_rule_version(
     db: Session = Depends(get_db),
     current_admin: SysUser = Depends(require_super_admin),
 ):
-    """手动递增评分规则版本""
+    """手动递增评分规则版本"""
     service = ScoringRuleService(db)
     version = service.bump_version(description or "手动版本递增")
     return ApiResponse.success_response(

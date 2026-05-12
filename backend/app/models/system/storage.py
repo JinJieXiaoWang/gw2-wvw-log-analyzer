@@ -1,12 +1,11 @@
 ﻿# 模块功能：存储管理相关数据模型
 # 作者：系统
-# 创建日期?2026-04-30
+# 创建日期：2026-04-30
 # 依赖说明：SQLAlchemy
 
+from app.config.database import Base
 from sqlalchemy import Boolean, Column, DateTime, Float, Index, Integer, String, Text
 from sqlalchemy.sql import func
-
-from app.config.database import Base
 
 
 class StorageCleanupRecord(Base):
@@ -23,16 +22,16 @@ class StorageCleanupRecord(Base):
         DateTime(timezone=True),
         default=func.now(),
         server_default=func.now(),
-        comment="开始时?,
+        comment="开始时间",
     )
     end_time = Column(DateTime(timezone=True), nullable=True, comment="结束时间")
-    files_deleted = Column(Integer, default=0, comment="删除文件?)
+    files_deleted = Column(Integer, default=0, comment="删除文件数")
     space_freed = Column(Float, default=0.0, comment="释放空间（字节）")
     status = Column(
         String(20), default="in_progress", comment="状态：in_progress/completed/failed"
     )
     error_message = Column(Text, nullable=True, comment="错误信息")
-    triggered_by = Column(String(100), nullable=True, comment="触发?)
+    triggered_by = Column(String(100), nullable=True, comment="触发人")
 
     __table_args__ = (
         Index("idx_cleanup_start_time", "start_time"),

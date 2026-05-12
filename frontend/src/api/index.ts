@@ -10,12 +10,11 @@ export { default as logsApi } from './combat/logs'
 export * from './data/attendance'
 export { default as attendanceApi } from './data/attendance'
 
+export * from './build/build'
 export { default as buildApi } from './build/build'
 
 export * from './data/dashboard'
 export { default as dashboardApi } from './data/dashboard'
-
-export { default as skillsApi } from './build/skills'
 
 export * from './ai/ai'
 export { default as aiApi } from './ai/ai'

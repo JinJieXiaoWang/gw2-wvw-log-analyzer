@@ -1,19 +1,20 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：评分重算任务管理服?
-# 说明：管理评分规则变更后的历史数据后台重算任?
+# 模块功能：评分重算任务管理服务
+# 作者：帅妹妹丶.8297
+# 创建日期：2026-05-09
+# 说明：管理评分规则变更后的历史数据后台重算任务
 
 import asyncio
 from datetime import datetime
 from typing import Dict, Optional
-
-from sqlalchemy import func
-from sqlalchemy.orm import Session
 
 from app.config.database import SessionLocal
 from app.models.scoring.scoring_rule_version import ScoringRuleVersion
 from app.services.scoring.score_query_service import _clear_rules_cache
 from app.services.scoring.scoring_rule_service import ScoringRuleService
 from app.utils.logger import logger
+from sqlalchemy import func
+from sqlalchemy.orm import Session
 
 
 class ScoreRecalculationService:
@@ -21,11 +22,11 @@ class ScoreRecalculationService:
 
     @staticmethod
     def create_task(db: Session, filters: dict, description: str = "") -> ScoringRuleVersion:
-        """创建重算任务，返回版本记?
+        """创建重算任务，返回版本记录
         
         Args:
-            db: 数据库会?
-            filters: 重算筛选条?
+            db: 数据库会话
+            filters: 重算筛选条件，格式为 {"field": "value"}
             description: 任务描述
             
         Returns:
@@ -39,11 +40,12 @@ class ScoreRecalculationService:
     async def execute_recalculation_async(version_id: int, filters: dict):
         """异步执行重算任务
         
-        在后台线程池中执行同步数据库操作，避免阻塞主事件循环?
+        在后台线程池中执行同步数据库操作，避免阻塞主事件循环
         
         Args:
             version_id: 版本记录ID
-            filters: 重算筛选条?
+            filters: 重算筛选条件，格式为 {"field": "value"}
+        
         """
         loop = asyncio.get_event_loop()
         await loop.run_in_executor(
@@ -55,11 +57,12 @@ class ScoreRecalculationService:
 
     @staticmethod
     def _execute_recalculation_sync(version_id: int, filters: dict):
-        """同步执行重算任务（在线程池中运行?
+        """同步执行重算任务（在线程池中运行）
         
         Args:
             version_id: 版本记录ID
-            filters: 重算筛选条?
+            filters: 重算筛选条件，格式为 {"field": "value"}
+        
         """
         db = SessionLocal()
         version: Optional[ScoringRuleVersion] = None
@@ -67,10 +70,10 @@ class ScoreRecalculationService:
         try:
             version = db.query(ScoringRuleVersion).get(version_id)
             if not version:
-                logger.error(f"重算任务失败: 版本记录 {version_id} 不存?)
+                logger.error(f"重算任务失败: 版本记录 {version_id} 不存在")
                 return
 
-            # 并发控制：检查是否已有任务在执行?
+            # 并发控制：检查是否已有任务在执行中
             running = (
                 db.query(ScoringRuleVersion)
                 .filter(ScoringRuleVersion.status == "processing")
@@ -88,8 +91,8 @@ class ScoreRecalculationService:
             db.commit()
 
             # 统计总记录数
-            from app.models.log.fight_stats import FightStats
             from app.models.log.fight import Fight
+            from app.models.log.fight_stats import FightStats
 
             query = db.query(FightStats)
             if filters.get("fight_ids"):
@@ -117,12 +120,12 @@ class ScoreRecalculationService:
                 version.status = "completed"
                 version.completed_at = datetime.now()
                 db.commit()
-                logger.info(f"重算任务完成: version_id={version_id}, 无匹配记?)
+                logger.info(f"重算任务完成: version_id={version_id}, 无匹配记录")
                 return
 
-            logger.info(f"重算任务开? version_id={version_id}, ?{total} 条记?)
+            logger.info(f"重算任务开始 version_id={version_id}, 共 {total} 条记录")
 
-            # 执行真正的评分重?
+            # 执行真正的评分重算
             from app.services.wvw.scoring_service import ScoringService
             updated = ScoringService.recalculate_scores_by_filters(
                 db=db,
@@ -131,7 +134,7 @@ class ScoreRecalculationService:
                 batch_size=1000,
                 progress_callback=None
             )
-            logger.info(f"重算任务完成: version_id={version_id}, 更新?{updated.get('updated_count', 0)} 条记?)
+            logger.info(f"重算任务完成: version_id={version_id}, 更新 {updated.get('updated_count', 0)} 条记录")
 
             # 清除规则缓存，确保后续查询使用新规则
             _clear_rules_cache()
@@ -161,11 +164,11 @@ class ScoreRecalculationService:
         """获取任务进度
         
         Args:
-            db: 数据库会?
+            db: 数据库会话
             version_id: 版本记录ID
             
         Returns:
-            任务状态字典，?None（记录不存在?
+            任务状态字典，或 None 如果记录不存在
         """
         version = db.query(ScoringRuleVersion).get(version_id)
         if not version:
@@ -192,10 +195,10 @@ class ScoreRecalculationService:
         """检查是否有重算任务在执行中
         
         Args:
-            db: 数据库会?
+            db: 数据库会话
             
         Returns:
-            True 如果?processing 状态的任务
+            True 如果有 processing 状态的任务，否则 False
         """
         return (
             db.query(ScoringRuleVersion)
@@ -206,11 +209,12 @@ class ScoreRecalculationService:
 
     @staticmethod
     def start_recalculation_task(version_id: int, filters: dict) -> None:
-        """启动后台重算任务（自动选择 APScheduler ?asyncio）?
+        """启动后台重算任务（自动选择 APScheduler 或 asyncio）
 
         Args:
             version_id: 版本记录ID
-            filters: 重算筛选条?
+            filters: 重算筛选条件，格式为 {"field": "value"}
+        
         """
         from app.core.task_scheduler import scheduler
 

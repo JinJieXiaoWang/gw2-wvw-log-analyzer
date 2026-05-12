@@ -13,54 +13,124 @@
       :sort-order="1"
       class="dict-data-table"
     >
-      <Column field="dict_sort" header="排序" sortable style="width: 80px">
+      <Column
+        field="dict_sort"
+        header="排序"
+        sortable
+        style="width: 80px"
+      >
         <template #body="{ data }">
           <span class="sort-value">{{ data.dict_sort }}</span>
         </template>
       </Column>
-      <Column field="dict_label" header="标ǩ" sortable>
+      <Column
+        field="dict_label"
+        header="标签"
+        sortable
+      >
         <template #body="{ data }">
           <div class="label-cell">
             <span class="label-text">{{ data.dict_label }}</span>
-            <span v-if="data.is_default === 1" class="default-badge">Ĭ认</span>
+            <span
+              v-if="data.is_default === 1"
+              class="default-badge"
+            >默认</span>
           </div>
         </template>
       </Column>
-      <Column field="dict_value" header="ֵ" sortable>
+      <Column
+        field="dict_value"
+        header="值"
+        sortable
+      >
         <template #body="{ data }">
           <span class="value-text">{{ data.dict_value }}</span>
         </template>
       </Column>
-      <Column field="css_class" header="颜ɫ" style="width: 120px">
+      <Column
+        field="css_class"
+        header="颜色"
+        style="width: 120px"
+      >
         <template #body="{ data }">
-          <div v-if="data.css_class" class="color-cell">
-            <span class="color-swatch" :style="{ backgroundColor: data.css_class }" />
+          <div
+            v-if="data.css_class"
+            class="color-cell"
+          >
+            <span
+              class="color-swatch"
+              :style="{ backgroundColor: data.css_class }"
+            />
             <span class="color-value">{{ data.css_class }}</span>
           </div>
-          <span v-else class="no-color">-</span>
+          <span
+            v-else
+            class="no-color"
+          >-</span>
         </template>
       </Column>
-      <Column field="list_class" header="列表样ʽ" style="width: 100px">
+      <Column
+        field="list_class"
+        header="列表样式"
+        style="width: 100px"
+      >
         <template #body="{ data }">
-          <span v-if="data.list_class" class="list-class">{{ data.list_class }}</span>
-          <span v-else class="no-color">-</span>
+          <span
+            v-if="data.list_class"
+            class="list-class"
+          >{{ data.list_class }}</span>
+          <span
+            v-else
+            class="no-color"
+          >-</span>
         </template>
       </Column>
-      <Column field="status" header="״̬" sortable style="width: 80px">
+      <Column
+        field="status"
+        header="状态"
+        sortable
+        style="width: 80px"
+      >
         <template #body="{ data }">
-          <BaseTag :value="data.status === 0 ? '启用' : '禁用'" :severity="data.status === 0 ? 'success' : 'danger'" />
+          <BaseTag
+            :value="data.status === 0 ? '启用' : '禁用'"
+            :severity="data.status === 0 ? 'success' : 'danger'"
+          />
         </template>
       </Column>
-      <Column field="remark" header="备ע">
+      <Column
+        field="remark"
+        header="备注"
+      >
         <template #body="{ data }">
           <span class="remark-text">{{ data.remark || '-' }}</span>
         </template>
       </Column>
-      <Column v-if="isAdmin" header="操作" style="width: 150px" frozen align-frozen="right">
+      <Column
+        v-if="isAdmin"
+        header="操作"
+        style="width: 150px"
+        frozen
+        align-frozen="right"
+      >
         <template #body="{ data }">
           <div class="action-buttons">
-            <BaseButton icon="pi pi-pencil" severity="warning" text rounded size="small" @click="$emit('edit', data)" />
-            <BaseButton icon="pi pi-trash" severity="danger" text rounded size="small" @click="$emit('delete', data)" />
+            <BaseButton
+              icon="pi pi-pencil"
+              severity="warning"
+              text
+              rounded
+              size="small"
+              @click="$emit('edit', data)"
+            />
+            <BaseButton
+              icon="pi pi-trash"
+              severity="danger"
+              text
+              rounded
+              size="small"
+              @click="$emit('delete', data)"
+            />
           </div>
         </template>
       </Column>
@@ -72,7 +142,10 @@
         </div>
       </template>
     </DataTable>
-    <div v-else class="no-selection">
+    <div
+      v-else
+      class="no-selection"
+    >
       <i class="pi pi-book" />
       <h3>请选择字典分类</h3>
       <p>从左侧列表选择一个字典分类来查看和编辑数据</p>
@@ -83,8 +156,8 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import BaseTag from '@/components/common/ui/BaseTag.vue'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { DictData, DictType } from '@/services/system/dictionaryService'
 
 defineProps<{

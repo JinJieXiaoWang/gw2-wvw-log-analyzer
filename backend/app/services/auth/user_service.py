@@ -47,7 +47,7 @@ def get_users(
 def create_user(db: Session, user_data: UserCreate) -> SysUser:
     existing = db.query(SysUser).filter(SysUser.username == user_data.username).first()
     if existing:
-        raise BadRequestException(f"用户?{user_data.username} 已存?)
+        raise BadRequestException(f"用户 {user_data.username} 已存在")
 
     user = SysUser(
         username=user_data.username,
@@ -65,7 +65,7 @@ def create_user(db: Session, user_data: UserCreate) -> SysUser:
 def update_user(db: Session, user_id: int, user_data: UserUpdate) -> SysUser:
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(f"用户ID {user_id} 不存?)
+        raise NotFoundException(f"用户ID {user_id} 不存在")
 
     if user_data.email is not None:
         user.email = user_data.email
@@ -81,14 +81,14 @@ def update_user(db: Session, user_id: int, user_data: UserUpdate) -> SysUser:
 
 def delete_user(db: Session, user_id: int, admin_id: int) -> bool:
     if admin_id == user_id:
-        raise BadRequestException(detail="不能删除自己的账?)
+        raise BadRequestException(detail="不能删除自己的账号")
 
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
 
     if user.is_predefined:
-        raise BadRequestException(detail="预置管理员账号禁止删?)
+        raise BadRequestException(detail="预置管理员账号禁止删除")
 
     success = delete_admin(db, user_id)
     if not success:
@@ -104,17 +104,17 @@ def change_user_password(
     confirm_password: Optional[str] = None,
 ) -> bool:
     if not old_password:
-        raise BadRequestException(detail="请提供当前密?)
+        raise BadRequestException(detail="请提供当前密码")
 
     if confirm_password is not None and new_password != confirm_password:
-        raise BadRequestException(detail="两次输入的密码不一?)
+        raise BadRequestException(detail="两次输入的密码不一致")
 
     if len(new_password) < 6:
-        raise BadRequestException(detail="新密码长度至??)
+        raise BadRequestException(detail="新密码长度至少6位")
 
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail="用户不存?)
+        raise NotFoundException(detail="用户不存在")
 
     if not verify_password(old_password, user.password_hash):
         raise BadRequestException(detail="当前密码错误")
@@ -128,10 +128,10 @@ def change_user_password(
 def reset_user_password(db: Session, user_id: int) -> str:
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
 
     if user.is_predefined:
-        raise BadRequestException(detail="预置管理员账号禁止重置密?)
+        raise BadRequestException(detail="预置管理员账号禁止重置密码")
 
     new_password = secrets.token_urlsafe(12)
     user.password_hash = get_password_hash(new_password)
@@ -142,14 +142,14 @@ def reset_user_password(db: Session, user_id: int) -> str:
 
 def toggle_user_active(db: Session, user_id: int, admin_id: int) -> bool:
     if admin_id == user_id:
-        raise BadRequestException(detail="不能修改自己的活跃状?)
+        raise BadRequestException(detail="不能修改自己的活跃状态")
 
     user = get_user_by_id(db, user_id)
     if not user:
-        raise NotFoundException(detail=f"用户ID {user_id} 不存?)
+        raise NotFoundException(detail=f"用户ID {user_id} 不存在")
 
     if user.is_predefined:
-        raise BadRequestException(detail="预置管理员账号禁止禁?)
+        raise BadRequestException(detail="预置管理员账号禁止禁用")
 
     user.is_active = not user.is_active
     db.commit()

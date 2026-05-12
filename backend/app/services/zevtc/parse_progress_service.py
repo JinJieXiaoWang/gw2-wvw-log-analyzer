@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 """
 解析进度存储服务
-功能：基于TTL Cache防止无界增长，替代原路由?_ProgressStore
+功能：基于TTL Cache防止无界增长，替代原路由 parseProgressStore
 """
 
 from typing import Any, Dict
@@ -12,9 +12,9 @@ from app.utils.cache.cache import Cache
 class ParseProgressService:
     """解析进度存储包装器，基于TTL Cache防止无界增长
 
-    原实现使用普?dict，解析崩溃或重启后条目永久残留，导致内存泄漏?
-    改用 Cache（LRU + TTL）后，条目会?24 小时后自动过期，
-    且最大保?1000 条，超出时淘汰最早的条目?
+    原实现使用普通 dict，解析崩溃或重启后条目永久残留，导致内存泄漏。
+    改用 Cache（LRU + TTL）后，条目会 24 小时后自动过期，
+    且最大保 1000 条，超出时淘汰最早的条目。
     """
 
     def __init__(self):
@@ -30,7 +30,7 @@ class ParseProgressService:
         val = self._cache.get(self._key(log_id))
         if val is None:
             val = {
-                "stage": "未开?,
+                "stage": "未开始",
                 "progress": 0,
                 "current_file": "",
                 "players_found": 0,
@@ -47,7 +47,7 @@ class ParseProgressService:
             return default
         if val is None:
             val = {
-                "stage": "未开?,
+                "stage": "未开始",
                 "progress": 0,
                 "current_file": "",
                 "players_found": 0,
@@ -71,10 +71,10 @@ class ParseProgressService:
         return self._cache.get(self._key(log_id)) is not None
 
     def init_progress(self, log_id: int, filename: str) -> None:
-        """初始化解析进度状?""
+        """初始化解析进度状态"""
         from datetime import datetime
         self[log_id] = {
-            "stage": "初初始化,
+            "stage": "初始化",
             "progress": 0,
             "current_file": filename,
             "players_found": 0,

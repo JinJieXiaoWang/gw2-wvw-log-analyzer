@@ -5,10 +5,15 @@
         <i :class="['text-lg', icon, textColor]" />
       </div>
       <div>
-        <p class="text-xs text-neutral-text-secondary mb-1">{{ label }}</p>
+        <p class="text-xs text-neutral-text-secondary mb-1">
+          {{ label }}
+        </p>
         <div class="flex items-baseline gap-1">
           <span class="text-2xl font-bold">{{ value }}</span>
-          <span v-if="unit" class="text-sm text-neutral-text-secondary">{{ unit }}</span>
+          <span
+            v-if="unit"
+            class="text-sm text-neutral-text-secondary"
+          >{{ unit }}</span>
         </div>
       </div>
     </div>

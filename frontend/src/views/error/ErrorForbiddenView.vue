@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import PermissionDenied from '@/components/common/layout/PermissionDenied.vue'
+import PermissionDenied from '@/layout/components/PermissionDenied.vue'
 import { authStore } from '@/composables/system/usePermission'
 
 const isAuthenticated = computed(() => authStore.isAuthenticated)

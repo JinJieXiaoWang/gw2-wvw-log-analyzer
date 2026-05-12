@@ -1,6 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：EI 摘要预计算服?# 说明：将前端 computed 中的计算逻辑下沉到后端，
-#       返回"即渲?数据，前端零计算直接绑定义
+# 模块功能：EI 摘要预计算服务
+# 作者：系统
+# 说明：将前端 computed 中的计算逻辑下沉到后端，返回"即时渲染数据，前端零计算直接绑定义
 from typing import Any, Dict, List
 
 from sqlalchemy.orm import Session
@@ -10,7 +11,7 @@ from app.services.zevtc import fight_service as fight_svc
 
 
 def build_ei_summary(db: Session, log_id: int, sort_by: str = "damage") -> Dict[str, Any]:
-    """构建完整?EI 摘要（含所有预计算衍生字段）?""
+    """构建完整的 EI 摘要（含所有预计算衍生字段）"""
     fights = fight_svc.get_fights_by_log_id(db, log_id)
     if not fights:
         return None
@@ -60,7 +61,7 @@ def build_ei_summary(db: Session, log_id: int, sort_by: str = "damage") -> Dict[
 
 
 def _build_fight_info(fight) -> Dict[str, Any]:
-    """构建战斗基本信息字典?""
+    """构建战斗基本信息字典"""
     return {
         "id": fight.id,
         "map_name": fight.map_name,
@@ -80,7 +81,7 @@ def _build_fight_info(fight) -> Dict[str, Any]:
 
 
 def _calc_profession_distribution(players: List[Dict[str, Any]]) -> Dict[str, int]:
-    """计算职业分布?""
+    """计算职业分布"""
     dist: Dict[str, int] = {}
     for p in players:
         prof = p.get("profession", "Unknown")
@@ -89,7 +90,7 @@ def _calc_profession_distribution(players: List[Dict[str, Any]]) -> Dict[str, in
 
 
 def _build_groups(players: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """构建小队分组（含预计算汇总数据）?""
+    """构建小队分组（含所有预计算汇总数据）"""
     group_map: Dict[int, Dict[str, Any]] = {}
     for p in players:
         gid = p.get("group_id")
@@ -128,7 +129,7 @@ def _build_groups(players: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
 
 
 def _calc_stat_averages(players: List[Dict[str, Any]]) -> Dict[str, float]:
-    """计算各项统计平均值（一次遍历）?""
+    """计算各项统计平均值（一次遍历）"""
     if not players:
         return {"protection": 0, "stability": 0, "hitRate": 100, "skillCastUptime": 0, "stackDist": 0, "distToCom": 0}
 
@@ -174,7 +175,7 @@ def _calc_stat_averages(players: List[Dict[str, Any]]) -> Dict[str, float]:
 
 
 def _build_donut(aggregate: Dict[str, Any]) -> Dict[str, Any]:
-    """构建环形?SVG 参数据""
+    """构建环形图 SVG 数据"""
     total = aggregate.get("total_damage", 0)
     if not total:
         return {"pd": "0 264", "cd": "0 264", "bd": "0 264", "co": 0, "bo": 0, "total": 0, "p": 0, "c": 0, "b": 0}
@@ -201,7 +202,7 @@ def _build_donut(aggregate: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def _calc_percentages(aggregate: Dict[str, Any]) -> Dict[str, int]:
-    """计算伤害占比百分比?""
+    """计算伤害占比百分比"""
     total = aggregate.get("total_damage", 0)
     if not total:
         return {"power": 0, "condi": 0, "breakbar": 0}
@@ -213,7 +214,7 @@ def _calc_percentages(aggregate: Dict[str, Any]) -> Dict[str, int]:
 
 
 def _calc_buff_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
-    """计算 Buff 排行榜?""
+    """计算 Buff 排行榜"""
     return {
         "might": sorted(players, key=lambda x: x.get("might_uptime", 0), reverse=True)[:5],
         "quickness": sorted(players, key=lambda x: x.get("quickness_uptime", 0), reverse=True)[:5],
@@ -224,7 +225,7 @@ def _calc_buff_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str
 
 
 def _calc_support_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
-    """计算支援排行榜?""
+    """计算支援排行榜"""
     return {
         "boon_strips": sorted(players, key=lambda x: x.get("boon_strips", 0), reverse=True)[:5],
         "condition_cleanses": sorted(players, key=lambda x: x.get("condition_cleanses", 0), reverse=True)[:5],
@@ -233,7 +234,7 @@ def _calc_support_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[
 
 
 def _calc_defense_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
-    """计算防御排行榜?""
+    """计算防御排行榜"""
     return {
         "damage_taken": sorted(players, key=lambda x: x.get("damage_taken", 0), reverse=True)[:5],
         "dodge_count": sorted(players, key=lambda x: x.get("dodge_count", 0), reverse=True)[:5],

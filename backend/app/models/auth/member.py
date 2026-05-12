@@ -1,20 +1,18 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：成员数据模型
 # 作者：系统
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：SQLAlchemy
-# 说明?
-#   members 表仅保存账号维度（account_name）?
-#   角色名、职业等详细信息请去 account_characters 表查询?
+# 说明：
+#   members 表仅保存账号维度（account_name），角色名、职业等详细信息请去 account_characters 表查询
 
+from app.config.database import Base
 from sqlalchemy import Column, Date, Integer, String
 from sqlalchemy.orm import relationship
 
-from app.config.database import Base
-
 
 class Member(Base):
-    """成员??仅保存账号（account_name），角色信息?account_characters ?""
+    """成员模型，仅保存账号（account_name），角色信息?account_characters 表查询"""
 
     __tablename__ = "members"
 

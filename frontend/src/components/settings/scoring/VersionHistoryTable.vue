@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-xl p-5 shadow-lg">
+  <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-5 shadow-lg">
     <h4 class="flex items-center gap-2 text-lg font-semibold text-color mb-4">
       <i class="pi pi-history text-primary-500" />
       规则版本历史
@@ -18,9 +16,7 @@
         style="width: 90px"
       >
         <template #body="{ data }">
-          <span
-            class="px-2 py-0.5 rounded-md bg-primary-500/10 text-primary-500 text-xs font-mono
-                   font-semibold">v{{ data.version }}</span>
+          <span class="px-2 py-0.5 rounded-md bg-primary-500/10 text-primary-500 text-xs font-mono font-semibold">v{{ data.version }}</span>
         </template>
       </Column>
       <Column

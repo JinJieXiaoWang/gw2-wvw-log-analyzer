@@ -23,11 +23,20 @@ export interface LoginCredentials {
   rememberMe?: boolean
 }
 
+export interface MenuItem {
+  menu_name: string
+  path: string
+  icon: string
+  menu_type: 'M' | 'C'
+  children?: MenuItem[]
+}
+
 export interface AuthState {
   isAuthenticated: boolean
   user: User | null
   permissions: Permission[]
   token: string | null
+  menus: MenuItem[]
 }
 
 export interface LoginAttempt {

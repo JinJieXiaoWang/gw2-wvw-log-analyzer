@@ -1,5 +1,9 @@
 <template>
-  <InputText v-bind="$attrs" v-model="modelValue" class="w-full" />
+  <InputText
+    v-bind="$attrs"
+    v-model="modelValue"
+    class="w-full"
+  />
 </template>
 
 <script setup lang="ts">

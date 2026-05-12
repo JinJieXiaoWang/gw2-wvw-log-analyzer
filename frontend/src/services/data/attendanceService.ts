@@ -1,6 +1,8 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
+import axios from 'axios'
+import { getToken } from '@/utils/auth/tokenManager'
 
 export interface AttendanceListParams {
   page?: number
@@ -86,6 +88,55 @@ export class AttendanceService {
     if (startDate) params.start_date = startDate
     if (endDate) params.end_date = endDate
     return apiFactory.get<any>(API_ENDPOINTS.ATTENDANCE.DETAIL(memberId), { params })
+  }
+
+  /** v2.0 导出账号出勤详情 */
+  async exportAccountDetail(
+    account: string,
+    format: 'csv' | 'excel' = 'csv',
+    startDate?: string | null,
+    endDate?: string | null
+  ): Promise<void> {
+    const params: any = {}
+    if (startDate) params.start_date = startDate
+    if (endDate) params.end_date = endDate
+    params.format = format
+
+    // 构建URL
+    let url = API_ENDPOINTS.ATTENDANCE.ACCOUNT_EXPORT(account)
+    const queryString = new URLSearchParams(params).toString()
+    if (queryString) {
+      url += `?${queryString}`
+    }
+
+    // 直接使用axios下载文件，因为apiFactory会自动处理响应，但我们需要直接获取二进制数据
+    const token = getToken()
+    const headers: any = {}
+    if (token) {
+      headers.Authorization = `Bearer ${token.accessToken}`
+    }
+
+    try {
+      const response = await axios.get(url, {
+        responseType: 'blob',
+        headers
+      })
+
+      // 创建下载链接
+      const blob = new Blob([response.data])
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      const fileExt = format === 'excel' ? 'xlsx' : 'csv'
+      link.download = `${account}_attendance_detail.${fileExt}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (error) {
+      console.error('导出失败:', error)
+      throw error
+    }
   }
 }
 

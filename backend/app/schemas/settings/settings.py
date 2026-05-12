@@ -67,7 +67,7 @@ DEFAULT_SETTINGS = {
 
 
 def build_settings_response(settings: Dict[str, Any]) -> Dict[str, Any]:
-    """将原始设置字典构建为标准化响应字?""
+    """将原始设置字典构建为标准化响应字典"""
     defaults = DEFAULT_SETTINGS.copy()
     defaults.update(settings)
     return {
@@ -92,7 +92,7 @@ def build_settings_response(settings: Dict[str, Any]) -> Dict[str, Any]:
 
 
 def build_settings_response_from_defaults(defaults: Dict[str, str]) -> Dict[str, Any]:
-    """?DEFAULT_CONFIGS 字符串默认值构建响应字典（用于重置设置?""
+    """从 DEFAULT_CONFIGS 字符串默认值构建响应字典（用于重置设置）"""
     def _parse_bool(value: Any) -> bool:
         if isinstance(value, bool):
             return value

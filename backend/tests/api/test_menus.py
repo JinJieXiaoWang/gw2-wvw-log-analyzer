@@ -2,14 +2,14 @@
 """
 菜单管理 API 集成测试
 =====================
-覆盖场景?
+覆盖场景
 - 创建菜单（正常流程、参数校验）
 - 查询菜单（列表、详情、树形结构）
 - 更新菜单
 - 删除菜单（含子菜单级联删除）
 - 获取用户可用菜单（权限控制）
 - 批量操作菜单
-- 初始化默认菜?
+- 初始化默认菜单
 - 刷新缓存
 """
 
@@ -69,7 +69,7 @@ class TestMenuCreate:
     async def test_create_menu_missing_required(
         self, async_client: AsyncClient, auth_headers: dict
     ):
-        """缺少必填字段应返?422"""
+        """缺少必填字段应返回 422"""
         resp = await async_client.post(
             "/api/v1/menus",
             headers=auth_headers,
@@ -121,7 +121,7 @@ class TestMenuQuery:
     async def test_get_permissions_success(
         self, async_client: AsyncClient, auth_headers: dict
     ):
-        """获取所有权限标?""
+        """获取所有权限标识"""
         resp = await async_client.get("/api/v1/menus/permissions/all", headers=auth_headers)
         assert resp.status_code == 200
         data = resp.json()
@@ -193,7 +193,7 @@ class TestMenuUpdate:
             "/api/v1/menus",
             headers=auth_headers,
             json={
-                "menu_name": "待更新菜?,
+                "menu_name": "待更新菜单",
                 "parent_id": 0,
                 "order_num": 1,
                 "menu_type": "C",
@@ -241,7 +241,7 @@ class TestMenuUpdate:
     async def test_update_nonexistent_menu(
         self, async_client: AsyncClient, auth_headers: dict
     ):
-        """更新不存在的菜单应返?404"""
+        """更新不存在的菜单应返回 404"""
         resp = await async_client.put(
             "/api/v1/menus/99999",
             headers=auth_headers,
@@ -260,7 +260,7 @@ class TestMenuDelete:
             "/api/v1/menus",
             headers=auth_headers,
             json={
-                "menu_name": "待删除菜?,
+                "menu_name": "待删除菜单",
                 "parent_id": 0,
                 "order_num": 1,
                 "menu_type": "C",
@@ -280,7 +280,7 @@ class TestMenuDelete:
             "/api/v1/menus",
             headers=auth_headers,
             json={
-                "menu_name": "待删除菜?,
+                "menu_name": "待删除菜单",
                 "parent_id": 0,
                 "order_num": 1,
                 "menu_type": "C",
@@ -300,7 +300,7 @@ class TestMenuDelete:
     async def test_delete_nonexistent_menu(
         self, async_client: AsyncClient, auth_headers: dict
     ):
-        """删除不存在的菜单应返?404"""
+        """删除不存在的菜单应返回 404"""
         resp = await async_client.delete("/api/v1/menus/99999", headers=auth_headers)
         assert resp.status_code == 404
 
@@ -316,7 +316,7 @@ class TestMenuBatch:
         import uuid
         unique_suffix = uuid.uuid4().hex[:8]
         
-        # 先创建几个测试菜?
+        # 先创建几个测试菜单
         menu_ids = []
         for i in range(2):
             resp = await async_client.post(
@@ -345,13 +345,13 @@ class TestMenuBatch:
 
 
 class TestMenuInit:
-    """默认菜单初始化测?""
+    """默认菜单初始化测试"""
 
     @pytest.mark.asyncio
     async def test_init_default_menus_success(
         self, async_client: AsyncClient, auth_headers: dict
     ):
-        """初始化默认菜?""
+        """初始化默认菜单"""
         resp = await async_client.post("/api/v1/menus/init", headers=auth_headers)
         assert resp.status_code == 200
         data = resp.json()
@@ -373,11 +373,11 @@ class TestMenuCache:
 
 
 class TestMenuAuthIntegration:
-    """菜单与认证集成测?""
+    """菜单与认证集成测试"""
 
     @pytest.mark.asyncio
     async def test_login_returns_menus(self, async_client: AsyncClient):
-        """登录接口应返回用户可用菜?""
+        """登录接口应返回用户可用菜单"""
         # 重置登录尝试次数
         from app.services.auth.auth_service import reset_all_login_attempts
         reset_all_login_attempts()

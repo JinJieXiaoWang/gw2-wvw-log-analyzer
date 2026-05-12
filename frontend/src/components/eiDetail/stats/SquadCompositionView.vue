@@ -10,8 +10,7 @@
         <div
           v-for="cmd in commanders"
           :key="cmd.instanceID"
-            class="flex items-center gap-3 px-4 py-3 rounded-lg bg-yellow-500/10 border
-                   border-yellow-500/30"
+          class="flex items-center gap-3 px-4 py-3 rounded-lg bg-yellow-500/10 border border-yellow-500/30"
         >
           <div
             class="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold"
@@ -57,8 +56,7 @@
           >
             <div class="flex items-center gap-2">
               <span
-                class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
-                       text-white"
+                class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white"
                 :style="{ backgroundColor: getGroupColor(group.id) }"
               >
                 {{ group.id }}
@@ -82,8 +80,7 @@
               @click="$emit('select-player', player.instanceID)"
             >
               <div
-                class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm
-                       font-bold"
+                class="w-10 h-10 rounded-full flex items-center justify-center text-white text-sm font-bold"
                 :style="{ backgroundColor: getProfessionColor(player.profession) }"
               >
                 {{ player.name.charAt(0) }}
@@ -110,7 +107,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
-import { Colors } from '@/config/designTokens'
 
 const props = defineProps<{
   players: any[];
@@ -144,10 +140,10 @@ const commanders = computed(() => props.players.filter(p => p.hasCommanderTag));
 
 function getGroupColor(id: number | string): string {
   const colors: Record<string, string> = {
-    '1': Colors.palette.red, '2': Colors.palette.orange, '3': Colors.palette.yellow, '4': Colors.palette.lime,
-    '5': Colors.palette.green, '6': Colors.palette.cyan, '7': Colors.palette.blue, '8': Colors.palette.violet,
-    '9': Colors.palette.fuchsia, '10': Colors.palette.crimson, '-': Colors.palette.gray,
+    '1': '#ef4444', '2': '#f97316', '3': '#eab308', '4': '#84cc16',
+    '5': '#22c55e', '6': '#06b6d4', '7': '#3b82f6', '8': '#8b5cf6',
+    '9': '#d946ef', '10': '#f43f5e', '-': '#6b7280',
   };
-  return colors[String(id)] || Colors.palette.gray;
+  return colors[String(id)] || '#6b7280';
 }
 </script>

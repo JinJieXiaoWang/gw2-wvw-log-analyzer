@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-           dark:border-surface-700 rounded-2xl p-6 shadow-lg">
+  <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-6 shadow-lg">
     <div class="flex items-center justify-between mb-6">
       <div>
         <h4 class="flex items-center gap-2 text-lg font-semibold text-color">

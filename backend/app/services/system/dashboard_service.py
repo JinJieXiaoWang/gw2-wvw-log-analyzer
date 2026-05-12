@@ -12,11 +12,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 
-from app.models.account_character import AccountCharacter
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.log import Log
-from app.models.member import Member
+from app.models.auth.account_character import AccountCharacter
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
+from app.models.auth.member import Member
 from app.utils.logger import logger
 
 

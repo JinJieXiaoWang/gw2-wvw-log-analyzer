@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：AI分析业务总服?- 增强?
+# 模块功能：AI分析业务总服务 增强：
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-05-01
+# 创建日期：2026-05-01
 # 依赖说明：SQLAlchemy, json, LLM集成
 # 注意：Fight、Member、Build模型已被移除，相关功能已停用
 
@@ -98,7 +98,7 @@ def create_report(
 
 
 def delete_report(db: Session, report_id: int) -> bool:
-    # 功能：删除AI报告（软删除?
+    # 功能：删除AI报告（软删除）
     report = get_report_by_id(db, report_id)
     if not report:
         return False
@@ -142,7 +142,7 @@ class AIOrchestrator:
         """
         if not ai_config.AI_ENABLED:
             logger.info("AI功能未启用，使用规则分析")
-            return None, None, "AI功能未启?
+            return None, None, "AI功能未启用"
 
         template = PromptTemplateRegistry.get(template_id)
         if not template:
@@ -168,7 +168,7 @@ class AIOrchestrator:
             # 3. 解析和优化响?
             parsed = ResponseOptimizer.parse_json_response(ai_response.content)
             if not parsed:
-                logger.warning("LLM响应无法解析为JSON，使用原始文?)
+                logger.warning("LLM响应无法解析为JSON，使用原始文本")
                 parsed = {"raw_content": ai_response.content}
 
             # 4. 应用响应调整规则
@@ -205,7 +205,7 @@ class AIOrchestrator:
     ) -> Tuple[Optional[Dict], Optional[QualityAssessment], Optional[str]]:
         """处理LLM失败"""
         if not ai_config.AI_FALLBACK_ENABLED:
-            return None, None, "LLM调用失败且禁用降?
+            return None, None, "LLM调用失败且禁用降级"
 
         fallback_response = self.fallback_handler.handle_fallback(
             failed_response, {"analysis_type": analysis_type.value, **context}
@@ -223,7 +223,7 @@ _ai_orchestrator = AIOrchestrator()
 
 
 def get_ai_orchestrator() -> AIOrchestrator:
-    """获取AI编排?""
+    """获取AI编排器"""
     return _ai_orchestrator
 
 
@@ -257,7 +257,7 @@ def get_trend_analysis(db: Session) -> dict:
         "total_damage": 0,
         "total_kills": 0,
         "avg_duration": 0,
-        "trend": "无数据,
+        "trend": "无数据",
         "predictions": [],
         "anomalies": [],
         "insights": ["暂无趋势数据（Fight模型已移除）"],
@@ -268,9 +268,9 @@ def get_trend_analysis(db: Session) -> dict:
 def get_suggestions(db: Session) -> dict:
     # 功能：获取AI优化建议
     suggestions = [
-        {"type": "general", "priority": "high", "content": "建议提升团队配合?},
-        {"type": "skill", "priority": "medium", "content": "技能循环存在优化空?},
-        {"type": "build", "priority": "low", "content": "部分Build配置可进一步优?},
+        {"type": "general", "priority": "high", "content": "建议提升团队配合"},
+        {"type": "skill", "priority": "medium", "content": "技能循环存在优化空间"},
+        {"type": "build", "priority": "low", "content": "部分Build配置可进一步优化"},
     ]
 
     return {
@@ -290,7 +290,7 @@ def clear_ai_cache() -> Dict[str, Any]:
     cache = get_cache()
     stats_before = cache.get_cache_stats()
     cache.clear()
-    logger.info("AI缓存已清?)
+    logger.info("AI缓存已清空")
     return {"success": True, "before": stats_before}
 
 

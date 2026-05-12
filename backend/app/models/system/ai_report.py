@@ -1,8 +1,9 @@
 ﻿# 模块功能：AI分析报告数据模型
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：SQLAlchemy
 
+from app.config.database import Base
 from sqlalchemy import (
     Boolean,
     Column,
@@ -14,8 +15,6 @@ from sqlalchemy import (
     Text,
 )
 from sqlalchemy.sql import func
-
-from app.config.database import Base
 
 
 class AIReport(Base):

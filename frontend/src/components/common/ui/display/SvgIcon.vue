@@ -1,6 +1,6 @@
 <template>
   <svg
-    class="svg-icon inline-flex items-center justify-center shrink-0 hover:opacity-80"
+    class="svg-icon"
     :class="svgClasses"
     :style="svgStyle"
     :width="width || iconSize"
@@ -125,9 +125,32 @@ const svgStyle = computed(() => {
 </script>
 
 <style scoped>
+/**
+ * SVG图标基础样式
+ */
+.svg-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+/**
+ * 内联显示
+ */
+.svg-icon--inline {
+  display: inline;
+  vertical-align: middle;
+}
+
+/**
+ * 旋转动画
+ */
 .svg-icon--spin {
   animation: svg-spin 2s linear infinite;
 }
+
 @keyframes svg-spin {
   from {
     transform: rotate(0deg);
@@ -136,6 +159,45 @@ const svgStyle = computed(() => {
     transform: rotate(360deg);
   }
 }
+
+/**
+ * 尺寸变体
+ */
+.svg-icon--xs {
+  width: 12px;
+  height: 12px;
+}
+
+.svg-icon--sm {
+  width: 16px;
+  height: 16px;
+}
+
+.svg-icon--md {
+  width: 20px;
+  height: 20px;
+}
+
+.svg-icon--lg {
+  width: 24px;
+  height: 24px;
+}
+
+.svg-icon--xl {
+  width: 32px;
+  height: 32px;
+}
+
+/**
+ * 悬停效果
+ */
+.svg-icon:hover {
+  opacity: 0.8;
+}
+
+/**
+ * 焦点样式
+ */
 .svg-icon:focus {
   outline: 2px solid var(--primary);
   outline-offset: 2px;

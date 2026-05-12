@@ -2,10 +2,10 @@
 """
 游戏静态数据种子包
 
-功能：将所有游戏静态数据以 gzip + base64 形式内嵌?Python 模块中，
-彻底消除?JSON 文件的运行时依赖?
+功能：将所有游戏静态数据以 gzip + base64 形式内嵌 Python 模块中，
+彻底消除 JSON 文件的运行时依赖
 
-数据在导入时自动解压?Python 对象，供初始化脚本使用?
+数据在导入时自动解压为 Python 对象，并返回 Python 对象，供初始化脚本使用
 
 对应已删除的 JSON 文件?
 - bdcode_skills.json          ->  _BD_SKILLS_DATA
@@ -26,7 +26,7 @@ from typing import Any, Dict, List
 
 
 def _decompress(name: str, data: bytes) -> Any:
-    """解压 base64 + gzip 数据并返?Python 对象"""
+    """解压 base64 + gzip 数据并返回 Python 对象"""
     cleaned = b"".join(data.split())
     decoded = base64.b64decode(cleaned)
     decompressed = gzip.decompress(decoded)
@@ -11865,7 +11865,7 @@ hFx5cOX/B2/gdGJCAAA=
 
 
 def get_skills() -> List[Dict[str, Any]]:
-    """获取技能种子数据""
+    """获取技能种子数据"""
     return _decompress("bdcode_skills", _BDCODE_SKILLS_DATA)
 
 
@@ -11875,12 +11875,12 @@ def get_specializations() -> List[Dict[str, Any]]:
 
 
 def get_traits() -> List[Dict[str, Any]]:
-    """获取特性种子数据""
+    """获取特性种子数据"""
     return _decompress("bdcode_traits", _BDCODE_TRAITS_DATA)
 
 
 def get_skill_palettes() -> List[Dict[str, Any]]:
-    """获取调色板映射种子数据""
+    """获取调色板映射种子数据"""
     return _decompress("skill_palettes", _SKILL_PALETTES_DATA)
 
 
@@ -11890,5 +11890,5 @@ def get_buffs() -> Dict[str, Any]:
 
 
 def get_builds_initial() -> List[Dict[str, Any]]:
-    """获取 Build 图书馆初始种子数据""
+    """获取 Build 图书馆初始种子数据"""
     return _decompress("builds_initial", _BUILDS_INITIAL_DATA)

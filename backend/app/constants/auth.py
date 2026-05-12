@@ -5,7 +5,8 @@
 
 from datetime import timedelta
 
-# JWT 算法与令牌过?JWT_ALGORITHM = "HS256"
+# JWT 算法与令牌过期时间
+JWT_ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_HOURS = 2
 
 # 登录安全限制

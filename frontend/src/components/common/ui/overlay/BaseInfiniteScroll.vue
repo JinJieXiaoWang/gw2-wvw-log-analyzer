@@ -1,7 +1,7 @@
 <template>
   <div 
     ref="scrollContainerRef"
-    class="infinite-scroll-container overflow-y-auto overflow-x-hidden relative"
+    class="infinite-scroll-container"
     :class="containerClass"
     :style="containerStyle"
     @scroll="handleScroll"
@@ -14,7 +14,7 @@
     
     <div
       ref="sentinelRef"
-      class="infinite-scroll-sentinel h-px w-full"
+      class="infinite-scroll-sentinel"
     />
 
     <LoadingState
@@ -26,7 +26,7 @@
 
     <div
       v-if="isError && showError"
-      class="infinite-scroll-error p-4 m-[8px 0]"
+      class="infinite-scroll-error"
     >
       <div class="flex flex-col items-center gap-2 text-center">
         <i class="pi pi-exclamation-circle text-error text-2xl" />
@@ -46,7 +46,7 @@
 
     <div
       v-if="!hasMore && !isLoading && showNoMore"
-      class="infinite-scroll-no-more p-[16px 0] m-[8px 0]"
+      class="infinite-scroll-no-more"
     >
       <div class="flex items-center gap-2 text-neutral-text-secondary">
         <div class="h-px flex-1 bg-neutral-border" />
@@ -184,4 +184,25 @@ defineExpose({
 })
 </script>
 
+<style scoped>
+.infinite-scroll-container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+}
 
+.infinite-scroll-sentinel {
+  height: 1px;
+  width: 100%;
+}
+
+.infinite-scroll-error {
+  padding: 16px;
+  margin: 8px 0;
+}
+
+.infinite-scroll-no-more {
+  padding: 16px 0;
+  margin: 8px 0;
+}
+</style>

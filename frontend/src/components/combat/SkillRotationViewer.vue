@@ -3,14 +3,27 @@
     <!-- Header -->
     <div class="sr-header">
       <div class="sr-title-section">
-        <div class="sr-icon-wrapper"><i class="pi pi-clock" /></div>
+        <div class="sr-icon-wrapper">
+          <i class="pi pi-clock" />
+        </div>
         <div>
-          <h3 class="sr-title">技能循环分析</h3>
-          <p class="sr-subtitle">ս斗时长: {{ formatDuration(props.fightDuration || 0) }} | 技能总数: {{ props.events.length }}</p>
+          <h3 class="sr-title">
+            技能循环分析
+          </h3>
+          <p class="sr-subtitle">
+            ս斗时长: {{ formatDuration(props.fightDuration || 0) }} | 技能总数: {{ props.events.length }}
+          </p>
         </div>
       </div>
       <div class="sr-view-toggle">
-        <button v-for="mode in viewModes" :key="mode.key" type="button" class="toggle-btn" :class="{ active: viewMode === mode.key }" @click="viewMode = mode.key">
+        <button
+          v-for="mode in viewModes"
+          :key="mode.key"
+          type="button"
+          class="toggle-btn"
+          :class="{ active: viewMode === mode.key }"
+          @click="viewMode = mode.key"
+        >
           <i :class="mode.icon" /><span>{{ mode.label }}</span>
         </button>
       </div>
@@ -19,50 +32,111 @@
     <!-- Filters -->
     <div class="sr-filters">
       <div class="filter-group">
-        <label v-for="opt in filterOpts" :key="opt.key" class="filter-checkbox">
-          <input v-model="filterOptions[opt.key as keyof FilterOptions]" type="checkbox">
+        <label
+          v-for="opt in filterOpts"
+          :key="opt.key"
+          class="filter-checkbox"
+        >
+          <input
+            v-model="filterOptions[opt.key as keyof FilterOptions]"
+            type="checkbox"
+          >
           <span class="filter-icon">{{ opt.icon }}</span>
           <span>{{ opt.label }}</span>
         </label>
       </div>
       <div class="filter-actions">
-        <button type="button" class="btn-icon" @click="resetFilters"><i class="pi pi-refresh" /></button>
+        <button
+          type="button"
+          class="btn-icon"
+          @click="resetFilters"
+        >
+          <i class="pi pi-refresh" />
+        </button>
       </div>
     </div>
 
     <!-- Views -->
-    <RotationCycleView v-if="viewMode === 'cycle'" :cycles="filteredCycles" @hover-skill="hoveredSkill = $event" @leave-skill="hoveredSkill = null" @mousemove="handleMouseMove" />
-    <RotationTimelineView v-else-if="viewMode === 'timeline'" :ticks="timelineTicks" :tracks="skillTracks" @hover-skill="hoveredSkill = $event" @leave-skill="hoveredSkill = null" @mousemove="handleMouseMove" />
-    <RotationHeatmapView v-else :rows="heatmapData" />
+    <RotationCycleView
+      v-if="viewMode === 'cycle'"
+      :cycles="filteredCycles"
+      @hover-skill="hoveredSkill = $event"
+      @leave-skill="hoveredSkill = null"
+      @mousemove="handleMouseMove"
+    />
+    <RotationTimelineView
+      v-else-if="viewMode === 'timeline'"
+      :ticks="timelineTicks"
+      :tracks="skillTracks"
+      @hover-skill="hoveredSkill = $event"
+      @leave-skill="hoveredSkill = null"
+      @mousemove="handleMouseMove"
+    />
+    <RotationHeatmapView
+      v-else
+      :rows="heatmapData"
+    />
 
     <!-- Tooltip -->
     <Transition name="tooltip">
-      <div v-if="hoveredSkill" class="sr-tooltip" :style="tooltipStyle">
+      <div
+        v-if="hoveredSkill"
+        class="sr-tooltip"
+        :style="tooltipStyle"
+      >
         <div class="tooltip-header">
-          <img v-if="hoveredSkill.icon" :src="hoveredSkill.icon" class="tooltip-icon">
+          <img
+            v-if="hoveredSkill.icon"
+            :src="hoveredSkill.icon"
+            class="tooltip-icon"
+          >
           <div class="tooltip-title-section">
             <span class="tooltip-title">{{ hoveredSkill.name }}</span>
-            <span class="tooltip-state" :class="`state-${hoveredSkill.state}`">{{ STATE_LABELS[hoveredSkill.state] }}</span>
+            <span
+              class="tooltip-state"
+              :class="`state-${hoveredSkill.state}`"
+            >{{ STATE_LABELS[hoveredSkill.state] }}</span>
           </div>
         </div>
         <div class="tooltip-body">
-          <div class="tooltip-row"><span class="tooltip-label">ʩ放时间</span><span class="tooltip-value">{{ formatTime(hoveredSkill.castTime) }}</span></div>
-          <div class="tooltip-row"><span class="tooltip-label">持续时间</span><span class="tooltip-value">{{ hoveredSkill.duration }}ms</span></div>
-          <div v-if="hoveredSkill.timeGained !== 0" class="tooltip-row">
-            <span class="tooltip-label">动画差</span>
-            <span class="tooltip-value" :class="hoveredSkill.timeGained < 0 ? 'negative' : ''">{{ hoveredSkill.timeGained > 0 ? '+' : '' }}{{ hoveredSkill.timeGained }}ms</span>
+          <div class="tooltip-row">
+            <span class="tooltip-label">ʩ放时间</span><span class="tooltip-value">{{ formatTime(hoveredSkill.castTime) }}</span>
           </div>
-          <div class="tooltip-row"><span class="tooltip-label">急速</span><span class="tooltip-value">{{ Math.round((hoveredSkill.quickness || 0) * 100) }}%</span></div>
+          <div class="tooltip-row">
+            <span class="tooltip-label">持续时间</span><span class="tooltip-value">{{ hoveredSkill.duration }}ms</span>
+          </div>
+          <div
+            v-if="hoveredSkill.timeGained !== 0"
+            class="tooltip-row"
+          >
+            <span class="tooltip-label">动画差</span>
+            <span
+              class="tooltip-value"
+              :class="hoveredSkill.timeGained < 0 ? 'negative' : ''"
+            >{{ hoveredSkill.timeGained > 0 ? '+' : '' }}{{ hoveredSkill.timeGained }}ms</span>
+          </div>
+          <div class="tooltip-row">
+            <span class="tooltip-label">急速</span><span class="tooltip-value">{{ Math.round((hoveredSkill.quickness || 0) * 100) }}%</span>
+          </div>
         </div>
       </div>
     </Transition>
 
     <!-- Legend -->
     <div class="sr-legend">
-      <div class="legend-title">״̬˵明</div>
+      <div class="legend-title">
+        ״̬˵明
+      </div>
       <div class="legend-items">
-        <div v-for="s in legendItems" :key="s.key" class="legend-item">
-          <span class="legend-color" :class="s.key" />
+        <div
+          v-for="s in legendItems"
+          :key="s.key"
+          class="legend-item"
+        >
+          <span
+            class="legend-color"
+            :class="s.key"
+          />
           <span class="legend-text">{{ s.label }}</span>
         </div>
       </div>

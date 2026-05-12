@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：AI分析API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：FastAPI
 
 import json
@@ -12,14 +12,14 @@ from sqlalchemy.orm import Session
 
 from app.config.database import get_db
 from app.routers.auth.auth import get_current_admin
+from app.schemas.auth.common import ApiResponse
 from app.schemas.system.ai_report import (
     AIReportDetailResponse,
     AIReportListResponse,
     AIReportResponse,
     AISuggestionResponse,
 )
-from app.schemas.auth.common import ApiResponse
-from app.services import ai_service as ai_service
+from app.services.system import ai_service as ai_service
 from app.utils.error.exceptions import NotFoundException
 from app.utils.logger import logger
 
@@ -59,7 +59,7 @@ async def get_report(report_id: int, db: Session = Depends(get_db)):
     # 功能：获取AI报告详情
     report = ai_service.get_report_by_id(db, report_id)
     if not report:
-        raise NotFoundException(f"报告ID {report_id} 不存?)
+        raise NotFoundException(f"报告ID {report_id} 不存在")
 
     try:
         parsed_content = json.loads(report.content)
@@ -89,7 +89,7 @@ async def delete_report(
 
     success = ai_service.delete_report(db, report_id)
     if not success:
-        raise NotFoundException(f"报告ID {report_id} 不存?)
+        raise NotFoundException(f"报告ID {report_id} 不存在")
 
     return ApiResponse(success=True, message="删除AI报告成功")
 

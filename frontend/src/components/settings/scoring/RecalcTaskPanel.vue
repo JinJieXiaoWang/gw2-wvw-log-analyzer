@@ -1,8 +1,7 @@
 <template>
   <div
     v-if="task"
-      class="bg-surface-0 dark:bg-surface-900 border border-surface-200
-             dark:border-surface-700 rounded-xl p-5 shadow-lg"
+    class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-5 shadow-lg"
   >
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
@@ -38,9 +37,7 @@
         @click="emit('close')"
       />
     </div>
-    <div
-      class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full
-             overflow-hidden mb-2">
+    <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden mb-2">
       <div
         class="h-full rounded-full transition-all duration-300"
         :class="task.status === 'completed' ? 'bg-green-500' : task.status === 'failed' ? 'bg-red-500' : 'bg-primary-500'"

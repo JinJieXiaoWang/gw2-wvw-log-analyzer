@@ -1,13 +1,9 @@
-﻿# 模块功能：全局异常处理?
+﻿# 模块功能：全局异常处理工具
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-04-27
+# 创建日期：2026-04-27
 # 依赖说明：FastAPI
 
 from datetime import datetime
-
-from fastapi import Request, status
-from fastapi.responses import JSONResponse
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.config.status_codes import (
     HTTP_400_BAD_REQUEST,
@@ -23,6 +19,9 @@ from app.utils.error.exceptions import (
     UnauthorizedException,
 )
 from app.utils.logger import logger
+from fastapi import Request, status
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import SQLAlchemyError
 
 
 async def app_exception_handler(request: Request, exc: AppException):
@@ -52,7 +51,7 @@ async def not_found_exception_handler(request: Request, exc: NotFoundException):
         exc: 异常对象
     返回：JSON响应
     """
-    logger.error(f"资源未找? {exc.detail}")
+    logger.error(f"资源未找到: {exc.detail}")
     content = {
         "success": False,
         "message": exc.detail,
@@ -75,7 +74,7 @@ async def bad_request_exception_handler(request: Request, exc: BadRequestExcepti
     error_detail = exc.detail or ""
     error_code = (
         "INVALID_CREDENTIALS"
-        if any(k in error_detail for k in ("密码", "认证", "credential", "用户?, "登录"))
+        if any(k in error_detail for k in ("密码", "认证", "credential", "用户", "登录"))
         else "BAD_REQUEST"
     )
     content = {
@@ -99,7 +98,7 @@ async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
     logger.error(f"数据库异? {str(exc)}")
     content = {
         "success": False,
-        "message": "数据库操作失败,
+        "message": "数据库操作失败",
         "error_code": "DATABASE_ERROR",
         "data": None,
         "timestamp": datetime.now().isoformat(),
@@ -120,7 +119,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
     logger.error(f"通用异常: {str(exc)}")
     content = {
         "success": False,
-        "message": "服务器内部错?,
+        "message": "服务器内部错误",
         "error_code": "INTERNAL_ERROR",
         "data": None,
         "timestamp": datetime.now().isoformat(),

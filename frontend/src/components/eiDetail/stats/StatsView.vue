@@ -6,7 +6,7 @@
       :total-damage="totalDamage"
       :avg-dps="avgDps"
       :fight-duration="fightDuration"
-      @update:active-tab="activeChartTab = $event"
+      @update:active-tab="emit('update:activeChartTab', $event)"
     />
 
     <!-- 团队统计卡片 -->
@@ -67,7 +67,7 @@
       :sort-by="sortBy"
       :selected-player-id="selectedPlayerId"
       @select-player="emit('select-player', $event)"
-      @update:sort-by="sortBy = $event"
+      @update:sort-by="emit('update:sortBy', $event)"
     />
 
     <div
@@ -88,18 +88,17 @@ import PlayerStatsDetail from '../player/PlayerStatsDetail.vue'
 import StatsDamageChart from '../charts/StatsDamageChart.vue'
 import StatsPlayerTable from '../tables/StatsPlayerTable.vue'
 
-const sortBy = defineModel<string>('sortBy', { required: true })
-const activeChartTab = defineModel<string>('activeChartTab', { required: true })
-
 const props = defineProps<{
   playersSortedByDmg: Player[]
   selectedPlayerId: number | null
   selectedPlayer: Player | null
   fightDuration: string
   durationMs: number
+  sortBy: string
+  activeChartTab: string
 }>()
 
-const emit = defineEmits(['select-player'])
+const emit = defineEmits(['select-player', 'update:sortBy', 'update:activeChartTab'])
 
 const mockSkills = [
   { id: 1, name: '裁决重击', count: 45 },
@@ -137,4 +136,4 @@ function formatLargeNumber(num: number): string {
 }
 </script>
 
-
+<style scoped>@import './StatsView.css';</style>

@@ -10,15 +10,27 @@
     <div class="dialog-form">
       <div class="form-row">
         <label class="form-label">显示标签 *</label>
-        <InputText v-model="localForm.dict_label" placeholder="请输入显示标签" class="w-full" />
+        <InputText
+          v-model="localForm.dict_label"
+          placeholder="请输入显示标签"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">存储值 *</label>
-        <InputText v-model="localForm.dict_value" placeholder="请输入存储值" class="w-full" />
+        <InputText
+          v-model="localForm.dict_value"
+          placeholder="请输入存储值"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">排序</label>
-        <InputNumber v-model="localForm.dict_sort" :min="0" class="w-full" />
+        <InputNumber
+          v-model="localForm.dict_sort"
+          :min="0"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">CSS类</label>
@@ -26,7 +38,11 @@
       </div>
       <div class="form-row">
         <label class="form-label">列表类</label>
-        <InputText v-model="localForm.list_class" placeholder="如: primary, secondary" class="w-full" />
+        <InputText
+          v-model="localForm.list_class"
+          placeholder="如: primary, secondary"
+          class="w-full"
+        />
       </div>
       <div class="form-row">
         <label class="form-label">状态</label>
@@ -40,7 +56,12 @@
       </div>
       <div class="form-row">
         <label class="form-label">备注</label>
-        <Textarea v-model="localForm.remark" placeholder="请输入备注说明" rows="3" class="w-full" />
+        <Textarea
+          v-model="localForm.remark"
+          placeholder="请输入备注说明"
+          rows="3"
+          class="w-full"
+        />
       </div>
     </div>
   </BaseDialog>
@@ -51,9 +72,9 @@ import { ref, watch, computed } from 'vue'
 import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
-import ColorPickerInput from '@/components/common/ui/ColorPickerInput.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import ColorPickerInput from '@/components/common/ui/input/ColorPickerInput.vue'
 import type { DictData } from '@/services/system/dictionaryService'
 
 interface DataForm {
@@ -66,28 +87,29 @@ interface DataForm {
   remark: string
 }
 
+const visible = defineModel<boolean>('visible', { default: false })
+const form = defineModel<DataForm>('form', {
+  default: () => ({ dict_label: '', dict_value: '', dict_sort: 0, css_class: '', list_class: '', status: 0, remark: '' })
+})
+
 const props = defineProps<{
-  visible: boolean
   editingData: DictData | null
   saving: boolean
-  form: DataForm
   statusOptions: { label: string; value: number | null }[]
 }>()
 
 const emit = defineEmits<{
-  'update:visible': [value: boolean]
-  'update:form': [value: DataForm]
   save: []
 }>()
 
 const localVisible = computed({
-  get: () => props.visible,
-  set: v => emit('update:visible', v)
+  get: () => visible.value,
+  set: v => visible.value = v
 })
 
-const localForm = ref<DataForm>({ ...props.form })
-watch(() => props.form, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
-watch(localForm, (v) => { emit('update:form', { ...v }) }, { deep: true })
+const localForm = ref<DataForm>({ ...form.value })
+watch(() => form.value, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
+watch(localForm, (v) => { form.value = { ...v } }, { deep: true })
 </script>
 
 <style scoped>

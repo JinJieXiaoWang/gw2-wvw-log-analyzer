@@ -1,24 +1,23 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：评分规则配置模型
-# 说明：基于角色类型的灵活评分规则配置?
+# 说明：基于角色类型的灵活评分规则配置
 
+from app.config.database import Base
 from sqlalchemy import (
+    Boolean,
     Column,
+    DateTime,
+    Float,
     Integer,
     String,
-    Float,
-    Boolean,
-    DateTime,
     Text,
     UniqueConstraint,
     func,
 )
 
-from app.config.database import Base
-
 
 class ScoringRule(Base):
-    """评分规则配置?
+    """评分规则配置模型
 
     支持按角色类型（输出/辅助/承伤）和职业配置不同的评分权重和阈值?
     profession ?null 时表示该 role_type 的通用规则；有值时表示该职业的特定规则?
@@ -29,7 +28,7 @@ class ScoringRule(Base):
         UniqueConstraint(
             "role_type", "profession", "dimension", name="uk_role_profession_dimension"
         ),
-        {"comment": "评分规则配置?},
+        {"comment": "评分规则配置"},
     )
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="规则ID")
@@ -57,12 +56,12 @@ class ScoringRule(Base):
     min_value = Column(
         Float,
         nullable=True,
-        comment="最小值阈值，低于此值计0?,
+        comment="最小值阈值，低于此值计为0",
     )
     max_value = Column(
         Float,
         nullable=True,
-        comment="最大值上限，用于归一化分?,
+        comment="最大值上限，用于归一化评分",
     )
     is_active = Column(
         Boolean,
@@ -99,11 +98,11 @@ class ScoringRule(Base):
 class ScoringRulePreset(Base):
     """评分规则预设?
 
-    存储不同角色类型的完整预设方案，便于一键切换和恢复默认?
+    存储不同角色类型的完整预设方案，便于一键切换和恢复默认预设规则。
     """
 
     __tablename__ = "scoring_rule_preset"
-    __table_args__ = {"comment": "评分规则预设方案?}
+    __table_args__ = {"comment": "评分规则预设方案"}
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="预设ID")
     role_type = Column(
@@ -126,7 +125,7 @@ class ScoringRulePreset(Base):
         Boolean,
         default=False,
         nullable=False,
-        comment="是否为系统默认预?,
+        comment="是否为系统默认预设",
     )
     is_active = Column(
         Boolean,

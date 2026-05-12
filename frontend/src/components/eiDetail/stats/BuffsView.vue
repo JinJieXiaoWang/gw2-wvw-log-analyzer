@@ -1,14 +1,14 @@
 <template>
-  <div class="buffs-view flex flex-col gap-6">
+  <div class="buffs-view">
     <!-- 团队增益覆盖 -->
-    <div class="buffs-section card bg-neutral-card rounded-xl border border-neutral-border overflow-hidden">
-      <div class="section-header flex items-center justify-between p-[1rem 1.25rem] bg-neutral-card-hover">
-        <h3 class="section-title flex items-center gap-2 text-base font-semibold text-neutral-text m-0">
-          <i class="pi pi-shield text-primary" />
+    <div class="buffs-section card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-shield" />
           团队增益覆盖
         </h3>
       </div>
-      <div class="buffs-grid grid grid-cols-[repeat(auto-fit, minmax(300px, 1fr))] gap-4 p-5">
+      <div class="buffs-grid">
         <BoonsUptimeCard
           v-for="(boonData, index) in playerBoons"
           :key="index"
@@ -18,33 +18,33 @@
     </div>
 
     <!-- 增益统计表格 -->
-    <div class="buff-table-section card bg-neutral-card rounded-xl border border-neutral-border overflow-hidden">
-      <div class="section-header flex items-center justify-between p-[1rem 1.25rem] bg-neutral-card-hover">
-        <h3 class="section-title flex items-center gap-2 text-base font-semibold text-neutral-text m-0">
-          <i class="pi pi-list text-primary" />
+    <div class="buff-table-section card">
+      <div class="section-header">
+        <h3 class="section-title">
+          <i class="pi pi-list" />
           增益详细统计
         </h3>
       </div>
-      <div class="table-wrapper overflow-x-auto">
-        <table class="data-table w-full">
+      <div class="table-wrapper">
+        <table class="data-table">
           <thead>
             <tr>
-              <th class="col-player p-3 px-4 text-left border-b border-neutral-border bg-neutral-card-hover text-xs font-semibold text-neutral-text-secondary uppercase tracking-wider whitespace-nowrap">
+              <th class="col-player">
                 玩家
               </th>
-              <th class="col-boon p-3 px-4 border-b border-neutral-border bg-neutral-card-hover text-sm font-semibold text-neutral-text uppercase tracking-wider whitespace-nowrap text-center">
+              <th class="col-boon">
                 平均增益
               </th>
-              <th class="col-boon-active p-3 px-4 border-b border-neutral-border bg-neutral-card-hover text-sm font-semibold text-neutral-text uppercase tracking-wider whitespace-nowrap text-center">
+              <th class="col-boon-active">
                 活跃增益
               </th>
-              <th class="col-condi p-3 px-4 border-b border-neutral-border bg-neutral-card-hover text-sm font-semibold text-neutral-text uppercase tracking-wider whitespace-nowrap text-center">
+              <th class="col-condi">
                 平均症状
               </th>
-              <th class="col-condi-active p-3 px-4 border-b border-neutral-border bg-neutral-card-hover text-sm font-semibold text-neutral-text uppercase tracking-wider whitespace-nowrap text-center">
+              <th class="col-condi-active">
                 活跃症状
               </th>
-              <th class="col-swap p-3 px-4 border-b border-neutral-border bg-neutral-card-hover text-sm font-semibold text-neutral-text uppercase tracking-wider whitespace-nowrap text-center">
+              <th class="col-swap">
                 武器切换
               </th>
             </tr>
@@ -53,33 +53,33 @@
             <tr
               v-for="player in sortedPlayers"
               :key="player.instanceID"
-              class="data-row cursor-pointer hover:bg-neutral-card-hover"
-              :class="{ 'bg-primary/10': selectedPlayerId === player.instanceID }"
+              class="data-row"
+              :class="{ selected: selectedPlayerId === player.instanceID }"
               @click="$emit('select-player', player.instanceID)"
             >
-              <td class="col-player p-3 px-4 text-left border-b border-neutral-border">
-                <div class="player-cell flex items-center gap-2">
+              <td class="col-player">
+                <div class="player-cell">
                   <img
                     :src="getProfIcon(player.profession)"
-                    class="player-avatar w-6 h-6 rounded-full"
+                    class="player-avatar"
                     alt=""
                   >
-                  <span class="player-name text-sm font-medium text-neutral-text">{{ player.name }}</span>
+                  <span class="player-name">{{ player.name }}</span>
                 </div>
               </td>
-              <td class="col-boon p-3 px-4 border-b border-neutral-border text-sm font-semibold text-neutral-text text-center">
+              <td class="col-boon">
                 {{ formatDecimal(getStats(player).avgBoons) }}
               </td>
-              <td class="col-boon-active p-3 px-4 border-b border-neutral-border text-sm font-semibold text-neutral-text text-center">
+              <td class="col-boon-active">
                 {{ formatDecimal(getStats(player).avgActiveBoons) }}
               </td>
-              <td class="col-condi p-3 px-4 border-b border-neutral-border text-sm font-semibold text-neutral-text text-center">
+              <td class="col-condi">
                 {{ formatDecimal(getStats(player).avgConditions) }}
               </td>
-              <td class="col-condi-active p-3 px-4 border-b border-neutral-border text-sm font-semibold text-neutral-text text-center">
+              <td class="col-condi-active">
                 {{ formatDecimal(getStats(player).avgActiveConditions) }}
               </td>
-              <td class="col-swap p-3 px-4 border-b border-neutral-border text-sm font-semibold text-neutral-text text-center">
+              <td class="col-swap">
                 {{ getStats(player).swapCount }}
               </td>
             </tr>
@@ -95,7 +95,6 @@ import { computed } from 'vue'
 import type { Player, PlayerStats } from '@/types/eliteInsights'
 import { getProfessionIconUrl } from '@/utils/profession/professionUtils'
 import BoonsUptimeCard from '../charts/BoonsUptimeCard.vue'
-import { Colors } from '@/config/designTokens'
 
 interface Props {
   players: Player[]
@@ -152,7 +151,7 @@ function getStats(player: Player): PlayerStats {
 }
 
 function getBoonColor(index: number): string {
-  const colors = [Colors.palette.green, Colors.palette.blue, Colors.palette.amber, Colors.palette.red, Colors.palette.violet, Colors.palette.cyan]
+  const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
   return colors[index % colors.length]
 }
 
@@ -165,4 +164,116 @@ function getProfIcon(prof: string): string {
 }
 </script>
 
+<style scoped lang="css">
+.buffs-view {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
+.buffs-section,
+.buff-table-section {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-card-hover);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.section-title i {
+  color: var(--color-primary);
+}
+
+.buffs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1.25rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.data-table th {
+  background-color: var(--color-card-hover);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.data-row {
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.data-row:hover {
+  background-color: var(--color-card-hover);
+}
+
+.data-row.selected {
+  background-color: var(--color-primary-alpha-10);
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+.player-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.col-boon,
+.col-boon-active,
+.col-condi,
+.col-condi-active,
+.col-swap {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+  text-align: center;
+}
+</style>

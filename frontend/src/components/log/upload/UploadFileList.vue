@@ -1,12 +1,32 @@
 <template>
-  <div v-if="files.length > 0" class="mt-0 p-4 bg-neutral-bg rounded-xl border border-neutral-border">
+  <div
+    v-if="files.length > 0"
+    class="mt-0 p-4 bg-neutral-bg rounded-xl border border-neutral-border"
+  >
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-neutral-border">
       <span class="text-sm text-neutral-text font-medium">
-        已鼼夋嫨 {{ files.length }} 个文浠?        <span v-if="files.length > 50" class="text-status-warning text-xs ml-1">(批量上传建议不超杩?0涓?</span>
+        已鼼夋嫨 {{ files.length }} 个文浠?        <span
+          v-if="files.length > 50"
+          class="text-status-warning text-xs ml-1"
+        >(批量上传建议不超杩?0涓?</span>
       </span>
       <div class="flex items-center gap-2">
-        <BaseButton v-if="!isUploading" label="缁х画添加" icon="pi pi-plus" size="small" text @click="$emit('add')" />
-        <BaseButton label="清空" size="small" text class="text-status-error" :disabled="isUploading" @click="$emit('clear')" />
+        <BaseButton
+          v-if="!isUploading"
+          label="缁х画添加"
+          icon="pi pi-plus"
+          size="small"
+          text
+          @click="$emit('add')"
+        />
+        <BaseButton
+          label="清空"
+          size="small"
+          text
+          class="text-status-error"
+          :disabled="isUploading"
+          @click="$emit('clear')"
+        />
       </div>
     </div>
 
@@ -43,30 +63,57 @@
         </div>
 
         <div class="flex-1 min-w-0">
-          <p class="text-sm text-neutral-text font-medium truncate">{{ file.name }}</p>
+          <p class="text-sm text-neutral-text font-medium truncate">
+            {{ file.name }}
+          </p>
           <p class="text-xs text-neutral-text-secondary">
             {{ formatSize(file.size) }}
-            <span v-if="items[index]?.phase === 'uploading' && items[index]?.transportPercent !== undefined" class="text-primary ml-1">传输 {{ items[index].transportPercent }}%</span>
-            <span v-else-if="items[index]?.phase === 'processing'" class="text-status-warning ml-1">服务器处理中...</span>
-            <span v-else-if="items[index]?.phase === 'success'" class="text-status-success ml-1">完成</span>
-            <span v-else-if="items[index]?.phase === 'error'" class="text-status-error ml-1">{{ items[index].errorMsg || 'ʧ败' }}</span>
+            <span
+              v-if="items[index]?.phase === 'uploading' && items[index]?.transportPercent !== undefined"
+              class="text-primary ml-1"
+            >传输 {{ items[index].transportPercent }}%</span>
+            <span
+              v-else-if="items[index]?.phase === 'processing'"
+              class="text-status-warning ml-1"
+            >服务器处理中...</span>
+            <span
+              v-else-if="items[index]?.phase === 'success'"
+              class="text-status-success ml-1"
+            >完成</span>
+            <span
+              v-else-if="items[index]?.phase === 'error'"
+              class="text-status-error ml-1"
+            >{{ items[index].errorMsg || 'ʧ败' }}</span>
           </p>
         </div>
 
-        <div v-if="items[index]?.phase === 'uploading'" class="w-24 flex-shrink-0">
+        <div
+          v-if="items[index]?.phase === 'uploading'"
+          class="w-24 flex-shrink-0"
+        >
           <div class="h-1.5 bg-neutral-border rounded-full overflow-hidden">
-            <div class="h-full bg-primary rounded-full transition-all duration-300" :style="{ width: (items[index].transportPercent || 0) + '%' }" />
+            <div
+              class="h-full bg-primary rounded-full transition-all duration-300"
+              :style="{ width: (items[index].transportPercent || 0) + '%' }"
+            />
           </div>
         </div>
 
-        <BaseButton v-if="!isUploading" icon="pi pi-times" size="small" text class="hover:bg-status-error/10 flex-shrink-0" @click="$emit('remove', index)" />
+        <BaseButton
+          v-if="!isUploading"
+          icon="pi pi-times"
+          size="small"
+          text
+          class="hover:bg-status-error/10 flex-shrink-0"
+          @click="$emit('remove', index)"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 interface UploadItem {
   phase?: string

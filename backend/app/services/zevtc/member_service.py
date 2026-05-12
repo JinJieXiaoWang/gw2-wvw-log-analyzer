@@ -11,8 +11,8 @@ from typing import List, Optional, Tuple
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.fight_stats import FightStats
-from app.models.member import Member
+from app.models.log.fight_stats import FightStats
+from app.models.auth.member import Member
 from app.utils.cache import cache_result
 
 

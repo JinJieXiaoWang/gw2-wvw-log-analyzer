@@ -172,31 +172,13 @@ defineEmits<{
 </script>
 
 <style scoped>
-:deep(.p-datatable-scrollable-body) {
-  scrollbar-width: thin; scrollbar-color: var(--color-neutral-border) transparent;
-}
-:deep(.p-datatable-scrollable-body::-webkit-scrollbar) {
-  width: 6px; height: 6px;
-}
-:deep(.p-datatable-scrollable-body::-webkit-scrollbar-track) {
-  background: transparent;
-}
-:deep(.p-datatable-scrollable-body::-webkit-scrollbar-thumb) {
-  background-color: var(--color-neutral-border); border-radius: 3px;
-}
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 12px 16px;
-}
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-  padding: 12px 16px; background: var(--color-bg-secondary); border-bottom: 2px solid var(--color-neutral-border); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-text-secondary);
-}
-:deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background-color: var(--color-bg-secondary);
-}
-:deep(.p-datatable .p-datatable-tbody > tr.p-datatable-striped-row) {
-  background-color: var(--color-card);
-}
-:deep(.p-datatable .p-datatable-tbody > tr.p-datatable-striped-row:hover) {
-  background-color: var(--color-bg-secondary);
-}
+:deep(.p-datatable-scrollable-body) { scrollbar-width: thin; scrollbar-color: var(--color-neutral-border) transparent; }
+:deep(.p-datatable-scrollable-body::-webkit-scrollbar) { width: 6px; height: 6px; }
+:deep(.p-datatable-scrollable-body::-webkit-scrollbar-track) { background: transparent; }
+:deep(.p-datatable-scrollable-body::-webkit-scrollbar-thumb) { background-color: var(--color-neutral-border); border-radius: 3px; }
+:deep(.p-datatable .p-datatable-tbody > tr > td) { padding: 12px 16px; }
+:deep(.p-datatable .p-datatable-thead > tr > th) { padding: 12px 16px; background: var(--color-bg-secondary); border-bottom: 2px solid var(--color-neutral-border); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-neutral-text-secondary); }
+:deep(.p-datatable .p-datatable-tbody > tr:hover) { background-color: var(--color-bg-secondary); }
+:deep(.p-datatable .p-datatable-tbody > tr.p-datatable-striped-row) { background-color: var(--color-card); }
+:deep(.p-datatable .p-datatable-tbody > tr.p-datatable-striped-row:hover) { background-color: var(--color-bg-secondary); }
 </style>

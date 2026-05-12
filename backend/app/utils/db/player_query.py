@@ -1,14 +1,13 @@
 ﻿# -*- coding: utf-8 -*-
 """
-玩家查询工具函数（已停用?
+玩家查询工具函数（已停用）
 注意：Fight、Member、FightStats模型已被移除，相关功能已停用
 """
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from sqlalchemy.orm import Session
-
 from app.utils.error.exceptions import BadRequestException, NotFoundException
+from sqlalchemy.orm import Session
 
 
 def query_player(
@@ -20,7 +19,7 @@ def query_player(
     member_name: Optional[str] = None,
 ) -> Tuple[Optional[Dict], Optional[Dict], Optional[int], bool]:
     """
-    统一玩家查询函数（已停用?
+    统一玩家查询函数（已停用）
 
     参数优先级：fight_stats_id > instance_id > account_name > member_name
 
@@ -29,7 +28,7 @@ def query_player(
         - fight_stats_dict: 战斗统计数据（字典格式）
         - member_dict: 玩家数据（字典格式）
         - instance_id: 实例ID
-        - is_ambiguous: 是否有歧?
+        - is_ambiguous: 是否有歧义
 
     注意：由于Fight、Member、FightStats模型已被移除，此函数返回空数据
     """

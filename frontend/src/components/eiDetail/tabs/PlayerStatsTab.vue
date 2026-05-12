@@ -1,93 +1,93 @@
 <template>
   <div class="tab-content">
     <!-- 主要数据卡片 -->
-    <div class="stats-grid grid grid-cols-2 max-sm:grid-cols-1 gap-4 mb-6">
-      <div class="stat-card damage flex items-center gap-3 p-4 bg-neutral-bg-secondary rounded-xl">
-        <div class="stat-icon w-11 h-11 flex items-center justify-center rounded-[0.625rem] bg-[linear-gradient(135deg,#ef4444,#f97316)]">
-          <i class="pi pi-bolt text-[1.375rem] text-white" />
+    <div class="stats-grid">
+      <div class="stat-card damage">
+        <div class="stat-icon">
+          <i class="pi pi-bolt" />
         </div>
-        <div class="stat-info flex flex-col gap-0.5">
-          <span class="stat-value text-[1.375rem] font-bold text-neutral-text">{{ fmtNum(player.dpsAll?.[0]?.damage) }}</span>
-          <span class="stat-label text-xs text-neutral-text-secondary">总伤害</span>
-        </div>
-      </div>
-      <div class="stat-card dps flex items-center gap-3 p-4 bg-neutral-bg-secondary rounded-xl">
-        <div class="stat-icon w-11 h-11 flex items-center justify-center rounded-[0.625rem] bg-[linear-gradient(135deg,#3b82f6,#8b5cf6)]">
-          <i class="pi pi-gauge text-[1.375rem] text-white" />
-        </div>
-        <div class="stat-info flex flex-col gap-0.5">
-          <span class="stat-value text-[1.375rem] font-bold text-neutral-text">{{ player.dps }}</span>
-          <span class="stat-label text-xs text-neutral-text-secondary">DPS</span>
+        <div class="stat-info">
+          <span class="stat-value">{{ fmtNum(player.dpsAll?.[0]?.damage) }}</span>
+          <span class="stat-label">总伤害</span>
         </div>
       </div>
-      <div class="stat-card score flex items-center gap-3 p-4 bg-neutral-bg-secondary rounded-xl">
-        <div class="stat-icon w-11 h-11 flex items-center justify-center rounded-[0.625rem] bg-[linear-gradient(135deg,#f59e0b,#eab308)]">
-          <i class="pi pi-trophy text-[1.375rem] text-white" />
+      <div class="stat-card dps">
+        <div class="stat-icon">
+          <i class="pi pi-gauge" />
         </div>
-        <div class="stat-info flex flex-col gap-0.5">
-          <span class="stat-value text-[1.375rem] font-bold text-neutral-text">{{ player.total_score }}</span>
-          <span class="stat-label text-xs text-neutral-text-secondary">评分</span>
+        <div class="stat-info">
+          <span class="stat-value">{{ player.dps }}</span>
+          <span class="stat-label">DPS</span>
         </div>
       </div>
-      <div class="stat-card hps flex items-center gap-3 p-4 bg-neutral-bg-secondary rounded-xl">
-        <div class="stat-icon w-11 h-11 flex items-center justify-center rounded-[0.625rem] bg-[linear-gradient(135deg,#22c55e,#10b981)]">
-          <i class="pi pi-heart text-[1.375rem] text-white" />
+      <div class="stat-card score">
+        <div class="stat-icon">
+          <i class="pi pi-trophy" />
         </div>
-        <div class="stat-info flex flex-col gap-0.5">
-          <span class="stat-value text-[1.375rem] font-bold text-neutral-text">{{ player.hps || 0 }}</span>
-          <span class="stat-label text-xs text-neutral-text-secondary">HPS</span>
+        <div class="stat-info">
+          <span class="stat-value">{{ player.total_score }}</span>
+          <span class="stat-label">评分</span>
+        </div>
+      </div>
+      <div class="stat-card hps">
+        <div class="stat-icon">
+          <i class="pi pi-heart" />
+        </div>
+        <div class="stat-info">
+          <span class="stat-value">{{ player.hps || 0 }}</span>
+          <span class="stat-label">HPS</span>
         </div>
       </div>
     </div>
 
     <!-- 详细数据 -->
-    <div class="detail-section mb-6 last:mb-0">
-      <h4 class="section-title flex items-center gap-2 text-sm font-semibold text-neutral-text-secondary uppercase tracking-[0.05em] m-[0 0 0.875rem 0]">
-        <i class="pi pi-chart-bar text-primary" />
+    <div class="detail-section">
+      <h4 class="section-title">
+        <i class="pi pi-chart-bar" />
         战斗数据详情
       </h4>
-      <div class="detail-grid grid grid-cols-2 max-sm:grid-cols-1 gap-2.5">
+      <div class="detail-grid">
         <div
           v-for="item in detailItems"
           :key="item.label"
-          class="detail-item flex justify-between items-center p-[0.625rem 0.875rem] bg-neutral-bg-secondary rounded-lg"
+          class="detail-item"
         >
-          <span class="detail-label text-[0.8125rem] text-neutral-text-secondary">{{ item.label }}</span>
-          <span class="detail-value text-sm font-semibold text-neutral-text">{{ item.value }}</span>
+          <span class="detail-label">{{ item.label }}</span>
+          <span class="detail-value">{{ item.value }}</span>
         </div>
       </div>
     </div>
 
     <!-- 战斗状态 -->
-    <div class="detail-section mb-6 last:mb-0">
-      <h4 class="section-title flex items-center gap-2 text-sm font-semibold text-neutral-text-secondary uppercase tracking-[0.05em] m-[0 0 0.875rem 0]">
-        <i class="pi pi-shield text-primary" />
+    <div class="detail-section">
+      <h4 class="section-title">
+        <i class="pi pi-shield" />
         战斗状态
       </h4>
-      <div class="status-grid grid grid-cols-4 max-sm:grid-cols-2 gap-3.5">
+      <div class="status-grid">
         <div
           v-for="s in statusItems"
           :key="s.label"
-          class="status-item flex flex-col items-center gap-2.5 p-3.5 bg-neutral-bg-secondary rounded-[0.625rem]"
+          class="status-item"
           :class="{ danger: s.danger }"
         >
-          <i :class="[s.icon, 'text-2xl', s.danger ? 'text-status-error' : 'text-neutral-text-secondary']" />
-          <div class="status-data text-center">
-            <span class="status-value block text-xl font-bold" :class="s.danger ? 'text-status-error' : 'text-neutral-text'">{{ s.value }}</span>
-            <span class="status-label block text-xs text-neutral-text-secondary">{{ s.label }}</span>
+          <i :class="s.icon" />
+          <div class="status-data">
+            <span class="status-value">{{ s.value }}</span>
+            <span class="status-label">{{ s.label }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <!-- 武器配置 -->
-    <div class="detail-section mb-6 last:mb-0">
-      <h4 class="section-title flex items-center gap-2 text-sm font-semibold text-neutral-text-secondary uppercase tracking-[0.05em] m-[0 0 0.875rem 0]">
-        <i class="pi pi-sword text-primary" />
+    <div class="detail-section">
+      <h4 class="section-title">
+        <i class="pi pi-sword" />
         武器配置
       </h4>
-      <div class="weapons-box p-3.5 bg-neutral-bg-secondary rounded-[0.625rem]">
-        <span class="weapons-text text-sm text-neutral-text">{{ player.weapons?.join(' / ') || '未记录' }}</span>
+      <div class="weapons-box">
+        <span class="weapons-text">{{ player.weapons?.join(' / ') || '未记录' }}</span>
       </div>
     </div>
   </div>
@@ -127,3 +127,161 @@ const statusItems = computed(() => [
 ])
 </script>
 
+<style scoped>
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+.stat-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.625rem;
+}
+.stat-card.damage .stat-icon {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
+.stat-card.dps .stat-icon {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+.stat-card.score .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #eab308);
+}
+.stat-card.hps .stat-icon {
+  background: linear-gradient(135deg, #22c55e, #10b981);
+}
+.stat-icon i {
+  font-size: 1.375rem;
+  color: white;
+}
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+.stat-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+.detail-section:last-child {
+  margin-bottom: 0;
+}
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.875rem 0;
+}
+.section-title i {
+  color: var(--color-primary);
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.625rem;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 0.875rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+}
+.detail-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+.detail-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.875rem;
+}
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.875rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-border);
+}
+.status-item i {
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+}
+.status-item.danger i {
+  color: var(--color-error);
+}
+.status-data {
+  text-align: center;
+}
+.status-value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+.status-item.danger .status-value {
+  color: var(--color-error);
+}
+.status-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+.weapons-box {
+  padding: 0.875rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.625rem;
+  border: 1px solid var(--color-border);
+}
+.weapons-text {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+@media (max-width: 640px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>

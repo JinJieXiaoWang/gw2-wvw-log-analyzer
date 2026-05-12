@@ -25,11 +25,11 @@ from app.services.system.dps_report_service import (
     DpsReportTimeoutError,
     upload_and_parse,
 )
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.log import Log
-from app.models.member import Member
-from app.models.zevtc_data import EiPlayer, EiSkillMap, EiTarget
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
+from app.models.auth.member import Member
+from app.models.log.zevtc_data import EiPlayer, EiSkillMap, EiTarget
 from app.services.zevtc.data_validator import EIJsonValidator
 from app.services.zevtc.field_mapper import EIJsonFieldMapper
 from app.utils.logger import logger
@@ -499,7 +499,7 @@ class LogImportService:
         评分移至查询阶段（PlayerScoreService），规则更新立即生效。
         """
         from datetime import date
-        from app.models.account_character import AccountCharacter
+        from app.models.auth.account_character import AccountCharacter
 
         today = date.today()
         seen_accounts: set = set()
@@ -891,7 +891,7 @@ class LogImportService:
         - 如果解析数据有误，用户可以保留源文件重新解析
         - 文件删除后，log.file_path 将被设置为 None
         """
-        from app.models.log import Log
+        from app.models.log.log import Log
 
         try:
             log = self.db.query(Log).filter(Log.id == log_id).first()
@@ -932,7 +932,7 @@ class LogImportService:
         返回：{"success": True, "deleted_count": N, "failed_count": M, "errors": [...]}
         """
         from app.config.database import SessionLocal
-        from app.models.log import Log
+        from app.models.log.log import Log
 
         db = SessionLocal()
         deleted_count = 0

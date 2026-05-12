@@ -13,7 +13,7 @@
         :class="activeSection === section.id
           ? 'bg-gradient-to-r from-primary/15 to-transparent text-primary'
           : 'text-neutral-text-secondary hover:bg-neutral-bg hover:text-neutral-text'"
-        @click="selectSection(section.id)"
+        @click="selectSection(section)"
       >
         <!-- 左侧激活指示器 -->
         <div
@@ -44,8 +44,16 @@
           {{ section.label }}
         </span>
 
-        <!-- 右侧箭头 -->
+        <!-- 外部链接图标 -->
         <i
+          v-if="section.isExternal"
+          class="pi pi-external-link text-xs text-neutral-text-disabled flex-shrink-0"
+          title="在新面板打开"
+        />
+
+        <!-- 右侧箭头（非外部链接） -->
+        <i
+          v-else
           class="pi pi-chevron-right text-xs transition-all duration-200 flex-shrink-0"
           :class="activeSection === section.id
             ? 'text-primary opacity-100 translate-x-0'
@@ -60,23 +68,37 @@
 /**
  * SettingSidebar - 设置页面侧边导航栏组件
  * 功能：显示设置页面的导航选项，提供精致的视觉反馈
- * 更新日期：2026-05-04
+ * 更新日期：2026-05-11
  */
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+interface SettingSection {
+  id: string
+  label: string
+  icon: string
+  isExternal?: boolean
+  path?: string
+}
 
 defineProps<{
   activeSection: string
-  settingSections: Array<{
-    id: string
-    label: string
-    icon: string
-  }>
+  settingSections: SettingSection[]
 }>()
 
 const emit = defineEmits<{
   'select-section': [sectionId: string]
 }>()
 
-const selectSection = (sectionId: string) => {
-  emit('select-section', sectionId)
+const selectSection = (section: SettingSection) => {
+  // 如果是外部链接，跳转到指定页面
+  if (section.isExternal && section.path) {
+    router.push(section.path)
+    return
+  }
+  // 否则触发普通导航
+  emit('select-section', section.id)
 }
 </script>

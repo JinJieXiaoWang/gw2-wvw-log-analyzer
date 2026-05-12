@@ -1,10 +1,6 @@
 <template>
-  <div
-    class="card bg-surface-800/50 border border-neutral-border/30 rounded-2xl
-           overflow-hidden">
-    <div
-      class="card-header flex items-center justify-between p-4 border-b
-             border-neutral-border/20">
+  <div class="card bg-surface-800/50 border border-neutral-border/30 rounded-2xl overflow-hidden">
+    <div class="card-header flex items-center justify-between p-4 border-b border-neutral-border/20">
       <div class="flex items-center gap-2">
         <i class="pi pi-swords text-status-error text-lg" />
         <h3 class="font-semibold text-neutral-text">
@@ -15,8 +11,7 @@
       <button
         v-if="fights.length > 5"
         type="button"
-          class="text-xs text-primary hover:text-primary/80 flex items-center gap-1
-                 transition-colors"
+        class="text-xs text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
         @click="showAll = !showAll"
       >
         <span>{{ showAll ? '收起' : '查看全部' }}</span>
@@ -28,8 +23,7 @@
         <div
           v-for="(fight, index) in displayFights"
           :key="index"
-            class="group p-4 rounded-xl bg-surface-700/50 border border-neutral-border/20
-                   hover:border-status-error/40 transition-all duration-300"
+          class="group p-4 rounded-xl bg-surface-700/50 border border-neutral-border/20 hover:border-status-error/40 transition-all duration-300"
         >
           <div class="flex flex-wrap items-start gap-3">
             <div class="flex items-center gap-2 shrink-0">
@@ -38,8 +32,7 @@
             </div>
             <div class="flex items-center gap-2 shrink-0">
               <div
-                class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs
-                       font-bold"
+                class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
                 :style="{ backgroundColor: getProfessionColor(fight.profession) }"
               >
                 {{ fight.character_name?.charAt(0) }}

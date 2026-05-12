@@ -45,7 +45,8 @@ class FightResponse(FightBase):
 
 
 class FightDetailResponse(FightResponse):
-    # 功能：战斗详情响应模型    fight_stats: List["FightStatsResponse"] = []
+    # 功能：战斗详情响应模型
+    fight_stats: List["FightStatsResponse"] = []
 
 
 class FightStatsBase(BaseModel):

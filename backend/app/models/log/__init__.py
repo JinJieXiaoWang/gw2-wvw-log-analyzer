@@ -1,4 +1,7 @@
-﻿
 # -*- coding: utf-8 -*-
-# 模块功能：日志模型目录（已废弃，请使用根目录下的模型）
-
+from .log import Log
+from .fight import Fight
+from .fight_stats import FightStats
+from .ei_report import EiReport
+from .batch_parse import BatchParseTask, BatchParseTaskItem
+from .zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget

@@ -468,3 +468,138 @@
 .p-datepicker table td.p-datepicker-selected > span {
   @apply bg-primary text-white;
 }
+
+/* ==================== 自定义滚动条样式 ==================== */
+
+/**
+ * 通用自定义滚动条 - 深色电竞风格
+ * 适用于所有滚动容器，与整体UI设计风格保持一致
+ */
+
+/* WebKit 浏览器滚动条基础样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-border-light);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--color-primary);
+}
+
+/* Firefox 滚动条样式 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-bg);
+}
+
+/**
+ * PrimeVue DataTable 虚拟滚动条样式
+ * 针对虚拟滚动容器的专用样式优化
+ */
+.p-datatable .p-datatable-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+  min-height: 20px;
+}
+
+.p-datatable .p-datatable-wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+  box-shadow: 0 0 8px var(--color-primary-alpha-30);
+}
+
+/**
+ * 虚拟滚动容器专用样式
+ */
+.virtual-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-card);
+}
+
+.virtual-scroll-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.virtual-scroll-container::-webkit-scrollbar-track {
+  background: var(--color-card);
+}
+
+.virtual-scroll-container::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+
+.virtual-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/**
+ * 对话框内容区域滚动条
+ */
+.p-dialog .p-dialog-content {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-card);
+}
+
+.p-dialog .p-dialog-content::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.p-dialog .p-dialog-content::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/**
+ * 卡片内部滚动区域
+ */
+.card-scrollable {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) var(--color-bg);
+}
+
+.card-scrollable::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+.card-scrollable::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/**
+ * 移动端优化 - 隐藏滚动条但保持滚动功能
+ */
+@media (max-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .p-datatable .p-datatable-wrapper::-webkit-scrollbar {
+    width: 4px;
+  }
+}

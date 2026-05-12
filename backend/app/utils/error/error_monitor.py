@@ -19,7 +19,7 @@ MAX_RECENT_ERRORS = 100
 
 
 class ErrorMonitor:
-    """错误监控?""
+    """错误监控"""
 
     @staticmethod
     def record_error(
@@ -175,7 +175,7 @@ def export_errors_to_file(file_path: str, limit: int = 100):
 
 
 def setup_global_error_handlers(app):
-    """设置全局错误处理器（用于FastAPI?""
+    """设置全局错误处理器（用于FastAPI）"""
     from fastapi import Request
     from fastapi.responses import JSONResponse
 
@@ -199,7 +199,7 @@ def setup_global_error_handlers(app):
             status_code=500,
             content={
                 "success": False,
-                "message": "服务器内部错?,
+                "message": "服务器内部错误",
                 "error_code": "INTERNAL_ERROR",
             },
         )

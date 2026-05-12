@@ -1,6 +1,6 @@
 <template>
   <BaseDialog
-    v-model:visible="visible"
+    :visible="visible"
     header="更改密码"
     modal
     :closable="!isChangingPassword"
@@ -92,9 +92,12 @@ import Password from 'primevue/password'
 import { authService } from '@/services/auth/authService'
 import { authStore } from '@/composables/system/usePermission'
 
-const visible = defineModel<boolean>('visible', { required: true })
+const props = defineProps<{
+  visible: boolean
+}>()
 
 const emit = defineEmits<{
+  'update:visible': [boolean]
   success: []
 }>()
 
@@ -148,7 +151,7 @@ const handleChangePassword = async () => {
     const isSuccess = result?.success === true || (result?.code >= 200 && result?.code < 300)
     if (isSuccess) {
       toast.add({ severity: 'success', summary: '密码已更改', detail: '请使用新密码重新登录', life: 3000 })
-      visible.value = false
+      emit('update:visible', false)
       emit('success')
       resetPasswordForm()
     } else {

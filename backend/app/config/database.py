@@ -912,7 +912,7 @@ def init_db(force_recreate: bool = False) -> bool:
 
             # 初始化系统默认配置（sys_config 表）
             try:
-                from app.services.sys_config_service import SysConfigService
+                from app.services.system.sys_config_service import SysConfigService
                 from app.config.database import SessionLocal
 
                 db = SessionLocal()

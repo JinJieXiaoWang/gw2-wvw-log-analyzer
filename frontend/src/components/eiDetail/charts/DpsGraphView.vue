@@ -1,115 +1,111 @@
 <template>
-  <div class="dps-graph-view flex flex-col gap-6">
-    <div class="graph-controls card flex gap-6 p-4 px-5 bg-neutral-card rounded-xl border border-neutral-border flex-wrap">
-      <div class="control-group flex items-center gap-3">
-        <span class="control-label text-sm font-medium text-neutral-text-secondary">图表类型</span>
-        <div class="control-buttons flex gap-1">
+  <div class="dps-graph-view">
+    <div class="graph-controls card">
+      <div class="control-group">
+        <span class="control-label">图表类型</span>
+        <div class="control-buttons">
           <button
             v-for="mode in graphModes"
             :key="mode.key"
-            class="control-btn py-2 px-3.5 border rounded-md text-[0.8125rem] cursor-pointer transition-all duration-200"
-            :class="[
-              activeMode === mode.key
-                ? 'bg-primary border-primary text-white'
-                : 'bg-neutral-bg border-neutral-border text-neutral-text-secondary hover:border-primary-alpha-30'
-            ]"
+            class="control-btn"
+            :class="{ active: activeMode === mode.key }"
             @click="activeMode = mode.key"
           >
             {{ mode.label }}
           </button>
         </div>
       </div>
-      <div class="control-group flex items-center gap-3">
-        <span class="control-label text-sm font-medium text-neutral-text-secondary">时间间隔</span>
+      <div class="control-group">
+        <span class="control-label">时间间隔</span>
         <select
           v-model="timeInterval"
-          class="control-select py-2 px-3 border border-neutral-border rounded-md bg-neutral-bg text-neutral-text text-[0.8125rem]"
+          class="control-select"
         >
           <option :value="1">
-            1秒
+            1�?
           </option>
           <option :value="5">
-            5秒
+            5�?
           </option>
           <option :value="10">
-            10秒
+            10�?
           </option>
         </select>
       </div>
     </div>
 
-    <div class="graph-container card bg-neutral-card rounded-xl border border-neutral-border p-5">
-      <div class="graph-header flex items-center justify-between mb-4 flex-wrap gap-4">
-        <h3 class="graph-title flex items-center gap-2 text-base font-semibold text-neutral-text m-0">
-          <i class="pi pi-chart-line text-primary" />
+    <div class="graph-container card">
+      <div class="graph-header">
+        <h3 class="graph-title">
+          <i class="pi pi-chart-line" />
           {{ graphTitle }}
         </h3>
-        <div class="graph-legend flex flex-wrap gap-3">
+        <div class="graph-legend">
           <div
             v-for="player in displayPlayers"
             :key="player.instanceID"
-            class="legend-item flex items-center gap-1.5 text-[0.8125rem]"
+            class="legend-item"
           >
             <span
-              class="legend-color w-3 h-3 rounded-sm"
+              class="legend-color"
               :style="{ backgroundColor: player.color }"
             />
-            <span class="legend-name text-neutral-text-secondary">{{ player.name }}</span>
+            <span class="legend-name">{{ player.name }}</span>
           </div>
         </div>
       </div>
-      <div class="graph-body flex h-[300px] gap-2">
-        <div class="y-axis flex flex-col justify-between items-end pr-2 w-[60px]">
+      <div class="graph-body">
+        <div class="y-axis">
           <span
             v-for="(tick, idx) in yAxisTicks"
             :key="idx"
-            class="y-tick text-xs text-[var(--color-text-tertiary)]"
+            class="y-tick"
           >{{ formatDamage(tick) }}</span>
         </div>
-        <div class="graph-area flex-1 relative bg-neutral-bg rounded-lg overflow-hidden">
+        <div class="graph-area">
           <div
             v-for="player in displayPlayers"
             :key="player.instanceID"
-            class="graph-line absolute inset-0 opacity-60"
+            class="graph-line"
             :style="getLineStyle(player)"
           />
-          <div class="graph-bars absolute inset-0 pointer-events-none">
+          <div class="graph-bars">
             <div
               v-for="(_, idx) in xAxisTicks"
               :key="idx"
-              class="x-tick-line absolute top-0 w-px h-full bg-neutral-border/30"
+              class="x-tick-line"
               :style="{ left: (idx / (xAxisTicks.length - 1)) * 100 + '%' }"
             />
           </div>
         </div>
       </div>
-      <div class="x-axis flex justify-between mt-2 pl-[68px]">
+      <div class="x-axis">
         <span
           v-for="(tick, idx) in xAxisTicks"
           :key="idx"
-          class="x-tick text-xs text-[var(--color-text-tertiary)]"
+          class="x-tick"
         >{{ tick }}s</span>
       </div>
     </div>
 
     <!-- 统计摘要 -->
-    <div class="graph-summary card p-4 px-5 bg-neutral-card rounded-xl border border-neutral-border">
-      <div class="summary-grid grid grid-cols-[repeat(auto-fit,minmax(140px,1fr))] gap-4">
-        <div class="summary-item flex flex-col items-center gap-1 p-3 bg-neutral-card-hover rounded-lg">
-          <span class="summary-label text-xs text-neutral-text-secondary">峰值DPS</span>
-          <span class="summary-value text-xl font-bold text-neutral-text">{{ formatDamage(peakDps) }}</span>
+    <div class="graph-summary card">
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">峰值DPS</span>
+          <span class="summary-value">{{ formatDamage(peakDps) }}</span>
         </div>
-        <div class="summary-item flex flex-col items-center gap-1 p-3 bg-neutral-card-hover rounded-lg">
-          <span class="summary-label text-xs text-neutral-text-secondary">平均DPS</span>
-          <span class="summary-value text-xl font-bold text-neutral-text">{{ formatDamage(avgDps) }}</span>
+        <div class="summary-item">
+          <span class="summary-label">平均DPS</span>
+          <span class="summary-value">{{ formatDamage(avgDps) }}</span>
         </div>
-        <div class="summary-item flex flex-col items-center gap-1 p-3 bg-neutral-card-hover rounded-lg">
-          <span class="summary-label text-xs text-neutral-text-secondary">最低DPS</span>
-          <span class="summary-value text-xl font-bold text-neutral-text">{{ formatDamage(minDps) }}</span>
+        <div class="summary-item">
+          <span class="summary-label">最低DPS</span>
+          <span class="summary-value">{{ formatDamage(minDps) }}</span>
         </div>
-        <div class="summary-item flex flex-col items-center gap-1 p-3 bg-neutral-card-hover rounded-lg">
-          <span class="summary-label text-xs text-neutral-text-secondary">波动幅度</span>
-          <span class="summary-value text-xl font-bold text-neutral-text">{{ formatDamage(peakDps - minDps) }}</span>
+        <div class="summary-item">
+          <span class="summary-label">波动幅度</span>
+          <span class="summary-value">{{ formatDamage(peakDps - minDps) }}</span>
         </div>
       </div>
     </div>
@@ -232,3 +228,5 @@ function getLineStyle(player: Player & { color: string }) {
   }
 }
 </script>
+
+<style scoped>@import './DpsGraphView.css';</style>

@@ -1,8 +1,9 @@
 ﻿# 模块功能：系统菜单数据模型
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-05-11
+# 创建日期：2026-05-11
 # 依赖说明：SQLAlchemy
 
+from app.config.database import Base
 from sqlalchemy import (
     BIGINT,
     CHAR,
@@ -14,8 +15,6 @@ from sqlalchemy import (
     func,
 )
 from sqlalchemy.orm import relationship
-
-from app.config.database import Base
 
 
 class SysMenu(Base):
@@ -54,23 +53,23 @@ class SysMenu(Base):
 
     is_cache = Column(INTEGER, default=0, comment="是否缓存?缓存 1不缓存）")
 
-    menu_type = Column(CHAR(1), default="", comment="菜单类型（M目录 C菜单 F按钮?)
+    menu_type = Column(CHAR(1), default="", comment="菜单类型（M目录, C菜单, F按钮）")
 
-    visible = Column(CHAR(1), default="0", comment="菜单状态（0显示 1隐藏?)
+    visible = Column(CHAR(1), default="0", comment="菜单状态（0显示 1隐藏）")
 
-    status = Column(CHAR(1), default="0", comment="菜单状态（0正常 1停用?)
+    status = Column(CHAR(1), default="0", comment="菜单状态（0正常 1停用）")
 
     perms = Column(VARCHAR(100), nullable=True, comment="权限标识")
 
     icon = Column(VARCHAR(100), default="#", comment="菜单图标")
 
-    create_by = Column(VARCHAR(64), default="", comment="创建?)
+    create_by = Column(VARCHAR(64), default="", comment="创建人")
 
     create_time = Column(
         DATETIME, default=func.now(), server_default=func.now(), comment="创建时间"
     )
 
-    update_by = Column(VARCHAR(64), default="", comment="更新?)
+    update_by = Column(VARCHAR(64), default="", comment="更新人")
 
     update_time = Column(
         DATETIME,

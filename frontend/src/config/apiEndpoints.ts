@@ -52,6 +52,7 @@ export const API_ENDPOINTS = {
     ACCOUNTS: `${API_V1}/attendance/accounts`,
     ACCOUNT_DETAIL: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}`,
     ACCOUNT_SCORE_BREAKDOWN: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/score-breakdown`,
+    ACCOUNT_EXPORT: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/export`,
     CHARACTER_DETAIL: (account: string, character: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/characters/${encodeURIComponent(character)}`,
     FILTERS: `${API_V1}/attendance/filters`
   },
