@@ -105,7 +105,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Fight } from '@/api/combat/fights'
+import type { Fight } from '@/services/combat/fightsService'
 
 defineProps<{
   fights: Fight[]

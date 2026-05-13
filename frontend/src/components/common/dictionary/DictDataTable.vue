@@ -135,11 +135,7 @@
         </template>
       </Column>
       <template #empty>
-        <div class="table-empty">
-          <i class="pi pi-inbox" />
-          <span v-if="!selectedDictType">请选择左侧字典分类</span>
-          <span v-else>暂无数据</span>
-        </div>
+        <EmptyState icon="pi pi-inbox" title="暂无数据" />
       </template>
     </DataTable>
     <div
@@ -154,6 +150,7 @@
 </template>
 
 <script setup lang="ts">
+import EmptyState from '@/components/common/ui/display/EmptyState.vue'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { DictData, DictType } from '@/services/system/dictionaryService'
@@ -246,19 +243,6 @@ defineEmits<{
   display: flex;
   gap: 4px;
   justify-content: flex-end;
-}
-.table-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  color: var(--color-text-secondary);
-  gap: 12px;
-}
-.table-empty i {
-  font-size: 48px;
-  color: var(--color-text-tertiary);
 }
 .no-selection {
   display: flex;

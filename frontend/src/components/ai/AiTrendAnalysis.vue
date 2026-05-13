@@ -49,7 +49,7 @@
  * 创建日期：2026-04-27
  */
 
-import type { AiTrend } from '@/api/ai/ai'
+import type { AiTrend } from '@/services/ai/aiService'
 
 defineProps<{
   trend: AiTrend[]

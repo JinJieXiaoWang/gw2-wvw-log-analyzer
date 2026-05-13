@@ -2,6 +2,38 @@ import { apiFactory } from '../core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '../../models'
 
+export interface AiReport {
+  id: string
+  type: string
+  targetType: string
+  targetId: string
+  targetName: string
+  analysis: any
+  createdAt: string
+  updatedAt: string
+}
+
+export interface AiTrend {
+  period: string
+  metrics: {
+    averagePerformance: number
+    totalFights: number
+    averageDuration: number
+    winRate: number
+  }
+}
+
+export interface AiSuggestion {
+  id: string
+  type: string
+  priority: 'low' | 'medium' | 'high'
+  title: string
+  description: string
+  recommendation: string
+  impact: string
+  relatedMetrics: string[]
+}
+
 export interface ReportsListParams {
   page?: number
   page_size?: number

@@ -22,8 +22,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { fightsApi } from '@/api'
-import type { Fight, FightStats, FightQueryParams } from '@/api/combat/fights'
+import { fightsService } from '@/services'
+import type { Fight, FightStats, FightQueryParams } from '@/services/combat/fightsService'
 import FightFilterBar from '@/components/combat/fightData/FightFilterBar.vue'
 import FightListPanel from '@/components/combat/fightData/FightListPanel.vue'
 import FightDetailPanel from '@/components/combat/fightData/FightDetailPanel.vue'
@@ -48,7 +48,7 @@ const filters = ref<FightQueryParams>({
 const loadFights = async () => {
   loading.value = true
   try {
-    const response = await fightsApi.getFights({
+    const response = await fightsService.getFights({
       ...filters.value,
       page: 1,
       pageSize: pageSize.value
@@ -75,7 +75,7 @@ const loadMoreFights = async () => {
   page.value++
   loading.value = true
   try {
-    const response = await fightsApi.getFights({
+    const response = await fightsService.getFights({
       ...filters.value,
       page: page.value,
       pageSize: pageSize.value
@@ -93,7 +93,7 @@ const loadMoreFights = async () => {
 
 const viewFightDetail = async (fightId: string) => {
   try {
-    const response = await fightsApi.getFightDetail(fightId)
+    const response = await fightsService.getFightDetail(fightId)
     if (response.success && response.data) {
       selectedFight.value = response.data
       selectedFightStats.value = null
@@ -105,11 +105,11 @@ const viewFightDetail = async (fightId: string) => {
 
 const viewFightStats = async (fightId: string) => {
   try {
-    const response = await fightsApi.getFightStats(fightId)
+    const response = await fightsService.getFightStats(fightId)
     if (response.success && response.data) {
       selectedFightStats.value = response.data
       if (!selectedFight.value) {
-        const fightResponse = await fightsApi.getFightDetail(fightId)
+        const fightResponse = await fightsService.getFightDetail(fightId)
         if (fightResponse.success && fightResponse.data) {
           selectedFight.value = fightResponse.data
         }

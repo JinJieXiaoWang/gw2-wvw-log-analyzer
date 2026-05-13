@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FightStats } from '@/api/combat/fights';
+import type { FightStats } from '@/services/combat/fightsService';
 
 defineProps<{
   stats: FightStats | null

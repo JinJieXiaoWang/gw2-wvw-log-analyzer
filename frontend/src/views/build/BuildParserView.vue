@@ -109,7 +109,7 @@ import ImportDialog from '@/components/build/parser/ImportDialog.vue'
 import SaveDialog from '@/components/build/parser/SaveDialog.vue'
 import BuildTraitsPanel from '@/components/build/parser/BuildTraitsPanel.vue'
 import BuildSkillsPanel from '@/components/build/parser/BuildSkillsPanel.vue'
-import buildApi from '@/api/build/build'
+import { buildsService } from '@/services/build/buildsService'
 import { getProfessionColor, getProfessionInitial } from '@/utils/build/buildParserUtils'
 
 const toast = useToast()
@@ -140,9 +140,9 @@ const handleParseBuildCode = async () => {
   isParsing.value = true
   parseError.value = ''
   try {
-    const result = await buildApi.parseBuildCode(buildCode.value.trim())
-    if (result) {
-      parsedData.value = result
+    const response = await buildsService.parseBuild(buildCode.value.trim())
+    if (response.success && response.data) {
+      parsedData.value = response.data
       toast.add({ severity: 'success', summary: '解析成功', detail: 'Build代码解析完成', life: 3000 })
     } else {
       parseError.value = '解析失败，请稍后重试'
@@ -169,7 +169,10 @@ const handleImportBuildCode = (code: string) => {
 
 const handleSaveBuild = async (buildData: any) => {
   try {
-    await buildApi.saveBuild(buildData)
+    const saveResponse = await buildsService.createBuild(buildData)
+    if (!saveResponse.success) {
+      throw new Error('保存失败')
+    }
     showSaveDialog.value = false
     toast.add({ severity: 'success', summary: '保存成功', detail: 'Build配置已保存', life: 3000 })
   } catch (error) {

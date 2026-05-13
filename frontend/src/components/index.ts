@@ -69,12 +69,12 @@ export { default as SkillRotationTimeline } from './combat/SkillRotationTimeline
 export { default as SkillRotationViewer } from './combat/SkillRotationViewer.vue'
 
 // ── 战斗详情 ──
-export { default as DamageDetailDialog } from './combat/detail/DamageDetailDialog.vue'
+export { default as DamageDetailDialog } from './combat/detail/dialogs/DamageDetailDialog.vue'
 export { default as FightOverviewTab } from './combat/detail/FightOverviewTab.vue'
 export { default as FightPlayerStatsTable } from './combat/detail/FightPlayerStatsTable.vue'
 export { default as PlayerSquadTab } from './combat/detail/PlayerSquadTab.vue'
 export { default as SquadRoster } from './combat/detail/SquadRoster.vue'
-export { default as StatDetailDialog } from './combat/detail/StatDetailDialog.vue'
+export { default as StatDetailDialog } from './combat/detail/dialogs/StatDetailDialog.vue'
 
 // ── 战斗轮转 ──
 export { default as AdvancedRotationView } from './combat/rotation/AdvancedRotationView.vue'

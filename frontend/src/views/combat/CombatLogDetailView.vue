@@ -157,14 +157,14 @@
     </template>
   </div>
 
-  <CombatDamageDetailDialog
+  <DamageDetailDialog
     v-model:visible="showDamageDetailDialog"
     :donut="donut"
     :agg="agg"
     :top-dps-players="topDpsPlayers"
     :breakbar-pct="breakbarPct"
   />
-  <CombatStatDetailDialog
+  <StatDetailDialog
     v-model:visible="showStatDetailDialog"
     :title="statDetailTitle"
     :stat-detail-list="statDetailList"
@@ -210,8 +210,8 @@ import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
 import CombatOverviewTab from '@/components/combat/detail/overview/CombatOverviewTab.vue'
 import CombatPlayerRankingTab from '@/components/combat/detail/overview/CombatPlayerRankingTab.vue'
-import CombatDamageDetailDialog from '@/components/combat/detail/dialogs/CombatDamageDetailDialog.vue'
-import CombatStatDetailDialog from '@/components/combat/detail/dialogs/CombatStatDetailDialog.vue'
+import DamageDetailDialog from '@/components/combat/detail/dialogs/DamageDetailDialog.vue'
+import StatDetailDialog from '@/components/combat/detail/dialogs/StatDetailDialog.vue'
 import CombatPlayerDetailDialog from '@/components/combat/detail/dialogs/CombatPlayerDetailDialog.vue'
 
 const activeTab = ref(0)

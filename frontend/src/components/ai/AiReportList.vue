@@ -63,7 +63,7 @@
  */
 
 import BaseLoadMore from '@/components/common/ui/overlay/BaseLoadMore.vue'
-import type { AiReport } from '@/api/ai/ai'
+import type { AiReport } from '@/services/ai/aiService'
 
 defineProps<{
   reports: AiReport[]

@@ -40,8 +40,8 @@ import AiReportList from '@/components/ai/AiReportList.vue'
 import AiSuggestions from '@/components/ai/AiSuggestions.vue'
 import AiTrendAnalysis from '@/components/ai/AiTrendAnalysis.vue'
 import AiAnalysisTools from '@/components/ai/AiAnalysisTools.vue'
-import { aiApi } from '@/api'
-import type { AiReport, AiSuggestion, AiTrend } from '@/api/ai/ai'
+import { aiService } from '@/services'
+import type { AiReport, AiSuggestion, AiTrend } from '@/services/ai/aiService'
 
 const reports = ref<AiReport[]>([])
 const suggestions = ref<AiSuggestion[]>([])
@@ -56,7 +56,7 @@ const pageSize = ref(10)
 const loadReports = async () => {
   loading.value = true
   try {
-    const response = await aiApi.getReports({
+    const response = await aiService.getReports({
       page: page.value,
       pageSize: pageSize.value
     })
@@ -84,7 +84,7 @@ const loadMoreReports = () => {
 const loadSuggestions = async () => {
   loadingSuggestions.value = true
   try {
-    const response = await aiApi.getSuggestions()
+    const response = await aiService.getSuggestions()
     if (response.success && response.data) {
       suggestions.value = response.data
     }
@@ -98,7 +98,7 @@ const loadSuggestions = async () => {
 const loadTrend = async () => {
   loadingTrend.value = true
   try {
-    const response = await aiApi.getTrend()
+    const response = await aiService.getTrend()
     if (response.success && response.data) {
       trend.value = response.data
     }
@@ -115,7 +115,7 @@ const viewReport = (reportId: string) => {
 
 const analyzeFight = async (fightId: string) => {
   try {
-    const response = await aiApi.analyzeFight(fightId)
+    const response = await aiService.analyzeFight(fightId)
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表
@@ -129,7 +129,7 @@ const analyzeFight = async (fightId: string) => {
 
 const analyzeMember = async (memberId: string) => {
   try {
-    const response = await aiApi.analyzeMember(memberId)
+    const response = await aiService.analyzeMember(memberId)
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表
@@ -143,7 +143,7 @@ const analyzeMember = async (memberId: string) => {
 
 const analyzeBuild = async (buildId: string) => {
   try {
-    const response = await aiApi.analyzeBuild(buildId)
+    const response = await aiService.analyzeBuild(buildId)
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表

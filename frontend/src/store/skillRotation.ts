@@ -15,7 +15,7 @@ import {
   computeFilteredEvents,
   cropEventsByTimeRange
 } from '@/models/skillRotation'
-import skillsApiService from '@/api/build/skills'
+import { skillRotationService } from '@/services/build/skillRotationService'
 
 export const useSkillRotationStore = defineStore('skillRotation', () => {
   // ==================== 选中状态 ====================
@@ -70,13 +70,13 @@ export const useSkillRotationStore = defineStore('skillRotation', () => {
     error.value = null
 
     try {
-      const result = await skillsApiService.analyzeSkillRotation(
+      const response = await skillRotationService.analyzeSkillRotationByIds(
         selectedLogId.value,
         selectedMemberId.value
       )
 
-      if (result) {
-        analysisResult.value = result
+      if (response.success && response.data) {
+        analysisResult.value = response.data
       } else {
         analysisResult.value = createEmptyRotationAnalysis()
         error.value = '未返回有效的分析数据'

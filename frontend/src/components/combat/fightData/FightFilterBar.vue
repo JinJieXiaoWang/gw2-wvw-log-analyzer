@@ -79,7 +79,7 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import type { FightQueryParams } from '@/api/combat/fights'
+import type { FightQueryParams } from '@/services/combat/fightsService'
 
 const props = defineProps<{
   filters: FightQueryParams

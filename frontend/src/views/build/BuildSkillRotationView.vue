@@ -4,7 +4,7 @@
 // 创建日期：2026-05-04
 // 更新日期：2026-05-14
 
-import skillsApiService from '@/api/build/skills'
+import { skillRotationService } from '@/services/build/skillRotationService'
 import AnalysisConfig from '@/components/skillRotation/AnalysisConfig.vue'
 import CycleView from '@/components/skillRotation/CycleView.vue'
 import HeatmapView from '@/components/skillRotation/HeatmapView.vue'
@@ -79,7 +79,7 @@ async function handleExportReport() {
   }
 
   try {
-    const blob = await skillsApiService.exportReport(selectedLogId.value, selectedMemberId.value)
+    const blob = await skillRotationService.exportReport(selectedLogId.value, selectedMemberId.value)
     if (blob) {
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')

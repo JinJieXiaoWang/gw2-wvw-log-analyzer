@@ -2,6 +2,44 @@ import { apiFactory } from '../core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '@/types/api'
 
+export interface LogEntry {
+  id: string
+  fileName: string
+  fileSize: number
+  mapName: string
+  serverName: string
+  date: string
+  duration: string
+  playerCount: number
+  status: 'pending' | 'parsing' | 'completed' | 'error'
+  uploadedAt: string
+  parsedAt?: string
+  metadata?: LogMetadata
+}
+
+export interface LogMetadata {
+  version: string
+  gameVersion: string
+  bossId?: string
+  bossName?: string
+  isCm?: boolean
+  duration: number
+  success: boolean
+}
+
+export interface LogQueryParams {
+  page?: number
+  pageSize?: number
+  search?: string
+  map?: string
+  server?: string
+  dateFrom?: string
+  dateTo?: string
+  status?: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
+}
+
 export interface LogListParams {
   page?: number
   page_size?: number

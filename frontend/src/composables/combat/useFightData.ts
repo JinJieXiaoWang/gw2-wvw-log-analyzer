@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { fightsApi } from '@/api'
-import type { Fight, FightStats, FightQueryParams } from '@/api/combat/fights'
+import { fightsService } from '@/services'
+import type { Fight, FightStats, FightQueryParams } from '@/services/combat/fightsService'
 import { configManager } from '@/services/core/configManager'
 
 export function useFightData() {
@@ -19,7 +19,7 @@ export function useFightData() {
   const loadFights = async () => {
     loading.value = true
     try {
-      const response = await fightsApi.getFights({ ...filters.value, page: 1, pageSize: pageSize.value })
+      const response = await fightsService.getFights({ ...filters.value, page: 1, pageSize: pageSize.value })
       if (response.success && response.data) {
         fights.value = response.data
         hasMore.value = response.data.length === pageSize.value
@@ -37,7 +37,7 @@ export function useFightData() {
     page.value++
     loading.value = true
     try {
-      const response = await fightsApi.getFights({ ...filters.value, page: page.value, pageSize: pageSize.value })
+      const response = await fightsService.getFights({ ...filters.value, page: page.value, pageSize: pageSize.value })
       if (response.success && response.data) {
         fights.value = [...fights.value, ...response.data]
         hasMore.value = response.data.length === pageSize.value
@@ -51,7 +51,7 @@ export function useFightData() {
 
   const viewFightDetail = async (fightId: string) => {
     try {
-      const response = await fightsApi.getFightDetail(fightId)
+      const response = await fightsService.getFightDetail(fightId)
       if (response.success && response.data) {
         selectedFight.value = response.data
         selectedFightStats.value = null
@@ -61,11 +61,11 @@ export function useFightData() {
 
   const viewFightStats = async (fightId: string) => {
     try {
-      const response = await fightsApi.getFightStats(fightId)
+      const response = await fightsService.getFightStats(fightId)
       if (response.success && response.data) {
         selectedFightStats.value = response.data
         if (!selectedFight.value) {
-          const fr = await fightsApi.getFightDetail(fightId)
+          const fr = await fightsService.getFightDetail(fightId)
           if (fr.success && fr.data) selectedFight.value = fr.data
         }
       }

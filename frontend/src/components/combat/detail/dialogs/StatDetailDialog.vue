@@ -1,29 +1,62 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+import Dialog from 'primevue/dialog'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
+import { getProfessionIconUrl, getProfessionName, rankClass } from '@/composables/combat/useCombatHelpers'
+import { CATEGORY_FIELDS, getStatValue, getStatValueClass } from '@/composables/combat/useStatDetail'
+
+const props = defineProps<{
+  title: string
+  statDetailList: EiAnalysisPlayer[]
+  statDetailAverage: number
+  currentStatType: string
+  currentStatCategory: string[]
+}>()
+
+const visible = defineModel<boolean>('visible', { default: false })
+
+const emit = defineEmits<{
+  'open-player-dialog': [player: EiAnalysisPlayer]
+}>()
+
+const unitSuffix = computed(() => {
+  const t = props.currentStatType
+  return t === 'condition_cleanses' || t === 'boon_strips' || t === 'damage_taken' || t === 'position' ? '' : '%'
+})
+</script>
+
 <template>
   <Dialog
-    v-model:visible="visible"
+    :visible="visible"
     :header="title"
     :style="{ width: '700px', maxWidth: '95vw' }"
     :modal="true"
     :draggable="false"
+    @update:visible="visible = $event"
   >
     <div class="space-y-4">
-      <!-- 统计ժҪ -->
+      <!-- 统计摘要 -->
       <div class="flex items-center gap-4 p-3 rounded-xl bg-neutral-bg-secondary border border-neutral-border/50">
         <div class="flex items-center gap-2">
-          <i class="pi pi-users text-primary" /><span class="text-sm text-neutral-text">共 {{ data.statDetailList.length }} 人</span>
+          <i class="pi pi-users text-primary" />
+          <span class="text-sm text-neutral-text">共 {{ statDetailList.length }} 人</span>
         </div>
         <div
-          v-if="data.statDetailList.length > 0"
+          v-if="statDetailList.length > 0"
           class="flex items-center gap-2 ml-auto"
         >
-          <span class="text-xs text-neutral-text-secondary">ƽ均值：</span>
-          <span class="text-sm font-semibold text-primary">{{ data.statDetailAverage.toFixed(1) }}{{ unitSuffix }}</span>
+          <span class="text-xs text-neutral-text-secondary">平均值：</span>
+          <span class="text-sm font-semibold text-primary">
+            {{ statDetailAverage.toFixed(1) }}{{ unitSuffix }}
+          </span>
         </div>
       </div>
 
       <!-- 玩家列表 -->
       <DataTable
-        :value="data.statDetailList"
+        :value="statDetailList"
         :paginator="true"
         :rows="10"
         class="w-full"
@@ -50,7 +83,7 @@
           <template #body="{ data }">
             <div
               class="flex items-center gap-2 cursor-pointer hover:text-primary transition-colors"
-              @click="emit('player-click', data)"
+              @click="emit('open-player-dialog', data)"
             >
               <img
                 :src="getProfessionIconUrl(data.profession)"
@@ -76,60 +109,22 @@
             <span class="text-xs text-neutral-text-secondary">{{ data.account }}</span>
           </template>
         </Column>
+        <!-- 动态字段列：根据当前分类展示一个或多个字段 -->
         <Column
-          v-for="field in data.currentStatCategory"
+          v-for="field in currentStatCategory"
           :key="field"
           :field="field"
-          :header="CATEGORY_FIELDS[data.currentStatType]?.labels[field] || field"
+          :header="CATEGORY_FIELDS[currentStatType]?.labels[field] || field"
           style="min-width: 100px"
         >
-          <template #body="{ data: rowData }">
+          <template #body="{ data }">
             <span
               class="text-sm font-semibold"
-              :class="getStatValueClass(field, rowData)"
-            >{{ getStatValue(rowData, field) }}</span>
+              :class="getStatValueClass(field, data)"
+            >{{ getStatValue(data, field) }}</span>
           </template>
         </Column>
       </DataTable>
     </div>
   </Dialog>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-import Dialog from 'primevue/dialog'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
-import { getProfessionName, getProfessionIconUrl } from '@/utils/profession/professionUtils'
-import { rankClass } from '@/utils/combat/combatFormatters'
-import { type StatCategory, CATEGORY_FIELDS, getStatValue, getStatValueClass } from '@/utils/combat/combatStats'
-import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
-
-interface StatDialogData {
-  statDetailList: EiAnalysisPlayer[]
-  currentStatCategory: string[]
-  currentStatType: StatCategory
-  statDetailAverage: number
-}
-
-const props = defineProps<{
-  visible: boolean
-  title: string
-  data: StatDialogData
-}>()
-
-const emit = defineEmits<{
-  'update:visible': [value: boolean]
-  'player-click': [player: EiAnalysisPlayer]
-}>()
-
-const visible = computed({
-  get: () => props.visible,
-  set: (v) => emit('update:visible', v)
-})
-
-const unitSuffix = computed(() => {
-  const t = props.data.currentStatType
-  return t === 'condition_cleanses' || t === 'boon_strips' || t === 'damage_taken' || t === 'position' ? '' : '%'
-})
-</script>

@@ -58,7 +58,7 @@
  * 创建日期：2026-04-27
  */
 
-import type { AiSuggestion } from '@/api/ai/ai'
+import type { AiSuggestion } from '@/services/ai/aiService'
 
 defineProps<{
   suggestions: AiSuggestion[]
