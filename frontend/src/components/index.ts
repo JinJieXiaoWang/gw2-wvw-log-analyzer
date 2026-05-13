@@ -93,7 +93,6 @@ export { default as DashboardStatCards } from './dashboard/StatCards.vue'
 export { default as MapHeatmap } from './dashboard/MapHeatmap.vue'
 export { default as ProfessionDistribution } from './dashboard/ProfessionDistribution.vue'
 export { default as TopPlayers } from './dashboard/TopPlayers.vue'
-export { default as DashboardWelcomeBanner } from './dashboard/WelcomeBanner.vue'
 
 // ── 字典管理 ──
 export { default as DictDataDialog } from './common/dictionary/DictDataDialog.vue'
@@ -216,7 +215,6 @@ export { default as MistakeStats } from './skillRotation/MistakeStats.vue'
 export { default as OptimizationSuggestions } from './skillRotation/OptimizationSuggestions.vue'
 export { default as SkillRatioAnalysis } from './skillRotation/SkillRatioAnalysis.vue'
 export { default as SkillTimeline } from './skillRotation/SkillTimeline.vue'
-export { default as SkillRotationWelcomeBanner } from './skillRotation/WelcomeBanner.vue'
 
 // ── 系统 ──
 export { default as AppWatermark } from './system/AppWatermark.vue'

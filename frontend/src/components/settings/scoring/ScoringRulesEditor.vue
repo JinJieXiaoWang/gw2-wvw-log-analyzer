@@ -88,7 +88,7 @@
       />
     </div>
 
-    <ScoringRulesDataTable
+    <ScoringRulesTable
       :editable-rules="editableRules"
       :loading="loading"
       :can-write="canWrite"
@@ -115,7 +115,7 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import ScoringRulesDataTable from './ScoringRulesDataTable.vue'
+import ScoringRulesTable from './ScoringRulesTable.vue'
 import AddRuleForm from './AddRuleForm.vue'
 import type { ScoringRule, DimensionInfo } from '@/services/core/scoringRulesService'
 

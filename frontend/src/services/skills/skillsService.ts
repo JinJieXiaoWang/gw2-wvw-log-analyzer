@@ -1,5 +1,5 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '../../models'
 
 export interface SkillsListParams {

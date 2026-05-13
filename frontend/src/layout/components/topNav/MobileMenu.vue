@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MenuItem } from '@/composables/core/useTopNav'
+import type { MenuItem } from '@/composables/layout/useTopNav'
 
 defineProps<{
   visible: boolean

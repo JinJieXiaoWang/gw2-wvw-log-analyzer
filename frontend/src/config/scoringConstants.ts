@@ -106,3 +106,10 @@ export const RULE_SCOPES = {
 } as const
 
 export type RuleScope = typeof RULE_SCOPES[keyof typeof RULE_SCOPES]
+
+/** 默认角色类型（API失败回退） */
+export const DEFAULT_ROLE_TYPES = [
+  { type: 'dps', label: '输出', description: '以伤害输出为主要职责', icon: 'pi pi-bolt', color: '#FF4D6A' },
+  { type: 'support', label: '辅助', description: '以治疗和增益为主要职责', icon: 'pi pi-heart', color: '#00D68F' },
+  { type: 'tank', label: '承伤', description: '以吸收伤害和控制为主要职责', icon: 'pi pi-shield', color: '#9D4EDD' },
+]

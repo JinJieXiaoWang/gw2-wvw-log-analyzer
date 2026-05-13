@@ -16,7 +16,7 @@ import {
   THEME_SETTINGS_DEFAULTS,
   NOTIFICATION_SETTINGS_DEFAULTS,
   SECURITY_SETTINGS_DEFAULTS
-} from '@/constants/settings'
+} from '@/config/settings'
 import { useDictOptions } from './useDictOptions'
 
 export function useSystemSettings() {

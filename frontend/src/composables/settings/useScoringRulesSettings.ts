@@ -1,7 +1,13 @@
-import { ref, computed } from 'vue'
+/**
+ * useScoringRulesSettings - 设置模块评分规则 composable（兼容 wrapper）
+ * 基于统一版本，关闭可选功能，并包装差异接口以完全保持原有行为
+ */
+
+import { computed } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/core/scoringRulesService'
+import { useScoringRules as useScoringRulesBase } from '@/composables/scoring/useScoringRules'
+import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { configManager } from '@/services/core/configManager'
 
 export const ROLE_TYPES = [
@@ -19,173 +25,148 @@ export const GRADE_LEVELS = [
   { letter: 'F', range: '<40分', desc: '表现很差', gradient: 'linear-gradient(135deg, #FF4D6A, #D93664)' }
 ]
 
-const DIMENSION_ICONS: Record<string, string> = {
-  damage: 'pi pi-bolt', healing: 'pi pi-heart', protection: 'pi pi-shield',
-  crowd_control: 'pi pi-lock', support: 'pi pi-star', survival: 'pi pi-users',
-  objective: 'pi pi-flag', downstacks: 'pi pi-arrow-down'
-}
-
-const DIMENSION_COLORS: Record<string, string> = {
-  damage: '#FF4D6A', healing: '#00D68F', protection: '#165DFF',
-  crowd_control: '#9D4EDD', support: '#FFAA00', survival: '#00B4FF',
-  objective: '#4CAF50', downstacks: '#FF5722'
-}
-
 export function useScoringRulesSettings() {
   const confirm = useConfirm()
   const toast = useToast()
 
-  const activeRole = ref('dps')
-  const loading = ref(false)
-  const saving = ref(false)
-  const currentRules = ref<Record<string, ScoringRule[]>>({})
-  const originalRules = ref<Record<string, ScoringRule[]>>({})
-  const editableRules = ref<ScoringRule[]>([])
-  const changedRoles = ref<Set<string>>(new Set())
-  const allDimensions = ref<DimensionInfo[]>([])
-  const newRuleDimension = ref('')
-  const newRuleWeight = ref(10)
-  const newRuleDesc = ref('')
-
-  const totalWeight = computed(() => editableRules.value.filter(r => r.is_active).reduce((s, r) => s + (r.weight || 0), 0))
-  const availableDimensions = computed(() => {
-    const used = new Set(editableRules.value.map(r => r.dimension))
-    return allDimensions.value.filter(d => !used.has(d.key))
+  const base = useScoringRulesBase({
+    enableProfessionRules: false,
+    enableRecalculation: false,
+    enableVersionHistory: false,
   })
 
+  // 保持原有默认角色
+  if (!base.activeRole.value) base.activeRole.value = 'dps'
+
+  // ========== 包装差异计算属性 ==========
   const weightStatus = computed(() => {
-    const diff = Math.abs(totalWeight.value - 1.0)
-    if (diff < 0.01) return { bg: 'bg-success/10', text: 'text-success', bar: 'bg-success' }
-    if (diff < 0.1) return { bg: 'bg-warning/10', text: 'text-warning', bar: 'bg-warning' }
+    const cls = base.weightStatusClass.value
+    if (cls === 'optimal') return { bg: 'bg-success/10', text: 'text-success', bar: 'bg-success' }
+    if (cls === 'warning') return { bg: 'bg-warning/10', text: 'text-warning', bar: 'bg-warning' }
     return { bg: 'bg-error/10', text: 'text-error', bar: 'bg-error' }
   })
 
   function roleIconBgClass(role: string) {
-    const map: Record<string, string> = { dps: 'bg-gradient-to-br from-error to-orange-500', support: 'bg-gradient-to-br from-success to-info', tank: 'bg-gradient-to-br from-purple-500 to-primary' }
+    const map: Record<string, string> = {
+      dps: 'bg-gradient-to-br from-error to-orange-500',
+      support: 'bg-gradient-to-br from-success to-info',
+      tank: 'bg-gradient-to-br from-purple-500 to-primary'
+    }
     return map[role] || 'bg-gradient-to-br from-primary to-secondary'
   }
 
-  function hasUnsavedChanges(role: string) { return changedRoles.value.has(role) }
-  function getDimensionIcon(key: string) { return DIMENSION_ICONS[key] || 'pi pi-circle' }
-  function getDimensionColor(key: string) { return DIMENSION_COLORS[key] || '#888888' }
-  function getDimensionLabel(key: string) { return allDimensions.value.find(d => d.key === key)?.label || key }
-
-  async function fetchRules() {
-    loading.value = true
-    try {
-      const data = await scoringRulesService.getRules()
-      if (data) {
-        for (const key of ['dps', 'support', 'tank']) {
-          if (data[key]) {
-            currentRules.value[key] = data[key].rules || []
-            originalRules.value[key] = JSON.parse(JSON.stringify(data[key].rules || []))
-          }
-        }
-      }
-      syncEditableRules()
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分规则失败', life: configManager.get('ui').toastErrorLife })
-    } finally { loading.value = false }
-  }
-
-  async function fetchDimensions() {
-    try { allDimensions.value = await scoringRulesService.getDimensions() } catch (e) { console.error('获取评分维度失败', e) }
-  }
-
-  function syncEditableRules() {
-    const rules = currentRules.value[activeRole.value] || []
-    editableRules.value = rules.map(r => ({ ...r }))
-  }
-
-  function switchRole(role: string) { activeRole.value = role; syncEditableRules() }
-  function markChanged() { changedRoles.value.add(activeRole.value) }
-
-  function moveUp(index: number) {
-    if (index === 0) return
-    const temp = editableRules.value[index]
-    editableRules.value[index] = editableRules.value[index - 1]
-    editableRules.value[index - 1] = temp
-    markChanged()
-  }
-
-  function moveDown(index: number) {
-    if (index === editableRules.value.length - 1) return
-    const temp = editableRules.value[index]
-    editableRules.value[index] = editableRules.value[index + 1]
-    editableRules.value[index + 1] = temp
-    markChanged()
-  }
-
+  // ========== 包装差异动作 ==========
   function removeRule(index: number) {
     confirm.require({
-      message: '确定要删除这条评分规则吗？', header: '删除确认', icon: 'pi pi-exclamation-triangle',
-      accept: () => { editableRules.value.splice(index, 1); markChanged(); toast.add({ severity: 'success', summary: '成功', detail: '删除成功', life: configManager.get('ui').toastLife }) }
+      message: '确定要删除这条评分规则吗？',
+      header: '删除确认',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        base.editableRules.value.splice(index, 1)
+        base.markChanged()
+        toast.add({ severity: 'success', summary: '成功', detail: '删除成功', life: configManager.get('ui').toastLife })
+      }
     })
   }
 
   function addRule() {
-    if (!newRuleDimension.value) return
-    editableRules.value.push({
-      role_type: activeRole.value, dimension: newRuleDimension.value,
-      weight: newRuleWeight.value / 100, description: newRuleDesc.value,
-      is_active: true, sort_order: editableRules.value.length + 1
-    } as ScoringRule)
-    markChanged()
-    newRuleDimension.value = ''; newRuleWeight.value = 10; newRuleDesc.value = ''
+    if (!base.newRuleDimension.value) return
+    base.editableRules.value.push({
+      role_type: base.activeRole.value,
+      dimension: base.newRuleDimension.value,
+      weight: base.newRuleWeight.value / 100,
+      description: base.newRuleDesc.value,
+      is_active: true,
+      sort_order: base.editableRules.value.length + 1
+    } as any)
+    base.markChanged()
+    base.newRuleDimension.value = ''
+    base.newRuleWeight.value = 10
+    base.newRuleDesc.value = ''
     toast.add({ severity: 'success', summary: '成功', detail: '添加成功', life: configManager.get('ui').toastLife })
   }
 
   function resetChanges() {
-    if (!hasUnsavedChanges(activeRole.value)) return
+    if (!base.hasUnsavedChanges(base.activeRole.value)) return
     confirm.require({
-      message: '确定要取消所有未保存的更改吗？', header: '取消确认', icon: 'pi pi-exclamation-triangle',
+      message: '确定要取消所有未保存的更改吗？',
+      header: '取消确认',
+      icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        currentRules.value[activeRole.value] = JSON.parse(JSON.stringify(originalRules.value[activeRole.value] || []))
-        changedRoles.value.delete(activeRole.value)
-        syncEditableRules()
+        base.currentRules.value[base.activeRole.value] = JSON.parse(JSON.stringify(base.originalRules.value[base.activeRole.value] || []))
+        base.changedRoles.value.delete(base.activeRole.value)
+        base.syncEditableRules()
         toast.add({ severity: 'info', summary: '已取消', detail: '已恢复到上次保存的状态', life: configManager.get('ui').toastLife })
       }
     })
   }
 
   async function saveChanges() {
-    if (!hasUnsavedChanges(activeRole.value)) return
-    saving.value = true
+    if (!base.hasUnsavedChanges(base.activeRole.value)) return
+    base.saving.value = true
     try {
-      await scoringRulesService.batchUpdate(activeRole.value, editableRules.value)
-      originalRules.value[activeRole.value] = JSON.parse(JSON.stringify(editableRules.value))
-      changedRoles.value.delete(activeRole.value)
+      await scoringRulesService.batchUpdate(base.activeRole.value, base.editableRules.value)
+      base.originalRules.value[base.activeRole.value] = JSON.parse(JSON.stringify(base.editableRules.value))
+      base.changedRoles.value.delete(base.activeRole.value)
       toast.add({ severity: 'success', summary: '成功', detail: '保存成功', life: configManager.get('ui').toastLife })
     } catch (e: any) {
       toast.add({ severity: 'error', summary: '错误', detail: e?.message || '保存失败', life: configManager.get('ui').toastErrorLife })
-    } finally { saving.value = false }
+    } finally {
+      base.saving.value = false
+    }
   }
 
   function confirmReset() {
     confirm.require({
-      message: '确定要重置为默认评分规则吗？这将覆盖所有自定义设置。', header: '重置确认', icon: 'pi pi-exclamation-triangle',
+      message: '确定要重置为默认评分规则吗？这将覆盖所有自定义设置。',
+      header: '重置确认',
+      icon: 'pi pi-exclamation-triangle',
       accept: async () => {
-        loading.value = true
+        base.loading.value = true
         try {
-          await scoringRulesService.resetDefault(activeRole.value)
-          await fetchRules()
-          changedRoles.value.delete(activeRole.value)
+          await scoringRulesService.resetDefault(base.activeRole.value)
+          await base.fetchRules()
+          base.changedRoles.value.delete(base.activeRole.value)
           toast.add({ severity: 'success', summary: '成功', detail: '已重置为默认规则', life: configManager.get('ui').toastLife })
         } catch (e: any) {
           toast.add({ severity: 'error', summary: '错误', detail: e?.message || '重置失败', life: configManager.get('ui').toastErrorLife })
-        } finally { loading.value = false }
+        } finally {
+          base.loading.value = false
+        }
       }
     })
   }
 
+  // ========== Return ==========
   return {
-    activeRole, loading, saving, editableRules, changedRoles, allDimensions,
-    newRuleDimension, newRuleWeight, newRuleDesc,
-    totalWeight, availableDimensions, weightStatus,
-    roleIconBgClass, hasUnsavedChanges,
-    getDimensionIcon, getDimensionColor, getDimensionLabel,
-    fetchRules, fetchDimensions, syncEditableRules,
-    switchRole, markChanged, moveUp, moveDown, removeRule, addRule,
-    resetChanges, saveChanges, confirmReset
+    activeRole: base.activeRole,
+    loading: base.loading,
+    saving: base.saving,
+    editableRules: base.editableRules,
+    changedRoles: base.changedRoles,
+    allDimensions: base.allDimensions,
+    newRuleDimension: base.newRuleDimension,
+    newRuleWeight: base.newRuleWeight,
+    newRuleDesc: base.newRuleDesc,
+    totalWeight: base.totalWeight,
+    availableDimensions: base.availableDimensions,
+    weightStatus,
+    roleIconBgClass,
+    hasUnsavedChanges: base.hasUnsavedChanges,
+    getDimensionIcon: base.getDimensionIcon,
+    getDimensionColor: base.getDimensionColor,
+    getDimensionLabel: base.getDimensionLabel,
+    fetchRules: base.fetchRules,
+    fetchDimensions: base.fetchDimensions,
+    syncEditableRules: base.syncEditableRules,
+    switchRole: base.switchRole,
+    markChanged: base.markChanged,
+    moveUp: base.moveUp,
+    moveDown: base.moveDown,
+    removeRule,
+    addRule,
+    resetChanges,
+    saveChanges,
+    confirmReset,
   }
 }

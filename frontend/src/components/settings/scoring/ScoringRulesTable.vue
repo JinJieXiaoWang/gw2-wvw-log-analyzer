@@ -1,9 +1,9 @@
 <template>
-  <div class="mb-6">
+  <div class="rounded-lg overflow-hidden border border-surface-200 dark:border-surface-700">
     <DataTable
       :value="editableRules"
       :loading="loading"
-      class="w-full"
+      class="w-full text-sm"
       :striped-rows="true"
       :row-hover="true"
       :responsive="true"
@@ -23,7 +23,7 @@
               rounded
               size="small"
               :disabled="index === 0"
-              @click="$emit('move-up', index)"
+              @click="$emit('moveUp', index)"
             />
             <span class="w-6 text-center text-sm font-medium text-neutral-text">{{ index + 1 }}</span>
             <BaseButton
@@ -32,7 +32,7 @@
               rounded
               size="small"
               :disabled="index === editableRules.length - 1"
-              @click="$emit('move-down', index)"
+              @click="$emit('moveDown', index)"
             />
           </div>
         </template>
@@ -54,11 +54,11 @@
         </template>
       </Column>
       <Column
-        header="Ȩ重"
+        header="权重"
         style="width: 280px; min-width: 280px;"
       >
         <template #body="{ index }">
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-3 relative">
             <div
               class="flex-1"
               style="min-width: 150px; max-width: 180px;"
@@ -69,10 +69,13 @@
                 :max="1"
                 :step="0.01"
                 class="w-full"
-                @change="$emit('mark-changed')"
+                :disabled="!canWrite"
+                @change="$emit('markChanged')"
               />
             </div>
-            <div style="width: 70px; flex-shrink: 0;">
+            <div
+              class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-md border border-surface-200 dark:border-surface-700"
+            >
               <BaseInputNumber
                 v-model="editableRules[index].weight"
                 :min="0"
@@ -80,10 +83,16 @@
                 :step="0.01"
                 :max-fraction-digits="2"
                 size="small"
-                class="w-full"
-                @update:model-value="$emit('mark-changed')"
+                class="w-16"
+                :disabled="!canWrite"
+                @update:model-value="$emit('markChanged')"
               />
+              <span class="text-xs text-color-secondary">%</span>
             </div>
+            <div
+              class="absolute bottom-0 left-0 h-0.5 bg-primary-500 opacity-30 transition-all"
+              :style="{ width: `${editableRules[index].weight * 100}%` }"
+            />
           </div>
         </template>
       </Column>
@@ -97,19 +106,21 @@
             size="small"
             class="w-full"
             placeholder="输入描述..."
-            @update:model-value="$emit('mark-changed')"
+            :disabled="!canWrite"
+            @update:model-value="$emit('markChanged')"
           />
         </template>
       </Column>
       <Column
-        header="״̬"
+        header="状态"
         style="width: 120px; min-width: 120px;"
       >
         <template #body="{ data, index }">
           <div class="flex items-center gap-2">
             <ToggleSwitch
               v-model="editableRules[index].is_active"
-              @update:model-value="$emit('mark-changed')"
+              :disabled="!canWrite"
+              @update:model-value="$emit('markChanged')"
             />
             <span
               class="text-xs font-medium"
@@ -124,6 +135,7 @@
       >
         <template #body="{ index }">
           <BaseButton
+            v-if="canWrite"
             icon="pi pi-trash"
             severity="danger"
             text
@@ -155,19 +167,34 @@ import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import EmptyState from '@/components/common/ui/display/EmptyState.vue'
 import type { ScoringRule } from '@/services/core/scoringRulesService'
 
-defineProps<{
+withDefaults(defineProps<{
   editableRules: ScoringRule[]
   loading: boolean
+  canWrite?: boolean
   getDimensionIcon: (key: string) => string
   getDimensionColor: (key: string) => string
   getDimensionLabel: (key: string) => string
-}>()
+  // 兼容旧版调用（ScoringRulesSettings.vue）的额外属性，不实际使用
+  totalWeight?: number
+  availableDimensions?: any[]
+  newDimension?: string
+  newWeight?: number
+  newDesc?: string
+  hasChanges?: boolean
+}>(), {
+  canWrite: true,
+})
 
 defineEmits<{
-  'move-up': [index: number]
-  'move-down': [index: number]
-  'remove': [index: number]
-  'mark-changed': []
+  moveUp: [index: number]
+  moveDown: [index: number]
+  remove: [index: number]
+  markChanged: []
+  // 兼容旧版调用（ScoringRulesSettings.vue）的额外事件，不实际触发
+  add: []
+  reset: []
+  cancel: []
+  save: []
 }>()
 </script>
 

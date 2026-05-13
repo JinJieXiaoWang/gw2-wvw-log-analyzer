@@ -236,7 +236,7 @@ import {
     NUMERIC_CONFIG_KEYS,
     SCORING_MODE_OPTIONS,
     SYSTEM_CONFIG_DEFAULTS
-} from '@/constants/settings'
+} from '@/config/settings'
 import { useDictOptions } from '@/composables/system/useDictOptions'
 import { settingsService } from '@/services'
 import { useToast } from 'primevue/usetoast'

@@ -97,7 +97,7 @@
       :get-dimension-label="data.getDimensionLabel"
       @move-up="emit('move-up', $event)"
       @move-down="emit('move-down', $event)"
-      @remove-rule="emit('remove-rule', $event)"
+      @remove="emit('remove', $event)"
       @mark-changed="emit('mark-changed')"
     />
 
@@ -152,7 +152,7 @@ const emit = defineEmits<{
   recalculate: []
   'delete-profession': []
   'add-rule': [dimension: string, weight: number, desc: string]
-  'remove-rule': [index: number]
+  'remove': [index: number]
   'move-up': [index: number]
   'move-down': [index: number]
   'mark-changed': []

@@ -4,6 +4,7 @@
  * 规范：单一职责、函数式拆分、≤50行、幂等外部调用
  */
 
+import { fmtDate, fmtDuration } from '@/composables/combat/useCombatHelpers'
 import { logsService } from '@/services/combat/logsService'
 import { configManager } from '@/services/core/configManager'
 import type { PlayerRotationData } from '@/services/ei/eiAnalysisService'
@@ -199,6 +200,13 @@ export function useCombatLogDetail() {
   const sortedPlayerList = computed(() => {
     return [...players.value].sort((a: any, b: any) => (b.damage || 0) - (a.damage || 0))
   })
+
+  const quickInfoItems = computed(() => [
+    { label: '战斗时长', value: fmtDuration(fightSummary.value.duration_sec || 0), iconClass: 'pi pi-clock text-primary', iconBg: 'bg-primary/10 group-hover:bg-primary/20' },
+    { label: '参战人数', value: `${summary.value?.total_players || 0} 人`, iconClass: 'pi pi-users text-success', iconBg: 'bg-success/10 group-hover:bg-success/20' },
+    { label: '地图', value: fightSummary.value.map_name || '-', iconClass: 'pi pi-map text-info', iconBg: 'bg-info/10 group-hover:bg-info/20' },
+    { label: '上传时间', value: fmtDate(logDetail.value.upload_time), iconClass: 'pi pi-calendar text-secondary', iconBg: 'bg-secondary/10 group-hover:bg-secondary/20' },
+  ])
 
   const powerPct = computed(() => {
     const t = agg.value.total_damage
@@ -431,6 +439,7 @@ export function useCombatLogDetail() {
     statDetailList,
     statDetailAverage,
     sortedPlayerList,
+    quickInfoItems,
     powerPct,
     condiPct,
     breakbarPct,

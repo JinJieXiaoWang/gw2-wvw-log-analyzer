@@ -15,7 +15,7 @@ import RotationViewTabs from '@/components/skillRotation/RotationViewTabs.vue'
 import SkillDetails from '@/components/skillRotation/SkillDetails.vue'
 import StatsOverview from '@/components/skillRotation/StatsOverview.vue'
 import TimelineView from '@/components/skillRotation/TimelineView.vue'
-import WelcomeBanner from '@/components/skillRotation/WelcomeBanner.vue'
+import PageHeader from '@/components/common/layout/PageHeader.vue'
 import { useSkillRotationStore } from '@/store/skillRotation'
 import { storeToRefs } from 'pinia'
 import { useToast } from 'primevue/usetoast'
@@ -123,10 +123,27 @@ function handleImportRotation(data: { ideal: string; actual: string }) {
   <div class="skill-rotation-page min-h-screen bg-[#0d0d0f] text-white p-6">
     <div class="max-w-7xl mx-auto">
       <!-- 欢迎横幅 -->
-      <WelcomeBanner
-        @show-import-dialog="handleShowImportDialog"
-        @export-report="handleExportReport"
-      />
+      <PageHeader
+        title="技能循环分析"
+        subtitle="对比理想循环与实战循环，优化技能释放顺序"
+        icon="pi pi-sync"
+        icon-gradient="bg-gradient-to-br from-secondary to-status-warning"
+      >
+        <template #actions>
+          <BaseButton
+            label="导入对比"
+            icon="pi pi-upload"
+            variant="secondary"
+            @click="handleShowImportDialog"
+          />
+          <BaseButton
+            label="导出报告"
+            icon="pi pi-download"
+            variant="game"
+            @click="handleExportReport"
+          />
+        </template>
+      </PageHeader>
 
       <div class="mt-6 space-y-6">
         <!-- 配置区域 -->
