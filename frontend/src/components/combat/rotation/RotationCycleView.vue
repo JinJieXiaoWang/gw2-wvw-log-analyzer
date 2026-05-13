@@ -36,6 +36,12 @@
                 loading="lazy"
               >
               <div
+                v-else-if="showSwapIcon && evt.isSwap"
+                class="skill-placeholder w-full h-full flex items-center justify-center bg-white/5 text-sm font-bold text-[var(--color-text-secondary,#94a3b8)]"
+              >
+                <i class="pi pi-sync text-xs" />
+              </div>
+              <div
                 v-else
                 class="skill-placeholder w-full h-full flex items-center justify-center bg-white/5 text-sm font-bold text-[var(--color-text-secondary,#94a3b8)]"
               >
@@ -76,7 +82,7 @@
 import type { SkillCycle } from '@/utils/combat/rotationTypes'
 import { formatTime, formatCycleTime } from '@/utils/combat/rotation'
 
-defineProps<{ cycles: SkillCycle[] }>()
+defineProps<{ cycles: SkillCycle[]; showSwapIcon?: boolean }>()
 defineEmits<{
   'hover-skill': [skill: any]
   'leave-skill': []

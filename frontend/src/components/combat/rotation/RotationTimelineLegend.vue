@@ -1,19 +1,23 @@
 <template>
   <div class="timeline-legend">
     <div class="legend-title">
-      ״̬ͼ例:
+      状态图例:
     </div>
-    <div class="legend-item">
-      <span class="legend-box state-full" /><span>完整施放</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-box state-interrupted" /><span>被打断</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-box state-instant" /><span>˲发</span>
-    </div>
-    <div class="legend-item">
-      <span class="legend-box state-unknown" /><span>δ֪</span>
+    <div
+      v-for="state in states"
+      :key="state"
+      class="legend-item"
+    >
+      <span
+        class="legend-box"
+        :class="`state-${state}`"
+      /><span>{{ STATE_LABELS[state] }}</span>
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { STATE_LABELS } from '@/utils/combat/rotation'
+
+const states = ['full', 'interrupted', 'instant', 'swap', 'trait'] as const
+</script>

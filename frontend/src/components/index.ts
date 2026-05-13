@@ -77,13 +77,11 @@ export { default as SquadRoster } from './combat/detail/SquadRoster.vue'
 export { default as StatDetailDialog } from './combat/detail/dialogs/StatDetailDialog.vue'
 
 // ── 战斗轮转 ──
-export { default as AdvancedRotationView } from './combat/rotation/AdvancedRotationView.vue'
 export { default as RotationCycleView } from './combat/rotation/RotationCycleView.vue'
 export { default as RotationHeatmapView } from './combat/rotation/RotationHeatmapView.vue'
 export { default as RotationTimelineLegend } from './combat/rotation/RotationTimelineLegend.vue'
 export { default as RotationTimelineView } from './combat/rotation/RotationTimelineView.vue'
 export { default as RotationViewModeBar } from './combat/rotation/RotationViewModeBar.vue'
-export { default as SimpleRotationView } from './combat/rotation/SimpleRotationView.vue'
 
 // ── 仪表盘 ──
 export { default as BattleHistory } from './dashboard/BattleHistory.vue'
