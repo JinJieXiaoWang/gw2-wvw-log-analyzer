@@ -29,7 +29,7 @@ async function loadSystemConfigs(): Promise<void> {
   try {
     const res = await settingsService.getSettings()
     if (res.success && res.data) {
-      const data = res.data as Record<string, any>
+      const data = res.data as Record<string, unknown>
       // 扁平化嵌套数据
       const flattened: Record<string, string> = {}
       for (const [key, value] of Object.entries(data)) {

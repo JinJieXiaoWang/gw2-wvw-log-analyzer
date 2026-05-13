@@ -1,11 +1,14 @@
 import { usePagination } from '@/composables/common/usePagination'
 import { attendanceService } from '@/services'
+import type { AttendanceListParams } from '@/services/data/attendanceService'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { formatDateParam } from '@/utils/common/attendanceFormatters'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { AccountItem } from '@/components/attendance/AttendanceTable.vue'
+import type { PaginatedResponse } from '@/types/api'
 
 export function useAttendancePage() {
   const router = useRouter()
@@ -41,7 +44,7 @@ export function useAttendancePage() {
     professions: [] as string[]
   })
 
-  const accountList = ref<any[]>([])
+  const accountList = ref<AccountItem[]>([])
   const { page, pageSize, total, pagination, onPageChange: _onPageChange, resetPage: _resetPage } = usePagination({ defaultPageSize: 20 })
   const currentSort = ref({ field: 'attendance_count', order: 'desc' })
 
@@ -54,12 +57,12 @@ export function useAttendancePage() {
 
   const scoreBreakdownVisible = ref(false)
   const scoreBreakdownLoading = ref(false)
-  const scoreBreakdownData = ref<any>(null)
+  const scoreBreakdownData = ref<unknown>(null)
   const scoreBreakdownAccount = ref('')
 
   const scoringRulesVisible = ref(false)
   const scoringRulesLoading = ref(false)
-  const scoringRulesData = ref<Record<string, any>>({})
+  const scoringRulesData = ref<Record<string, unknown>>({})
   const scoringRulesActiveTab = ref(0)
 
   const openScoringRulesDialog = async () => {
@@ -71,8 +74,8 @@ export function useAttendancePage() {
       if (result) {
         scoringRulesData.value = result
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分规则失败', life: 5000 })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分规则失败', life: 5000 })
     } finally {
       scoringRulesLoading.value = false
     }
@@ -96,7 +99,7 @@ export function useAttendancePage() {
   const fetchAccounts = async () => {
     loading.value = true
     try {
-      const params: any = {
+      const params: AttendanceListParams = {
         page: page.value,
         page_size: pageSize.value,
         sort_by: currentSort.value.field,
@@ -134,8 +137,8 @@ export function useAttendancePage() {
         total.value = 0
         toast.add({ severity: 'warn', summary: '提示', detail: '暂无数据', life: 3000 })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取数据失败', life: 5000 })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取数据失败', life: 5000 })
     } finally {
       loading.value = false
     }
@@ -166,8 +169,8 @@ export function useAttendancePage() {
       } else {
         toast.add({ severity: 'warn', summary: '提示', detail: '暂无评分数据', life: 3000 })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分维度详情失败', life: 5000 })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分维度详情失败', life: 5000 })
     } finally {
       scoreBreakdownLoading.value = false
     }

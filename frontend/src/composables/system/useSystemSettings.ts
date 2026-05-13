@@ -18,6 +18,16 @@ import {
   SECURITY_SETTINGS_DEFAULTS
 } from '@/config/settings'
 import { useDictOptions } from './useDictOptions'
+import type { DictOption } from '@/services'
+
+interface SettingsResponseData {
+  theme?: string
+  export_format?: string
+  parse_parallel?: number
+  last_login_time?: string
+  username?: string
+  email?: string
+}
 
 export function useSystemSettings() {
   const toast = useToast()
@@ -56,7 +66,7 @@ export function useSystemSettings() {
 
   const themeColors = THEME_COLOR_OPTIONS
 
-  const { options: numberFormatOptions } = useDictOptions('number_format', true, NUMBER_FORMAT_OPTIONS as any)
+  const { options: numberFormatOptions } = useDictOptions('number_format', true, NUMBER_FORMAT_OPTIONS as DictOption[])
 
   const fetchSettings = async () => {
     isLoadingSettings.value = true
@@ -66,7 +76,7 @@ export function useSystemSettings() {
         { showErrorMessage: false }
       )
       if (result.success && result.data) {
-        const data = result.data as any
+        const data = result.data as SettingsResponseData
         themeSettings.mode = data.theme === 'light' ? 'light' : 'dark'
         exportSettings.defaultFormat = data.export_format || 'csv'
         parsingSettings.preFightBuffer = data.parse_parallel || 5
@@ -196,8 +206,8 @@ export function useSystemSettings() {
         toast.add({ severity: 'error', summary: '同步失败', detail: result.message || '服务器保存失败', life: 5000 })
         return
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '同步失败', detail: e?.message || '服务器保存失败', life: 5000 })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '同步失败', detail: e instanceof Error ? e.message : '服务器保存失败', life: 5000 })
       return
     }
     toast.add({ severity: 'success', summary: '保存成功', detail: '水印设置已保存并同步到服务器', life: 3000 })

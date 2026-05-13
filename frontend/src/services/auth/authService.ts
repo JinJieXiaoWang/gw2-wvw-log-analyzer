@@ -35,14 +35,15 @@ export class AuthService {
     return apiFactory.post<void>(API_ENDPOINTS.AUTH.LOGOUT)
   }
 
-  async getLoginStatus(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.AUTH.STATUS)
+  async getLoginStatus(): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.AUTH.STATUS)
   }
 
-  async getProfile(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.AUTH.PROFILE)
+  async getProfile(): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.AUTH.PROFILE)
   }
 
+  /** 后端可能返回 message/msg 等非标准字段，保留 any 以兼容调用方 */
   async changePassword(data: ChangePasswordRequest): Promise<any> {
     return apiFactory.post(API_ENDPOINTS.AUTH.CHANGE_PASSWORD, data)
   }

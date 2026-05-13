@@ -25,7 +25,7 @@ export function useFightData() {
         hasMore.value = response.data.length === pageSize.value
         page.value = 1
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '战斗列表加载失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
@@ -42,7 +42,7 @@ export function useFightData() {
         fights.value = [...fights.value, ...response.data]
         hasMore.value = response.data.length === pageSize.value
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '加载更多战斗失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
