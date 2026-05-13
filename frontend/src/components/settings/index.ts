@@ -4,7 +4,7 @@ export { default as NotificationSettings } from './appearance/NotificationSettin
 export { default as ParsingSettings } from './upload/ParsingSettings.vue'
 export { default as SecuritySettings } from './account/SecuritySettings.vue'
 export { default as SettingItem } from './SettingItem.vue'
-export { default as SettingSidebar } from './SettingSidebar.vue'
+export { default as SettingTabs } from './SettingTabs.vue'
 export { default as SystemFunctionsPanel } from './system/SystemFunctionsPanel.vue'
 export { default as ThemeSettings } from './appearance/ThemeSettings.vue'
 export { default as WatermarkSettings } from './appearance/WatermarkSettings.vue'

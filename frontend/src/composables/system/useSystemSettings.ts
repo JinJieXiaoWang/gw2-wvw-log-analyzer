@@ -17,6 +17,7 @@ import {
   NOTIFICATION_SETTINGS_DEFAULTS,
   SECURITY_SETTINGS_DEFAULTS
 } from '@/constants/settings'
+import { useDictOptions } from './useDictOptions'
 
 export function useSystemSettings() {
   const toast = useToast()
@@ -55,7 +56,7 @@ export function useSystemSettings() {
 
   const themeColors = THEME_COLOR_OPTIONS
 
-  const numberFormatOptions = NUMBER_FORMAT_OPTIONS
+  const { options: numberFormatOptions } = useDictOptions('number_format', true, NUMBER_FORMAT_OPTIONS as any)
 
   const fetchSettings = async () => {
     isLoadingSettings.value = true
@@ -120,10 +121,10 @@ export function useSystemSettings() {
     try {
       await ApiResponseWrapper.wrap(
         settingsService.updateSettings({
-          include_overkill: parsingSettings.includeOverkill,
-          ignore_small_damage: parsingSettings.ignoreSmallDamage,
-          pre_fight_buffer: parsingSettings.preFightBuffer,
-          auto_categorize_skills: parsingSettings.autoCategorizeSkills
+          parsing_include_overkill: parsingSettings.includeOverkill,
+          parsing_ignore_small_damage: parsingSettings.ignoreSmallDamage,
+          parsing_pre_fight_buffer: parsingSettings.preFightBuffer,
+          parsing_auto_categorize_skills: parsingSettings.autoCategorizeSkills
         }),
         { showSuccessMessage: true, successMessage: '解析参数已保存', showErrorMessage: true }
       )
@@ -137,9 +138,9 @@ export function useSystemSettings() {
       await ApiResponseWrapper.wrap(
         settingsService.updateSettings({
           export_format: exportSettings.defaultFormat,
-          include_header: exportSettings.includeHeader,
-          utf8_encoding: exportSettings.utf8Encoding,
-          number_format: exportSettings.numberFormat
+          export_include_header: exportSettings.includeHeader,
+          export_utf8_encoding: exportSettings.utf8Encoding,
+          export_number_format: exportSettings.numberFormat
         }),
         { showSuccessMessage: true, successMessage: '导出格式已保存', showErrorMessage: true }
       )
@@ -153,8 +154,8 @@ export function useSystemSettings() {
       await ApiResponseWrapper.wrap(
         settingsService.updateSettings({
           theme: themeSettings.mode,
-          primary_color: themeSettings.primaryColor,
-          zoom: themeSettings.zoom
+          theme_primary_color: themeSettings.primaryColor,
+          theme_zoom: themeSettings.zoom
         }),
         { showSuccessMessage: true, successMessage: '主题已应用', showErrorMessage: true }
       )
@@ -167,9 +168,9 @@ export function useSystemSettings() {
     try {
       await ApiResponseWrapper.wrap(
         settingsService.updateSettings({
-          notify_email: notificationSettings.email,
-          notify_push: notificationSettings.push,
-          notify_parse_complete: notificationSettings.parseComplete
+          notification_email: notificationSettings.email,
+          notification_push: notificationSettings.push,
+          notification_parse_complete: notificationSettings.parseComplete
         }),
         { showSuccessMessage: true, successMessage: '通知设置已保存', showErrorMessage: true }
       )

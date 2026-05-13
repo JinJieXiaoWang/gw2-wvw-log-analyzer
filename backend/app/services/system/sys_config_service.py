@@ -15,31 +15,54 @@ DEFAULT_CONFIGS = [
     # 界面与系统基础
     {"config_key": "theme", "config_value": "light", "config_name": "界面主题", "config_type": "Y"},
     {"config_key": "default_server", "config_value": "Tarnished Coast", "config_name": "默认服务器", "config_type": "Y"},
-    {"config_key": "system.name", "config_value": "GW2 WVW日志分析系统", "config_name": "系统名称", "config_type": "Y"},
-    {"config_key": "system.version", "config_value": "1.0.0", "config_name": "系统版本", "config_type": "Y"},
+    {"config_key": "system_name", "config_value": "GW2 WVW日志分析系统", "config_name": "系统名称", "config_type": "Y"},
+    {"config_key": "system_version", "config_value": "1.0.0", "config_name": "系统版本", "config_type": "Y"},
 
     # 解析与上?
     {"config_key": "parse_parallel", "config_value": "1", "config_name": "解析并行数", "config_type": "Y"},
     {"config_key": "export_format", "config_value": "json", "config_name": "导出格式", "config_type": "Y"},
-    {"config_key": "upload.max_file_size", "config_value": "50", "config_name": "最大上传文件大?MB)", "config_type": "Y"},
-    {"config_key": "upload.allowed_extensions", "config_value": '[".zevtc", ".evtc"]', "config_name": "允许上传的文件扩展名", "config_type": "Y"},
-    {"config_key": "analysis.max_fight_duration", "config_value": "3600", "config_name": "最大战斗时??", "config_type": "Y"},
+    {"config_key": "upload_max_file_size", "config_value": "50", "config_name": "最大上传文件大小(MB)", "config_type": "Y"},
+    {"config_key": "upload_allowed_extensions", "config_value": '[".zevtc", ".evtc"]', "config_name": "允许上传的文件扩展名", "config_type": "Y"},
+    {"config_key": "analysis_max_fight_duration", "config_value": "3600", "config_name": "最大战斗时长(秒)", "config_type": "Y"},
 
     # 缓存与通知
-    {"config_key": "cache.menu_ttl", "config_value": "3600", "config_name": "菜单缓存时长(?", "config_type": "Y"},
-    {"config_key": "notification.enabled", "config_value": "true", "config_name": "是否启用通知", "config_type": "Y"},
+    {"config_key": "cache_menu_ttl", "config_value": "3600", "config_name": "菜单缓存时长(秒)", "config_type": "Y"},
+    {"config_key": "notification_enabled", "config_value": "true", "config_name": "是否启用通知", "config_type": "Y"},
 
     # 数据保留与清?
     {"config_key": "auto_backup", "config_value": "true", "config_name": "自动备份", "config_type": "Y"},
     {"config_key": "retention_days", "config_value": "365", "config_name": "数据保留天数", "config_type": "Y"},
-    {"config_key": "auto_cleanup.enabled", "config_value": "true", "config_name": "是否启用自动清理", "config_type": "Y"},
-    {"config_key": "auto_cleanup.retention_days", "config_value": "30", "config_name": "日志保留天数", "config_type": "Y"},
+    {"config_key": "auto_cleanup_enabled", "config_value": "true", "config_name": "是否启用自动清理", "config_type": "Y"},
+    {"config_key": "auto_cleanup_retention_days", "config_value": "30", "config_name": "日志保留天数", "config_type": "Y"},
 
     # 水印与评?
     {"config_key": "watermark_enabled", "config_value": "false", "config_name": "页面水印开关", "config_type": "N"},
     {"config_key": "watermark_text", "config_value": "", "config_name": "水印内容", "config_type": "N"},
     {"config_key": "watermark_screenshot_enabled", "config_value": "true", "config_name": "截图水印开关", "config_type": "N"},
     {"config_key": "scoring_mode", "config_value": "role_based", "config_name": "评分模式", "remark": "role_based=按角色定位评分 profession_based=按职业评分", "config_type": "Y"},
+
+    # 通知设置
+    {"config_key": "notification_email", "config_value": "true", "config_name": "邮件通知", "config_type": "Y"},
+    {"config_key": "notification_push", "config_value": "false", "config_name": "推送通知", "config_type": "Y"},
+    {"config_key": "notification_parse_complete", "config_value": "true", "config_name": "解析完成通知", "config_type": "Y"},
+
+    # 安全设置
+    {"config_key": "security_two_factor_auth", "config_value": "false", "config_name": "双因素认证", "config_type": "Y"},
+
+    # 主题设置
+    {"config_key": "theme_primary_color", "config_value": "#165DFF", "config_name": "主题主色", "config_type": "Y"},
+    {"config_key": "theme_zoom", "config_value": "100", "config_name": "界面缩放", "config_type": "Y"},
+
+    # 导出设置
+    {"config_key": "export_include_header", "config_value": "true", "config_name": "导出包含表头", "config_type": "Y"},
+    {"config_key": "export_utf8_encoding", "config_value": "true", "config_name": "UTF-8编码", "config_type": "Y"},
+    {"config_key": "export_number_format", "config_value": "auto", "config_name": "数字格式", "config_type": "Y"},
+
+    # 解析设置
+    {"config_key": "parsing_include_overkill", "config_value": "true", "config_name": "包含过量伤害", "config_type": "Y"},
+    {"config_key": "parsing_ignore_small_damage", "config_value": "true", "config_name": "忽略小额伤害", "config_type": "Y"},
+    {"config_key": "parsing_pre_fight_buffer", "config_value": "5", "config_name": "战前缓冲时间(秒)", "config_type": "Y"},
+    {"config_key": "parsing_auto_categorize_skills", "config_value": "true", "config_name": "自动分类技能", "config_type": "Y"},
 ]
 
 

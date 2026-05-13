@@ -9,7 +9,7 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
       <div class="lg:col-span-1">
-        <SettingSidebar
+        <SettingTabs
           :active-section="activeSection"
           :setting-sections="settingSections"
           @select-section="activeSection = $event"
@@ -90,7 +90,7 @@
 
 <script setup lang="ts">
 import DictionaryManagementWrapper from '@/components/common/dictionary/DictionaryManagementWrapper.vue'
-import SettingSidebar from '@/components/settings/SettingSidebar.vue'
+import SettingTabs from '@/components/settings/SettingTabs.vue'
 import AccountSettings from '@/components/settings/account/AccountSettings.vue'
 import ExportSettings from '@/components/settings/account/ExportSettings.vue'
 import SecuritySettings from '@/components/settings/account/SecuritySettings.vue'

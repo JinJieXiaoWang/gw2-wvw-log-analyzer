@@ -40,6 +40,7 @@ from app.models.game.profession import (
 )
 from app.models.system.sys_menu import SysMenu
 from app.services.game.build_service import create_build
+from app.services.system.sys_config_service import SysConfigService
 from app.utils.logger import logger
 
 # =============================================================================
@@ -265,6 +266,102 @@ _SYS_DICT_TYPE_SEED = [
         "remark": "\u6280\u80fd\u5faa\u73af\u65f6\u95f4\u8f74\u72b6\u6001\u6807\u7b7e",
         "is_system": 1,
     },
+    {
+        "dict_type": "permission",
+        "dict_name": "\u6743\u9650\u6807\u8bc6",
+        "status": 0,
+        "sort_order": 8,
+        "remark": "\u7cfb\u7edf\u6743\u9650\u6807\u8bc6\u5217\u8868",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "scoring_mode",
+        "dict_name": "\u8bc4\u5206\u6a21\u5f0f",
+        "status": 0,
+        "sort_order": 9,
+        "remark": "\u8bc4\u5206\u89c4\u5219\u5e94\u7528\u65b9\u5f0f",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "grade_level",
+        "dict_name": "\u8bc4\u5206\u7b49\u7ea7",
+        "status": 0,
+        "sort_order": 10,
+        "remark": "\u8bc4\u5206\u7b49\u7ea7\u5212\u5206",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "session_timeout",
+        "dict_name": "\u4f1a\u8bdd\u8d85\u65f6",
+        "status": 0,
+        "sort_order": 11,
+        "remark": "\u4f1a\u8bdd\u8d85\u65f6\u65f6\u95f4\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "setting_tab",
+        "dict_name": "\u8bbe\u7f6e\u9009\u9879\u5361",
+        "status": 0,
+        "sort_order": 12,
+        "remark": "\u7cfb\u7edf\u8bbe\u7f6e\u9875\u9762\u5185\u9009\u9879\u5361",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "chart_mode",
+        "dict_name": "\u56fe\u8868\u6a21\u5f0f",
+        "status": 0,
+        "sort_order": 13,
+        "remark": "\u6570\u636e\u56fe\u8868\u5c55\u793a\u6a21\u5f0f",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "sort_field",
+        "dict_name": "\u6392\u5e8f\u5b57\u6bb5",
+        "status": 0,
+        "sort_order": 14,
+        "remark": "\u6570\u636e\u6392\u5e8f\u5b57\u6bb5\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "time_range",
+        "dict_name": "\u65f6\u95f4\u8303\u56f4",
+        "status": 0,
+        "sort_order": 15,
+        "remark": "\u65f6\u95f4\u7b5b\u9009\u8303\u56f4\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "metric_type",
+        "dict_name": "\u6307\u6807\u7c7b\u578b",
+        "status": 0,
+        "sort_order": 16,
+        "remark": "\u6570\u636e\u5206\u6790\u6307\u6807\u7c7b\u578b",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "export_format",
+        "dict_name": "\u5bfc\u51fa\u683c\u5f0f",
+        "status": 0,
+        "sort_order": 17,
+        "remark": "\u6570\u636e\u5bfc\u51fa\u683c\u5f0f\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "theme_color",
+        "dict_name": "\u4e3b\u9898\u989c\u8272",
+        "status": 0,
+        "sort_order": 18,
+        "remark": "\u754c\u9762\u4e3b\u9898\u989c\u8272\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "number_format",
+        "dict_name": "\u6570\u5b57\u683c\u5f0f",
+        "status": 0,
+        "sort_order": 19,
+        "remark": "\u6570\u636e\u5c55\u793a\u6570\u5b57\u683c\u5f0f\u9009\u9879",
+        "is_system": 1,
+    },
 ]
 
 # 字典数据种子：格式 (value, label, color, remark)
@@ -278,6 +375,10 @@ _SYS_DICT_DATA_SEED = {
         ("healing", "\u6cbb\u7597", "#166534", "\u4ee5\u7eaf\u6cbb\u7597\u4e3a\u4e3b\u8981\u804c\u8d23"),
         ("control", "\u63a7\u5236", "#1f2937", "\u4ee5\u63a7\u573a\u6253\u65ad\u4e3a\u4e3b\u8981\u804c\u8d23"),
         ("utility", "\u529f\u80fd", "#155e75", "\u4ee5\u529f\u80fd\u8f85\u52a9\u4e3a\u4e3b\u8981\u804c\u8d23"),
+    ],
+    "scoring_mode": [
+        ("role_based", "\u89d2\u8272\u5b9a\u4f4d\u8bc4\u5206", "#165DFF", "\u6309\u89d2\u8272\u5b9a\u4f4d\u8bc4\u5206"),
+        ("profession_based", "\u804c\u4e1a\u8bc4\u5206", "#00B42A", "\u6309\u804c\u4e1a\u8bc4\u5206"),
     ],
     "scoring_dimension": [
         ("damage", "\u4f24\u5bb3", "#ff4500", "\u603b\u4f24\u5bb3"),
@@ -335,6 +436,87 @@ _SYS_DICT_DATA_SEED = {
         ("instant", "\u77ac\u53d1", "#10b981", ""),
         ("auto", "\u81ea\u52a8\u653b\u51fb", "#6b7280", ""),
         ("flip", "\u7ffb\u8f6c", "#f59e0b", ""),
+    ],
+    "permission": [
+        ("add", "\u65b0\u589e", "#10b981", ""),
+        ("edit", "\u7f16\u8f91", "#3b82f6", ""),
+        ("delete", "\u5220\u9664", "#ef4444", ""),
+        ("view", "\u67e5\u770b", "#6b7280", ""),
+        ("export", "\u5bfc\u51fa", "#f59e0b", ""),
+        ("import", "\u5bfc\u5165", "#8b5cf6", ""),
+    ],
+    "grade_level": [
+        ("S", "S\u7ea7", "#f59e0b", "\u5353\u8d8a"),
+        ("A", "A\u7ea7", "#10b981", "\u4f18\u79c0"),
+        ("B", "B\u7ea7", "#3b82f6", "\u826f\u597d"),
+        ("C", "C\u7ea7", "#6b7280", "\u4e00\u822c"),
+        ("D", "D\u7ea7", "#ef4444", "\u5f85\u63d0\u5347"),
+        ("F", "F\u7ea7", "#991b1b", "\u4e0d\u53ca\u683c"),
+    ],
+    "session_timeout": [
+        ("15", "15\u5206\u949f", "#6b7280", ""),
+        ("30", "30\u5206\u949f", "#6b7280", ""),
+        ("60", "60\u5206\u949f", "#6b7280", ""),
+        ("120", "120\u5206\u949f", "#6b7280", ""),
+    ],
+    "setting_tab": [
+        ("account", "\u8d26\u53f7\u8bbe\u7f6e", "#3b82f6", ""),
+        ("parsing", "\u89e3\u6790\u53c2\u6570", "#f59e0b", ""),
+        ("export", "\u5bfc\u51fa\u683c\u5f0f", "#10b981", ""),
+        ("theme", "\u754c\u9762\u4e3b\u9898", "#8b5cf6", ""),
+        ("notifications", "\u901a\u77e5\u8bbe\u7f6e", "#06b6d4", ""),
+        ("scoring-rules", "\u8bc4\u5206\u89c4\u5219", "#ef4444", ""),
+        ("profession-mgmt", "\u804c\u4e1a\u7ba1\u7406", "#dc2626", ""),
+        ("system-params", "\u7cfb\u7edf\u53c2\u6570", "#f97316", ""),
+        ("dictionary", "\u5b57\u5178\u7ba1\u7406", "#84cc16", ""),
+        ("security", "\u5b89\u5168\u8bbe\u7f6e", "#64748b", ""),
+        ("watermark", "\u6c34\u5370\u8bbe\u7f6e", "#64748b", ""),
+    ],
+    "chart_mode": [
+        ("bar", "\u67f1\u72b6\u56fe", "#3b82f6", ""),
+        ("line", "\u6298\u7ebf\u56fe", "#10b981", ""),
+        ("pie", "\u997c\u56fe", "#f59e0b", ""),
+        ("radar", "\u96f7\u8fbe\u56fe", "#8b5cf6", ""),
+    ],
+    "sort_field": [
+        ("damage", "\u4f24\u5bb3", "#ef4444", ""),
+        ("dps", "DPS", "#f59e0b", ""),
+        ("heal", "\u6cbb\u7597", "#10b981", ""),
+        ("hps", "HPS", "#3b82f6", ""),
+        ("time", "\u65f6\u95f4", "#6b7280", ""),
+    ],
+    "time_range": [
+        ("7d", "\u6700\u8fd17\u5929", "#3b82f6", ""),
+        ("30d", "\u6700\u8fd130\u5929", "#3b82f6", ""),
+        ("90d", "\u6700\u8fd190\u5929", "#3b82f6", ""),
+        ("180d", "\u6700\u8fd1180\u5929", "#3b82f6", ""),
+        ("365d", "\u6700\u8fd1365\u5929", "#3b82f6", ""),
+    ],
+    "metric_type": [
+        ("damage", "\u4f24\u5bb3", "#ef4444", ""),
+        ("heal", "\u6cbb\u7597", "#10b981", ""),
+        ("boon", "\u589e\u76ca", "#f59e0b", ""),
+        ("cleanse", "\u6e05\u75c7", "#3b82f6", ""),
+        ("stab", "\u7a33\u56fa", "#8b5cf6", ""),
+        ("dodge", "\u95ea\u907f", "#06b6d4", ""),
+    ],
+    "export_format": [
+        ("json", "JSON", "#3b82f6", ""),
+        ("csv", "CSV", "#10b981", ""),
+        ("xlsx", "Excel", "#f59e0b", ""),
+        ("pdf", "PDF", "#ef4444", ""),
+    ],
+    "theme_color": [
+        ("blue", "\u84dd\u8272", "#165DFF", ""),
+        ("purple", "\u7d2b\u8272", "#722ED1", ""),
+        ("green", "\u7eff\u8272", "#00B42A", ""),
+        ("orange", "\u6a59\u8272", "#FF7D00", ""),
+        ("red", "\u7ea2\u8272", "#F53F3F", ""),
+    ],
+    "number_format": [
+        ("auto", "\u81ea\u52a8", "", ""),
+        ("comma", "\u5343\u4f4d\u5206\u9694\u7b26 (1,000)", "", ""),
+        ("scientific", "\u79d1\u5b66\u8ba1\u6570\u6cd5 (1.0e6)", "", ""),
     ],
 }
 
@@ -1130,6 +1312,17 @@ def _cleanup_profession_dict(db: Session) -> int:
     return deleted
 
 
+def _init_sys_config(db: Session) -> int:
+    """初始化系统配置（sys_config 表）"""
+    try:
+        from app.services.system.sys_config_service import DEFAULT_CONFIGS
+        SysConfigService.init_default_configs(db)
+        return len(DEFAULT_CONFIGS)
+    except Exception as e:
+        logger.error(f"sys_config 初始化失败: {e}")
+        return 0
+
+
 def _init_sys_dict_data(db: Session) -> int:
     """初始化字典数据（所有在 _SYS_DICT_DATA_SEED 中声明的类型）"""
     created = 0
@@ -1597,6 +1790,7 @@ def initialize_all(db: Session) -> Dict[str, Any]:
         "sys_menu": _init_sys_menu(db),
         "sys_dict_type": _init_sys_dict_type(db),
         "sys_dict_data": _init_sys_dict_data(db),
+        "sys_config": _init_sys_config(db),
         "gw_role_type": _init_role_types(db),
         "gw_profession": _init_professions(db),
         "gw_elite_specialization": _init_elite_specializations(db),

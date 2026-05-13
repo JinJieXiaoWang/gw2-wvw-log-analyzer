@@ -35,24 +35,24 @@ export const THEME_COLOR_OPTIONS = [
   { id: 'red', value: '#F53F3F' }
 ]
 
-/** 数字格式选项 */
+/** 数字格式选项 - 作为字典API加载失败的fallback */
 export const NUMBER_FORMAT_OPTIONS = [
-  { label: '自动', value: 'auto' },
-  { label: '千位分隔符 (1,000)', value: 'comma' },
-  { label: '科学计数法 (1.0e6)', value: 'scientific' }
+  { label: '自动', value: 'auto', is_default: 1 },
+  { label: '千位分隔符 (1,000)', value: 'comma', is_default: 0 },
+  { label: '科学计数法 (1.0e6)', value: 'scientific', is_default: 0 }
 ]
 
-/** 评分模式选项 */
+/** 评分模式选项 - 作为字典API加载失败的fallback */
 export const SCORING_MODE_OPTIONS = [
-  { label: '角色定位评分', value: 'role_based' },
-  { label: '职业评分', value: 'profession_based' }
+  { label: '角色定位评分', value: 'role_based', is_default: 1 },
+  { label: '职业评分', value: 'profession_based', is_default: 0 }
 ]
 
-/** 数据导出格式选项 */
+/** 数据导出格式选项 - 作为字典API加载失败的fallback */
 export const EXPORT_FORMAT_SELECT_OPTIONS = [
-  { label: 'JSON', value: 'json' },
-  { label: 'CSV', value: 'csv' },
-  { label: 'Excel', value: 'xlsx' }
+  { label: 'JSON', value: 'json', is_default: 1 },
+  { label: 'CSV', value: 'csv', is_default: 0 },
+  { label: 'Excel', value: 'xlsx', is_default: 0 }
 ]
 
 /** 系统参数本地配置默认值 */

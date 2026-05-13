@@ -202,7 +202,7 @@ export { default as ScoringVersionHistory } from './settings/scoring/ScoringVers
 export { default as SectionHeader } from './settings/SectionHeader.vue'
 export { default as SecuritySettings } from './settings/account/SecuritySettings.vue'
 export { default as SettingItem } from './settings/SettingItem.vue'
-export { default as SettingSidebar } from './settings/SettingSidebar.vue'
+export { default as SettingTabs } from './settings/SettingTabs.vue'
 export { default as SystemFunctionsPanel } from './settings/system/SystemFunctionsPanel.vue'
 export { default as ThemeSettings } from './settings/appearance/ThemeSettings.vue'
 export { default as WatermarkSettings } from './settings/appearance/WatermarkSettings.vue'

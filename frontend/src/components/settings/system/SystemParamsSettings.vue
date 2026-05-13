@@ -237,6 +237,7 @@ import {
     SCORING_MODE_OPTIONS,
     SYSTEM_CONFIG_DEFAULTS
 } from '@/constants/settings'
+import { useDictOptions } from '@/composables/system/useDictOptions'
 import { settingsService } from '@/services'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -257,8 +258,8 @@ const changedConfigs = ref<Set<string>>(new Set())
 
 const localConfigs = reactive({ ...SYSTEM_CONFIG_DEFAULTS })
 
-const scoringModeOptions = SCORING_MODE_OPTIONS
-const exportFormatOptions = EXPORT_FORMAT_SELECT_OPTIONS
+const { options: scoringModeOptions, loadOptions: loadScoringModes } = useDictOptions('scoring_mode', false, SCORING_MODE_OPTIONS as any)
+const { options: exportFormatOptions, loadOptions: loadExportFormats } = useDictOptions('export_format', false, EXPORT_FORMAT_SELECT_OPTIONS as any)
 
 const hasChanges = computed(() => changedConfigs.value.size > 0)
 
@@ -321,7 +322,11 @@ function handleBooleanChange(config: any, value: boolean) {
   markChanged(config.config_key)
 }
 
-onMounted(() => loadConfigs())
+onMounted(() => {
+  loadConfigs()
+  loadScoringModes()
+  loadExportFormats()
+})
 </script>
 
 <style scoped>

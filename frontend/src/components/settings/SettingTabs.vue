@@ -60,8 +60,8 @@
 
 <script setup lang="ts">
 /**
- * SettingSidebar - 设置页面侧边导航栏组件
- * 功能：显示设置页面的导航选项，提供精致的视觉反馈
+ * SettingTabs - 设置页面选项卡导航组件
+ * 功能：显示设置页面的选项卡导航，提供精致的视觉反馈
  */
 
 import { useRouter } from 'vue-router'
