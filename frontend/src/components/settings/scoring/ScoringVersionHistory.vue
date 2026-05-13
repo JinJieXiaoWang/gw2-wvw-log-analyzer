@@ -1,7 +1,7 @@
 <template>
   <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-5 shadow-lg">
     <h4 class="flex items-center gap-2 text-lg font-semibold text-color mb-4">
-      <i class="pi pi-history text-primary-500" />规则版本历ʷ
+      <i class="pi pi-history text-primary-500" />规则版本历史
     </h4>
     <DataTable
       :value="data.versions"
@@ -11,9 +11,8 @@
     >
       <Column
         field="version"
-        header="版本鍙? style="
-        width:
-        90px"
+        header="版本号"
+        style="width: 90px"
       >
         <template #body="{ data }">
           <span class="px-2 py-0.5 rounded-md bg-primary-500/10 text-primary-500 text-xs font-mono font-semibold">v{{ data.version }}</span>
@@ -25,9 +24,8 @@
       />
       <Column
         field="status"
-        header="״漼? style="
-        width:
-        100px"
+        header="状态"
+        style="width: 100px"
       >
         <template #body="{ data }">
           <BaseTag

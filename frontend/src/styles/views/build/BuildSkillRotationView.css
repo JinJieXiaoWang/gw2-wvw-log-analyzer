@@ -1,0 +1,80 @@
+.skill-rotation-view {
+  min-height: 100vh;
+  padding-bottom: 2rem;
+}
+
+.card {
+  @apply bg-neutral-900 rounded-xl p-6 border border-neutral-800;
+}
+
+.skill-timeline {
+  @apply overflow-x-auto;
+}
+
+.skill-item {
+  @apply flex-shrink-0 p-3 bg-neutral-800 rounded-lg border border-neutral-700 hover:border-neutral-600 transition-colors;
+}
+
+.skill-item.skill-mistake {
+  @apply border-yellow-500/50 bg-yellow-500/10;
+}
+
+.skill-icon {
+  @apply text-2xl mb-2;
+}
+
+.skill-info {
+  @apply text-center;
+}
+
+.skill-name {
+  @apply text-sm font-medium text-neutral-text;
+}
+
+.skill-time {
+  @apply text-xs text-neutral-text-secondary;
+}
+
+.stat-box {
+  @apply p-4 bg-neutral-800 rounded-lg text-center;
+}
+
+.stat-value {
+  @apply text-2xl font-bold text-neutral-text mb-1;
+}
+
+.stat-label {
+  @apply text-sm text-neutral-text-secondary;
+}
+
+.chart-placeholder {
+  @apply bg-neutral-800 rounded-lg;
+}
+
+.mistake-item {
+  @apply p-3 bg-neutral-800 rounded-lg border border-neutral-700;
+}
+
+.mistake-title {
+  @apply text-sm font-medium text-neutral-text;
+}
+
+.mistake-description {
+  @apply text-sm text-neutral-text-secondary mt-1;
+}
+
+.mistake-time {
+  @apply text-xs text-neutral-text-secondary mt-1;
+}
+
+.suggestion-item {
+  @apply p-3 bg-neutral-800 rounded-lg;
+}
+
+.suggestion-title {
+  @apply text-sm font-medium text-neutral-text;
+}
+
+.suggestion-description {
+  @apply text-sm text-neutral-text-secondary mt-1;
+}

@@ -1,7 +1,7 @@
 <template>
   <div class="rounded-lg overflow-hidden border border-surface-200 dark:border-surface-700">
     <DataTable
-      :value="editableRules"
+      :value="localEditableRules"
       :loading="loading"
       class="w-full text-sm"
       :striped-rows="true"
@@ -31,7 +31,7 @@
               text
               rounded
               size="small"
-              :disabled="index === editableRules.length - 1"
+              :disabled="index === localEditableRules.length - 1"
               @click="$emit('moveDown', index)"
             />
           </div>
@@ -64,7 +64,7 @@
               style="min-width: 150px; max-width: 180px;"
             >
               <Slider
-                v-model="editableRules[index].weight"
+                v-model="localEditableRules[index].weight"
                 :min="0"
                 :max="1"
                 :step="0.01"
@@ -77,7 +77,7 @@
               class="flex items-center gap-1 bg-surface-100 dark:bg-surface-800 px-2 py-1 rounded-md border border-surface-200 dark:border-surface-700"
             >
               <BaseInputNumber
-                v-model="editableRules[index].weight"
+                v-model="localEditableRules[index].weight"
                 :min="0"
                 :max="1"
                 :step="0.01"
@@ -91,7 +91,7 @@
             </div>
             <div
               class="absolute bottom-0 left-0 h-0.5 bg-primary-500 opacity-30 transition-all"
-              :style="{ width: `${editableRules[index].weight * 100}%` }"
+              :style="{ width: `${localEditableRules[index].weight * 100}%` }"
             />
           </div>
         </template>
@@ -102,7 +102,7 @@
       >
         <template #body="{ index }">
           <BaseInput
-            v-model="editableRules[index].description"
+            v-model="localEditableRules[index].description"
             size="small"
             class="w-full"
             placeholder="输入描述..."
@@ -118,7 +118,7 @@
         <template #body="{ data, index }">
           <div class="flex items-center gap-2">
             <ToggleSwitch
-              v-model="editableRules[index].is_active"
+              v-model="localEditableRules[index].is_active"
               :disabled="!canWrite"
               @update:model-value="$emit('markChanged')"
             />
@@ -166,8 +166,9 @@ import ToggleSwitch from 'primevue/toggleswitch'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import EmptyState from '@/components/common/ui/display/EmptyState.vue'
 import type { ScoringRule } from '@/services/core/scoringRulesService'
+import { ref, watch } from 'vue'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   editableRules: ScoringRule[]
   loading: boolean
   canWrite?: boolean
@@ -185,7 +186,7 @@ withDefaults(defineProps<{
   canWrite: true,
 })
 
-defineEmits<{
+const emit = defineEmits<{
   moveUp: [index: number]
   moveDown: [index: number]
   remove: [index: number]
@@ -195,7 +196,18 @@ defineEmits<{
   reset: []
   cancel: []
   save: []
+  'update:editableRules': [editableRules: ScoringRule[]]
 }>()
+
+const localEditableRules = ref([...props.editableRules])
+
+watch(() => props.editableRules, (val) => {
+  localEditableRules.value = [...val]
+}, { deep: true })
+
+watch(localEditableRules, (val) => {
+  emit('update:editableRules', [...val])
+}, { deep: true })
 </script>
 
 <style scoped>

@@ -13,7 +13,7 @@
       <div>
         <label class="block text-sm text-neutral-text-secondary mb-1">默认角色</label>
         <BaseSelect
-          v-model="form.default_role"
+          v-model="localForm.default_role"
           :options="roleOptions"
           option-label="label"
           option-value="value"
@@ -23,8 +23,8 @@
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-neutral-text-secondary">状态</label>
-        <ToggleSwitch v-model="form.is_active" />
-        <span class="text-sm text-neutral-text">{{ form.is_active ? '启用' : '禁用' }}</span>
+        <ToggleSwitch v-model="localForm.is_active" />
+        <span class="text-sm text-neutral-text">{{ localForm.is_active ? '启用' : '禁用' }}</span>
       </div>
     </div>
     <template #footer>
@@ -51,8 +51,9 @@ import Dialog from 'primevue/dialog'
 import ToggleSwitch from 'primevue/toggleswitch'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { reactive, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   visible: boolean
   title: string
   form: any
@@ -60,8 +61,19 @@ defineProps<{
   loading: boolean
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'update:visible': [boolean]
+  'update:form': [form: any]
   save: []
 }>()
+
+const localForm = reactive<any>({})
+
+watch(() => props.form, (val) => {
+  Object.assign(localForm, val ?? {})
+}, { deep: true, immediate: true })
+
+watch(localForm, (val) => {
+  emit('update:form', { ...val })
+}, { deep: true })
 </script>

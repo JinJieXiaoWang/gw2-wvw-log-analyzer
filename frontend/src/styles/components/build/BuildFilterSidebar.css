@@ -1,0 +1,99 @@
+.build-filter-sidebar {
+  background: linear-gradient(to bottom, rgba(15, 15, 25, 0.95), rgba(20, 20, 35, 0.98));
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+}
+
+.profession-btn {
+  border: 1.5px solid transparent;
+  background: rgba(30, 35, 50, 0.5);
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+.profession-btn:hover {
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.profession-btn-active {
+  border-width: 1.5px;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.role-btn {
+  background: rgba(30, 35, 50, 0.5);
+  color: var(--neutral-text-secondary);
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.role-btn:hover {
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+.role-btn-active {
+  background: rgba(22, 93, 255, 0.15);
+  color: var(--primary);
+  border-color: rgba(22, 93, 255, 0.35);
+  box-shadow: 0 4px 12px rgba(22, 93, 255, 0.15);
+}
+
+.subrole-chip-inactive {
+  background: rgba(30, 35, 50, 0.5);
+  color: var(--neutral-text-secondary);
+  border: 1.5px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.subrole-chip-inactive:hover {
+  background: rgba(40, 45, 65, 0.85);
+  border-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+.subrole-chip-active {
+  background: rgba(255, 125, 0, 0.15);
+  color: var(--secondary);
+  border: 1.5px solid rgba(255, 125, 0, 0.4);
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(255, 125, 0, 0.15);
+}
+
+.clear-btn {
+  background: rgba(245, 63, 63, 0.08);
+  color: var(--status-error);
+  border: 1px solid rgba(245, 63, 63, 0.2);
+  border-radius: 12px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.clear-btn:hover {
+  background: rgba(245, 63, 63, 0.18);
+  border-color: rgba(245, 63, 63, 0.4);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 63, 63, 0.15);
+}
+
+:deep(.p-dropdown) {
+  background: rgba(30, 35, 50, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+:deep(.p-dropdown .p-dropdown-label) {
+  color: var(--neutral-text);
+  font-size: 0.875rem;
+}
+:deep(.p-dropdown .p-dropdown-trigger) {
+  color: var(--neutral-text-secondary);
+}
+:deep(.p-inputtext) {
+  background: rgba(30, 35, 50, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+}
+:deep(.p-inputtext::placeholder) {
+  color: rgba(255, 255, 255, 0.35);
+}

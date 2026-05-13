@@ -41,7 +41,7 @@
               icon="pi pi-calculator"
               icon-color="primary"
             >
-              <InputSwitch v-model="parsingSettings.includeOverkill" />
+              <InputSwitch v-model="localParsingSettings.includeOverkill" />
             </SettingItem>
             <SettingItem
               title="忽略 1 点伤害以下"
@@ -49,7 +49,7 @@
               icon="pi pi-filter"
               icon-color="secondary"
             >
-              <InputSwitch v-model="parsingSettings.ignoreSmallDamage" />
+              <InputSwitch v-model="localParsingSettings.ignoreSmallDamage" />
             </SettingItem>
           </div>
         </div>
@@ -74,7 +74,7 @@
             >
               <div class="flex items-center gap-2">
                 <BaseInputNumber
-                  v-model="parsingSettings.preFightBuffer"
+                  v-model="localParsingSettings.preFightBuffer"
                   :min="0"
                   :max="30"
                   class="w-20"
@@ -103,7 +103,7 @@
               icon="pi pi-sitemap"
               icon-color="warning"
             >
-              <InputSwitch v-model="parsingSettings.autoCategorizeSkills" />
+              <InputSwitch v-model="localParsingSettings.autoCategorizeSkills" />
             </SettingItem>
           </div>
         </div>
@@ -132,19 +132,33 @@ import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseInputNumber from '@/components/common/ui/input/BaseInputNumber.vue'
 import InputSwitch from 'primevue/inputswitch'
 import SettingItem from '../SettingItem.vue'
+import { reactive, watch } from 'vue'
 
-defineProps<{
-  parsingSettings: {
-    includeOverkill: boolean
-    ignoreSmallDamage: boolean
-    preFightBuffer: number
-    autoCategorizeSkills: boolean
-  }
+interface ParsingSettings {
+  includeOverkill: boolean
+  ignoreSmallDamage: boolean
+  preFightBuffer: number
+  autoCategorizeSkills: boolean
+}
+
+const props = defineProps<{
+  parsingSettings: ParsingSettings
 }>()
 
 const emit = defineEmits<{
   'save-parsing-settings': []
+  'update:parsingSettings': [parsingSettings: ParsingSettings]
 }>()
+
+const localParsingSettings = reactive({ ...props.parsingSettings })
+
+watch(() => props.parsingSettings, (val) => {
+  Object.assign(localParsingSettings, val)
+}, { deep: true })
+
+watch(localParsingSettings, (val) => {
+  emit('update:parsingSettings', { ...val })
+}, { deep: true })
 
 const saveParsingSettings = () => {
   emit('save-parsing-settings')

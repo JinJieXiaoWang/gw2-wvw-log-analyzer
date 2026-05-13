@@ -21,22 +21,29 @@
       <div class="xl:col-span-3 card rounded-xl border-neutral-border/50 overflow-hidden flex flex-col h-full">
         <div class="p-4 border-b border-neutral-border/50 flex-shrink-0">
           <h4 class="text-sm font-semibold text-neutral-text flex items-center gap-2">
-            <i
-              class="pi pi-list text-primary"
-              style="min-width: 120px"
-            />
-            <template #body="{ data }">
-              <div class="flex items-center gap-2">
-                <span class="text-xs font-medium text-neutral-text truncate max-w-[100px]">{{ data.character_name || data.account }}</span>
-                <BaseTag
-                  v-if="data.has_commander_tag"
-                  icon="pi pi-star-fill"
-                  severity="warn"
-                  value=""
-                  class="text-[8px] w-4 h-4 p-0 flex items-center justify-center"
-                />
-              </div>
-            </template>
+            <i class="pi pi-list text-primary" />
+            排行榜
+          </h4>
+        </div>
+        <div class="flex-1 overflow-auto">
+          <DataTable
+            :value="data.sortedPlayerList"
+            size="small"
+            class="w-full"
+          >
+            <Column style="min-width: 120px">
+              <template #body="{ data }">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs font-medium text-neutral-text truncate max-w-[100px]">{{ data.character_name || data.account }}</span>
+                  <BaseTag
+                    v-if="data.has_commander_tag"
+                    icon="pi pi-star-fill"
+                    severity="warn"
+                    value=""
+                    class="text-[8px] w-4 h-4 p-0 flex items-center justify-center"
+                  />
+                </div>
+              </template>
             </Column>
             <Column
               field="group_id"
@@ -115,8 +122,7 @@
                 />
               </template>
             </Column>
-            </DataTable>
-          </h4>
+          </DataTable>
         </div>
       </div>
 
@@ -174,13 +180,13 @@ import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
 import { getProfessionColor, getProfessionName, getProfessionIconUrl } from '@/utils/profession/professionUtils'
 import { rankClass, groupColor, scoreValueColor, scoreSeverity } from '@/utils/combat/combatFormatters'
 import SquadRoster from './SquadRoster.vue'
-import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
+import type { EiAnalysisGroup, EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
 
 interface SquadData {
   players: EiAnalysisPlayer[]
   sortedPlayerList: EiAnalysisPlayer[]
   commanders: EiAnalysisPlayer[]
-  groups: { id: number; players: EiAnalysisPlayer[] }[]
+  groups: EiAnalysisGroup[]
   ungrouped: EiAnalysisPlayer[]
   enemyPlayers: EiAnalysisPlayer[]
 }

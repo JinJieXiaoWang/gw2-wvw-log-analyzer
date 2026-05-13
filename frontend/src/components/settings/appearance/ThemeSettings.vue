@@ -34,11 +34,11 @@
           <div class="grid grid-cols-2 gap-4">
             <div
               class="theme-mode-card group"
-              :class="themeSettings.mode === 'dark' ? 'theme-mode-active' : 'theme-mode-inactive'"
-              @click="themeSettings.mode = 'dark'"
+              :class="localThemeSettings.mode === 'dark' ? 'theme-mode-active' : 'theme-mode-inactive'"
+              @click="localThemeSettings.mode = 'dark'"
             >
               <div
-                v-if="themeSettings.mode === 'dark'"
+                v-if="localThemeSettings.mode === 'dark'"
                 class="theme-check-badge"
               >
                 <i class="pi pi-check text-white text-[10px]" />
@@ -55,11 +55,11 @@
             </div>
             <div
               class="theme-mode-card group"
-              :class="themeSettings.mode === 'light' ? 'theme-mode-active' : 'theme-mode-inactive'"
-              @click="themeSettings.mode = 'light'"
+              :class="localThemeSettings.mode === 'light' ? 'theme-mode-active' : 'theme-mode-inactive'"
+              @click="localThemeSettings.mode = 'light'"
             >
               <div
-                v-if="themeSettings.mode === 'light'"
+                v-if="localThemeSettings.mode === 'light'"
                 class="theme-check-badge"
               >
                 <i class="pi pi-check text-white text-[10px]" />
@@ -93,18 +93,18 @@
               v-for="color in themeColors"
               :key="color.id"
               class="theme-color-item group"
-              @click="themeSettings.primaryColor = color.value"
+              @click="localThemeSettings.primaryColor = color.value"
             >
               <div
                 class="theme-color-circle"
-                :class="themeSettings.primaryColor === color.value ? 'theme-color-active' : 'theme-color-hover'"
+                :class="localThemeSettings.primaryColor === color.value ? 'theme-color-active' : 'theme-color-hover'"
                 :style="{
                   backgroundColor: color.value,
-                  boxShadow: themeSettings.primaryColor === color.value ? `0 0 20px ${color.value}50` : 'none'
+                  boxShadow: localThemeSettings.primaryColor === color.value ? `0 0 20px ${color.value}50` : 'none'
                 }"
               >
                 <i
-                  v-if="themeSettings.primaryColor === color.value"
+                  v-if="localThemeSettings.primaryColor === color.value"
                   class="pi pi-check text-white text-lg"
                 />
               </div>
@@ -130,7 +130,7 @@
             <div class="flex items-center gap-4 mb-2">
               <span class="text-sm text-neutral-text-secondary w-10">80%</span>
               <BaseSlider
-                v-model="themeSettings.zoom"
+                v-model="localThemeSettings.zoom"
                 :min="80"
                 :max="120"
                 class="flex-1"
@@ -139,7 +139,7 @@
               <span class="text-sm text-neutral-text-secondary w-10 text-right">120%</span>
             </div>
             <p class="text-sm text-neutral-text text-center mt-3 font-medium">
-              当前缩放: <span class="text-primary">{{ themeSettings.zoom }}%</span>
+              当前缩放: <span class="text-primary">{{ localThemeSettings.zoom }}%</span>
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@
 
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseSlider from '@/components/common/ui/input/BaseSlider.vue'
-import { ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
 interface Props {
   themeSettings: {
@@ -187,7 +187,18 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'apply-theme': []
+  'update:themeSettings': [themeSettings: Props['themeSettings']]
 }>()
+
+const localThemeSettings = reactive({ ...props.themeSettings })
+
+watch(() => props.themeSettings, (val) => {
+  Object.assign(localThemeSettings, val)
+}, { deep: true })
+
+watch(localThemeSettings, (val) => {
+  emit('update:themeSettings', { ...val })
+}, { deep: true })
 
 const isApplyingZoom = ref(false)
 
@@ -196,7 +207,7 @@ const applyZoom = () => {
   if (isApplyingZoom.value) return
   isApplyingZoom.value = true
   setTimeout(() => {
-    document.documentElement.style.setProperty('--app-zoom', `${props.themeSettings.zoom}%`)
+    document.documentElement.style.setProperty('--app-zoom', `${localThemeSettings.zoom}%`)
     isApplyingZoom.value = false
   }, 100)
 }

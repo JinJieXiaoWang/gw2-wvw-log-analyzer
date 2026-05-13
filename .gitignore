@@ -28,7 +28,7 @@ logs/
 
 # 构建产物
 dist/
-build/
+/build/
 
 # Vite cache
 .vite/

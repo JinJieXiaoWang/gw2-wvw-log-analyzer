@@ -62,7 +62,7 @@
               用户名
             </label>
             <BaseInput
-              v-model="accountSettings.username"
+              v-model="localAccountSettings.username"
               placeholder="请输入用户名"
             />
           </div>
@@ -72,7 +72,7 @@
               邮箱
             </label>
             <BaseInput
-              v-model="accountSettings.email"
+              v-model="localAccountSettings.email"
               placeholder="请输入邮箱地址"
             />
           </div>
@@ -83,7 +83,7 @@
             个人简介
           </label>
           <BaseTextarea
-            v-model="accountSettings.bio"
+            v-model="localAccountSettings.bio"
             rows="3"
             placeholder="介绍一下你自己..."
           />
@@ -112,7 +112,7 @@
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseInput from '@/components/common/ui/input/BaseInput.vue'
 import BaseTextarea from '@/components/common/ui/input/BaseTextarea.vue'
-import { computed } from 'vue'
+import { computed, reactive, watch } from 'vue'
 
 interface Props {
   accountSettings: {
@@ -128,10 +128,21 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'save-account-settings': []
+  'update:accountSettings': [accountSettings: Props['accountSettings']]
 }>()
 
+const localAccountSettings = reactive({ ...props.accountSettings })
+
+watch(() => props.accountSettings, (val) => {
+  Object.assign(localAccountSettings, val)
+}, { deep: true })
+
+watch(localAccountSettings, (val) => {
+  emit('update:accountSettings', { ...val })
+}, { deep: true })
+
 const avatarLetter = computed(() => {
-  const name = props.accountSettings.username || ''
+  const name = localAccountSettings.username || ''
   return name.charAt(0).toUpperCase() || 'U'
 })
 

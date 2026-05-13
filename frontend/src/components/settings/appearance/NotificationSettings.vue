@@ -29,7 +29,7 @@
           icon="pi pi-envelope"
           icon-color="primary"
         >
-          <InputSwitch v-model="notificationSettings.email" />
+          <InputSwitch v-model="localNotificationSettings.email" />
         </SettingItem>
         <SettingItem
           title="推送通知"
@@ -37,7 +37,7 @@
           icon="pi pi-bell"
           icon-color="secondary"
         >
-          <InputSwitch v-model="notificationSettings.push" />
+          <InputSwitch v-model="localNotificationSettings.push" />
         </SettingItem>
         <SettingItem
           title="解析完成通知"
@@ -45,7 +45,7 @@
           icon="pi pi-check-circle"
           icon-color="success"
         >
-          <InputSwitch v-model="notificationSettings.parseComplete" />
+          <InputSwitch v-model="localNotificationSettings.parseComplete" />
         </SettingItem>
       </div>
 
@@ -71,18 +71,32 @@
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import InputSwitch from 'primevue/inputswitch'
 import SettingItem from '../SettingItem.vue'
+import { reactive, watch } from 'vue'
 
-defineProps<{
-  notificationSettings: {
-    email: boolean
-    push: boolean
-    parseComplete: boolean
-  }
+interface NotificationSettings {
+  email: boolean
+  push: boolean
+  parseComplete: boolean
+}
+
+const props = defineProps<{
+  notificationSettings: NotificationSettings
 }>()
 
 const emit = defineEmits<{
   'save-notification-settings': []
+  'update:notificationSettings': [notificationSettings: NotificationSettings]
 }>()
+
+const localNotificationSettings = reactive({ ...props.notificationSettings })
+
+watch(() => props.notificationSettings, (val) => {
+  Object.assign(localNotificationSettings, val)
+}, { deep: true })
+
+watch(localNotificationSettings, (val) => {
+  emit('update:notificationSettings', { ...val })
+}, { deep: true })
 
 const saveNotificationSettings = () => {
   emit('save-notification-settings')

@@ -144,7 +144,7 @@ export function useScreenshotDetection(options: ScreenshotDetectionOptions = {})
       window.addEventListener('focus', handleFocus)
     }
     if (detectClipboard && 'clipboard' in navigator) {
-      // @ts-ignore - clipboardchange 是非标准事件
+      // @ts-expect-error clipboardchange is non-standard - clipboardchange 是非标准事件
       navigator.clipboard?.addEventListener?.('clipboardchange', handleClipboardChange)
     }
     if (detectDevTools) {
@@ -158,7 +158,7 @@ export function useScreenshotDetection(options: ScreenshotDetectionOptions = {})
     window.removeEventListener('keydown', handleDevToolsKey)
     window.removeEventListener('blur', handleBlur)
     window.removeEventListener('focus', handleFocus)
-    // @ts-ignore
+    // @ts-expect-error clipboardchange is non-standard event
     navigator.clipboard?.removeEventListener?.('clipboardchange', handleClipboardChange)
     if (blurTimer) clearTimeout(blurTimer)
     if (devToolsTimer) clearInterval(devToolsTimer)

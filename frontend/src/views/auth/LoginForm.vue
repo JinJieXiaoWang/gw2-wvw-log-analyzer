@@ -1,7 +1,7 @@
 <template>
   <form
     class="space-y-5"
-    @submit.prevent="$emit('submit')"
+    @submit.prevent="emit('submit')"
   >
     <div>
       <label
@@ -16,14 +16,14 @@
         </span>
         <input
           id="username"
-          v-model="form.username"
+          v-model="localForm.username"
           type="text"
           :disabled="loading"
           class="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           :class="{ 'border-red-500 bg-red-900/20': errors.username }"
           placeholder="请输入用户名"
-          @blur="$emit('validate-username')"
-          @input="$emit('clear-error', 'username')"
+          @blur="emit('validate-username')"
+          @input="emit('clear-error', 'username')"
         >
       </div>
       <p
@@ -47,14 +47,14 @@
         </span>
         <input
           id="password"
-          v-model="form.password"
+          v-model="localForm.password"
           :type="showPassword ? 'text' : 'password'"
           :disabled="loading"
           class="w-full pl-12 pr-12 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           :class="{ 'border-red-500 bg-red-900/20': errors.password }"
           placeholder="请输入密码"
-          @blur="$emit('validate-password')"
-          @input="$emit('clear-error', 'password')"
+          @blur="emit('validate-password')"
+          @input="emit('clear-error', 'password')"
         >
         <button
           type="button"
@@ -110,9 +110,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   form: { username: string; password: string }
   errors: { username?: string; password?: string }
   loading: boolean
@@ -120,12 +120,23 @@ defineProps<{
   remainingAttempts: number
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   submit: []
   'validate-username': []
   'validate-password': []
   'clear-error': [field: string]
+  'update:form': [form: { username: string; password: string }]
 }>()
 
 const showPassword = ref(false)
+
+const localForm = reactive({ ...props.form })
+
+watch(() => props.form, (val) => {
+  Object.assign(localForm, val)
+}, { deep: true })
+
+watch(localForm, (val) => {
+  emit('update:form', { ...val })
+}, { deep: true })
 </script>

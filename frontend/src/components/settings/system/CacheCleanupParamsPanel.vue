@@ -27,7 +27,7 @@
           </div>
         </div>
         <BaseInputNumber
-          v-model="configs.cache_menu_ttl"
+          v-model="localConfigs.cache_menu_ttl"
           :min="60"
           :max="86400"
           suffix=" 秒"
@@ -48,7 +48,7 @@
           </div>
         </div>
         <ToggleSwitch
-          v-model="configs.auto_cleanup_enabled"
+          v-model="localConfigs.auto_cleanup_enabled"
           @change="markChanged('auto_cleanup_enabled')"
         />
       </div>
@@ -65,7 +65,7 @@
           </div>
         </div>
         <BaseInputNumber
-          v-model="configs.auto_cleanup_retention_days"
+          v-model="localConfigs.auto_cleanup_retention_days"
           :min="1"
           :max="365"
           suffix=" 天"
@@ -80,14 +80,26 @@
 <script setup lang="ts">
 import BaseInputNumber from '@/components/common/ui/input/BaseInputNumber.vue'
 import ToggleSwitch from 'primevue/toggleswitch'
+import { reactive, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   configs: Record<string, any>
 }>()
 
 const emit = defineEmits<{
   markChanged: [key: string]
+  'update:configs': [configs: Record<string, any>]
 }>()
+
+const localConfigs = reactive({ ...props.configs })
+
+watch(() => props.configs, (val) => {
+  Object.assign(localConfigs, val)
+}, { deep: true })
+
+watch(localConfigs, (val) => {
+  emit('update:configs', { ...val })
+}, { deep: true })
 
 const markChanged = (key: string) => emit('markChanged', key)
 </script>

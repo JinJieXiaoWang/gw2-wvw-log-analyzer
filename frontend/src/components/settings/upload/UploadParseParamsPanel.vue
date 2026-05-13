@@ -27,7 +27,7 @@
           </div>
         </div>
         <BaseInputNumber
-          v-model="configs.upload_max_file_size"
+          v-model="localConfigs.upload_max_file_size"
           :min="1"
           :max="500"
           suffix=" MB"
@@ -48,7 +48,7 @@
           </div>
         </div>
         <BaseInput
-          v-model="configs.upload_allowed_extensions"
+          v-model="localConfigs.upload_allowed_extensions"
           class="w-56"
           @input="markChanged('upload_allowed_extensions')"
         />
@@ -66,7 +66,7 @@
           </div>
         </div>
         <BaseInputNumber
-          v-model="configs.analysis_max_fight_duration"
+          v-model="localConfigs.analysis_max_fight_duration"
           :min="60"
           :max="7200"
           suffix=" 秒"
@@ -81,14 +81,26 @@
 <script setup lang="ts">
 import BaseInputNumber from '@/components/common/ui/input/BaseInputNumber.vue'
 import BaseInput from '@/components/common/ui/input/BaseInput.vue'
+import { reactive, watch } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   configs: Record<string, any>
 }>()
 
 const emit = defineEmits<{
   markChanged: [key: string]
+  'update:configs': [configs: Record<string, any>]
 }>()
+
+const localConfigs = reactive({ ...props.configs })
+
+watch(() => props.configs, (val) => {
+  Object.assign(localConfigs, val)
+}, { deep: true })
+
+watch(localConfigs, (val) => {
+  emit('update:configs', { ...val })
+}, { deep: true })
 
 const markChanged = (key: string) => emit('markChanged', key)
 </script>
