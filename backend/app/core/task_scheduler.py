@@ -4,7 +4,7 @@
 # 依赖说明：apscheduler
 
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -82,6 +82,52 @@ async def scheduled_cleanup():
         logger.error(f"定时清理失败: {e}", exc_info=True)
 
 
+async def scheduled_reset_stuck_parsing_logs():
+    """定时扫描并重置卡住的解析中日志（每10分钟执行一次）"""
+    logger.info("执行卡住解析日志扫描...")
+    try:
+        db = SessionLocal()
+        try:
+            from app.models.log.log import Log
+            from app.services.zevtc import log_service
+
+            # 超过30分钟仍处于 parsing 状态的视为卡住
+            stuck_threshold = datetime.now(timezone.utc) - timedelta(minutes=30)
+
+            stuck_logs = (
+                db.query(Log)
+                .filter(
+                    Log.parse_status == "parsing",
+                    Log.parse_started_at.isnot(None),
+                    Log.parse_started_at <= stuck_threshold,
+                )
+                .all()
+            )
+
+            reset_count = 0
+            for log in stuck_logs:
+                logger.warning(
+                    f"发现卡住日志 log_id={log.id}, "
+                    f"started_at={log.parse_started_at}, 自动重置为 failed"
+                )
+                log_service.update_parse_status(
+                    db,
+                    log.id,
+                    "failed",
+                    "解析任务超时或中断（超过30分钟），已由定时器自动重置",
+                )
+                reset_count += 1
+
+            if reset_count > 0:
+                logger.info(f"已重置 {reset_count} 个卡住日志为 failed 状态")
+            else:
+                logger.info("未发现卡住日志")
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error(f"扫描卡住日志失败: {e}", exc_info=True)
+
+
 def init_scheduler():
     # 功能：初始化任务调度器
     global scheduler
@@ -122,6 +168,16 @@ def init_scheduler():
         replace_existing=True,
     )
     logger.info("已添加技能图标同步任务（每周日凌晨 3:00）")
+
+    # 添加卡住解析日志扫描任务（每10分钟执行一次）
+    scheduler.add_job(
+        scheduled_reset_stuck_parsing_logs,
+        trigger=IntervalTrigger(minutes=10),
+        id="reset_stuck_parsing_logs",
+        name="重置卡住解析日志",
+        replace_existing=True,
+    )
+    logger.info("已添加卡住解析日志扫描任务（每10分钟执行）")
 
     return scheduler
 

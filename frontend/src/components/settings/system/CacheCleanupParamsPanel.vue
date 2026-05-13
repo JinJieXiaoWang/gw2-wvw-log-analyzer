@@ -7,7 +7,9 @@
         <i class="pi pi-trash text-white" />
       </div>
       <div>
-        <h4 class="font-semibold text-color">缓存与清理</h4>
+        <h4 class="font-semibold text-color">
+          缓存与清理
+        </h4>
         <span class="text-xs text-color-secondary">菜单缓存与日志自动清理</span>
       </div>
     </div>
@@ -19,7 +21,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">菜单缓存时长</label>
-            <p class="text-xs text-color-secondary">菜单数据缓存的有效时间</p>
+            <p class="text-xs text-color-secondary">
+              菜单数据缓存的有效时间
+            </p>
           </div>
         </div>
         <BaseInputNumber
@@ -38,7 +42,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">自动清理</label>
-            <p class="text-xs text-color-secondary">是否启用日志自动清理</p>
+            <p class="text-xs text-color-secondary">
+              是否启用日志自动清理
+            </p>
           </div>
         </div>
         <ToggleSwitch
@@ -53,7 +59,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">清理保留天数</label>
-            <p class="text-xs text-color-secondary">自动清理时保留的日志天数</p>
+            <p class="text-xs text-color-secondary">
+              自动清理时保留的日志天数
+            </p>
           </div>
         </div>
         <BaseInputNumber

@@ -68,14 +68,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import Textarea from 'primevue/textarea'
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import ColorPickerInput from '@/components/common/ui/input/ColorPickerInput.vue'
 import type { DictData } from '@/services/system/dictionaryService'
+import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
+import { computed, ref, watch } from 'vue'
 
 interface DataForm {
   dict_label: string

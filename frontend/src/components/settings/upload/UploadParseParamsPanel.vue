@@ -7,7 +7,9 @@
         <i class="pi pi-upload text-white" />
       </div>
       <div>
-        <h4 class="font-semibold text-color">上传与解析</h4>
+        <h4 class="font-semibold text-color">
+          上传与解析
+        </h4>
         <span class="text-xs text-color-secondary">文件上传与战斗解析限制</span>
       </div>
     </div>
@@ -19,7 +21,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">最大上传文件大小</label>
-            <p class="text-xs text-color-secondary">允许上传的单个文件最大容量</p>
+            <p class="text-xs text-color-secondary">
+              允许上传的单个文件最大容量
+            </p>
           </div>
         </div>
         <BaseInputNumber
@@ -38,7 +42,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">允许的文件扩展名</label>
-            <p class="text-xs text-color-secondary">JSON数组格式，如 [&quot;.zevtc&quot;, &quot;.evtc&quot;]</p>
+            <p class="text-xs text-color-secondary">
+              JSON数组格式，如 [&quot;.zevtc&quot;, &quot;.evtc&quot;]
+            </p>
           </div>
         </div>
         <BaseInput
@@ -54,7 +60,9 @@
           </div>
           <div>
             <label class="text-sm font-medium text-color">最大战斗时长</label>
-            <p class="text-xs text-color-secondary">超过此时长的战斗将被截断分析</p>
+            <p class="text-xs text-color-secondary">
+              超过此时长的战斗将被截断分析
+            </p>
           </div>
         </div>
         <BaseInputNumber

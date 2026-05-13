@@ -63,16 +63,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { useDictionaryManagement } from '@/composables/core/useDictionaryManagement'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
-import { useDictionaryManagement } from '@/composables/core/useDictionaryManagement'
-import DictTypeSidebar from './DictTypeSidebar.vue'
-import DictOverviewCards from './DictOverviewCards.vue'
-import DictDataToolbar from './DictDataToolbar.vue'
-import DictDataTable from './DictDataTable.vue'
+import { onMounted } from 'vue'
 import DictDataDialog from './DictDataDialog.vue'
+import DictDataTable from './DictDataTable.vue'
+import DictDataToolbar from './DictDataToolbar.vue'
+import DictOverviewCards from './DictOverviewCards.vue'
 import DictTypeDialog from './DictTypeDialog.vue'
+import DictTypeSidebar from './DictTypeSidebar.vue'
 import InitConfirmDialog from './InitConfirmDialog.vue'
 
 const {

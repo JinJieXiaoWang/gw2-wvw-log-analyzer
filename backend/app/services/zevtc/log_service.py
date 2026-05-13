@@ -5,7 +5,7 @@
 # 依赖说明：SQLAlchemy
 
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
@@ -205,10 +205,17 @@ def update_parse_status(
     # 功能：更新解析状态
     # 参数：db - 数据库会话；log_id - 日志ID；status - 状态；error_message - 错误消息
     # 返回：更新的日志对象或None
-    log_update = LogUpdate(parse_status=status)
-    if error_message:
-        log_update.error_message = error_message
-    return update_log(db, log_id, log_update)
+    log = get_log_by_id(db, log_id)
+    if not log:
+        return None
+    log.parse_status = status
+    if error_message is not None:
+        log.error_message = error_message
+    if status == "parsing":
+        log.parse_started_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(log)
+    return log
 
 
 def handle_upload_duplicate(
@@ -272,6 +279,23 @@ async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True
                 if result.get("success", False):
                     update_parse_status(db, log_id, "completed")
                     logger.info(f"后台解析完成: {log.filename}")
+                    
+                    # 解析成功后自动执行入库评分
+                    try:
+                        from app.services.wvw.scoring_service import ScoringService
+                        fights = db.query(Fight).filter(Fight.log_id == log_id).all()
+                        for fight in fights:
+                            scoring_result = ScoringService.recalculate_fight_scores(
+                                fight.id, db
+                            )
+                            logger.info(
+                                f"日志 {log_id} 战斗 {fight.id} 评分完成: "
+                                f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                            )
+                    except Exception as score_err:
+                        logger.error(
+                            f"日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+                        )
                 else:
                     error_msg = result.get("error", "未知错误")
                     update_parse_status(db, log_id, "failed", error_msg)

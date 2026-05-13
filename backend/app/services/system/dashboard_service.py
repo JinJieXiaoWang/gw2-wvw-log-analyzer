@@ -61,18 +61,19 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     participation_query = _apply_time_filter(participation_query, start_date, end_date)
     total_participations = participation_query.count()
 
-    # 总伤害 / 总治疗
-    damage_healing = (
+    # 总击杀 / 总击倒
+    kills_downs = (
         db.query(
-            func.sum(Fight.total_damage).label("total_damage"),
-            func.sum(Fight.total_healing).label("total_healing"),
+            func.sum(Fight.kill_count).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downs"),
         )
         .select_from(Fight)
+        .outerjoin(FightStats, FightStats.fight_id == Fight.id)
     )
-    damage_healing = _apply_time_filter(damage_healing, start_date, end_date)
-    dh = damage_healing.first()
-    total_damage = int(dh.total_damage or 0) if dh else 0
-    total_healing = int(dh.total_healing or 0) if dh else 0
+    kills_downs = _apply_time_filter(kills_downs, start_date, end_date)
+    kd = kills_downs.first()
+    total_kills = int(kd.total_kills or 0) if kd else 0
+    total_downs = int(kd.total_downs or 0) if kd else 0
 
     # 活跃账号数（有 fight_stats 记录的不同 account）
     active_accounts_query = (
@@ -108,18 +109,18 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     prev_end = end_date - timedelta(days=days)
 
     prev_fights = _apply_time_filter(db.query(Fight), prev_start, prev_end).count()
-    prev_damage = (
-        _apply_time_filter(
-            db.query(func.sum(Fight.total_damage)).select_from(Fight),
-            prev_start, prev_end
-        ).scalar() or 0
+    prev_kills_downs = (
+        db.query(
+            func.sum(Fight.kill_count).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downs"),
+        )
+        .select_from(Fight)
+        .outerjoin(FightStats, FightStats.fight_id == Fight.id)
     )
-    prev_healing = (
-        _apply_time_filter(
-            db.query(func.sum(Fight.total_healing)).select_from(Fight),
-            prev_start, prev_end
-        ).scalar() or 0
-    )
+    prev_kills_downs = _apply_time_filter(prev_kills_downs, prev_start, prev_end)
+    prev_kd = prev_kills_downs.first()
+    prev_kills = int(prev_kd.total_kills or 0) if prev_kd else 0
+    prev_downs = int(prev_kd.total_downs or 0) if prev_kd else 0
     prev_accounts = (
         _apply_time_filter(
             db.query(distinct(FightStats.account)).join(Fight, FightStats.fight_id == Fight.id),
@@ -136,16 +137,16 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
         "period_days": days,
         "total_fights": total_fights,
         "total_participations": total_participations,
-        "total_damage": total_damage,
-        "total_healing": total_healing,
+        "total_kills": total_kills,
+        "total_downs": total_downs,
         "active_accounts": active_accounts,
         "total_characters": int(total_characters),
         "parsed_logs": int(parsed_logs),
         "avg_ai_score": round(float(avg_ai_score), 2) if avg_ai_score else 0,
         "change": {
             "fights": _pct_change(total_fights, prev_fights),
-            "damage": _pct_change(total_damage, prev_damage),
-            "healing": _pct_change(total_healing, prev_healing),
+            "kills": _pct_change(total_kills, prev_kills),
+            "downs": _pct_change(total_downs, prev_downs),
             "accounts": _pct_change(active_accounts, prev_accounts),
         },
     }

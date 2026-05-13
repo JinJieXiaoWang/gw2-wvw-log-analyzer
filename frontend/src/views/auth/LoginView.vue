@@ -111,12 +111,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useToast } from 'primevue/usetoast'
 import { authStore } from '@/composables/system/usePermission'
-import LoginTransitionOverlay from './LoginTransitionOverlay.vue'
+import { useToast } from 'primevue/usetoast'
+import { computed, reactive, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import LoginForm from './LoginForm.vue'
+import LoginTransitionOverlay from './LoginTransitionOverlay.vue'
 
 const router = useRouter()
 const toast = useToast()
@@ -204,4 +204,4 @@ function goHome() {
 }
 </script>
 
-<style scoped>@import './LoginView.css';</style>
+<style scoped>@import '@/styles/views/auth/LoginView.css';</style>

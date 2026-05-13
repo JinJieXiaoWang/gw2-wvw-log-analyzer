@@ -35,17 +35,35 @@ export interface SkillAnalysisRequest {
 }
 
 export interface SkillAnalysisResponse {
-  rotations: SkillRotationEvent[];
-  stats: {
-    total_casts: number;
-    average_cast_time: number;
-    mistakes: Array<{
-      timestamp: number;
-      skill_id: string;
-      description: string;
-    }>;
+  member_id?: number;
+  account?: string;
+  log_id: number;
+  fight_count: number;
+  total_damage: number;
+  avg_dps: number;
+  total_healing: number;
+  skill_cast_uptime: number;
+  buffs: {
+    might: number;
+    fury: number;
+    quickness: number;
+    alacrity: number;
+    protection: number;
+    stability: number;
   };
-  ideal_rotation: SkillRotationEvent[];
+  survival: {
+    damage_taken: number;
+    deaths: number;
+    downs: number;
+    dodge_count: number;
+  };
+  combat: {
+    killed: number;
+    downed: number;
+    boon_strips: number;
+    condition_cleanses: number;
+    interrupts: number;
+  };
 }
 
 /**

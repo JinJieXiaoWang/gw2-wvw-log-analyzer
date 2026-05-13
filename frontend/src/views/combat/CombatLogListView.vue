@@ -21,7 +21,7 @@
           icon="pi pi-refresh"
           variant="game"
           class="ml-2"
-          @click="showBatchParseDialog = true"
+          @click="handleBatchParseClick"
         />
       </template>
     </PageHeader>
@@ -145,19 +145,32 @@ const {
 } = useCombatLogList()
 
 /**
+ * 前置校验登录状态
+ * 未登录则保存当前路径并跳转登录页
+ */
+const checkAuthAndRedirect = (): boolean => {
+  if (!authStore.isAuthenticated) {
+    sessionStorage.setItem('auth_redirect', router.currentRoute.value.fullPath)
+    router.push('/login')
+    return false
+  }
+  return true
+}
+
+/**
  * 处理上传按钮点击事件
- * 前置校验登录状态，未登录则重定向到登录页
  */
 const handleUploadClick = () => {
-  if (!authStore.isAuthenticated) {
-    // 保存当前页面路径，登录成功后自动返回
-    sessionStorage.setItem('auth_redirect', router.currentRoute.value.fullPath)
-    // 重定向到登录页面
-    router.push('/login')
-    return
-  }
-  // 已登录，显示上传对话框
+  if (!checkAuthAndRedirect()) return
   showUploadDialog.value = true
+}
+
+/**
+ * 处理批量解析按钮点击事件
+ */
+const handleBatchParseClick = () => {
+  if (!checkAuthAndRedirect()) return
+  showBatchParseDialog.value = true
 }
 
 const onRowSelect = () => {

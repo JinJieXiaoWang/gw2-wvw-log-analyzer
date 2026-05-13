@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import type { SelectProps } from 'primevue/select';
+import Select from 'primevue/select';
+
+interface Props extends /* @vue-ignore */ SelectProps {}
+
+defineProps<Props>()
+const modelValue = defineModel<any>()
+</script>
+
 <template>
   <Select
     v-bind="$attrs"
@@ -15,9 +25,3 @@
     </template>
   </Select>
 </template>
-
-<script setup lang="ts">
-import Select from 'primevue/select'
-
-const modelValue = defineModel<any>()
-</script>

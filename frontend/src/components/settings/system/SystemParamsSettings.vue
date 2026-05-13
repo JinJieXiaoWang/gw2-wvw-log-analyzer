@@ -27,7 +27,9 @@
             <i class="pi pi-cog text-white" />
           </div>
           <div>
-            <h4 class="font-semibold text-color">核心功能</h4>
+            <h4 class="font-semibold text-color">
+              核心功能
+            </h4>
             <span class="text-xs text-color-secondary">影响系统核心行为</span>
           </div>
         </div>
@@ -39,7 +41,9 @@
               </div>
               <div>
                 <label class="text-sm font-medium text-color">评分模式</label>
-                <p class="text-xs text-color-secondary">选择评分规则的应用方式</p>
+                <p class="text-xs text-color-secondary">
+                  选择评分规则的应用方式
+                </p>
               </div>
             </div>
             <BaseSelect
@@ -58,7 +62,9 @@
               </div>
               <div>
                 <label class="text-sm font-medium text-color">默认服务器</label>
-                <p class="text-xs text-color-secondary">新建日志时默认选中的服务器</p>
+                <p class="text-xs text-color-secondary">
+                  新建日志时默认选中的服务器
+                </p>
               </div>
             </div>
             <BaseInput
@@ -76,7 +82,9 @@
             <i class="pi pi-bolt text-white" />
           </div>
           <div>
-            <h4 class="font-semibold text-color">解析参数</h4>
+            <h4 class="font-semibold text-color">
+              解析参数
+            </h4>
             <span class="text-xs text-color-secondary">日志解析相关配置</span>
           </div>
         </div>
@@ -88,7 +96,9 @@
               </div>
               <div>
                 <label class="text-sm font-medium text-color">解析并行数</label>
-                <p class="text-xs text-color-secondary">批量解析时的并行任务数</p>
+                <p class="text-xs text-color-secondary">
+                  批量解析时的并行任务数
+                </p>
               </div>
             </div>
             <BaseInputNumber
@@ -106,7 +116,9 @@
               </div>
               <div>
                 <label class="text-sm font-medium text-color">数据保留天数</label>
-                <p class="text-xs text-color-secondary">超过此天数的日志将被清理</p>
+                <p class="text-xs text-color-secondary">
+                  超过此天数的日志将被清理
+                </p>
               </div>
             </div>
             <BaseInputNumber
@@ -127,7 +139,9 @@
             <i class="pi pi-file-export text-white" />
           </div>
           <div>
-            <h4 class="font-semibold text-color">导出格式</h4>
+            <h4 class="font-semibold text-color">
+              导出格式
+            </h4>
             <span class="text-xs text-color-secondary">数据导出的默认格式</span>
           </div>
         </div>
@@ -138,7 +152,9 @@
             </div>
             <div>
               <label class="text-sm font-medium text-color">默认导出格式</label>
-              <p class="text-xs text-color-secondary">选择默认的数据导出格式</p>
+              <p class="text-xs text-color-secondary">
+                选择默认的数据导出格式
+              </p>
             </div>
           </div>
           <BaseSelect
@@ -158,7 +174,9 @@
             <i class="pi pi-database text-white" />
           </div>
           <div>
-            <h4 class="font-semibold text-color">系统维护</h4>
+            <h4 class="font-semibold text-color">
+              系统维护
+            </h4>
             <span class="text-xs text-color-secondary">数据备份与维护设置</span>
           </div>
         </div>
@@ -169,7 +187,9 @@
             </div>
             <div>
               <label class="text-sm font-medium text-color">自动备份</label>
-              <p class="text-xs text-color-secondary">是否启用自动数据库备份</p>
+              <p class="text-xs text-color-secondary">
+                是否启用自动数据库备份
+              </p>
             </div>
           </div>
           <ToggleSwitch

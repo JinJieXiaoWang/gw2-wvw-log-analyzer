@@ -1,0 +1,72 @@
+{
+  "dps": [
+    {"dimension": "damage", "weight": 0.40, "description": "总伤害输出权重", "sort_order": 1},
+    {"dimension": "power_damage", "weight": 0.15, "description": "直伤输出权重", "sort_order": 2},
+    {"dimension": "condition_damage", "weight": 0.15, "description": "症状伤害权重", "sort_order": 3},
+    {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 4},
+    {"dimension": "kills", "weight": 0.08, "description": "击杀贡献权重", "sort_order": 5},
+    {"dimension": "breakbar", "weight": 0.05, "description": "蔑视条伤害权重", "sort_order": 6},
+    {"dimension": "strips", "weight": 0.04, "description": "破法权重", "sort_order": 7},
+    {"dimension": "cleanses", "weight": 0.03, "description": "净化权重", "sort_order": 8}
+  ],
+  "support": [
+    {"dimension": "healing", "weight": 0.30, "description": "治疗量权重", "sort_order": 1},
+    {"dimension": "boons", "weight": 0.20, "description": "增益覆盖权重", "sort_order": 2},
+    {"dimension": "alacrity", "weight": 0.15, "description": "敏捷覆盖权重", "sort_order": 3},
+    {"dimension": "quickness", "weight": 0.15, "description": "急速覆盖权重", "sort_order": 4},
+    {"dimension": "cleanses", "weight": 0.08, "description": "净化权重", "sort_order": 5},
+    {"dimension": "strips", "weight": 0.05, "description": "破法权重", "sort_order": 6},
+    {"dimension": "survival", "weight": 0.05, "description": "生存能力权重", "sort_order": 7},
+    {"dimension": "damage", "weight": 0.02, "description": "输出补充权重", "sort_order": 8}
+  ],
+  "tank": [
+    {"dimension": "damage_taken", "weight": 0.25, "description": "承受伤害权重", "sort_order": 1},
+    {"dimension": "survival", "weight": 0.20, "description": "生存能力权重", "sort_order": 2},
+    {"dimension": "blocked_count", "weight": 0.12, "description": "格挡次数权重", "sort_order": 3},
+    {"dimension": "evaded_count", "weight": 0.10, "description": "闪避次数权重", "sort_order": 4},
+    {"dimension": "damage", "weight": 0.10, "description": "反击输出权重", "sort_order": 5},
+    {"dimension": "breakbar", "weight": 0.08, "description": "控制贡献权重", "sort_order": 6},
+    {"dimension": "strips", "weight": 0.08, "description": "破法权重", "sort_order": 7},
+    {"dimension": "cleanses", "weight": 0.07, "description": "净化权重", "sort_order": 8}
+  ],
+  "condition": [
+    {"dimension": "condition_damage", "weight": 0.40, "description": "症状伤害权重", "sort_order": 1},
+    {"dimension": "damage", "weight": 0.25, "description": "总伤害输出权重", "sort_order": 2},
+    {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 3},
+    {"dimension": "kills", "weight": 0.08, "description": "击杀贡献权重", "sort_order": 4},
+    {"dimension": "breakbar", "weight": 0.07, "description": "蔑视条伤害权重", "sort_order": 5},
+    {"dimension": "strips", "weight": 0.05, "description": "破法权重", "sort_order": 6},
+    {"dimension": "cleanses", "weight": 0.03, "description": "净化权重", "sort_order": 7},
+    {"dimension": "power_damage", "weight": 0.02, "description": "直伤输出权重", "sort_order": 8}
+  ],
+  "healing": [
+    {"dimension": "healing", "weight": 0.45, "description": "治疗量权重", "sort_order": 1},
+    {"dimension": "boons", "weight": 0.15, "description": "增益覆盖权重", "sort_order": 2},
+    {"dimension": "cleanses", "weight": 0.12, "description": "净化权重", "sort_order": 3},
+    {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 4},
+    {"dimension": "alacrity", "weight": 0.08, "description": "敏捷覆盖权重", "sort_order": 5},
+    {"dimension": "quickness", "weight": 0.05, "description": "急速覆盖权重", "sort_order": 6},
+    {"dimension": "strips", "weight": 0.03, "description": "破法权重", "sort_order": 7},
+    {"dimension": "damage", "weight": 0.02, "description": "输出补充权重", "sort_order": 8}
+  ],
+  "control": [
+    {"dimension": "breakbar", "weight": 0.30, "description": "控制贡献权重", "sort_order": 1},
+    {"dimension": "strips", "weight": 0.25, "description": "破法权重", "sort_order": 2},
+    {"dimension": "survival", "weight": 0.15, "description": "生存能力权重", "sort_order": 3},
+    {"dimension": "damage_taken", "weight": 0.10, "description": "承受伤害权重", "sort_order": 4},
+    {"dimension": "cleanses", "weight": 0.08, "description": "净化权重", "sort_order": 5},
+    {"dimension": "damage", "weight": 0.05, "description": "反击输出权重", "sort_order": 6},
+    {"dimension": "blocked_count", "weight": 0.04, "description": "格挡次数权重", "sort_order": 7},
+    {"dimension": "evaded_count", "weight": 0.03, "description": "闪避次数权重", "sort_order": 8}
+  ],
+  "utility": [
+    {"dimension": "boons", "weight": 0.25, "description": "增益覆盖权重", "sort_order": 1},
+    {"dimension": "cleanses", "weight": 0.20, "description": "净化权重", "sort_order": 2},
+    {"dimension": "strips", "weight": 0.15, "description": "破法权重", "sort_order": 3},
+    {"dimension": "survival", "weight": 0.15, "description": "生存能力权重", "sort_order": 4},
+    {"dimension": "healing", "weight": 0.08, "description": "治疗量权重", "sort_order": 5},
+    {"dimension": "breakbar", "weight": 0.08, "description": "控制贡献权重", "sort_order": 6},
+    {"dimension": "damage", "weight": 0.05, "description": "反击输出权重", "sort_order": 7},
+    {"dimension": "kills", "weight": 0.04, "description": "击杀贡献权重", "sort_order": 8}
+  ]
+}

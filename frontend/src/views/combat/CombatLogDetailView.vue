@@ -175,10 +175,10 @@
   />
   <CombatPlayerDetailDialog
     v-model:visible="dialogVisible"
+    v-model:rotation-view-mode="rotationViewMode"
     :player="selectedPlayer"
     :player-rotation="playerRotation"
     :rotation-loading="rotationLoading"
-    v-model:rotation-view-mode="rotationViewMode"
     :sorted-skill-casts="sortedSkillCasts"
     :has-player-detail-data="hasPlayerDetailData"
     :timeline-ticks="timelineTicks"

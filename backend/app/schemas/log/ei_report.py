@@ -2,11 +2,11 @@
 """
 EI 报告 API Schema 定义
 
-说明?  EI (_logData + _graphData) 的数据结构极其复杂且版本间可能变化，
-  因此本模块采?顶层结构?+ 深层宽松?的策略：
+说明?  EI (_logData + _graphData) 格式 的数据结构极其复杂且版本间可能变化，
+  因此本模块采用 顶层结构 + 深层宽松的策略：
   - 顶层字段（如元数据、定义表）使用显?Pydantic 字段
   - 深层嵌套结构（如 player details, phase stats）使?Dict[str, Any] / List[Any]
-  这样既保?API 文档可读性，又避免因 EI 版本变化导致解析失败?"""
+  这样既保持 API 文档可读性，又避免因 EI 版本变化导致解析失败 """
 
 from typing import Any, Dict, List, Optional
 
@@ -46,7 +46,8 @@ class EiReportMeta(BaseModel):
 
 
 # =====================================================================
-# EI 摘要数据结构（直接来?summary_json?# =====================================================================
+# EI 摘要数据结构（直接来自 summary_json）
+# =====================================================================
 class EiSummaryResponse(ApiResponse):
     """EI 报告摘要响应"""
 
@@ -85,14 +86,14 @@ class EiImportResponse(ApiResponse):
 # 玩家/目标/阶段详情响应
 # =====================================================================
 class EiPlayerDetailResponse(ApiResponse):
-    """单个玩家完整数据（含 details?""
+    """单个玩家完整数据（含 details 字段）"""
 
     player_index: int = 0
     data: Optional[Dict[str, Any]] = None
 
 
 class EiTargetDetailResponse(ApiResponse):
-    """单个目标完整数据（含 details?""
+    """单个目标完整数据（含 details 字段）"""
 
     target_index: int = 0
     data: Optional[Dict[str, Any]] = None

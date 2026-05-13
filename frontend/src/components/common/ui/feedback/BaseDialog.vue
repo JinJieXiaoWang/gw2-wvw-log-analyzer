@@ -1,38 +1,3 @@
-<template>
-  <Dialog
-    v-bind="$attrs"
-    :visible="visible"
-    :header="header"
-    :modal="modal"
-    :style="{ width }"
-    :pt="dialogPt"
-    @update:visible="$emit('update:visible', $event)"
-  >
-    <slot />
-    <template
-      v-if="showFooter"
-      #footer
-    >
-      <slot name="footer-actions">
-        <BaseButton
-          :label="cancelLabel"
-          severity="secondary"
-          variant="text"
-          @click="close"
-        />
-        <BaseButton
-          :label="confirmLabel"
-          :icon="confirmIcon"
-          :severity="confirmSeverity"
-          :loading="loading"
-          :disabled="confirmDisabled"
-          @click="$emit('confirm')"
-        />
-      </slot>
-    </template>
-  </Dialog>
-</template>
-
 <script setup lang="ts">
 /**
  * BaseDialog - 通用对话框基础封装组件
@@ -42,10 +7,11 @@
  *       取消按钮改用 severity + variant 标准 API；确认按钮 severity 类型对齐 PrimeVue v4
  */
 
+import type { DialogProps } from 'primevue/dialog'
 import Dialog from 'primevue/dialog'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
-interface Props {
+interface Props extends /* @vue-ignore */ DialogProps {
   visible: boolean
   header: string
   width?: string
@@ -87,3 +53,38 @@ const dialogPt = {
   }
 }
 </script>
+
+<template>
+  <Dialog
+    v-bind="$attrs"
+    :visible="visible"
+    :header="header"
+    :modal="modal"
+    :style="{ width }"
+    :pt="dialogPt"
+    @update:visible="emit('update:visible', $event)"
+  >
+    <slot />
+    <template
+      v-if="showFooter"
+      #footer
+    >
+      <slot name="footer-actions">
+        <BaseButton
+          :label="cancelLabel"
+          severity="secondary"
+          variant="text"
+          @click="close"
+        />
+        <BaseButton
+          :label="confirmLabel"
+          :icon="confirmIcon"
+          :severity="confirmSeverity"
+          :loading="loading"
+          :disabled="confirmDisabled"
+          @click="emit('confirm')"
+        />
+      </slot>
+    </template>
+  </Dialog>
+</template>

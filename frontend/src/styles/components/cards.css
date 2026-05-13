@@ -135,15 +135,35 @@
   }
 
   /* 精英级卡片 */
-  .card-exotic {
-    @apply card;
-    border: 2px solid var(--rarity-exotic);
-    box-shadow: 0 0 20px rgba(255, 164, 5, 0.25);
-  }
+.card-exotic {
+  @apply card;
+  border: 2px solid var(--rarity-exotic);
+  box-shadow: 0 0 20px rgba(255, 164, 5, 0.25);
+}
 
-  .card-exotic:hover {
-    box-shadow: 0 0 35px rgba(255, 164, 5, 0.45);
-  }
+.card-exotic:hover {
+  box-shadow: 0 0 35px rgba(255, 164, 5, 0.45);
+}
+
+/* 神话级卡片（用于击杀等核心数据） */
+.card-mythic {
+  @apply card relative overflow-hidden;
+  border: 2px solid var(--rarity-mythic);
+  box-shadow: 0 0 25px rgba(0, 200, 100, 0.25);
+}
+
+.card-mythic::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 200, 100, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.card-mythic:hover {
+  border-color: var(--rarity-mythic);
+  box-shadow: 0 0 40px rgba(0, 200, 100, 0.4);
+}
 
   /* 战斗记录卡片 */
   .battle-card {

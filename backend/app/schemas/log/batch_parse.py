@@ -1,4 +1,4 @@
-﻿# 模块功能：批量解析任务数据验证模型# 作者：系统
+# 模块功能：批量解析任务数据验证模型# 作者：系统
 # 创建日期：2026-04-29
 # 依赖说明：pydantic v2
 
@@ -9,13 +9,15 @@ from pydantic import BaseModel, ConfigDict, Field
 
 
 class BatchParseTaskCreate(BaseModel):
-    # 功能：批量解析任务创建模型    task_name: Optional[str] = None
+    # 功能：批量解析任务创建模型
+    task_name: Optional[str] = None
     log_ids: List[int] = Field(..., description="需要解析的日志ID列表")
     overwrite: bool = Field(True, description="是否覆盖已有的解析数据，默认为True")
 
 
 class BatchParseTaskUpdate(BaseModel):
-    # 功能：批量解析任务更新模型    task_name: Optional[str] = None
+    # 功能：批量解析任务更新模型
+    task_name: Optional[str] = None
     status: Optional[str] = None
 
 
@@ -33,7 +35,8 @@ class BatchParseTaskItemResponse(BaseModel):
 
 
 class BatchParseTaskResponse(BaseModel):
-    # 功能：批量解析任务响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：批量解析任务响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     task_name: Optional[str] = None
@@ -51,11 +54,13 @@ class BatchParseTaskResponse(BaseModel):
 
 
 class BatchParseTaskDetailResponse(BatchParseTaskResponse):
-    # 功能：批量解析任务详情响应模型    items: List[BatchParseTaskItemResponse] = []
+    # 功能：批量解析任务详情响应模型
+    items: List[BatchParseTaskItemResponse] = []
 
 
 class BatchParseTaskListResponse(BaseModel):
-    # 功能：批量解析任务列表响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：批量解析任务列表响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     items: List[BatchParseTaskResponse]
     total: int
@@ -64,7 +69,8 @@ class BatchParseTaskListResponse(BaseModel):
 
 
 class BatchParseProgressResponse(BaseModel):
-    # 功能：批量解析进度响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：批量解析进度响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     task_id: int
     status: str
@@ -80,7 +86,8 @@ class BatchParseProgressResponse(BaseModel):
 
 
 class BatchParseResultResponse(BaseModel):
-    # 功能：批量解析结果响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：批量解析结果响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     task_id: int
     status: str

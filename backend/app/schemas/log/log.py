@@ -1,5 +1,6 @@
-﻿# 模块功能：日志文件数据验证模型# 作者：系统
-# 创建日期?2026-04-27
+﻿# 模块功能：日志文件数据验证模型
+# 作者：帅妹妹丶.8297
+# 创建日期：2023-04-27
 # 依赖说明：pydantic v2
 # 说明：Log 相关 schema 仅反映文件上传管理信息，不包含解析业务数据?#       服务器、地图等解析结果?Fight / evtc_header 等子表提供?
 from datetime import datetime
@@ -51,7 +52,7 @@ class LogResponse(LogBase):
 
 class LogDetailResponse(LogResponse):
     # 功能：日志详情响应模型
-    fights: List["FightResponse"] = []
+    fights: List["FightInfoResponse"] = []
 
 
 class LogListResponse(BaseModel):

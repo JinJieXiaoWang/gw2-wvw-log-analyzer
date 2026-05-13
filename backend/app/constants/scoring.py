@@ -33,24 +33,6 @@ SCORING_DIMENSIONS = [
     {"key": "evaded_count", "label": "闪避"},
 ]
 
-# 默认评分规则权重（规则表为空时的兜底配置）
-DEFAULT_FALLBACK_RULES = {
-    "damage_weight": 0.35,
-    "power_damage_weight": 0.15,
-    "condition_damage_weight": 0.15,
-    "healing_weight": 0.20,
-    "boons_weight": 0.10,
-    "alacrity_weight": 0.05,
-    "quickness_weight": 0.05,
-    "survival_weight": 0.10,
-    "strips_weight": 0.03,
-    "cleanses_weight": 0.02,
-    "kills_weight": 0.05,
-    "breakbar_weight": 0.03,
-    "min_score_threshold": 0.0,
-    "max_score_cap": 100.0,
-}
-
 # 评分规则内存缓存 TTL（秒）
 RULE_CACHE_TTL_SECONDS = 60.0
 
@@ -66,3 +48,27 @@ DEFAULT_ABILITIES = {
 
 # 高机动性职业列表（用于机动能力评分）
 MOBILE_PROFESSIONS = ["盗贼", "游侠", "战士", "魂武者"]
+
+# 默认兜底评分规则（当数据库中没有配置规则时使用）
+# 包含各维度权重、最低分阈值和最高分上限
+DEFAULT_FALLBACK_RULES = {
+    # DPS 角色默认权重配置
+    "damage_weight": 0.35,
+    "power_damage_weight": 0.15,
+    "condition_damage_weight": 0.15,
+    "healing_weight": 0.05,
+    "boons_weight": 0.10,
+    "alacrity_weight": 0.05,
+    "quickness_weight": 0.05,
+    "survival_weight": 0.10,
+    "strips_weight": 0.05,
+    "cleanses_weight": 0.05,
+    "kills_weight": 0.05,
+    "breakbar_weight": 0.05,
+    "damage_taken_weight": 0.05,
+    "blocked_count_weight": 0.05,
+    "evaded_count_weight": 0.05,
+    # 分数阈值配置
+    "min_score_threshold": 0.0,
+    "max_score_cap": 100.0,
+}

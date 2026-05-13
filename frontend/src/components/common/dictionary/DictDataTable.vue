@@ -154,11 +154,11 @@
 </template>
 
 <script setup lang="ts">
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { DictData, DictType } from '@/services/system/dictionaryService'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
 
 defineProps<{
   selectedDictType: DictType | null

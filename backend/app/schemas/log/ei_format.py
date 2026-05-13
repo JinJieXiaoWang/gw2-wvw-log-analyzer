@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：EI格式数据Schema定义
-# 作者：系统
-# 创建日期?2026-04-28
+# 作者：帅妹妹丶.8297
+# 创建日期：2026-04-28
 # 依赖说明：Pydantic
 
 from typing import Any, Dict, List, Optional

@@ -64,6 +64,9 @@ class Log(Base):
         String(500), nullable=True, comment="dps.report 报告链接"
     )
     parsed_at = Column(DateTime(timezone=True), comment="解析完成时间")
+    parse_started_at = Column(
+        DateTime(timezone=True), comment="解析开始时间（用于检测超时）"
+    )
     error_message = Column(Text, comment="解析失败时的错误信息")
 
     # === 上传审计 ===

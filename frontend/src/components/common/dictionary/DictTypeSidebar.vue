@@ -50,12 +50,12 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import type { DictType } from '@/services/system/dictionaryService'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
+import { computed } from 'vue'
 
 const props = defineProps<{
   collapsed: boolean

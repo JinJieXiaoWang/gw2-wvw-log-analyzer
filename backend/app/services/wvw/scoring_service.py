@@ -3,15 +3,15 @@
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-04-30
 # 更新日期：2026-05-07
-# 说明：v3.0 — 支持职业特定规则、Buff覆盖率参与评分、历史数据重算
+# 说明：v3.0 — 支持职业特定规则、Buff 覆盖率参与评分、历史数据重算
 
 from typing import Any, Callable, Dict, List, Optional
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.log.fight_stats import FightStats
 from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
 from app.services.scoring.scoring_rule_service import ScoringRuleService
 from app.services.system.sys_config_service import SysConfigService
 from app.utils.logger import logger
@@ -56,26 +56,12 @@ class ScoringService:
 
         rules = service.get_rules_for_scoring(role_type, profession)
 
-        # 如果表为空，使用默认规则并提示
-        if not rules or len(rules) <= 2:  # 只有 min/max 阈值
-            logger.warning(f"评分规则表为空或数据不足，使用默认规则 (role_type={role_type}, profession={profession})")
-            default_fallback = {
-                "damage_weight": 0.35,
-                "power_damage_weight": 0.15,
-                "condition_damage_weight": 0.15,
-                "healing_weight": 0.20,
-                "boons_weight": 0.10,
-                "alacrity_weight": 0.05,
-                "quickness_weight": 0.05,
-                "survival_weight": 0.10,
-                "strips_weight": 0.03,
-                "cleanses_weight": 0.02,
-                "kills_weight": 0.05,
-                "breakbar_weight": 0.03,
-                "min_score_threshold": 0.0,
-                "max_score_cap": 100.0,
-            }
-            return default_fallback
+        # 如果表为空，仅返回阈值配置，记录警告日志
+        if not rules or len(rules) <= 2:
+            logger.warning(
+                f"评分规则表为空或数据不足，请从管理后台配置评分规则 "
+                f"(role_type={role_type}, profession={profession})"
+            )
 
         return rules
 

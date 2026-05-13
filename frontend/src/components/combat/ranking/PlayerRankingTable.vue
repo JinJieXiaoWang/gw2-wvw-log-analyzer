@@ -9,9 +9,9 @@
     <div class="flex-1 overflow-hidden">
       <DataTable
         :value="sortedPlayerList"
-        :virtualScrollerOptions="{ itemSize: 48 }"
+        :virtual-scroller-options="{ itemSize: 48 }"
         scrollable
-        scrollHeight="calc(100vh - 320px)"
+        scroll-height="calc(100vh - 320px)"
         class="w-full cursor-pointer"
         striped-rows
         @row-click="$emit('row-click', $event)"

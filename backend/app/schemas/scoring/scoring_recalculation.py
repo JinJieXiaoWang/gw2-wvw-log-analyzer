@@ -1,5 +1,5 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：评分重算任?Schema
+# 模块功能：评分重算任务 Schema
 # 说明：定义重算任务的请求/响应模型
 
 from datetime import datetime

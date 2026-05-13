@@ -13,80 +13,22 @@ from app.utils.db.dict_utils import get_dict_options
 from app.utils.logger import logger
 from sqlalchemy.orm import Session
 
-# 系统默认评分规则配置
-# 所有角色类型都预定义默认规则，通过字典表 status 控制启用哪些
-DEFAULT_RULES = {
-    "dps": [
-        {"dimension": "damage", "weight": 0.40, "description": "总伤害输出权重", "sort_order": 1},
-        {"dimension": "power_damage", "weight": 0.15, "description": "直伤输出权重", "sort_order": 2},
-        {"dimension": "condition_damage", "weight": 0.15, "description": "症状伤害权重", "sort_order": 3},
-        {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 4},
-        {"dimension": "kills", "weight": 0.08, "description": "击杀贡献权重", "sort_order": 5},
-        {"dimension": "breakbar", "weight": 0.05, "description": "蔑视条伤害权重", "sort_order": 6},
-        {"dimension": "strips", "weight": 0.04, "description": "破法权重", "sort_order": 7},
-        {"dimension": "cleanses", "weight": 0.03, "description": "净化权重", "sort_order": 8},
-    ],
-    "support": [
-        {"dimension": "healing", "weight": 0.30, "description": "治疗量权重", "sort_order": 1},
-        {"dimension": "boons", "weight": 0.20, "description": "增益覆盖权重", "sort_order": 2},
-        {"dimension": "alacrity", "weight": 0.15, "description": "敏捷覆盖权重", "sort_order": 3},
-        {"dimension": "quickness", "weight": 0.15, "description": "急速覆盖权重", "sort_order": 4},
-        {"dimension": "cleanses", "weight": 0.08, "description": "净化权重", "sort_order": 5},
-        {"dimension": "strips", "weight": 0.05, "description": "破法权重", "sort_order": 6},
-        {"dimension": "survival", "weight": 0.05, "description": "生存能力权重", "sort_order": 7},
-        {"dimension": "damage", "weight": 0.02, "description": "输出补充权重", "sort_order": 8},
-    ],
-    "tank": [
-        {"dimension": "damage_taken", "weight": 0.25, "description": "承受伤害权重", "sort_order": 1},
-        {"dimension": "survival", "weight": 0.20, "description": "生存能力权重", "sort_order": 2},
-        {"dimension": "blocked_count", "weight": 0.12, "description": "格挡次数权重", "sort_order": 3},
-        {"dimension": "evaded_count", "weight": 0.10, "description": "闪避次数权重", "sort_order": 4},
-        {"dimension": "damage", "weight": 0.10, "description": "反击输出权重", "sort_order": 5},
-        {"dimension": "breakbar", "weight": 0.08, "description": "控制贡献权重", "sort_order": 6},
-        {"dimension": "strips", "weight": 0.08, "description": "破法权重", "sort_order": 7},
-        {"dimension": "cleanses", "weight": 0.07, "description": "净化权重", "sort_order": 8},
-    ],
-    "condition": [
-        {"dimension": "condition_damage", "weight": 0.40, "description": "症状伤害权重", "sort_order": 1},
-        {"dimension": "damage", "weight": 0.25, "description": "总伤害输出权重", "sort_order": 2},
-        {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 3},
-        {"dimension": "kills", "weight": 0.08, "description": "击杀贡献权重", "sort_order": 4},
-        {"dimension": "breakbar", "weight": 0.07, "description": "蔑视条伤害权重", "sort_order": 5},
-        {"dimension": "strips", "weight": 0.05, "description": "破法权重", "sort_order": 6},
-        {"dimension": "cleanses", "weight": 0.03, "description": "净化权重", "sort_order": 7},
-        {"dimension": "power_damage", "weight": 0.02, "description": "直伤输出权重", "sort_order": 8},
-    ],
-    "healing": [
-        {"dimension": "healing", "weight": 0.45, "description": "治疗量权重", "sort_order": 1},
-        {"dimension": "boons", "weight": 0.15, "description": "增益覆盖权重", "sort_order": 2},
-        {"dimension": "cleanses", "weight": 0.12, "description": "净化权重", "sort_order": 3},
-        {"dimension": "survival", "weight": 0.10, "description": "生存能力权重", "sort_order": 4},
-        {"dimension": "alacrity", "weight": 0.08, "description": "敏捷覆盖权重", "sort_order": 5},
-        {"dimension": "quickness", "weight": 0.05, "description": "急速覆盖权重", "sort_order": 6},
-        {"dimension": "strips", "weight": 0.03, "description": "破法权重", "sort_order": 7},
-        {"dimension": "damage", "weight": 0.02, "description": "输出补充权重", "sort_order": 8},
-    ],
-    "control": [
-        {"dimension": "breakbar", "weight": 0.30, "description": "控制贡献权重", "sort_order": 1},
-        {"dimension": "strips", "weight": 0.25, "description": "破法权重", "sort_order": 2},
-        {"dimension": "survival", "weight": 0.15, "description": "生存能力权重", "sort_order": 3},
-        {"dimension": "damage_taken", "weight": 0.10, "description": "承受伤害权重", "sort_order": 4},
-        {"dimension": "cleanses", "weight": 0.08, "description": "净化权重", "sort_order": 5},
-        {"dimension": "damage", "weight": 0.05, "description": "反击输出权重", "sort_order": 6},
-        {"dimension": "blocked_count", "weight": 0.04, "description": "格挡次数权重", "sort_order": 7},
-        {"dimension": "evaded_count", "weight": 0.03, "description": "闪避次数权重", "sort_order": 8},
-    ],
-    "utility": [
-        {"dimension": "boons", "weight": 0.25, "description": "增益覆盖权重", "sort_order": 1},
-        {"dimension": "cleanses", "weight": 0.20, "description": "净化权重", "sort_order": 2},
-        {"dimension": "strips", "weight": 0.15, "description": "破法权重", "sort_order": 3},
-        {"dimension": "survival", "weight": 0.15, "description": "生存能力权重", "sort_order": 4},
-        {"dimension": "healing", "weight": 0.08, "description": "治疗量权重", "sort_order": 5},
-        {"dimension": "breakbar", "weight": 0.08, "description": "控制贡献权重", "sort_order": 6},
-        {"dimension": "damage", "weight": 0.05, "description": "反击输出权重", "sort_order": 7},
-        {"dimension": "kills", "weight": 0.04, "description": "击杀贡献权重", "sort_order": 8},
-    ],
-}
+# 默认评分规则配置文件路径
+_DEFAULT_RULES_PATH = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
+    "config", "default_scoring_rules.json"
+)
+
+
+def _load_default_rules_from_file() -> Dict[str, List[Dict[str, Any]]]:
+    """从 JSON 配置文件加载默认评分规则（非代码硬编码）"""
+    try:
+        with open(_DEFAULT_RULES_PATH, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"加载默认评分规则文件失败: {e}")
+        return {}
+
 
 DIMENSION_LABELS = {
     "damage": "总伤害",
@@ -272,13 +214,21 @@ class ScoringRuleService:
         return {"role_type": role_type, "profession": profession, "count": len(created)}
 
     def reset_to_default(self, role_type: Optional[str] = None) -> Dict:
-        """重置为系统默认规则（仅重置通用规则，不删除职业特定规则）"""
+        """重置为系统默认规则（仅重置通用规则，不删除职业特定规则）
+        
+        默认规则从 JSON 配置文件读取，不再硬编码在 Python 代码中。
+        """
+        default_rules = _load_default_rules_from_file()
+        if not default_rules:
+            logger.warning("默认评分规则文件为空或加载失败，无法重置")
+            return {"reset_roles": [], "count": 0, "error": "默认规则文件不可用"}
+
         enabled_roles = self._get_enabled_role_types()
         targets = [role_type] if role_type else enabled_roles
         total = 0
 
         for rt in targets:
-            if rt not in DEFAULT_RULES:
+            if rt not in default_rules:
                 continue
 
             # 仅删除通用规则（profession is null）
@@ -288,7 +238,7 @@ class ScoringRuleService:
             ).delete(synchronize_session=False)
 
             # 插入默认规则
-            for item in DEFAULT_RULES[rt]:
+            for item in default_rules[rt]:
                 rule = ScoringRule(
                     role_type=rt,
                     profession=None,

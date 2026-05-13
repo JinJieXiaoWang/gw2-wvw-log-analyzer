@@ -35,6 +35,7 @@ from app.routers.system.settings import router as settings_router
 from app.routers.system.monitoring import router as monitoring_router
 from app.routers.storage import router as storage_router
 from app.routers.game.builds import router as builds_router
+from app.routers.skills.skill_rotation import router as skill_rotation_router
 from app.routers.test.test_dps_report import router as test_dps_report_router
 from app.routers.system.memory_monitor import router as memory_monitor_router
 from app.routers.system.notice import router as notice_router
@@ -126,7 +127,7 @@ app.include_router(dashboard_router, prefix=settings.API_PREFIX)
 app.include_router(game_data_router, prefix=settings.API_PREFIX)
 app.include_router(professions_router, prefix=settings.API_PREFIX)
 
-app.include_router(bdcode_router)
+app.include_router(bdcode_router, prefix="/api")
 app.include_router(attendance_router, prefix=settings.API_PREFIX)
 app.include_router(settings_router, prefix=settings.API_PREFIX)
 app.include_router(users_router, prefix=settings.API_PREFIX)
@@ -140,6 +141,7 @@ app.include_router(scoring_rules_router, prefix=settings.API_PREFIX)
 app.include_router(fights_router, prefix=settings.API_PREFIX)
 app.include_router(storage_router, prefix=settings.API_PREFIX)
 app.include_router(builds_router, prefix=settings.API_PREFIX)
+app.include_router(skill_rotation_router, prefix=settings.API_PREFIX)
 app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
 app.include_router(notice_router, prefix=settings.API_PREFIX)

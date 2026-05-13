@@ -1,7 +1,7 @@
 ﻿# -*- coding: utf-8 -*-
-# 模块功能：EI分析相关系Pydantic 模型
-# 作者：System
-# 创建日期?2026-05-12
+# 模块功能：EI分析相关系统 Pydantic 模型
+# 作者：帅妹妹丶.8297
+# 创建日期：2026-05-12
 
 from typing import Any, List, Optional
 

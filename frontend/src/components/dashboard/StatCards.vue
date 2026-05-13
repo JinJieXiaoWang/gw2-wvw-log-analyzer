@@ -64,7 +64,7 @@
       </div>
     </div>
 
-    <!-- 总伤害 -->
+    <!-- 击倒 -->
     <div
       class="card-rare animate-slide-in-up min-w-0"
       style="animation-delay: 0.3s"
@@ -72,31 +72,31 @@
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
           <p class="text-neutral-text-secondary text-sm mb-1">
-            总伤害
+            击倒
           </p>
           <p class="text-3xl font-bold game-number-rare truncate">
-            {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_damage || 0) }}
+            {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_downs || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
             <i
-              :class="changeIconClass(dashboardStats?.change?.damage)"
+              :class="changeIconClass(dashboardStats?.change?.downs)"
               class="text-sm"
             />
             <span
-              :class="changeTextClass(dashboardStats?.change?.damage)"
+              :class="changeTextClass(dashboardStats?.change?.downs)"
               class="text-sm"
             >
-              {{ Math.abs(dashboardStats?.change?.damage || 0) }}% 较上期
+              {{ Math.abs(dashboardStats?.change?.downs || 0) }}% 较上期
             </span>
           </div>
         </div>
         <div class="w-14 h-14 shrink-0 bg-gradient-to-br from-status-error/40 to-status-error/10 rounded-xl flex items-center justify-center">
-          <i class="pi pi-bolt text-status-error text-2xl" />
+          <i class="pi pi-arrow-circle-down text-status-error text-2xl" />
         </div>
       </div>
     </div>
 
-    <!-- 总治疗 -->
+    <!-- 击杀 -->
     <div
       class="card-mythic animate-slide-in-up min-w-0"
       style="animation-delay: 0.4s"
@@ -104,26 +104,26 @@
       <div class="flex items-center justify-between gap-3">
         <div class="min-w-0 overflow-hidden">
           <p class="text-neutral-text-secondary text-sm mb-1">
-            总治疗
+            击杀
           </p>
           <p class="text-3xl font-bold game-number-mythic truncate">
-            {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_healing || 0) }}
+            {{ isLoadingStats ? '...' : formatNumber(dashboardStats?.total_kills || 0) }}
           </p>
           <div class="flex items-center gap-1 mt-2">
             <i
-              :class="changeIconClass(dashboardStats?.change?.healing)"
+              :class="changeIconClass(dashboardStats?.change?.kills)"
               class="text-sm"
             />
             <span
-              :class="changeTextClass(dashboardStats?.change?.healing)"
+              :class="changeTextClass(dashboardStats?.change?.kills)"
               class="text-sm"
             >
-              {{ Math.abs(dashboardStats?.change?.healing || 0) }}% 较上期
+              {{ Math.abs(dashboardStats?.change?.kills || 0) }}% 较上期
             </span>
           </div>
         </div>
         <div class="w-14 h-14 shrink-0 bg-gradient-to-br from-status-success/40 to-status-success/10 rounded-xl flex items-center justify-center">
-          <i class="pi pi-heart text-status-success text-2xl" />
+          <i class="pi pi-flag text-status-success text-2xl" />
         </div>
       </div>
     </div>
@@ -145,11 +145,11 @@ defineProps<{
 const formatNumber = (num: number): string => {
   if (!num && num !== 0) return '0'
   if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + 'B'
+    return (num / 1000000000).toFixed(1).replace(/\.0$/, '') + 'B'
   } else if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M'
+    return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M'
   } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K'
+    return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K'
   }
   return num.toString()
 }

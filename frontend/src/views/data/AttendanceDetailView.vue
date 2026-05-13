@@ -86,8 +86,12 @@
                 <i class="pi pi-calendar-check text-primary" />
               </div>
               <div>
-                <p class="text-xs text-neutral-text-secondary">出勤天数</p>
-                <p class="text-sm font-semibold text-neutral-text">{{ summary.attendance_count || 0 }}</p>
+                <p class="text-xs text-neutral-text-secondary">
+                  出勤天数
+                </p>
+                <p class="text-sm font-semibold text-neutral-text">
+                  {{ summary.attendance_count || 0 }}
+                </p>
               </div>
             </div>
             <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-secondary">
@@ -95,8 +99,12 @@
                 <i class="pi pi-clock text-secondary" />
               </div>
               <div>
-                <p class="text-xs text-neutral-text-secondary">总时长</p>
-                <p class="text-sm font-semibold text-neutral-text">{{ formatDuration(summary.total_duration_sec || 0) }}</p>
+                <p class="text-xs text-neutral-text-secondary">
+                  总时长
+                </p>
+                <p class="text-sm font-semibold text-neutral-text">
+                  {{ formatDuration(summary.total_duration_sec || 0) }}
+                </p>
               </div>
             </div>
             <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-status-error">
@@ -104,8 +112,12 @@
                 <i class="pi pi-bolt text-status-error" />
               </div>
               <div>
-                <p class="text-xs text-neutral-text-secondary">总伤害</p>
-                <p class="text-sm font-semibold text-neutral-text">{{ formatNumber(summary.total_damage || 0) }}</p>
+                <p class="text-xs text-neutral-text-secondary">
+                  总伤害
+                </p>
+                <p class="text-sm font-semibold text-neutral-text">
+                  {{ formatNumber(summary.total_damage || 0) }}
+                </p>
               </div>
             </div>
             <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-status-success">
@@ -113,8 +125,12 @@
                 <i class="pi pi-trophy text-status-success" />
               </div>
               <div>
-                <p class="text-xs text-neutral-text-secondary">平均评分</p>
-                <p class="text-sm font-semibold text-neutral-text">{{ summary.avg_score || 0 }}</p>
+                <p class="text-xs text-neutral-text-secondary">
+                  平均评分
+                </p>
+                <p class="text-sm font-semibold text-neutral-text">
+                  {{ summary.avg_score || 0 }}
+                </p>
               </div>
             </div>
           </div>
