@@ -17,9 +17,9 @@ from sqlalchemy import distinct, func, or_, select
 from sqlalchemy.orm import Session
 
 from app.models.auth.account_character import AccountCharacter
+from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
-from app.models.auth.member import Member
 
 
 def get_account_attendance_list(
@@ -60,7 +60,7 @@ def get_account_attendance_list(
         func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
         func.sum(Fight.duration_sec).label("total_duration_sec"),
         func.sum(FightStats.damage).label("total_damage"),
-        func.sum(FightStats.healing).label("total_healing"),
+        func.sum(FightStats.downed).label("total_downed"),
         func.sum(FightStats.killed).label("total_kills"),
         func.sum(FightStats.dead_count).label("total_deaths"),
         func.avg(FightStats.ai_score).label("avg_score"),
@@ -93,7 +93,7 @@ def get_account_attendance_list(
     order_map = {
         "attendance_count": func.count(distinct(func.date(Fight.start_time))),
         "total_damage": func.sum(FightStats.damage),
-        "total_healing": func.sum(FightStats.healing),
+        "total_downed": func.sum(FightStats.downed),
         "total_kills": func.sum(FightStats.killed),
         "total_deaths": func.sum(FightStats.dead_count),
         "total_duration_sec": func.sum(Fight.duration_sec),
@@ -123,7 +123,7 @@ def get_account_attendance_list(
                 "attendance_count": int(r.attendance_count or 0),
                 "total_duration_sec": int(r.total_duration_sec or 0),
                 "total_damage": int(r.total_damage or 0),
-                "total_healing": int(r.total_healing or 0),
+                "total_downed": int(r.total_downed or 0),
                 "total_kills": kills,
                 "total_deaths": deaths,
                 "kd_ratio": round(kills / max(deaths, 1), 2),
@@ -170,7 +170,7 @@ def get_account_detail(
             FightStats.character_name,
             func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
             func.sum(FightStats.damage).label("total_damage"),
-            func.sum(FightStats.healing).label("total_healing"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.avg(FightStats.dps).label("avg_dps"),
             func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.dead_count).label("total_deaths"),
@@ -220,7 +220,7 @@ def get_account_detail(
             func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
             func.sum(Fight.duration_sec).label("total_duration_sec"),
             func.sum(FightStats.damage).label("total_damage"),
-            func.sum(FightStats.healing).label("total_healing"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.dead_count).label("total_deaths"),
             func.avg(FightStats.ai_score).label("avg_score"),
@@ -253,7 +253,7 @@ def get_account_detail(
             FightStats.profession,
             FightStats.damage,
             FightStats.dps,
-            FightStats.healing,
+            FightStats.downed,
             FightStats.killed,
             FightStats.dead_count,
             FightStats.ai_score,
@@ -286,7 +286,7 @@ def get_account_detail(
                 "profession": latest_professions.get(cs.character_name, ""),
                 "attendance_count": int(cs.attendance_count or 0),
                 "total_damage": int(cs.total_damage or 0),
-                "total_healing": int(cs.total_healing or 0),
+                "total_downed": int(cs.total_downed or 0),
                 "avg_dps": round(float(cs.avg_dps), 2) if cs.avg_dps else 0,
                 "total_kills": kills,
                 "total_deaths": deaths,
@@ -312,7 +312,7 @@ def get_account_detail(
                 "profession": rf.profession,
                 "damage": rf.damage or 0,
                 "dps": rf.dps or 0,
-                "healing": rf.healing or 0,
+                "downed": rf.downed or 0,
                 "killed": rf.killed or 0,
                 "dead_count": rf.dead_count or 0,
                 "ai_score": round(float(rf.ai_score), 2) if rf.ai_score else 0,
@@ -344,7 +344,7 @@ def get_account_detail(
             "attendance_count": int(summary.attendance_count or 0),
             "total_duration_sec": int(summary.total_duration_sec or 0),
             "total_damage": int(summary.total_damage or 0),
-            "total_healing": int(summary.total_healing or 0),
+            "total_downed": int(summary.total_downed or 0),
             "total_kills": total_kills,
             "total_deaths": total_deaths,
             "kd_ratio": round(total_kills / max(total_deaths, 1), 2),
@@ -373,7 +373,7 @@ def _calculate_comprehensive_abilities(
     
     计算6个维度的能力评分：
     - damage: 伤害能力
-    - healing: 治疗能力
+    - downed: 击倒能力
     - survival: 生存能力
     - support: 支援能力
     - utility: 功能能力
@@ -384,7 +384,7 @@ def _calculate_comprehensive_abilities(
     # 默认能力值
     default_abilities = {
         "damage": 70.0,
-        "healing": 60.0,
+        "downed": 60.0,
         "survival": 65.0,
         "support": 55.0,
         "utility": 60.0,

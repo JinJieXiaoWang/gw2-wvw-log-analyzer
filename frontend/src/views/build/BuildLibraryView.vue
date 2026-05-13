@@ -194,6 +194,8 @@ import BuildEditDialog from '@/components/build/library/BuildEditDialog.vue'
 import Drawer from 'primevue/drawer'
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseCheckbox from '@/components/common/ui/input/BaseCheckbox.vue'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import type { BuildEntry, SubRoleFilter } from '@/types/buildLibrary'
 

@@ -5,45 +5,45 @@
 # 依赖说明：FastAPI, uvicorn, contextlib
 
 from contextlib import asynccontextmanager
+
+import app.models  # 确保所有模型类注册到 Base.metadata
+from app.config.database import get_db_context, init_db
+from app.config.settings import settings
+from app.core.task_scheduler import start_scheduler, stop_scheduler
+from app.routers.ai import router as ai_router
+from app.routers.auth import router as auth_router
+from app.routers.auth.users import router as users_router
+from app.routers.dictionary import router as dictionary_router
+from app.routers.game import router as game_data_router
+from app.routers.game.bdcode import router as bdcode_router
+from app.routers.game.builds import router as builds_router
+from app.routers.game.professions import router as professions_router
+from app.routers.logs import router as logs_router
+from app.routers.logs.ei_analysis import router as ei_analysis_router
+from app.routers.logs.fights import router as fights_router
+from app.routers.scoring import router as scoring_router
+from app.routers.scoring.attendance import router as attendance_router
+from app.routers.scoring.scoring_rules import router as scoring_rules_router
+from app.routers.skills.skill_rotation import router as skill_rotation_router
+from app.routers.storage import router as storage_router
+from app.routers.system.config import router as config_router
+from app.routers.system.dashboard import router as dashboard_router
+from app.routers.system.dps_report_monitor import router as dps_report_queue_router
+from app.routers.system.memory_monitor import router as memory_monitor_router
+from app.routers.system.monitor import router as monitor_router
+from app.routers.system.monitoring import router as monitoring_router
+from app.routers.system.notice import router as notice_router
+from app.routers.system.settings import router as settings_router
+from app.routers.test.test_dps_report import router as test_dps_report_router
+from app.services.auth.auth_service import init_predefined_admin
+from app.services.zevtc.batch_parse_service import start_workers, stop_workers
+from app.utils.error.exception_handler import register_exception_handlers
+from app.utils.error.exceptions import AppException
+from app.utils.logger import logger
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
-from app.config.settings import settings
-from app.config.database import init_db, get_db_context
-from app.services.auth.auth_service import init_predefined_admin
-import app.models  # 确保所有模型类注册到 Base.metadata
-from app.services.zevtc.batch_parse_service import start_workers, stop_workers
-from app.core.task_scheduler import start_scheduler, stop_scheduler
-from app.routers.auth import router as auth_router
-from app.routers.auth.users import router as users_router
-from app.routers.system.monitor import router as monitor_router
-from app.routers.logs import router as logs_router
-from app.routers.logs.fights import router as fights_router
-from app.routers.logs.ei_analysis import router as ei_analysis_router
-from app.routers.scoring.attendance import router as attendance_router
-from app.routers.ai import router as ai_router
-from app.routers.system.dashboard import router as dashboard_router
-
-from app.routers.scoring import router as scoring_router
-from app.routers.scoring.scoring_rules import router as scoring_rules_router
-from app.routers.game import router as game_data_router
-from app.routers.game.bdcode import router as bdcode_router
-from app.routers.game.professions import router as professions_router
-from app.routers.dictionary import router as dictionary_router
-from app.routers.system.settings import router as settings_router
-from app.routers.system.monitoring import router as monitoring_router
-from app.routers.storage import router as storage_router
-from app.routers.game.builds import router as builds_router
-from app.routers.skills.skill_rotation import router as skill_rotation_router
-from app.routers.test.test_dps_report import router as test_dps_report_router
-from app.routers.system.memory_monitor import router as memory_monitor_router
-from app.routers.system.notice import router as notice_router
-from app.routers.system.config import router as config_router
-from app.routers.system.dps_report_monitor import router as dps_report_queue_router
-from app.utils.logger import logger
-from app.utils.error.exceptions import AppException
-from app.utils.error.exception_handler import register_exception_handlers
 
 
 @asynccontextmanager
@@ -109,7 +109,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.BACKEND_CORS_ORIGINS,
+    allow_origins=[*settings.BACKEND_CORS_ORIGINS, "http://localhost:3001"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-Silent-Request"],
@@ -117,6 +117,7 @@ app.add_middleware(
 
 # 注册增强版内存监控中间件（自动GC、内存超限告警、OOM预防）
 from app.middleware.enhanced_memory_monitor import EnhancedMemoryMonitorMiddleware
+
 app.add_middleware(EnhancedMemoryMonitorMiddleware)
 
 register_exception_handlers(app)

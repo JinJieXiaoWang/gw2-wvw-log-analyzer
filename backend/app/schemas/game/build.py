@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 模块功能：Build图书馆数据验证Schema
 # 依赖说明：Pydantic v2
 
@@ -62,7 +62,7 @@ class BuildBase(BaseModel):
     )
     mechanics: List[BuildMechanic] = Field(default_factory=list, description="机制说明")
     videos: List[BuildVideo] = Field(default_factory=list, description="视频链接")
-    author: str = Field(default="", max_length=50, description="作者")
+    author: Optional[str] = Field(default="", max_length=50, description="作者")
 
     @field_validator("profession")
     @classmethod

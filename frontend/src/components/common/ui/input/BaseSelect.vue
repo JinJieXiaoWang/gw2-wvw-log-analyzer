@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { SelectProps } from 'primevue/select';
-import Select from 'primevue/select';
+import type { SelectProps } from 'primevue/select'
+import Select from 'primevue/select'
 
 interface Props extends /* @vue-ignore */ SelectProps {}
 
 defineProps<Props>()
+
 const modelValue = defineModel<any>()
 </script>
 

@@ -30,7 +30,7 @@ def get_account_attendance_list(
     """获取账号出勤列表（按 account 维度聚合?
 
     出勤次数 = 该账号在统计周期内有多少个不同的自然日有战斗记录
-    （同一自然日内无论多少日志/多少角色，只?1 次账号出勤）
+    （同一自然日内无论多少日志/多少角色，只算 1 次账号出勤）
 
     返回字段：
         account, character_count, attendance_count, total_duration_sec,
@@ -48,7 +48,7 @@ def get_account_attendance_list(
     query = db.query(
         FightStats.account,
         char_count_subq.label("character_count"),
-        # 核心变更：按自然日去重计?
+        # 核心变更：按自然日去重计数
         func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
         func.sum(Fight.duration_sec).label("total_duration_sec"),
         func.sum(FightStats.damage).label("total_damage"),
