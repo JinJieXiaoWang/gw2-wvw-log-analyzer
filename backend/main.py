@@ -40,6 +40,7 @@ from app.routers.test.test_dps_report import router as test_dps_report_router
 from app.routers.system.memory_monitor import router as memory_monitor_router
 from app.routers.system.notice import router as notice_router
 from app.routers.system.config import router as config_router
+from app.routers.system.dps_report_monitor import router as dps_report_queue_router
 from app.utils.logger import logger
 from app.utils.error.exceptions import AppException
 from app.utils.error.exception_handler import register_exception_handlers
@@ -146,6 +147,7 @@ app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
 app.include_router(notice_router, prefix=settings.API_PREFIX)
 app.include_router(config_router, prefix=settings.API_PREFIX)
+app.include_router(dps_report_queue_router, prefix=settings.API_PREFIX)
 
 
 @app.get("/")

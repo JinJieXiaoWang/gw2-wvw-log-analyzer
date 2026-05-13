@@ -174,28 +174,122 @@ defineEmits<{
 </script>
 
 <style scoped>
-.data-table-container { flex: 1; background: #2a2a2a; border-radius: 12px; overflow: hidden; }
-.dict-data-table { font-size: 14px; }
-.sort-value, .value-text, .remark-text { color: #e5e5e5; }
-.label-cell { display: flex; align-items: center; gap: 8px; }
-.label-text { color: #e5e5e5; font-weight: 500; }
-.default-badge { font-size: 10px; background: #165dff; color: #fff; padding: 2px 6px; border-radius: 4px; }
-.color-cell { display: flex; align-items: center; gap: 8px; }
-.color-swatch { width: 24px; height: 24px; border-radius: 4px; border: 1px solid #333; }
-.color-value { font-size: 12px; color: #909399; }
-.no-color { color: #909399; }
-.list-class { font-size: 12px; color: #00c896; }
-.action-buttons { display: flex; gap: 4px; }
+.data-table-container {
+  flex: 1;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+}
+.dict-data-table {
+  font-size: 14px;
+  flex: 1;
+  min-height: 0;
+}
+.dict-data-table ::deep .p-datatable-header {
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+}
+.dict-data-table ::deep .p-datatable-footer {
+  background: var(--color-bg);
+  border-top: 1px solid var(--color-border);
+}
+.dict-data-table ::deep .p-paginator {
+  background: var(--color-bg);
+  border: none;
+}
+.sort-value, .value-text, .remark-text {
+  color: var(--color-text);
+}
+.label-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.label-text {
+  color: var(--color-text);
+  font-weight: 500;
+}
+.default-badge {
+  font-size: 10px;
+  background: var(--color-primary);
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.color-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  border: 1px solid var(--color-border);
+}
+.color-value {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.no-color {
+  color: var(--color-text-tertiary);
+}
+.list-class {
+  font-size: 12px;
+  color: var(--color-success);
+}
+.action-buttons {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+}
 .table-empty {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 60px 20px; color: #909399; gap: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--color-text-secondary);
+  gap: 12px;
 }
-.table-empty i { font-size: 48px; }
+.table-empty i {
+  font-size: 48px;
+  color: var(--color-text-tertiary);
+}
 .no-selection {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  height: 100%; color: #909399; gap: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-secondary);
+  gap: 16px;
+  padding: 40px;
 }
-.no-selection i { font-size: 64px; color: #333; }
-.no-selection h3 { font-size: 20px; color: #e5e5e5; margin: 0; }
-.no-selection p { margin: 0; }
+.no-selection i {
+  font-size: 64px;
+  color: var(--color-text-tertiary);
+}
+.no-selection h3 {
+  font-size: 20px;
+  color: var(--color-text);
+  margin: 0;
+}
+.no-selection p {
+  margin: 0;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .data-table-container {
+    min-height: 200px;
+  }
+  .action-buttons {
+    flex-direction: column;
+  }
+}
 </style>

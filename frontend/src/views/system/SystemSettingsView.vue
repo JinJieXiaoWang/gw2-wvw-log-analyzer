@@ -59,8 +59,9 @@
           <div
             v-else-if="activeSection === 'dictionary'"
             :key="'dictionary'"
+            class="dictionary-embedded-container"
           >
-            <DictionaryManagementWrapper />
+            <DictionaryManagementWrapper :is-embedded="true" />
           </div>
           <SystemParamsSettings
             v-else-if="activeSection === 'system-params'"
@@ -140,5 +141,11 @@ const {
 .setting-section-leave-to {
   opacity: 0;
   transform: translateX(-8px);
+}
+
+.dictionary-embedded-container {
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
 }
 </style>

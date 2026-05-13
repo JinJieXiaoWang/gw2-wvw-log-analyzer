@@ -10,6 +10,7 @@
       />
       <main class="main-content">
         <DictOverviewCards
+          v-if="showOverviewCards"
           :dict-data-length="dictData.length"
           :enabled-count="enabledCount"
           :disabled-count="disabledCount"
@@ -75,6 +76,12 @@ import DictTypeDialog from './DictTypeDialog.vue'
 import DictTypeSidebar from './DictTypeSidebar.vue'
 import InitConfirmDialog from './InitConfirmDialog.vue'
 
+const props = withDefaults(defineProps<{
+  showOverviewCards?: boolean
+}>(), {
+  showOverviewCards: true
+})
+
 const {
   isAdmin, isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
   refreshing, saving, initializing,
@@ -96,7 +103,34 @@ defineExpose({ toggleSidebar, handleReloadCache })
 </script>
 
 <style scoped>
-.dictionary-management { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 16px; }
-.content-layout { display: flex; gap: 16px; flex: 1; min-height: 0; }
-.main-content { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.dictionary-management {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 16px;
+  padding: 0;
+  box-sizing: border-box;
+}
+.content-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 1024px) {
+  .content-layout {
+    flex-direction: column;
+  }
+}
 </style>

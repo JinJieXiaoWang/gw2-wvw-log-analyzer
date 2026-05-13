@@ -204,70 +204,159 @@ _SYS_MENU_SEED = [
 
 
 # =============================================================================
-# 字典类型种子数据（profession/specialization/buff_id 已迁移至专业表，此处不再录入口
+# =============================================================================
+# 字典类型种子数据
+# 说明：所有业务配置类枚举数据统一在此声明，系统启动时自动录入字典表
 # =============================================================================
 _SYS_DICT_TYPE_SEED = [
     {
         "dict_type": "role",
-        "dict_name": "角色定位",
+        "dict_name": "\u89d2\u8272\u5b9a\u4f4d",
         "status": 0,
         "sort_order": 1,
-        "remark": "激?角色定位",
+        "remark": "\u6218\u6597\u89d2\u8272\u5b9a\u4f4d",
         "is_system": 1,
     },
     {
         "dict_type": "scoring_dimension",
-        "dict_name": "评分维度",
+        "dict_name": "\u8bc4\u5206\u7ef4\u5ea6",
         "status": 0,
         "sort_order": 2,
-        "remark": "评分指标维度",
+        "remark": "\u8bc4\u5206\u6307\u6807\u7ef4\u5ea6",
         "is_system": 1,
     },
     {
         "dict_type": "game_mode",
-        "dict_name": "游戏模式",
+        "dict_name": "\u6e38\u620f\u6a21\u5f0f",
         "status": 0,
         "sort_order": 3,
-        "remark": "激?游戏模式",
+        "remark": "\u6e38\u620f\u6a21\u5f0f",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "parse_status",
+        "dict_name": "\u89e3\u6790\u72b6\u6001",
+        "status": 0,
+        "sort_order": 4,
+        "remark": "\u65e5\u5fd7\u89e3\u6790\u751f\u547d\u5468\u671f\u72b6\u6001",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "buff",
+        "dict_name": "\u589e\u76ca\u6548\u679c",
+        "status": 0,
+        "sort_order": 5,
+        "remark": "\u6218\u6597\u589e\u76ca\u6548\u679c\u540d\u79f0\u6620\u5c04",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "dashboard_time_range",
+        "dict_name": "\u4eea\u8868\u76d8\u65f6\u95f4\u8303\u56f4",
+        "status": 0,
+        "sort_order": 6,
+        "remark": "\u6570\u636e\u770b\u677f\u65f6\u95f4\u7b5b\u9009\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "skill_state",
+        "dict_name": "\u6280\u80fd\u72b6\u6001",
+        "status": 0,
+        "sort_order": 7,
+        "remark": "\u6280\u80fd\u5faa\u73af\u65f6\u95f4\u8f74\u72b6\u6001\u6807\u7b7e",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "profession",
+        "dict_name": "\u804c\u4e1a",
+        "status": 0,
+        "sort_order": 8,
+        "remark": "GW2\u57fa\u7840\u804c\u4e1a\u5217\u8868",
         "is_system": 1,
     },
 ]
 
+# 字典数据种子：格式 (value, label, color, remark)
+# remark 字段存储扩展属性（如描述、分类标记等）
 _SYS_DICT_DATA_SEED = {
     "role": [
-        ("dps", "输出", "#FF6B35"),
-        ("support", "辅助", "#35B0FF"),
-        ("tank", "承伤", "#9D4EDD"),
-        ("condition", "症状", "#9A3412"),
-        ("healing", "治疗", "#166534"),
-        ("control", "控制", "#1f2937"),
-        ("utility", "功能", "#155e75"),
+        ("dps", "\u8f93\u51fa", "#FF6B35", "\u4ee5\u4f24\u5bb3\u8f93\u51fa\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("support", "\u8f85\u52a9", "#35B0FF", "\u4ee5\u6cbb\u7597\u548c\u589e\u76ca\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("tank", "\u627f\u4f24", "#9D4EDD", "\u4ee5\u5438\u6536\u4f24\u5bb3\u548c\u63a7\u5236\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("condition", "\u75c7\u72b6", "#9A3412", "\u4ee5\u75c7\u72b6\u4f24\u5bb3\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("healing", "\u6cbb\u7597", "#166534", "\u4ee5\u7eaf\u6cbb\u7597\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("control", "\u63a7\u5236", "#1f2937", "\u4ee5\u63a7\u573a\u6253\u65ad\u4e3a\u4e3b\u8981\u804c\u8d23"),
+        ("utility", "\u529f\u80fd", "#155e75", "\u4ee5\u529f\u80fd\u8f85\u52a9\u4e3a\u4e3b\u8981\u804c\u8d23"),
     ],
     "scoring_dimension": [
-        ("damage", "伤害", "#ff4500"),
-        ("power_damage", "直伤", "#32cd32"),
-        ("condition_damage", "症状伤害", "#9400d3"),
-        ("healing", "治疗", "#00ced1"),
-        ("boons", "增益", "#ffd700"),
-        ("alacrity", "敏捷", "#87ceeb"),
-        ("quickness", "急速", "#da70d6"),
-        ("survival", "生存", "#4169e1"),
-        ("strips", "破法", "#ff1745"),
-        ("cleanses", "清症", "#1aff1a"),
-        ("kills", "击杀", "#00bfff"),
-        ("breakbar", "蔑视", "#b0c4de"),
+        ("damage", "\u4f24\u5bb3", "#ff4500", "\u603b\u4f24\u5bb3"),
+        ("power_damage", "\u76f4\u4f24", "#32cd32", "\u76f4\u4f24"),
+        ("condition_damage", "\u75c7\u72b6\u4f24\u5bb3", "#9400d3", "\u75c7\u72b6\u4f24\u5bb3"),
+        ("healing", "\u6cbb\u7597", "#00ced1", "\u6cbb\u7597\u91cf"),
+        ("boons", "\u589e\u76ca", "#ffd700", "\u589e\u76ca\u8986\u76d6"),
+        ("alacrity", "\u654f\u6377", "#87ceeb", "\u654f\u6377\u8986\u76d6"),
+        ("quickness", "\u6025\u901f", "#da70d6", "\u6025\u901f\u8986\u76d6"),
+        ("survival", "\u751f\u5b58", "#4169e1", "\u751f\u5b58\u80fd\u529b"),
+        ("strips", "\u7834\u6cd5", "#ff1745", "\u7834\u6cd5"),
+        ("cleanses", "\u6e05\u75c7", "#1aff1a", "\u6e05\u75c7"),
+        ("kills", "\u51fb\u6740", "#00bfff", "\u51fb\u6740"),
+        ("breakbar", "\u9119\u89c6", "#b0c4de", "\u9119\u89c6"),
     ],
     "game_mode": [
-        ("wvw", "世界之战", "#6b21a8"),
-        ("pve", "玩家对战环境", "#166534"),
-        ("pvp", "玩家对战玩家", "#991b1b"),
-        ("strikes", "碎层", "#3730a3"),
-        ("raids", "团队副本", "#1f2937"),
+        ("wvw", "\u4e16\u754c\u4e4b\u6218", "#6b21a8", ""),
+        ("pve", "\u73a9\u5bb6\u5bf9\u6218\u73af\u5883", "#166534", ""),
+        ("pvp", "\u73a9\u5bb6\u5bf9\u6218\u73a9\u5bb6", "#991b1b", ""),
+        ("strikes", "\u788e\u5c42", "#3730a3", ""),
+        ("raids", "\u56e2\u961f\u526f\u672c", "#1f2937", ""),
+    ],
+    "parse_status": [
+        ("pending", "\u5f85\u89e3\u6790", "#6b7280", ""),
+        ("parsing", "\u89e3\u6790\u4e2d", "#f59e0b", ""),
+        ("completed", "\u5df2\u5b8c\u6210", "#10b981", ""),
+        ("failed", "\u5931\u8d25", "#ef4444", ""),
+    ],
+    "buff": [
+        ("717", "Regeneration", "#4caf50", ""),
+        ("718", "Swiftness", "#2196f3", ""),
+        ("719", "Fury", "#ff9800", ""),
+        ("725", "Might", "#f44336", ""),
+        ("726", "Vigor", "#9c27b0", ""),
+        ("728", "Protection", "#00bcd4", ""),
+        ("740", "Aegis", "#ffeb3b", ""),
+        ("743", "Stability", "#795548", ""),
+        ("1122", "Quickness", "#e91e63", ""),
+        ("1187", "Resistance", "#607d8b", ""),
+        ("26980", "Alacrity", "#3f51b5", ""),
+        ("26981", "Resolution", "#009688", ""),
+        ("9283", "Empathy", "#8bc34a", ""),
+        ("110942", "Stone", "#795548", ""),
+        ("13797", "Geomancy", "#ff5722", ""),
+    ],
+    "dashboard_time_range": [
+        ("7d", "\u6700\u8fd17\u5929", "#3b82f6", ""),
+        ("30d", "\u6700\u8fd130\u5929", "#3b82f6", ""),
+        ("90d", "\u6700\u8fd190\u5929", "#3b82f6", ""),
+        ("all", "\u5168\u90e8", "#6b7280", ""),
+    ],
+    "skill_state": [
+        ("cast", "\u65bd\u6cd5", "#3b82f6", ""),
+        ("channel", "\u5f15\u5bfc", "#8b5cf6", ""),
+        ("instant", "\u77ac\u53d1", "#10b981", ""),
+        ("auto", "\u81ea\u52a8\u653b\u51fb", "#6b7280", ""),
+        ("flip", "\u7ffb\u8f6c", "#f59e0b", ""),
+    ],
+    "profession": [
+        ("Guardian", "\u5b88\u62a4\u8005", "#ffc107", ""),
+        ("Warrior", "\u6218\u58eb", "#ff5722", ""),
+        ("Engineer", "\u5de5\u7a0b\u5e08", "#795548", ""),
+        ("Ranger", "\u6e38\u4fa0", "#4caf50", ""),
+        ("Thief", "\u6f5c\u884c\u8005", "#607d8b", ""),
+        ("Elementalist", "\u5143\u7d20\u4f7f", "#e91e63", ""),
+        ("Mesmer", "\u5e7b\u672f\u5e08", "#9c27b0", ""),
+        ("Necromancer", "\u5524\u7075\u5e08", "#00bcd4", ""),
+        ("Revenant", "\u9b42\u6b66\u8005", "#3f51b5", ""),
     ],
 }
 
-
-# =============================================================================
 # 角色定位种子数据
 # =============================================================================
 _ROLE_TYPE_SEED = [
@@ -1032,10 +1121,17 @@ def _init_sys_dict_type(db: Session) -> int:
 
 
 def _init_sys_dict_data(db: Session) -> int:
-    """初始化字典数据（role / scoring_dimension / game_mode）"""
+    """初始化字典数据（所有在 _SYS_DICT_DATA_SEED 中声明的类型）"""
     created = 0
     for dict_type, items in _SYS_DICT_DATA_SEED.items():
-        for idx, (value, label, color) in enumerate(items):
+        for idx, item in enumerate(items):
+            # 支持3元组 (value, label, color) 或4元组 (value, label, color, remark)
+            if len(item) == 3:
+                value, label, color = item
+                remark = f"{label}{'角色' if dict_type == 'role' else '维度' if dict_type == 'scoring_dimension' else '模式'}"
+            else:
+                value, label, color, remark = item
+
             existing = (
                 db.query(SysDictData)
                 .filter(
@@ -1053,7 +1149,7 @@ def _init_sys_dict_data(db: Session) -> int:
                         css_class=color,
                         status=0,
                         dict_sort=idx,
-                        remark=f"{label}{'角色' if dict_type == 'role' else '维度' if dict_type == 'scoring_dimension' else '模式'}",
+                        remark=remark,
                     )
                 )
                 created += 1

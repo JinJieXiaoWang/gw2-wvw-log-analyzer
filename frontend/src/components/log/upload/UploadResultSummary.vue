@@ -14,14 +14,14 @@
     <div class="text-sm text-neutral-text-secondary space-y-1">
       <p>成功: <span class="text-status-success font-medium">{{ successCount }}</span> 个</p>
       <p v-if="failedCount > 0">
-        ʧ败: <span class="text-status-error font-medium">{{ failedCount }}</span> 个
+        失败: <span class="text-status-error font-medium">{{ failedCount }}</span> 个
       </p>
       <div
         v-if="failedItems.length > 0"
         class="mt-2"
       >
         <p class="text-xs text-status-error">
-          ʧ败文件:
+          失败文件:
         </p>
         <ul class="text-xs text-status-error mt-1 space-y-0.5 max-h-24 overflow-y-auto">
           <li
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps<{
   complete: boolean
@@ -48,8 +48,8 @@ const props = defineProps<{
 }>()
 
 const resultTitle = computed(() => {
-  if (props.failedCount === 0) return 'ȫ部上传成功'
-  if (props.successCount === 0) return 'ȫ部上传失败'
+  if (props.failedCount === 0) return '全部上传成功'
+  if (props.successCount === 0) return '全部上传失败'
   return '部分上传成功'
 })
 

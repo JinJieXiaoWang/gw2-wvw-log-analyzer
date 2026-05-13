@@ -6,21 +6,21 @@
  * 更新：2026-05-07 - 集成权限控制系统（Token监控、智能跳转）
  */
 
-import { createApp } from 'vue'
 import PrimeVue from 'primevue/config'
-import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
+import ToastService from 'primevue/toastservice'
 import Tooltip from 'primevue/tooltip'
+import { createApp } from 'vue'
 
 import App from './App.vue'
-import router from './router'
-import pinia from './store'
-import { permissionDirective } from './directive/permission'
-import { ThemeService } from './services/system/themeService'
-import { GameThemePreset } from './config/themePreset'
 import { authStore } from './composables/system/usePermission'
-import { startTokenMonitor, clearToken } from './utils/auth/tokenManager'
+import { GameThemePreset } from './config/themePreset'
+import { permissionDirective } from './directive/permission'
+import router from './router'
+import { ThemeService } from './services/system/themeService'
+import pinia from './store'
 import './styles/index.css'
+import { clearToken, startTokenMonitor } from './utils/auth/tokenManager'
 
 // 在创建应用前初始化主题系统
 ThemeService.initialize()

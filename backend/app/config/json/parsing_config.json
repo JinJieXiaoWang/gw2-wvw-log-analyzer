@@ -1,0 +1,25 @@
+{
+  "description": "解析策略配置 — 控制 dps.report API 与本地解析器的行为",
+  "parsing_strategy": "api",
+  "local_parser": {
+    "enabled": false,
+    "experimental": true,
+    "warning": "本地解析器尚未在生产环境验证，启用可能导致解析失败或数据不一致"
+  },
+  "cache": {
+    "ei_json_cache_ttl_hours": 720,
+    "max_cache_size_mb": 500,
+    "compress_algorithm": "gzip"
+  },
+  "dps_report": {
+    "upload_timeout_seconds": 300,
+    "json_fetch_timeout_seconds": 60,
+    "retry_max_attempts": 3,
+    "retry_backoff_seconds": 5
+  },
+  "validation": {
+    "verify_permalink_on_insert": true,
+    "verify_permalink_schedule_cron": "0 3 * * *",
+    "verify_permalink_sample_rate": 0.1
+  }
+}

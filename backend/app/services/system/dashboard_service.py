@@ -13,12 +13,11 @@ from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 
 from app.models.auth.account_character import AccountCharacter
+from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.models.log.log import Log
-from app.models.auth.member import Member
 from app.utils.logger import logger
-
 
 # =====================================================================
 # 辅助函数
@@ -61,10 +60,10 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     participation_query = _apply_time_filter(participation_query, start_date, end_date)
     total_participations = participation_query.count()
 
-    # 总击杀 / 总击倒
+    # 总击杀 / 总击倒（统一从 fight_stats 表统计，确保统计口径一致）
     kills_downs = (
         db.query(
-            func.sum(Fight.kill_count).label("total_kills"),
+            func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.downed).label("total_downs"),
         )
         .select_from(Fight)
@@ -111,7 +110,7 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     prev_fights = _apply_time_filter(db.query(Fight), prev_start, prev_end).count()
     prev_kills_downs = (
         db.query(
-            func.sum(Fight.kill_count).label("total_kills"),
+            func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.downed).label("total_downs"),
         )
         .select_from(Fight)
@@ -369,6 +368,7 @@ def get_top_players(
             func.avg(FightStats.dps).label("avg_dps"),
             func.sum(FightStats.healing).label("total_healing"),
             func.sum(FightStats.killed).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.sum(FightStats.dead_count).label("total_deaths"),
             func.avg(FightStats.ai_score).label("avg_ai_score"),
             func.sum(FightStats.damage_taken).label("total_damage_taken"),
@@ -401,6 +401,7 @@ def get_top_players(
     for r in query.all():
         kills = int(r.total_kills or 0)
         deaths = int(r.total_deaths or 0)
+        downed = int(r.total_downed or 0)
         items.append({
             "account": r.account,
             "fight_count": int(r.fight_count or 0),
@@ -408,6 +409,7 @@ def get_top_players(
             "avg_dps": round(float(r.avg_dps or 0)),
             "total_healing": int(r.total_healing or 0),
             "total_kills": kills,
+            "total_downed": downed,
             "total_deaths": deaths,
             "kd_ratio": round(kills / max(deaths, 1), 2),
             "avg_ai_score": round(float(r.avg_ai_score or 0), 2),
@@ -432,15 +434,26 @@ def get_top_players(
 
 def get_recent_fights(db: Session, limit: int = 10) -> List[Dict[str, Any]]:
     """获取最近战斗记录"""
+    # 子查询：每场战斗的总击倒数
+    downed_subq = (
+        db.query(
+            FightStats.fight_id,
+            func.sum(FightStats.downed).label("total_downed")
+        )
+        .group_by(FightStats.fight_id)
+        .subquery()
+    )
+
     fights = (
-        db.query(Fight)
+        db.query(Fight, downed_subq.c.total_downed)
+        .outerjoin(downed_subq, Fight.id == downed_subq.c.fight_id)
         .order_by(Fight.start_time.desc())
         .limit(limit)
         .all()
     )
 
     items = []
-    for f in fights:
+    for f, total_downed in fights:
         items.append({
             "fight_id": f.id,
             "log_id": f.log_id,
@@ -450,7 +463,7 @@ def get_recent_fights(db: Session, limit: int = 10) -> List[Dict[str, Any]]:
             "duration_sec": f.duration_sec or 0,
             "player_count": f.player_count or 0,
             "total_damage": int(f.total_damage or 0),
-            "total_healing": int(f.total_healing or 0),
+            "total_downed": int(total_downed or 0),
             "kill_count": f.kill_count or 0,
             "death_count": f.death_count or 0,
         })

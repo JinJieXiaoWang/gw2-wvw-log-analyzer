@@ -13,40 +13,21 @@ from app.utils.db.dict_utils import get_dict_options
 from app.utils.logger import logger
 from sqlalchemy.orm import Session
 
-# 默认评分规则配置文件路径
-_DEFAULT_RULES_PATH = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
-    "config", "default_scoring_rules.json"
-)
+from app.config.json_loader import load_json_config
+from app.utils.db.dict_utils import get_dict_label
 
 
 def _load_default_rules_from_file() -> Dict[str, List[Dict[str, Any]]]:
     """从 JSON 配置文件加载默认评分规则（非代码硬编码）"""
     try:
-        with open(_DEFAULT_RULES_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
+        data = load_json_config("scoring_rules")
+        if data and isinstance(data, dict):
+            return data
+        logger.warning("评分规则 JSON 配置为空或格式错误，返回空结构")
+        return {}
     except Exception as e:
         logger.error(f"加载默认评分规则文件失败: {e}")
         return {}
-
-
-DIMENSION_LABELS = {
-    "damage": "总伤害",
-    "power_damage": "直伤",
-    "condition_damage": "症状伤害",
-    "healing": "治疗量",
-    "boons": "增益覆盖",
-    "alacrity": "敏捷覆盖",
-    "quickness": "急速覆盖",
-    "survival": "生存能力",
-    "strips": "破法",
-    "cleanses": "净化",
-    "kills": "击杀",
-    "breakbar": "蔑视条",
-    "damage_taken": "承受伤害",
-    "blocked_count": "格挡",
-    "evaded_count": "闪避",
-}
 
 
 class ScoringRuleService:
@@ -282,8 +263,8 @@ class ScoringRuleService:
         return result
 
     def get_dimension_label(self, dimension: str) -> str:
-        """获取维度中文标签"""
-        return DIMENSION_LABELS.get(dimension, dimension)
+        """获取维度中文标签（从字典表读取）"""
+        return get_dict_label("scoring_dimension", dimension) or dimension
 
     def get_role_label(self, role_type: str) -> str:
         """获取角色类型中文标签（优先查字典表）"""
@@ -431,9 +412,9 @@ class ScoringRuleService:
             return {"initialized": False, "reason": f"数据库查询失败: {e}"}
 
     def get_role_types_data(self) -> List[Dict[str, Any]]:
-        """获取所有启用的角色类型配置（含描述、颜色等前端展示字段）"""
-        from app.constants.scoring import ROLE_DESCRIPTIONS
+        """获取所有启用的角色类型配置（含描述、颜色等前端展示字段，从字典表读取）"""
         from app.services.game.profession_service import ProfessionService
+        from app.utils.db.dict_utils import get_dict_item_by_value
 
         prof_service = ProfessionService(self.db)
         role_types = prof_service.get_all_role_types()
@@ -441,10 +422,11 @@ class ScoringRuleService:
         roles = []
         for rt in role_types:
             role_key = rt.get("role_key", "")
+            item = get_dict_item_by_value("role", role_key)
             roles.append({
                 "type": role_key,
                 "label": rt.get("role_name", role_key),
-                "description": ROLE_DESCRIPTIONS.get(role_key, ""),
+                "description": item.get("remark", "") if item else "",
                 "color": rt.get("color", "#6b7280"),
             })
         return roles

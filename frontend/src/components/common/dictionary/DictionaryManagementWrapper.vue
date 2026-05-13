@@ -1,25 +1,31 @@
 <template>
-  <div class="dictionary-wrapper">
-    <DictOverviewView
-      v-if="viewMode === 'overview'"
-      :dict-types="dictTypes"
-      :type-stats="typeStats"
-      :data-stats="dataStats"
-      :cache-status="cacheStatus"
-      @enter-management="viewMode = 'management'"
-      @quick-reload="handleQuickReload"
-    />
-    <template v-else>
-      <DictManagementHeader
-        :is-admin="isAdmin"
-        :is-collapsed="isCollapsed"
-        :refreshing="refreshing"
-        @back="viewMode = 'overview'"
-        @toggle-sidebar="toggleSidebar"
-        @reload-cache="handleReloadCache"
-        @init-data="showInitDialog = true"
+  <div class="dictionary-wrapper" :class="{ 'embedded': isEmbedded }">
+    <template v-if="!isEmbedded && viewMode === 'overview'">
+      <DictOverviewView
+        :dict-types="dictTypes"
+        :type-stats="typeStats"
+        :data-stats="dataStats"
+        :cache-status="cacheStatus"
+        @enter-management="viewMode = 'management'"
+        @quick-reload="handleQuickReload"
       />
-      <DictionaryManagementCore ref="dictManagementRef" />
+    </template>
+    <template v-else>
+      <template v-if="!isEmbedded">
+        <DictManagementHeader
+          :is-admin="isAdmin"
+          :is-collapsed="isCollapsed"
+          :refreshing="refreshing"
+          @back="viewMode = 'overview'"
+          @toggle-sidebar="toggleSidebar"
+          @reload-cache="handleReloadCache"
+          @init-data="showInitDialog = true"
+        />
+      </template>
+      <DictionaryManagementCore 
+        ref="dictManagementRef" 
+        :show-overview-cards="!isEmbedded"
+      />
     </template>
 
     <BaseDialog
@@ -42,12 +48,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import DictionaryManagementCore from './DictionaryManagement.vue'
-import DictOverviewView from './DictOverviewView.vue'
-import DictManagementHeader from './DictManagementHeader.vue'
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 import { useDictionaryWrapper } from '@/composables/common/useDictionaryWrapper'
+import { onMounted } from 'vue'
+import DictionaryManagementCore from './DictionaryManagement.vue'
+import DictManagementHeader from './DictManagementHeader.vue'
+import DictOverviewView from './DictOverviewView.vue'
+
+defineProps<{
+  isEmbedded?: boolean
+}>()
 
 const {
   viewMode, dictManagementRef, dictTypes, refreshing, initializing,

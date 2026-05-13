@@ -25,6 +25,10 @@ from app.services.system.dps_report_service import (
     DpsReportTimeoutError,
     upload_and_parse,
 )
+from app.services.zevtc.cache_service import (
+    get_ei_json_from_cache,
+    store_ei_json_cache,
+)
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.models.log.log import Log
@@ -132,27 +136,45 @@ class LogImportService:
         return 0
 
     def import_log(self, log_id: int, file_path: str) -> Dict[str, Any]:
-        """主入口：导入单个日志文件（完全依赖 dps.report API）。
+        """主入口：导入单个日志文件。
 
         流程：
-        1. 调用 dps.report API 获取 EI JSON
-        2. 数据验证
-        3. 字段映射
-        4. 数据库存储
+        1. 检查 EI JSON 缓存（SHA256 命中则跳过 API）
+        2. 调用 dps.report API 获取 EI JSON（缓存未命中时）
+        3. 数据验证
+        4. 字段映射
+        5. 数据库存储
+        6. 存储 EI JSON 缓存（API 调用后）
         """
         if not os.path.exists(file_path):
             return {"success": False, "error": f"文件不存在: {file_path}"}
 
+        data_source = "dps_report"
+        permalink = None
+
         try:
             # =============================================
-            # 步骤 1: 调用 dps.report API
+            # 步骤 1: 检查 EI JSON 缓存
             # =============================================
-            dps_result = upload_and_parse(file_path)
-            # 【内存优化】pop 出 ei_json，让 dps_result 提前释放引用
-            ei_json = dps_result.pop("ei_json", {})
-            permalink = dps_result.pop("permalink", None)
-            del dps_result
-            logger.info("[import] dps.report 解析成功")
+            cached_ei_json = get_ei_json_from_cache(self.db, log_id)
+            if cached_ei_json:
+                ei_json = cached_ei_json
+                data_source = "cache"
+                logger.info(f"[import] EI JSON 缓存命中: log_id={log_id}, 跳过 dps.report API")
+                # 尝试从 log 记录恢复 permalink
+                log_record = self.db.query(Log).filter(Log.id == log_id).first()
+                if log_record:
+                    permalink = log_record.dps_report_permalink
+            else:
+                # =============================================
+                # 步骤 1b: 调用 dps.report API
+                # =============================================
+                dps_result = upload_and_parse(file_path)
+                # 【内存优化】pop 出 ei_json，让 dps_result 提前释放引用
+                ei_json = dps_result.pop("ei_json", {})
+                permalink = dps_result.pop("permalink", None)
+                del dps_result
+                logger.info("[import] dps.report 解析成功")
 
             # =============================================
             # 步骤 2: 数据验证
@@ -169,6 +191,15 @@ class LogImportService:
                 logger.warning("[import] 没有通过验证的玩家数据，但将继续处理")
 
             logger.info(f"[import] 数据验证完成，有效玩家数: {len(valid_players)}")
+
+            # =============================================
+            # 步骤 2.4: 存储 EI JSON 缓存（在丢弃大字段之前，确保缓存完整）
+            # =============================================
+            if data_source == "dps_report" and ei_json:
+                try:
+                    store_ei_json_cache(self.db, log_id, ei_json)
+                except Exception as cache_e:
+                    logger.warning(f"[import] 存储 EI JSON 缓存失败（非致命）: {cache_e}")
 
             # =============================================
             # 步骤 2.5: 丢弃不需要的大字段，降低内存峰值
@@ -210,6 +241,7 @@ class LogImportService:
                 log.parsed_data = None
                 if permalink:
                     log.dps_report_permalink = permalink
+                    log.dps_report_permalink_valid = 1
                 self.db.flush()
 
             # =============================================
@@ -249,7 +281,7 @@ class LogImportService:
                 "players_count": players_count,
                 "map_name": fight.map_name,
                 "duration_sec": fight.duration_sec,
-                "data_source": "dps_report",
+                "data_source": data_source,
                 "validation_errors": errors,
                 "validation_warnings": warnings,
                 "integrity_issues": integrity_issues,

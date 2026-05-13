@@ -3,8 +3,8 @@
  * BaseInputNumber - 基础数字输入组件
  * 功能：对 PrimeVue InputNumber 的封装
  */
-import type { InputNumberProps } from 'primevue/inputnumber'
-import InputNumber from 'primevue/inputnumber'
+import type { InputNumberProps } from 'primevue/inputnumber';
+import InputNumber from 'primevue/inputnumber';
 
 interface Props extends /* @vue-ignore */ InputNumberProps {}
 

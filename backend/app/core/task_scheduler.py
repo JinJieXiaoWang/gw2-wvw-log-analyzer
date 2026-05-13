@@ -82,6 +82,69 @@ async def scheduled_cleanup():
         logger.error(f"定时清理失败: {e}", exc_info=True)
 
 
+async def scheduled_verify_permalinks():
+    """定时抽样验证 dps.report permalink 有效性（每天执行）"""
+    import random
+
+    logger.info("执行 dps.report permalink 有效性巡检...")
+    try:
+        db = SessionLocal()
+        try:
+            from app.models.log.log import Log
+
+            # 获取所有有 permalink 且标记为有效的记录
+            logs = (
+                db.query(Log)
+                .filter(
+                    Log.dps_report_permalink.isnot(None),
+                    Log.dps_report_permalink_valid == 1,
+                )
+                .all()
+            )
+
+            if not logs:
+                logger.info("没有需要验证的 permalink")
+                return
+
+            # 抽样验证（默认 10%）
+            sample_rate = 0.1
+            sample_size = max(1, int(len(logs) * sample_rate))
+            sampled = random.sample(logs, min(sample_size, len(logs)))
+
+            import requests
+
+            invalid_count = 0
+            for log in sampled:
+                try:
+                    resp = requests.head(
+                        log.dps_report_permalink,
+                        timeout=10,
+                        allow_redirects=True,
+                    )
+                    if resp.status_code != 200:
+                        log.dps_report_permalink_valid = 0
+                        invalid_count += 1
+                        logger.warning(
+                            f"[permalink] 失效: log_id={log.id}, "
+                            f"HTTP {resp.status_code}, {log.dps_report_permalink}"
+                        )
+                except Exception as e:
+                    # 网络异常不直接标记为失效，避免误判
+                    logger.warning(
+                        f"[permalink] 验证异常: log_id={log.id}, 错误: {e}"
+                    )
+
+            db.commit()
+            logger.info(
+                f"[permalink] 巡检完成: 总计 {len(logs)} 个, "
+                f"抽样 {len(sampled)} 个, 失效 {invalid_count} 个"
+            )
+        finally:
+            db.close()
+    except Exception as e:
+        logger.error(f"permalink 巡检失败: {e}", exc_info=True)
+
+
 async def scheduled_reset_stuck_parsing_logs():
     """定时扫描并重置卡住的解析中日志（每10分钟执行一次）"""
     logger.info("执行卡住解析日志扫描...")
@@ -178,6 +241,16 @@ def init_scheduler():
         replace_existing=True,
     )
     logger.info("已添加卡住解析日志扫描任务（每10分钟执行）")
+
+    # 添加 dps.report permalink 有效性巡检（每天凌晨 3:00）
+    scheduler.add_job(
+        scheduled_verify_permalinks,
+        trigger=CronTrigger(hour=3, minute=0),
+        id="verify_permalinks",
+        name="验证 dps.report permalink 有效性",
+        replace_existing=True,
+    )
+    logger.info("已添加 permalink 有效性巡检任务（每天凌晨 3:00）")
 
     return scheduler
 

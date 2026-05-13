@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { useDictMapping } from '@/composables/core/useDictMapping'
 
 export interface RotationEvent {
   castTime: number
@@ -44,8 +45,10 @@ export interface TimeTick {
   position: number
 }
 
-export const STATE_LABELS: Record<string, string> = {
-  full: '完整施放', interrupted: '被打断', instant: '瞬发', unknown: '未知'
+export function getStateLabel(state: string): string {
+  // 从字典表获取状态标签（若字典未加载则返回原始值）
+  const { getLabel } = useDictMapping('skill_state', false)
+  return getLabel(state) || state
 }
 
 function getEventState(evt: RotationEvent): FlatEvent['state'] {

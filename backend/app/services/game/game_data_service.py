@@ -347,6 +347,28 @@ class GameDataService:
         self._buff_name_to_id_cache: Dict[str, int] = {}
         self._profession_name_to_data_cache: Dict[str, Dict] = {}
 
+        # 尝试从字典表加载 buff 映射到全局 buff mapper
+        self._load_buff_mappings_from_dict()
+
+    def _load_buff_mappings_from_dict(self) -> None:
+        """从字典表加载 buff 名称映射到全局 BuffNameMapper"""
+        try:
+            from app.utils.db.dict_utils import get_dict_options
+            buff_options = get_dict_options("buff")
+            if buff_options:
+                mappings = {}
+                for opt in buff_options:
+                    try:
+                        buff_id = int(opt["value"])
+                        mappings[buff_id] = opt["label"]
+                    except (ValueError, TypeError):
+                        continue
+                if mappings:
+                    self._buff_mapper.update_mappings(mappings)
+                    logger.debug(f"从字典表加载了 {len(mappings)} 条 buff 映射")
+        except Exception as e:
+            logger.debug(f"从字典表加载 buff 映射失败: {e}")
+
     def _get_professions_data(self, force_reload: bool = False) -> Dict:
         # 功能：获取职业数据（内部方法，带缓存） - 从数据库读取
         # 性能优化：使用数据库索引查询，避免全表扫描
@@ -611,7 +633,13 @@ class GameDataService:
             return cached
 
         buff = self.get_buff(buff_id)
-        result = buff.get("name_cn", f"Buff:{buff_id}") if buff else f"Buff:{buff_id}"
+        if buff:
+            result = buff.get("name_cn", f"Buff:{buff_id}")
+        else:
+            # 回退到字典表查找
+            from app.utils.db.dict_utils import get_dict_label
+            dict_name = get_dict_label("buff", str(buff_id))
+            result = dict_name if dict_name and dict_name != str(buff_id) else f"Buff:{buff_id}"
         self._cache.set(cache_key, result)
         return result
 

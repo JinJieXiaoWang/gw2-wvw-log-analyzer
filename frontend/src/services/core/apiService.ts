@@ -8,6 +8,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 import type { ApiResponse, ApiError, PaginationParams, PaginatedResponse } from '@/types/api'
 import { getToken, clearToken } from '@/utils/auth/tokenManager'
+import { configManager } from '@/services/core/configManager'
 
 export type { ApiResponse, ApiError, PaginationParams, PaginatedResponse }
 
@@ -19,9 +20,10 @@ class ApiFactory {
   private client: AxiosInstance
 
   constructor() {
+    const apiConfig = configManager.get('api')
     this.client = axios.create({
-      baseURL: '',
-      timeout: 30000,
+      baseURL: apiConfig.baseUrl || 'http://localhost:8000/api/v1',
+      timeout: apiConfig.timeout || 30000,
       headers: {
         'Content-Type': 'application/json'
       }

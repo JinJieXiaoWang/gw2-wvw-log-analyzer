@@ -89,16 +89,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
-import PageHeader from '@/layout/components/PageHeader.vue'
-import TabMenu from 'primevue/tabmenu'
-import ProgressSpinner from 'primevue/progressspinner'
-import { usePermission } from '@/composables/system/usePermission'
-import ProfessionListPanel from '@/components/profession/ProfessionListPanel.vue'
 import EliteSpecListPanel from '@/components/profession/EliteSpecListPanel.vue'
-import RoleTypeListPanel from '@/components/profession/RoleTypeListPanel.vue'
 import ProfessionEditDialog from '@/components/profession/ProfessionEditDialog.vue'
+import ProfessionListPanel from '@/components/profession/ProfessionListPanel.vue'
+import RoleTypeListPanel from '@/components/profession/RoleTypeListPanel.vue'
+import { usePermission } from '@/composables/system/usePermission'
+import PageHeader from '@/layout/components/PageHeader.vue'
+import ProgressSpinner from 'primevue/progressspinner'
+import TabMenu from 'primevue/tabmenu'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
 
 const toast = useToast()
 const { can } = usePermission()

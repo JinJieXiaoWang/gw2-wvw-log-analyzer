@@ -9,7 +9,8 @@
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-from app.constants.scoring import DEFAULT_FALLBACK_RULES, RULE_CACHE_TTL_SECONDS
+from app.config.json_loader import load_json_config
+from app.constants.scoring import RULE_CACHE_TTL_SECONDS
 from app.models.log.fight_stats import FightStats
 from app.services.game.game_data_service import GameDataService
 from app.services.scoring.scoring_rule_service import ScoringRuleService
@@ -20,24 +21,23 @@ from sqlalchemy.orm import Session
 # 评分规则内存缓存: {(role_type, profession): (rules_dict, expire_time)}
 _rules_cache: Dict[Tuple[str, Optional[str]], Tuple[Dict[str, float], float]] = {}
 
-# 维度中文标签（向后兼容）
-DIMENSION_LABELS = {
-    "damage": "总伤害",
-    "power_damage": "直伤",
-    "condition_damage": "症状伤害",
-    "healing": "治疗量",
-    "boons": "增益覆盖",
-    "alacrity": "敏捷覆盖",
-    "quickness": "急速覆盖",
-    "survival": "生存能力",
-    "strips": "破法",
-    "cleanses": "净化",
-    "kills": "击杀",
-    "breakbar": "蔑视",
-    "damage_taken": "承受伤害",
-    "blocked_count": "格挡",
-    "evaded_count": "闪避",
-}
+from app.utils.db.dict_utils import get_dict_label
+
+
+def _get_default_fallback_rules() -> Dict[str, float]:
+    """从 JSON 配置加载兜底评分规则"""
+    data = load_json_config("scoring_rules")
+    if data and "group_roles" in data:
+        # 从 JSON 配置中提取通用权重
+        first_role = next(iter(data["group_roles"].values()), {})
+        rules = {}
+        for key, val in first_role.items():
+            if isinstance(val, (int, float)):
+                rules[key] = float(val)
+        rules.setdefault("min_score_threshold", 0.0)
+        rules.setdefault("max_score_cap", 100.0)
+        return rules
+    return {"min_score_threshold": 0.0, "max_score_cap": 100.0}
 
 
 def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) -> Dict[str, float]:
@@ -54,9 +54,9 @@ def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) ->
     service = ScoringRuleService(db)
     rules = service.get_rules_for_scoring(role_type, profession)
 
-    # 如果表为空，使用默认兜底规则
+    # 如果表为空，使用默认兜底规则（从 JSON 配置加载）
     if not rules or len(rules) <= 2:
-        rules = DEFAULT_FALLBACK_RULES.copy()
+        rules = _get_default_fallback_rules()
 
     _rules_cache[cache_key] = (rules, now + RULE_CACHE_TTL_SECONDS)
     return rules

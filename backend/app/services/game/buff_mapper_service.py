@@ -42,8 +42,8 @@ class BuffNameMapper:
         with self._lock:
             if buff_id in self._dynamic_mappings:
                 name = self._dynamic_mappings[buff_id]
-            elif buff_id in self.STATIC_BUFF_NAMES:
-                name = self.STATIC_BUFF_NAMES[buff_id]
+            elif buff_id in STATIC_BUFF_NAMES:
+                name = STATIC_BUFF_NAMES[buff_id]
             else:
                 name = f"Buff:{buff_id}"
 

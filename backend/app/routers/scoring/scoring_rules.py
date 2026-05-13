@@ -20,8 +20,8 @@ from app.schemas.scoring.scoring_rule import (
     ScoringRuleUpdate,
 )
 from app.services.auth.auth_service import get_current_admin, require_super_admin
-from app.constants.scoring import SCORING_DIMENSIONS
 from app.services.scoring.scoring_rule_service import ScoringRuleService
+from app.utils.db.dict_utils import get_dict_options
 from app.utils.error.exceptions import BadRequestException, NotFoundException
 from app.utils.logger import logger
 
@@ -189,9 +189,11 @@ async def reset_scoring_rules(
 async def get_scoring_dimensions(
     db: Session = Depends(get_db),
 ):
-    """获取所有支持的评分维度及其中文标签"""
-    service = ScoringRuleService(db)
-    dimensions = SCORING_DIMENSIONS
+    """获取所有支持的评分维度及其中文标签（从字典表读取）"""
+    options = get_dict_options("scoring_dimension")
+    dimensions = [
+        {"key": opt["value"], "label": opt["label"]} for opt in options
+    ]
     return ApiResponse.success_response(
         code=HTTP_200_OK, message="获取评分维度成功", data=dimensions
     )

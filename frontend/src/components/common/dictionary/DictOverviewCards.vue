@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps<{
   dictDataLength: number
@@ -38,25 +38,79 @@ const cards = computed(() => [
 </script>
 
 <style scoped>
-.overview-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.overview-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
 .overview-card {
-  background: var(--color-card); border: 1px solid var(--color-border); border-radius: 12px; padding: 16px;
-  display: flex; align-items: center; gap: 16px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
   transition: all 0.3s ease;
+  min-height: 80px;
 }
 .overview-card:hover {
   border-color: var(--color-primary);
-  box-shadow: var(--color-shadow);
+  box-shadow: var(--shadow-sm);
 }
 .card-icon {
-  width: 48px; height: 48px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
 }
-.card-icon.primary { background: var(--color-primary-alpha-10); color: var(--color-primary); }
-.card-icon.success { background: var(--color-success-alpha-10); color: var(--color-success); }
-.card-icon.warning { background: var(--color-warning-alpha-10); color: var(--color-warning); }
-.card-icon.info { background: var(--color-info-alpha-10); color: var(--color-info); }
-.card-content { display: flex; flex-direction: column; gap: 4px; }
-.card-value { font-size: 24px; font-weight: 700; color: var(--color-text); }
-.card-label { font-size: 12px; color: var(--color-text-secondary); }
+.card-icon.primary {
+  background: var(--color-primary-alpha-10);
+  color: var(--color-primary);
+}
+.card-icon.success {
+  background: var(--color-success-alpha-10);
+  color: var(--color-success);
+}
+.card-icon.warning {
+  background: var(--color-warning-alpha-10);
+  color: var(--color-warning);
+}
+.card-icon.info {
+  background: var(--color-info-alpha-10);
+  color: var(--color-info);
+}
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+.card-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1;
+}
+.card-label {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+
+@media (max-width: 1024px) {
+  .overview-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .overview-cards {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

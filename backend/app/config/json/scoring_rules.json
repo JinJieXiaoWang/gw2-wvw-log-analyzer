@@ -68,5 +68,13 @@
     {"dimension": "breakbar", "weight": 0.08, "description": "控制贡献权重", "sort_order": 6},
     {"dimension": "damage", "weight": 0.05, "description": "反击输出权重", "sort_order": 7},
     {"dimension": "kills", "weight": 0.04, "description": "击杀贡献权重", "sort_order": 8}
-  ]
+  ],
+  "default_abilities": {
+    "damage": 70,
+    "healing": 60,
+    "survival": 65,
+    "support": 55,
+    "utility": 60,
+    "mobility": 65
+  }
 }

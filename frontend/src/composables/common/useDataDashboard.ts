@@ -1,15 +1,24 @@
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { debounce } from '@/utils/core/helpers'
 import { dashboardService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { configManager } from '@/services/core/configManager'
+import { useDictMapping } from '@/composables/core/useDictMapping'
 
 export function useDataDashboard() {
   const toast = useToast()
   const timeRange = ref('30d')
-  const timeRangeOptions = [{ label: '最近7天', value: '7d' }, { label: '最近30天', value: '30d' }, { label: '最近90天', value: '90d' }, { label: '全部', value: 'all' }]
+  const { data: timeRangeDictData, loadDictData: loadTimeRangeDict } = useDictMapping('dashboard_time_range', false)
+  const timeRangeOptions = computed(() => timeRangeDictData.value.length > 0
+    ? timeRangeDictData.value.map((item: any) => ({ label: item.label, value: item.value }))
+    : [{ label: '最近7天', value: '7d' }, { label: '最近30天', value: '30d' }, { label: '最近90天', value: '90d' }, { label: '全部', value: 'all' }])
   const daysFromRange = (r: string) => ({ '7d': 7, '30d': 30, '90d': 90, 'all': 365 }[r] || 30)
+
+  // 启动时加载时间范围字典
+  onMounted(() => {
+    loadTimeRangeDict()
+  })
 
   const loadings = {
     overview: ref(false), trends: ref(false), professions: ref(false),

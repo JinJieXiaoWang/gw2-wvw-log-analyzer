@@ -5,7 +5,7 @@
 
 import type { RotationEvent, CycleEvent, HeatmapRow } from './rotationTypes'
 
-/** 状态标签常量 */
+/** 状态标签常量（UI 级别，非业务常量） */
 export const STATE_LABELS: Record<string, string> = {
   full: '完整施放',
   interrupted: '被打断',
@@ -14,14 +14,14 @@ export const STATE_LABELS: Record<string, string> = {
   trait: '特性触发',
 }
 
-/** 视图模式标签常量 */
+/** 视图模式标签常量（UI 级别，非业务常量） */
 export const VIEW_LABELS = {
   cycle: '循环视图',
   timeline: '时间轴',
   heatmap: '热力图',
 }
 
-/** 过滤选项标签常量 */
+/** 过滤选项标签常量（UI 级别，非业务常量） */
 export const FILTER_LABELS = {
   showAuto: '普攻',
   showInstant: '瞬发',

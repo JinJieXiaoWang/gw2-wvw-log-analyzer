@@ -32,6 +32,7 @@ export const API_ENDPOINTS = {
     DOWNLOAD: (id: string | number) => `${API_V1}/logs/${id}/download`,
     BATCH_DELETE: `${API_V1}/logs/batch-delete`,
     BATCH_PARSE: `${API_V1}/logs/batch-parse`,
+    CHECK_SHA256: `${API_V1}/logs/check-sha256`,
     FIGHT_INFO: (id: string | number) => `${API_V1}/logs/${id}/fight`,
     PLAYERS_STATS: (id: string | number) => `${API_V1}/logs/${id}/players`,
     PLAYER_STATS: (logId: string | number, accountName: string) => `${API_V1}/logs/${logId}/players/${accountName}/stats`,

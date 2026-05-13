@@ -113,6 +113,10 @@ export class LogsService {
     return apiFactory.post<any>(API_ENDPOINTS.LOGS.BATCH_PARSE, params)
   }
 
+  async checkSha256(sha256: string): Promise<ApiResponse<any>> {
+    return apiFactory.post<any>(`${API_ENDPOINTS.LOGS.CHECK_SHA256}?sha256=${sha256}`)
+  }
+
 }
 
 export const logsService = new LogsService()

@@ -63,6 +63,15 @@ class Log(Base):
     dps_report_permalink = Column(
         String(500), nullable=True, comment="dps.report 报告链接"
     )
+    dps_report_permalink_valid = Column(
+        Integer, nullable=False, default=1, comment="permalink是否有效: 1-有效, 0-失效"
+    )
+    ei_json_cache = Column(
+        Text, nullable=True, comment="gzip+base64压缩后的EI JSON缓存"
+    )
+    ei_json_cached_at = Column(
+        DateTime(timezone=True), nullable=True, comment="EI JSON缓存时间"
+    )
     parsed_at = Column(DateTime(timezone=True), comment="解析完成时间")
     parse_started_at = Column(
         DateTime(timezone=True), comment="解析开始时间（用于检测超时）"

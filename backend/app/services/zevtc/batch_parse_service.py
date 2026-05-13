@@ -43,6 +43,7 @@ POLL_INTERVAL_SECONDS = 2  # 轮询数据库间隔
 TASK_DELAY_SECONDS = 1.0  # 任务完成后延迟（增加 GC 时间）
 active_workers_lock = threading.Lock()
 active_workers: set = set()
+_task_available_event = threading.Event()
 
 # =====================================================================
 # 内存管理配置（针对 2G2核 低内存服务器优化）
@@ -194,6 +195,8 @@ class BatchParseService:
             )
         else:
             logger.info(f"创建批量解析任务成功，任务ID: {task.id}，包含 {len(valid_log_ids)} 个日志")
+        # 通知 worker 有新任务可用，减少轮询等待
+        _task_available_event.set()
         return task
 
     @staticmethod
@@ -626,12 +629,18 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
 
 
 def worker():
-    """工作线程：轮询数据库 → 内存检查 → 限流检查 → 执行任务 → 深度 GC"""
+    """工作线程：事件通知/轮询数据库 → 内存检查 → 限流检查 → 执行任务 → 深度 GC"""
+    idle_poll_interval = max(POLL_INTERVAL_SECONDS, 5)  # 空闲时延长轮询间隔
     while is_running:
         try:
+            # 等待任务通知或超时（减少空转轮询）
+            if not _task_available_event.is_set():
+                _task_available_event.wait(timeout=idle_poll_interval)
+            # 无论是否超时，都检查一次；处理完后清除事件标志
+            _task_available_event.clear()
+
             # 轮询前内存检查
             if not _check_memory_and_wait("poll"):
-                time.sleep(POLL_INTERVAL_SECONDS)
                 continue
 
             db = SessionLocal()
@@ -639,7 +648,6 @@ def worker():
                 item = _fetch_next_pending_item(db)
                 if not item:
                     db.close()
-                    time.sleep(POLL_INTERVAL_SECONDS)
                     continue
 
                 # 在 session 关闭前提取原始数据，避免 commit() 后对象 expired 导致 DetachedInstanceError

@@ -5,15 +5,15 @@
   >
     <div class="flex items-center justify-between mb-3 pb-2 border-b border-neutral-border">
       <span class="text-sm text-neutral-text font-medium">
-        已鼼夋嫨 {{ files.length }} 个文浠?        <span
+        已上传 {{ files.length }} 个文件        <span
           v-if="files.length > 50"
           class="text-status-warning text-xs ml-1"
-        >(批量上传建议不超杩?0涓?</span>
+        >(批量上传建议不超50个)</span>
       </span>
       <div class="flex items-center gap-2">
         <BaseButton
           v-if="!isUploading"
-          label="缁х画添加"
+          label="添加文件"
           icon="pi pi-plus"
           size="small"
           text
@@ -113,7 +113,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue';
 
 interface UploadItem {
   phase?: string

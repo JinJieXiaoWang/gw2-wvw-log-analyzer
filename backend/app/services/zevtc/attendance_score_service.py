@@ -8,7 +8,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
 
-from app.constants.scoring import DEFAULT_ABILITIES, MOBILE_PROFESSIONS
+from app.config.json_loader import load_json_config
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 
@@ -24,10 +24,8 @@ def get_account_score_breakdown(
     将该账号在统计周期内所有 fight_stats 中的 score_breakdown 按维度求平均值
     根据该账号最常用的职业确定角色类型和规则配置    """
     from app.services.game.game_data_service import GameDataService
-    from app.services.scoring.scoring_rule_service import (
-        DIMENSION_LABELS,
-        ScoringRuleService,
-    )
+    from app.services.scoring.scoring_rule_service import ScoringRuleService
+    from app.utils.db.dict_utils import get_dict_label
     from app.services.wvw.scoring_service import ScoringService
 
     # 查询该账号的所有FightStats（带日期筛选）
@@ -94,7 +92,7 @@ def get_account_score_breakdown(
         dimensions[dim] = {
             "score": avg_score,
             "weight": rule.weight,
-            "label": rule.description or DIMENSION_LABELS.get(dim, dim),
+            "label": rule.description or get_dict_label("scoring_dimension", dim) or dim,
             "weighted_score": round(avg_score * rule.weight, 2),
         }
     
@@ -106,7 +104,7 @@ def get_account_score_breakdown(
             dimensions[dim] = {
                 "score": avg_score,
                 "weight": weight,
-                "label": DIMENSION_LABELS.get(dim, dim),
+                "label": get_dict_label("scoring_dimension", dim) or dim,
                 "weighted_score": round(avg_score * weight, 2),
             }
 
@@ -126,8 +124,19 @@ def get_account_score_breakdown(
 
 
 def _get_default_abilities() -> Dict[str, float]:
-    """返回默认综合能力评分"""
-    return DEFAULT_ABILITIES.copy()
+    """返回默认综合能力评分（从 JSON 配置加载）"""
+    config = load_json_config("scoring_rules")
+    defaults = config.get("default_abilities", {}) if config else {}
+    if not defaults:
+        return {
+            "damage": 70,
+            "healing": 60,
+            "survival": 65,
+            "support": 55,
+            "utility": 60,
+            "mobility": 65,
+        }
+    return defaults.copy()
 
 
 def _get_profession_and_role_type(
@@ -218,8 +227,18 @@ def _calculate_mechanics_ability(total_avg_score: float) -> float:
 def _calculate_mobility_ability(
     most_used_profession: Optional[str], total_avg_score: float
 ) -> float:
-    """计算机动能力评分"""
-    is_mobile = most_used_profession in MOBILE_PROFESSIONS if most_used_profession else False
+    """计算机动能力评分（高机动性职业从字典表读取）"""
+    is_mobile = False
+    if most_used_profession:
+        from app.utils.db.dict_utils import get_dict_item_by_value
+        item = get_dict_item_by_value("profession", most_used_profession)
+        if item and item.get("remark"):
+            import json
+            try:
+                extra = json.loads(item["remark"])
+                is_mobile = extra.get("is_mobile", False)
+            except json.JSONDecodeError:
+                pass
     mobility_score = min(100, (total_avg_score * 0.7) + (30 if is_mobile else 15))
     return round(mobility_score, 1)
 

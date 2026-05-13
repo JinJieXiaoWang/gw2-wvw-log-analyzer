@@ -70,9 +70,7 @@ export class BuildsService {
   }
 
   async parseBuild(buildCode: string): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.BUILD.SAVE, null, {
-      params: { build_code: buildCode }
-    })
+    return apiFactory.post<any>(API_ENDPOINTS.BUILD.PARSE, { bd_code: buildCode })
   }
 
   async compareBuilds(buildId1: number, buildId2: number): Promise<ApiResponse<any>> {

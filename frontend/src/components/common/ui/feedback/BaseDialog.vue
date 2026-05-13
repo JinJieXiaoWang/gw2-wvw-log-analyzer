@@ -7,9 +7,9 @@
  *       取消按钮改用 severity + variant 标准 API；确认按钮 severity 类型对齐 PrimeVue v4
  */
 
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { DialogProps } from 'primevue/dialog'
 import Dialog from 'primevue/dialog'
-import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 interface Props extends /* @vue-ignore */ DialogProps {
   visible: boolean

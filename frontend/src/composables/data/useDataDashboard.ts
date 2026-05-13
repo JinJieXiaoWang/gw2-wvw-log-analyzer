@@ -8,6 +8,7 @@ import { configManager } from '@/services/core/configManager'
 export function useDataDashboard() {
   const toast = useToast()
   const timeRange = ref('30d')
+  // 时间范围选项（UI 级别仪表盘配置，如需动态配置可迁移至 dashboard_time_range 字典类型）
   const timeRangeOptions = [{ label: '最近7天', value: '7d' }, { label: '最近30天', value: '30d' }, { label: '最近90天', value: '90d' }, { label: '全部', value: 'all' }]
   const daysFromRange = (r: string) => ({ '7d': 7, '30d': 30, '90d': 90, 'all': 365 }[r] || 30)
 

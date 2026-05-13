@@ -1,0 +1,25 @@
+{
+  "description": "速率限制配置 — 控制 dps.report API 和内部服务请求频率",
+  "dps_report_api": {
+    "token_bucket": {
+      "max_requests_per_window": 25,
+      "window_seconds": 60,
+      "enabled": true
+    },
+    "request_queue": {
+      "max_concurrent_requests": 1,
+      "max_queue_size": 1000,
+      "enabled": true
+    }
+  },
+  "batch_parse": {
+    "max_concurrent_tasks": 1,
+    "poll_interval_seconds": 2,
+    "streaming_batch_size": 10,
+    "db_flush_interval_seconds": 5
+  },
+  "upload": {
+    "max_file_size_mb": 100,
+    "allowed_extensions": [".zevtc", ".evtc"]
+  }
+}

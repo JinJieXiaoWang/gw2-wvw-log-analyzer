@@ -90,12 +90,55 @@ const localStatus = computed({
 
 <style scoped>
 .toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  background: #2a2a2a; border-radius: 12px; padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.toolbar-left { display: flex; align-items: center; }
-.toolbar-title { font-size: 16px; font-weight: 600; color: #e5e5e5; margin: 0; }
-.type-code { font-size: 12px; color: #909399; margin-left: 8px; }
-.toolbar-right { display: flex; align-items: center; gap: 12px; }
-.status-select { width: 120px; }
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+}
+.type-code {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-left: 8px;
+  font-family: monospace;
+}
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.status-select {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar-left {
+    justify-content: center;
+  }
+  .toolbar-right {
+    justify-content: center;
+  }
+}
 </style>

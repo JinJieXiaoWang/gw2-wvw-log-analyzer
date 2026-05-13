@@ -759,8 +759,8 @@ def get_account_score_breakdown(
     严格依据 scoring_rule 表中当前启用的维度配置进行展示，
     将该账号在统计周期内所有 fight_stats 的 score_breakdown 按维度求平均值。
     """
-    from app.services.scoring.scoring_rule_service import DIMENSION_LABELS
     from app.services.wvw.scoring_service import ScoringService
+    from app.utils.db.dict_utils import get_dict_label
 
     # 查询该账号的所有 FightStats（带日期筛选）
     query = (
@@ -810,7 +810,7 @@ def get_account_score_breakdown(
         dimensions[dim] = {
             "score": avg_score,
             "weight": weight,
-            "label": DIMENSION_LABELS.get(dim, dim),
+            "label": get_dict_label("scoring_dimension", dim) or dim,
             "weighted_score": round(avg_score * weight, 2),
         }
 
