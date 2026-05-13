@@ -1,15 +1,10 @@
 <template>
   <div class="card relative overflow-hidden">
-    <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
-      style="background: radial-gradient(circle, var(--color-error-alpha-10) 0%, transparent 70%)"
-    />
+    <div class="deco-bg-error" />
 
     <div class="relative z-10">
       <div class="flex items-center gap-4 mb-8 pb-6 border-b border-neutral-border">
-        <div
-          class="w-12 h-12 rounded-xl bg-gradient-to-br from-error/20 to-primary/10 flex items-center justify-center border border-error/20"
-        >
+        <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-error/20 to-primary/10 flex items-center justify-center border border-error/20">
           <i class="pi pi-shield text-status-error text-xl" />
         </div>
         <div>
@@ -55,7 +50,10 @@
               icon="pi pi-shield"
               icon-color="error"
             >
-              <InputSwitch v-model="securitySettings.twoFactorAuth" />
+              <BaseToggleSwitch
+                :model-value="securitySettings.twoFactorAuth"
+                @update:model-value="updateTwoFactor"
+              />
             </SettingItem>
           </div>
         </div>
@@ -73,7 +71,7 @@
           <div class="space-y-3">
             <SettingItem
               title="当前会话"
-              :description="`上次登录: ${lastLoginTime}`"
+              :description="`上次登录: ${lastLoginTime || '未知'}`"
               icon="pi pi-clock"
               icon-color="info"
             >
@@ -123,20 +121,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useToast } from 'primevue/usetoast'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import InputSwitch from 'primevue/inputswitch'
+import BaseToggleSwitch from '@/components/common/ui/input/BaseToggleSwitch.vue'
+import { authStore } from '@/composables/system/usePermission'
+import { useToast } from 'primevue/usetoast'
+import { ref } from 'vue'
 import SettingItem from '../SettingItem.vue'
 import ChangePasswordDialog from './ChangePasswordDialog.vue'
-import { authStore } from '@/composables/system/usePermission'
 
-defineProps<{
+interface Props {
   securitySettings: {
     twoFactorAuth: boolean
   }
   lastLoginTime: string
-}>()
+}
+
+withDefaults(defineProps<Props>(), {
+  securitySettings: () => ({ twoFactorAuth: false }),
+  lastLoginTime: ''
+})
 
 const emit = defineEmits<{
   logout: []
@@ -144,6 +147,7 @@ const emit = defineEmits<{
 }>()
 
 const toast = useToast()
+// authStore 单例已从 usePermission 导入
 const isLoggingOut = ref(false)
 const showChangePasswordDialog = ref(false)
 
@@ -167,4 +171,15 @@ const onPasswordChanged = () => {
     })
   }, 1500)
 }
+
+const updateTwoFactor = (value: boolean) => {
+  emit('update:securitySettings', { twoFactorAuth: value })
+}
 </script>
+
+<style scoped>
+.deco-bg-error {
+  @apply absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30;
+  background: radial-gradient(circle, var(--color-error-alpha-10) 0%, transparent 70%);
+}
+</style>

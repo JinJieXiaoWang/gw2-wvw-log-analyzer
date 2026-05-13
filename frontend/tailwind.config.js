@@ -58,6 +58,7 @@ export default {
           'alpha-20': 'var(--color-ai-alpha-20)',
           'alpha-30': 'var(--color-ai-alpha-30)',
         },
+        
       },
       fontFamily: {
         sans: ['Inter', 'Noto Sans SC', 'system-ui', '-apple-system', 'sans-serif'],

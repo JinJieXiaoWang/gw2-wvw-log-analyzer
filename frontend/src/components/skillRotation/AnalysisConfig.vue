@@ -1,103 +1,51 @@
-<template>
-  <div
-    class="card animate-slide-in-up"
-    style="animation-delay: 0.1s"
-  >
-    <div class="flex items-center gap-3 mb-4">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center">
-        <i class="pi pi-cog text-primary" />
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold text-neutral-text">
-          分析配置
-        </h3>
-        <p class="text-xs text-neutral-text-secondary">
-          选择日志和玩家进行对比
-        </p>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      <div>
-        <label class="block text-sm text-neutral-text-secondary mb-2">选择日志</label>
-        <Dropdown
-          v-model="selectedLog"
-          :options="logOptions"
-          option-label="label"
-          option-value="value"
-          placeholder="选择日志"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label class="block text-sm text-neutral-text-secondary mb-2">选择玩家</label>
-        <Dropdown
-          v-model="selectedPlayer"
-          :options="playerOptions"
-          option-label="label"
-          option-value="value"
-          placeholder="选择玩家"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label class="block text-sm text-neutral-text-secondary mb-2">对比模式</label>
-        <Dropdown
-          v-model="compareMode"
-          :options="compareModeOptions"
-          option-label="label"
-          option-value="value"
-          class="w-full"
-        />
-      </div>
-      <div>
-        <label class="block text-sm text-neutral-text-secondary mb-2">时间范围</label>
-        <Dropdown
-          v-model="timeRange"
-          :options="timeRangeOptions"
-          option-label="label"
-          option-value="value"
-          class="w-full"
-        />
-      </div>
-    </div>
-  </div>
-</template>
-
 <script setup lang="ts">
-/**
- * 技能循环分析配置组件
- * 功能：提供分析配置选项
- * 作者：帅姐姐
- * 创建日期：2026-04-27
- */
+// 模块功能：技能循环分析配置组件
+// 作者：帅姐姐
+// 创建日期：2026-04-27
+// 更新日期：2026-05-14
 
-import { ref } from 'vue'
+import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
+import { computed, ref, watch } from 'vue'
 
-// Props
-const props = defineProps<{
-  logOptions: any[]
-  playerOptions: any[]
+interface Props {
+  modelValue?: any
+  selectedLogId?: string | null
+  selectedMemberId?: string | null
+  loading?: boolean
+  disabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  selectedLogId: null,
+  selectedMemberId: null,
+  loading: false,
+  disabled: false
+})
+
+const emit = defineEmits<{
+  'update:selectedLogId': [value: string | null]
+  'update:selectedMemberId': [value: string | null]
+  'analyze': []
 }>()
 
-// 确保props被使用
-console.log(props.logOptions, props.playerOptions)
-
-// Emits
-const emit = defineEmits([
-  'update:selected-log',
-  'update:selected-player',
-  'update:compare-mode',
-  'update:time-range'
-])
-
-// 状态
-const selectedLog = ref<string | null>(null)
-const selectedPlayer = ref<string | null>(null)
+const localLogId = ref(props.selectedLogId)
+const localMemberId = ref(props.selectedMemberId)
 const compareMode = ref('time')
 const timeRange = ref('full')
 
-// 选项数据
+const logOptions = computed(() => [
+  { label: '选择一个日志', value: null },
+  { label: '示例日志 1', value: '1' },
+  { label: '示例日志 2', value: '2' }
+])
+
+const playerOptions = computed(() => [
+  { label: '选择一个玩家', value: null },
+  { label: '玩家 A', value: '1' },
+  { label: '玩家 B', value: '2' }
+])
+
 const compareModeOptions = [
   { label: '时间对比', value: 'time' },
   { label: '伤害对比', value: 'damage' },
@@ -110,22 +58,112 @@ const timeRangeOptions = [
   { label: '后5分钟', value: 'last5' }
 ]
 
-// 监听状态变化
-import { watch } from 'vue'
+watch(
+  () => props.selectedLogId,
+  (newValue) => {
+    localLogId.value = newValue
+  }
+)
 
-watch(selectedLog, (newValue) => {
-  emit('update:selected-log', newValue)
+watch(
+  () => props.selectedMemberId,
+  (newValue) => {
+    localMemberId.value = newValue
+  }
+)
+
+watch(localLogId, (newValue) => {
+  emit('update:selectedLogId', newValue)
 })
 
-watch(selectedPlayer, (newValue) => {
-  emit('update:selected-player', newValue)
+watch(localMemberId, (newValue) => {
+  emit('update:selectedMemberId', newValue)
 })
 
-watch(compareMode, (newValue) => {
-  emit('update:compare-mode', newValue)
-})
-
-watch(timeRange, (newValue) => {
-  emit('update:time-range', newValue)
-})
+function handleAnalyze() {
+  emit('analyze')
+}
 </script>
+
+<template>
+  <div class="analysis-config bg-[#1a1a1e] border border-[#2a2a2e] rounded-lg p-4">
+    <div class="flex items-center gap-3 mb-4">
+      <div
+        class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#165DFF]/30 to-[#FF7D00]/30 flex items-center justify-center"
+      >
+        <i class="pi pi-cog text-[#165DFF]" />
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-white">
+          分析配置
+        </h3>
+        <p class="text-xs text-[#909399]">
+          选择日志和玩家进行技能循环分析
+        </p>
+      </div>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div>
+        <label class="block text-sm text-[#909399] mb-2">选择日志</label>
+        <Dropdown
+          v-model="localLogId"
+          :options="logOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="选择日志"
+          class="w-full"
+          :disabled="loading"
+        />
+      </div>
+      <div>
+        <label class="block text-sm text-[#909399] mb-2">选择玩家</label>
+        <Dropdown
+          v-model="localMemberId"
+          :options="playerOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="选择玩家"
+          class="w-full"
+          :disabled="loading"
+        />
+      </div>
+      <div>
+        <label class="block text-sm text-[#909399] mb-2">对比模式</label>
+        <Dropdown
+          v-model="compareMode"
+          :options="compareModeOptions"
+          option-label="label"
+          option-value="value"
+          class="w-full"
+          :disabled="loading"
+        />
+      </div>
+      <div>
+        <label class="block text-sm text-[#909399] mb-2">时间范围</label>
+        <Dropdown
+          v-model="timeRange"
+          :options="timeRangeOptions"
+          option-label="label"
+          option-value="value"
+          class="w-full"
+          :disabled="loading"
+        />
+      </div>
+      <div class="flex items-end">
+        <Button
+          label="分析"
+          icon="pi pi-refresh"
+          :loading="loading"
+          :disabled="disabled || loading"
+          class="w-full"
+          :pt="{
+            root: { class: 'bg-[#165DFF] hover:bg-[#0f4cd9] text-white' }
+          }"
+          @click="handleAnalyze"
+        />
+      </div>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="postcss"></style>

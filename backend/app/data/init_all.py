@@ -265,14 +265,6 @@ _SYS_DICT_TYPE_SEED = [
         "remark": "\u6280\u80fd\u5faa\u73af\u65f6\u95f4\u8f74\u72b6\u6001\u6807\u7b7e",
         "is_system": 1,
     },
-    {
-        "dict_type": "profession",
-        "dict_name": "\u804c\u4e1a",
-        "status": 0,
-        "sort_order": 8,
-        "remark": "GW2\u57fa\u7840\u804c\u4e1a\u5217\u8868",
-        "is_system": 1,
-    },
 ]
 
 # 字典数据种子：格式 (value, label, color, remark)
@@ -343,17 +335,6 @@ _SYS_DICT_DATA_SEED = {
         ("instant", "\u77ac\u53d1", "#10b981", ""),
         ("auto", "\u81ea\u52a8\u653b\u51fb", "#6b7280", ""),
         ("flip", "\u7ffb\u8f6c", "#f59e0b", ""),
-    ],
-    "profession": [
-        ("Guardian", "\u5b88\u62a4\u8005", "#ffc107", ""),
-        ("Warrior", "\u6218\u58eb", "#ff5722", ""),
-        ("Engineer", "\u5de5\u7a0b\u5e08", "#795548", ""),
-        ("Ranger", "\u6e38\u4fa0", "#4caf50", ""),
-        ("Thief", "\u6f5c\u884c\u8005", "#607d8b", ""),
-        ("Elementalist", "\u5143\u7d20\u4f7f", "#e91e63", ""),
-        ("Mesmer", "\u5e7b\u672f\u5e08", "#9c27b0", ""),
-        ("Necromancer", "\u5524\u7075\u5e08", "#00bcd4", ""),
-        ("Revenant", "\u9b42\u6b66\u8005", "#3f51b5", ""),
     ],
 }
 
@@ -1120,6 +1101,35 @@ def _init_sys_dict_type(db: Session) -> int:
     return created
 
 
+def _cleanup_profession_dict(db: Session) -> int:
+    """清理字典表中的 profession 类型数据
+    
+    说明：职业和精英特长数据由 gw_profession / gw_elite_specialization 表管理，
+    不再存储在字典表中。此函数确保存量 profession 字典数据被彻底清除。
+    """
+    deleted = 0
+    # 删除 profession 类型的字典数据
+    deleted_data = (
+        db.query(SysDictData)
+        .filter(SysDictData.dict_type == "profession")
+        .delete(synchronize_session=False)
+    )
+    deleted += deleted_data
+    
+    # 删除 profession 类型的字典类型
+    deleted_type = (
+        db.query(SysDictType)
+        .filter(SysDictType.dict_type == "profession")
+        .delete(synchronize_session=False)
+    )
+    deleted += deleted_type
+    
+    if deleted > 0:
+        db.commit()
+        logger.info(f"已清理字典表中 profession 类型数据（{deleted} 条记录）")
+    return deleted
+
+
 def _init_sys_dict_data(db: Session) -> int:
     """初始化字典数据（所有在 _SYS_DICT_DATA_SEED 中声明的类型）"""
     created = 0
@@ -1448,6 +1458,8 @@ def _init_builds(db: Session) -> Dict[str, Any]:
 
 def init_dictionary_data(db: Session) -> Dict[str, Any]:
     """初始化字典数据（role / scoring_dimension / game_mode）"""
+    # 先清理不应存在于字典表的数据
+    _cleanup_profession_dict(db)
     types_created = _init_sys_dict_type(db)
     data_created = _init_sys_dict_data(db)
     return {

@@ -1,7 +1,13 @@
 <template>
-  <form @submit.prevent="$emit('submit')" class="space-y-5">
+  <form
+    class="space-y-5"
+    @submit.prevent="$emit('submit')"
+  >
     <div>
-      <label for="username" class="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        for="username"
+        class="block text-sm font-medium text-gray-300 mb-2"
+      >
         用户名
       </label>
       <div class="relative">
@@ -18,15 +24,21 @@
           placeholder="请输入用户名"
           @blur="$emit('validate-username')"
           @input="$emit('clear-error', 'username')"
-        />
+        >
       </div>
-      <p v-if="errors.username" class="mt-2 text-sm text-red-400">
+      <p
+        v-if="errors.username"
+        class="mt-2 text-sm text-red-400"
+      >
         {{ errors.username }}
       </p>
     </div>
 
     <div>
-      <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+      <label
+        for="password"
+        class="block text-sm font-medium text-gray-300 mb-2"
+      >
         密码
       </label>
       <div class="relative">
@@ -43,7 +55,7 @@
           placeholder="请输入密码"
           @blur="$emit('validate-password')"
           @input="$emit('clear-error', 'password')"
-        />
+        >
         <button
           type="button"
           class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-white transition-colors"
@@ -52,7 +64,10 @@
           <i :class="showPassword ? 'pi pi-eye' : 'pi pi-eye-slash'" />
         </button>
       </div>
-      <p v-if="errors.password" class="mt-2 text-sm text-red-400">
+      <p
+        v-if="errors.password"
+        class="mt-2 text-sm text-red-400"
+      >
         {{ errors.password }}
       </p>
     </div>
@@ -78,11 +93,17 @@
       :disabled="loading || !isValid"
       class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
     >
-      <i v-if="loading" class="pi pi-spin pi-spinner" />
+      <i
+        v-if="loading"
+        class="pi pi-spin pi-spinner"
+      />
       <span>{{ loading ? '登录中...' : '登录' }}</span>
     </button>
 
-    <div v-if="remainingAttempts > 0" class="text-center text-sm text-gray-500">
+    <div
+      v-if="remainingAttempts > 0"
+      class="text-center text-sm text-gray-500"
+    >
       剩余登录尝试次数: {{ remainingAttempts }}
     </div>
   </form>

@@ -15,8 +15,8 @@
       />
     </a>
     <BaseButton
+      v-tooltip.top="isParsed ? '查看详情' : '日志未解析，请先解析后再查看详情'"
       :disabled="!isParsed"
-      :v-tooltip.top="isParsed ? '查看详情' : '日志未解析，请先解析后再查看详情'"
       icon="pi pi-eye"
       size="small"
       text
@@ -46,11 +46,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue';
+import { computed } from 'vue';
+
+// 定义日志数据的接口结构
+interface LogData {
+  id?: string | number;
+  status: 'pending' | 'failed' | 'success' | 'completed' | string;
+  dpsReportPermalink?: string;
+  [key: string]: any; // 如果还有其他动态字段，可保留索引签名，或尽量明确列出
+}
 
 const props = defineProps<{
-  data: any
+  data: LogData
   parsing: boolean
 }>()
 
@@ -59,8 +67,8 @@ const isParsed = computed(() => {
 })
 
 defineEmits<{
-  (e: 'view', data: any): void
-  (e: 'parse', data: any): void
-  (e: 'delete', data: any): void
+  (e: 'view', data: LogData): void
+  (e: 'parse', data: LogData): void
+  (e: 'delete', data: LogData): void
 }>()
 </script>

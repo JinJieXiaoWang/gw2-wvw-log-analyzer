@@ -183,21 +183,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
-import { useConfirm } from 'primevue/useconfirm'
-import PageHeader from '@/layout/components/PageHeader.vue'
-import BuildFilterSidebar from '@/components/build/library/BuildFilterSidebar.vue'
 import BuildCard from '@/components/build/library/BuildCard.vue'
 import BuildDetailDrawer from '@/components/build/library/BuildDetailDrawer.vue'
 import BuildEditDialog from '@/components/build/library/BuildEditDialog.vue'
-import Drawer from 'primevue/drawer'
-import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
+import BuildFilterSidebar from '@/components/build/library/BuildFilterSidebar.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseCheckbox from '@/components/common/ui/input/BaseCheckbox.vue'
+import PageHeader from '@/layout/components/PageHeader.vue'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import type { BuildEntry, SubRoleFilter } from '@/types/buildLibrary'
+import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
+import Drawer from 'primevue/drawer'
+import { useConfirm } from 'primevue/useconfirm'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, ref } from 'vue'
 
 const toast = useToast()
 const confirm = useConfirm()

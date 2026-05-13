@@ -10,6 +10,9 @@ import app.models  # 确保所有模型类注册到 Base.metadata
 from app.config.database import get_db_context, init_db
 from app.config.settings import settings
 from app.core.task_scheduler import start_scheduler, stop_scheduler
+
+# 注册增强版内存监控中间件（自动GC、内存超限告警、OOM预防）
+from app.middleware.enhanced_memory_monitor import EnhancedMemoryMonitorMiddleware
 from app.routers.ai import router as ai_router
 from app.routers.auth import router as auth_router
 from app.routers.auth.users import router as users_router
@@ -63,8 +66,10 @@ async def lifespan(app: FastAPI):
             # MySQL 使用 GET_LOCK 确保多 worker 并发安全
             lock_acquired = False
             try:
-                result = db.execute(text("SELECT GET_LOCK('gw2_init_lock', 30)")).scalar()
-                lock_acquired = (result == 1)
+                result = db.execute(
+                    text("SELECT GET_LOCK('gw2_init_lock', 30)")
+                ).scalar()
+                lock_acquired = result == 1
             except Exception as e:
                 # SQLite 会走到这里，直接放行
                 logger.info(f"跳过分布式锁（SQLite 模式或无锁支持）: {e}")
@@ -109,14 +114,11 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[*settings.BACKEND_CORS_ORIGINS, "http://localhost:3001"],
+    allow_origins=[*settings.BACKEND_CORS_ORIGINS],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["Authorization", "Content-Type", "X-Request-ID", "X-Silent-Request"],
 )
-
-# 注册增强版内存监控中间件（自动GC、内存超限告警、OOM预防）
-from app.middleware.enhanced_memory_monitor import EnhancedMemoryMonitorMiddleware
 
 app.add_middleware(EnhancedMemoryMonitorMiddleware)
 

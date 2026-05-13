@@ -30,10 +30,12 @@
         <div class="damage-item primary">
           <div class="damage-icon">
             <i class="pi pi-bolt" />
-          </div><div class="damage-content">
+          </div>
+          <div class="damage-content">
             <div class="damage-label">
               DPS
-            </div><div class="damage-value">
+            </div>
+            <div class="damage-value">
               {{ fmt(player.dps) }}
             </div>
           </div>
@@ -41,10 +43,12 @@
         <div class="damage-item power">
           <div class="damage-icon">
             <i class="pi pi-fire" />
-          </div><div class="damage-content">
+          </div>
+          <div class="damage-content">
             <div class="damage-label">
               直伤
-            </div><div class="damage-value">
+            </div>
+            <div class="damage-value">
               {{ fmt(getPowerDmg(player)) }}
             </div>
           </div>
@@ -52,10 +56,12 @@
         <div class="damage-item condi">
           <div class="damage-icon">
             <i class="pi pi-sparkles" />
-          </div><div class="damage-content">
+          </div>
+          <div class="damage-content">
             <div class="damage-label">
               症状
-            </div><div class="damage-value">
+            </div>
+            <div class="damage-value">
               {{ fmt(getCondiDmg(player)) }}
             </div>
           </div>
@@ -73,7 +79,8 @@
       </h4>
       <div class="survival-stats">
         <div class="survival-item">
-          <i class="pi pi-exclamation-triangle" /><span class="label">倒地</span><span class="value">{{ player.downs }}</span>
+          <i class="pi pi-exclamation-triangle" /><span class="label">倒地</span><span class="value">
+            {{ player.downs }}</span>
         </div>
         <div class="survival-item">
           <i class="pi pi-times" /><span class="label">死亡</span><span class="value">{{ player.deaths }}</span>
@@ -123,17 +130,10 @@
         <i class="pi pi-th-large" /> 主要增益覆盖
       </h4>
       <div class="boon-list">
-        <div
-          v-for="(value, id) in player.buffs"
-          :key="id"
-          class="boon-item"
-        >
+        <div v-for="(value, id) in player.buffs" :key="id" class="boon-item">
           <span class="boon-id">{{ id }}</span><span class="boon-value">{{ value.uptime_ms }}ms</span>
         </div>
-        <div
-          v-if="!player.buffs || Object.keys(player.buffs).length === 0"
-          class="empty-boons"
-        >
+        <div v-if="!player.buffs || Object.keys(player.buffs).length === 0" class="empty-boons">
           暂无增益数据
         </div>
       </div>
@@ -142,8 +142,8 @@
 </template>
 
 <script setup lang="ts">
-import type { Player } from '@/types/eliteInsights'
-import { getProfessionName } from '@/utils/profession/professionUtils'
+import type { Player } from '@/types/eliteInsights';
+import { getProfessionName } from '@/utils/profession/professionUtils';
 
 const { player } = defineProps<{ player: Player }>()
 
@@ -158,4 +158,232 @@ function fmt(num: number) {
 }
 </script>
 
-<style scoped>@import './PlayerDetailSidebar.css';</style>
+<style scoped lang="css">
+.player-detail-card {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background-color: var(--color-card-hover);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.player-info-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-avatar-lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+
+.player-main-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.player-name-lg {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.profession-tag {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: white;
+  width: fit-content;
+}
+
+.close-btn {
+  padding: 0.5rem;
+  border: none;
+  background: transparent;
+  border-radius: 0.25rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background-color: var(--color-border);
+}
+
+.card-content {
+  padding: 1.25rem;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-box {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background-color: var(--color-bg);
+  border-radius: 0.5rem;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+}
+
+.stat-box.damage .stat-icon {
+  background: linear-gradient(135deg, #ef4444, #f97316);
+}
+
+.stat-box.dps .stat-icon {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+}
+
+.stat-box.score .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #eab308);
+}
+
+.stat-box.cleanse .stat-icon {
+  background: linear-gradient(135deg, #22c55e, #10b981);
+}
+
+.stat-icon i {
+  font-size: 1.25rem;
+  color: white;
+}
+
+.stat-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.detail-section,
+.status-section,
+.weapons-section {
+  margin-bottom: 1.5rem;
+}
+
+.section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 0 0 0.75rem 0;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--color-bg);
+  border-radius: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+}
+
+.detail-value {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.status-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background-color: var(--color-bg);
+  border-radius: 0.5rem;
+}
+
+.status-item i {
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+}
+
+.status-item.danger i {
+  color: var(--color-error);
+}
+
+.status-data {
+  text-align: center;
+}
+
+.status-value {
+  display: block;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.status-item.danger .status-value {
+  color: var(--color-error);
+}
+
+.status-label {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--color-text-secondary);
+}
+
+.weapons-info {
+  padding: 0.75rem;
+  background-color: var(--color-bg);
+  border-radius: 0.5rem;
+}
+
+.weapons-text {
+  font-size: 0.875rem;
+  color: var(--color-text);
+}
+</style>

@@ -1,7 +1,7 @@
-import { computed } from 'vue'
-import type { ComputedRef, Ref } from 'vue'
 import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
+import type { ComputedRef, Ref } from 'vue'
+import { computed } from 'vue'
 
 export type StatCategory =
   | 'protection' | 'stability' | 'condition_cleanses' | 'boon_strips' | 'damage_taken' | 'hitRate'
@@ -41,7 +41,7 @@ export const CATEGORY_FIELDS: Record<StatCategory, { fields: string[]; labels: R
   },
   buff_coverage: {
     fields: ['might_uptime', 'fury_uptime', 'quickness_uptime', 'alacrity_uptime', 'protection_uptime', 'stability_uptime'],
-    labels: { might_uptime: '力量', fury_uptime: '狂怒', quickness_uptime: '急速', alacrity_uptime: '敏捷', protection_uptime: '保护', stability_uptime: '稳固' }
+    labels: { might_uptime: '威能', fury_uptime: '激怒', quickness_uptime: '急速', alacrity_uptime: '敏捷', protection_uptime: '保护', stability_uptime: '稳固' }
   },
   survival: {
     fields: ['damage_taken', 'blocked_count', 'evaded_count', 'dodge_count', 'down_count', 'dead_count', 'downed_damage_taken', 'interrupted_count'],

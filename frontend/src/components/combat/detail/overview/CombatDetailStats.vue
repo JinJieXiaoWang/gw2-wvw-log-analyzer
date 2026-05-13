@@ -230,15 +230,6 @@
           style="min-width: 70px"
         />
         <Column
-          field="downed_count"
-          header="击倒人数"
-          style="min-width: 80px"
-        >
-          <template #body="{ data }">
-            <span class="text-sm font-semibold text-warning">{{ data.downed_count || 0 }}</span>
-          </template>
-        </Column>
-        <Column
           field="downed"
           header="击倒"
           style="min-width: 70px"
@@ -262,11 +253,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import { fmtCompact, getProfessionName, getProfessionIconUrl } from '@/composables/combat/useCombatHelpers'
+import { fmtCompact, getProfessionIconUrl, getProfessionName } from '@/composables/combat/useCombatHelpers'
+import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import { ref } from 'vue'
 
 const { players, agg, powerPct, condiPct, breakbarPct } = defineProps<{
   players: any[]

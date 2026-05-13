@@ -67,20 +67,22 @@ export const API_ENDPOINTS = {
     COMPARE_PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/compare/${memberAccount}`,
     HISTORY: `${API_V1}/skill-rotation/history`,
     PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/player/${memberAccount}`,
-    ERRORS: `${API_V1}/skill-rotation/errors`
+    ERRORS: `${API_V1}/skill-rotation/errors`,
+    EXPORT_REPORT: `${API_V1}/skill-rotation/export-report`,
+    IDEAL_ROTATIONS: `${API_V1}/skill-rotation/ideal-rotations`
   },
 
   // Build解析（保留 /api/bdcode 特殊前缀）
   BUILD: {
     // bdcode 特殊前缀
-    BDCODE_BASE: '/api/bdcode',
-    PARSE: '/api/bdcode/parse',
-    PARSE_BY_URL: (code: string) => `/api/bdcode/parse/${code}`,
-    VALIDATE: '/api/bdcode/validate',
-    BATCH: '/api/bdcode/batch',
-    STATS: '/api/bdcode/stats',
-    HEALTH: '/api/bdcode/health',
-    // builds ǰ׺
+    BDCODE_BASE: `${API_V1}/bdcode`,
+    PARSE: `${API_V1}/bdcode/parse`,
+    PARSE_BY_URL: (code: string) => `${API_V1}/bdcode/parse/${code}`,
+    VALIDATE: `${API_V1}/bdcode/validate`,
+    BATCH: `${API_V1}/bdcode/batch`,
+    STATS: `${API_V1}/bdcode/stats`,
+    HEALTH: `${API_V1}/bdcode/health`,  
+    // builds 主接口
     BASE: `${API_V1}/builds`,
     LIST: `${API_V1}/builds`,
     SAVE: `${API_V1}/builds/save`,

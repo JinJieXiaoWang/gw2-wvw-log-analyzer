@@ -1,10 +1,7 @@
 <template>
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
-    <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
-      style="background: radial-gradient(circle, var(--color-ai-alpha-10) 0%, transparent 70%)"
-    />
+    <div class="deco-bg-ai" />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
@@ -36,19 +33,17 @@
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div
-              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2 transition-all duration-200 hover:-translate-y-0.5"
-              :class="themeSettings.mode === 'dark'
-                ? 'border-primary shadow-lg shadow-primary/10'
-                : 'border-transparent hover:border-neutral-border-light'"
+              class="theme-mode-card group"
+              :class="themeSettings.mode === 'dark' ? 'theme-mode-active' : 'theme-mode-inactive'"
               @click="themeSettings.mode = 'dark'"
             >
               <div
                 v-if="themeSettings.mode === 'dark'"
-                class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md"
+                class="theme-check-badge"
               >
                 <i class="pi pi-check text-white text-[10px]" />
               </div>
-              <div class="w-14 h-14 rounded-xl bg-neutral-card border border-neutral-border flex items-center justify-center mx-auto mb-3 shadow-inner transition-transform duration-200 group-hover:scale-105">
+              <div class="theme-icon-box">
                 <i class="pi pi-moon text-primary text-2xl" />
               </div>
               <p class="text-sm font-semibold text-neutral-text text-center">
@@ -59,19 +54,17 @@
               </p>
             </div>
             <div
-              class="group relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2 transition-all duration-200 hover:-translate-y-0.5"
-              :class="themeSettings.mode === 'light'
-                ? 'border-primary shadow-lg shadow-primary/10'
-                : 'border-transparent hover:border-neutral-border-light'"
+              class="theme-mode-card group"
+              :class="themeSettings.mode === 'light' ? 'theme-mode-active' : 'theme-mode-inactive'"
               @click="themeSettings.mode = 'light'"
             >
               <div
                 v-if="themeSettings.mode === 'light'"
-                class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md"
+                class="theme-check-badge"
               >
                 <i class="pi pi-check text-white text-[10px]" />
               </div>
-              <div class="w-14 h-14 rounded-xl bg-white border border-neutral-border flex items-center justify-center mx-auto mb-3 shadow-inner transition-transform duration-200 group-hover:scale-105">
+              <div class="theme-icon-box theme-icon-light">
                 <i class="pi pi-sun text-yellow-500 text-2xl" />
               </div>
               <p class="text-sm font-semibold text-neutral-text text-center">
@@ -99,14 +92,12 @@
             <div
               v-for="color in themeColors"
               :key="color.id"
-              class="group relative cursor-pointer transition-all duration-200"
+              class="theme-color-item group"
               @click="themeSettings.primaryColor = color.value"
             >
               <div
-                class="w-14 h-14 rounded-2xl transition-all duration-200 flex items-center justify-center"
-                :class="themeSettings.primaryColor === color.value
-                  ? 'scale-110 shadow-lg'
-                  : 'hover:scale-105'"
+                class="theme-color-circle"
+                :class="themeSettings.primaryColor === color.value ? 'theme-color-active' : 'theme-color-hover'"
                 :style="{
                   backgroundColor: color.value,
                   boxShadow: themeSettings.primaryColor === color.value ? `0 0 20px ${color.value}50` : 'none'
@@ -138,11 +129,12 @@
           <div class="bg-neutral-bg rounded-xl p-5 border border-neutral-border">
             <div class="flex items-center gap-4 mb-2">
               <span class="text-sm text-neutral-text-secondary w-10">80%</span>
-              <Slider
+              <BaseSlider
                 v-model="themeSettings.zoom"
                 :min="80"
                 :max="120"
                 class="flex-1"
+                @change="applyZoom"
               />
               <span class="text-sm text-neutral-text-secondary w-10 text-right">120%</span>
             </div>
@@ -170,13 +162,13 @@
 /**
  * 界面主题设置组件
  * 功能：显示和编辑界面主题设置
- * 更新日期：2026-05-04
  */
 
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import Slider from 'primevue/slider'
+import BaseSlider from '@/components/common/ui/input/BaseSlider.vue'
+import { ref } from 'vue'
 
-defineProps<{
+interface Props {
   themeSettings: {
     mode: string
     primaryColor: string
@@ -186,13 +178,81 @@ defineProps<{
     id: string
     value: string
   }>
-}>()
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  themeSettings: () => ({ mode: 'dark', primaryColor: '#165DFF', zoom: 100 }),
+  themeColors: () => []
+})
 
 const emit = defineEmits<{
   'apply-theme': []
 }>()
 
+const isApplyingZoom = ref(false)
+
+const applyZoom = () => {
+  // 防抖处理缩放变化
+  if (isApplyingZoom.value) return
+  isApplyingZoom.value = true
+  setTimeout(() => {
+    document.documentElement.style.setProperty('--app-zoom', `${props.themeSettings.zoom}%`)
+    isApplyingZoom.value = false
+  }, 100)
+}
+
 const applyTheme = () => {
   emit('apply-theme')
 }
 </script>
+
+<style scoped>
+.deco-bg-ai {
+  @apply absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30;
+  background: radial-gradient(circle, var(--color-ai-alpha-10) 0%, transparent 70%);
+}
+
+.theme-mode-card {
+  @apply relative p-5 bg-neutral-bg rounded-xl cursor-pointer border-2 transition-all duration-200;
+}
+
+.theme-mode-card:hover {
+  @apply -translate-y-0.5;
+}
+
+.theme-mode-active {
+  @apply border-primary shadow-lg shadow-primary/10;
+}
+
+.theme-mode-inactive {
+  @apply border-transparent hover:border-neutral-border-light;
+}
+
+.theme-check-badge {
+  @apply absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary flex items-center justify-center shadow-md;
+}
+
+.theme-icon-box {
+  @apply w-14 h-14 rounded-xl bg-neutral-card border border-neutral-border flex items-center justify-center mx-auto mb-3 shadow-inner transition-transform duration-200 group-hover:scale-105;
+}
+
+.theme-icon-light {
+  @apply bg-white;
+}
+
+.theme-color-item {
+  @apply relative cursor-pointer transition-all duration-200;
+}
+
+.theme-color-circle {
+  @apply w-14 h-14 rounded-2xl transition-all duration-200 flex items-center justify-center;
+}
+
+.theme-color-active {
+  @apply scale-110 shadow-lg;
+}
+
+.theme-color-hover {
+  @apply hover:scale-105;
+}
+</style>

@@ -1,5 +1,8 @@
 <template>
-  <div class="dictionary-wrapper" :class="{ 'embedded': isEmbedded }">
+  <div
+    class="dictionary-wrapper"
+    :class="{ 'embedded': isEmbedded }"
+  >
     <template v-if="!isEmbedded && viewMode === 'overview'">
       <DictOverviewView
         :dict-types="dictTypes"

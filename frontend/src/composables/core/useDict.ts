@@ -6,8 +6,8 @@
  * 创建日期：2026-05-07
  *
  * 使用示例：
- *   const { profession, role, dictLoading } = useDict('profession', 'role')
- *   const label = dictStore.getDictLabel('profession', 'Guardian') // -> '守护者'
+ *   const { role, gameMode, dictLoading } = useDict('role', 'game_mode')
+ *   const label = dictStore.getDictLabel('role', 'dps') // -> '输出'
  *   const color = dictStore.getDictColor('role', 'dps') // -> '#FF6B35'
  */
 
@@ -29,8 +29,8 @@ export type UseDictResult<T extends string = string> = ToRefs<Record<T, DictItem
  * @returns 响应式字典数据 + 加载状态
  *
  * 示例：
- *   const { profession, role, dictLoading } = useDict('profession', 'role')
- *   // profession.value -> [{label:'守护者', value:'Guardian', css_class:'#0078D4'}, ...]
+ *   const { role, scoringDimension, dictLoading } = useDict('role', 'scoring_dimension')
+ *   // role.value -> [{label:'输出', value:'dps', css_class:'#FF6B35'}, ...]
  *   // dictLoading.value -> true/false
  */
 export function useDict<T extends string>(...args: T[]): UseDictResult<T> {

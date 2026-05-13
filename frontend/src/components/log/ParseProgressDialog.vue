@@ -36,11 +36,11 @@
           <span
             v-else-if="item.status === 'failed'"
             class="text-status-error"
-          >ʧ败</span>
+          >失败</span>
           <span
             v-else-if="item.status === 'timeout'"
             class="text-status-error"
-          >超ʱ</span>
+          >超时</span>
           <span
             v-else
             class="text-primary"
@@ -52,8 +52,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
+import { computed } from 'vue'
 
 interface ParseProgressItem {
   logId: number

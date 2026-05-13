@@ -220,9 +220,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import type { Player } from '@/types/eliteInsights'
-import { getProfessionName, getProfessionColor, getProfessionIconUrl } from '@/utils/profession/professionUtils'
+import type { Player } from '@/types/eliteInsights';
+import { getProfessionColor, getProfessionIconUrl, getProfessionName } from '@/utils/profession/professionUtils';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
   players: Player[]
@@ -335,5 +335,365 @@ function formatLargeNumber(num: number): string {
 }
 </script>
 
-<style scoped>@import './HealingExtension.css';</style>
+<style scoped lang="css">
+.healing-extension {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.section-header {
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 0.25rem 0;
+}
+
+.section-title i {
+  color: var(--color-accent);
+}
+
+.section-subtitle {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+}
+
+.stat-icon {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.75rem;
+}
+
+.stat-card.healing .stat-icon {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+}
+
+.stat-card.barrier .stat-icon {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+}
+
+.stat-card.hps .stat-icon {
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+}
+
+.stat-card.overheal .stat-icon {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-icon i {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.chart-section {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.chart-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.chart-tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chart-tab {
+  padding: 0.5rem 0.75rem;
+  border: none;
+  background-color: var(--color-card-hover);
+  border-radius: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chart-tab:hover {
+  background-color: var(--color-border);
+}
+
+.chart-tab.active {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.bar-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.bar-rank {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-card-hover);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.bar-info {
+  width: 150px;
+  display: flex;
+  flex-direction: column;
+}
+
+.bar-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.bar-profession {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.bar-wrapper {
+  flex: 1;
+  height: 20px;
+  background-color: var(--color-card-hover);
+  border-radius: 0.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.healing-bar {
+  left: 0;
+  background: linear-gradient(90deg, #22c55e, #16a34a);
+  border-radius: 0.25rem 0 0 0.25rem;
+}
+
+.barrier-bar {
+  background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.bar-value {
+  width: 100px;
+  text-align: right;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.skill-section {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  padding: 1.25rem;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.skill-card {
+  background-color: var(--color-card-hover);
+  border-radius: 0.5rem;
+  padding: 1rem;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.skill-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.skill-count {
+  font-size: 0.75rem;
+  color: var(--color-status-success);
+  font-weight: 500;
+}
+
+.skill-stats {
+  display: flex;
+  gap: 1rem;
+}
+
+.skill-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.skill-stat .stat-label {
+  font-size: 0.7rem;
+  color: var(--color-text-tertiary);
+}
+
+.skill-stat .stat-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.table-section {
+  background-color: var(--color-card);
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.table-section .section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  background-color: var(--color-card-hover);
+  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 0;
+}
+
+.table-controls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.sort-dropdown {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background-color: var(--color-card-hover);
+  color: var(--color-text);
+  font-size: 0.875rem;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+.healing-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.healing-table th,
+.healing-table td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.healing-table th {
+  background-color: var(--color-card-hover);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.healing-table tbody tr:hover {
+  background-color: var(--color-card-hover);
+}
+
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+}
+
+.player-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.profession-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: white;
+}
 </style>

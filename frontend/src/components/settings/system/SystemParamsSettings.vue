@@ -15,15 +15,15 @@
         icon="pi pi-save"
         :loading="saving"
         :disabled="!hasChanges"
-        class="btn-game"
         @click="saveAllConfigs"
       />
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+      <!-- 核心功能卡片 -->
+      <div class="config-card">
+        <div class="card-header">
+          <div class="icon-box icon-primary">
             <i class="pi pi-cog text-white" />
           </div>
           <div>
@@ -34,10 +34,10 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded flex items-center justify-center bg-blue-100 dark:bg-blue-900/30">
-                <i class="pi pi-chart-line text-blue-600 dark:text-blue-400" />
+          <div class="config-row">
+            <div class="config-info">
+              <div class="icon-badge icon-blue">
+                <i class="pi pi-chart-line" />
               </div>
               <div>
                 <label class="text-sm font-medium text-color">评分模式</label>
@@ -55,10 +55,10 @@
               @change="markChanged('scoring_mode')"
             />
           </div>
-          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded flex items-center justify-center bg-green-100 dark:bg-green-900/30">
-                <i class="pi pi-server text-green-600 dark:text-green-400" />
+          <div class="config-row">
+            <div class="config-info">
+              <div class="icon-badge icon-green">
+                <i class="pi pi-server" />
               </div>
               <div>
                 <label class="text-sm font-medium text-color">默认服务器</label>
@@ -76,9 +76,10 @@
         </div>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+      <!-- 解析参数卡片 -->
+      <div class="config-card">
+        <div class="card-header">
+          <div class="icon-box icon-amber">
             <i class="pi pi-bolt text-white" />
           </div>
           <div>
@@ -89,10 +90,10 @@
           </div>
         </div>
         <div class="space-y-4">
-          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded flex items-center justify-center bg-purple-100 dark:bg-purple-900/30">
-                <i class="pi pi-spinner text-purple-600 dark:text-purple-400" />
+          <div class="config-row">
+            <div class="config-info">
+              <div class="icon-badge icon-purple">
+                <i class="pi pi-spinner" />
               </div>
               <div>
                 <label class="text-sm font-medium text-color">解析并行数</label>
@@ -109,10 +110,10 @@
               @blur="markChanged('parse_parallel')"
             />
           </div>
-          <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded flex items-center justify-center bg-teal-100 dark:bg-teal-900/30">
-                <i class="pi pi-calendar text-teal-600 dark:text-teal-400" />
+          <div class="config-row">
+            <div class="config-info">
+              <div class="icon-badge icon-teal">
+                <i class="pi pi-calendar" />
               </div>
               <div>
                 <label class="text-sm font-medium text-color">数据保留天数</label>
@@ -133,9 +134,10 @@
         </div>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+      <!-- 导出格式卡片 -->
+      <div class="config-card">
+        <div class="card-header">
+          <div class="icon-box icon-cyan">
             <i class="pi pi-file-export text-white" />
           </div>
           <div>
@@ -145,10 +147,10 @@
             <span class="text-xs text-color-secondary">数据导出的默认格式</span>
           </div>
         </div>
-        <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded flex items-center justify-center bg-cyan-100 dark:bg-cyan-900/30">
-              <i class="pi pi-file text-cyan-600 dark:text-cyan-400" />
+        <div class="config-row">
+          <div class="config-info">
+            <div class="icon-badge icon-cyan">
+              <i class="pi pi-file" />
             </div>
             <div>
               <label class="text-sm font-medium text-color">默认导出格式</label>
@@ -168,9 +170,10 @@
         </div>
       </div>
 
-      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-2xl p-5 shadow-sm">
-        <div class="flex items-center gap-3 mb-4">
-          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-pink-600 flex items-center justify-center">
+      <!-- 系统维护卡片 -->
+      <div class="config-card">
+        <div class="card-header">
+          <div class="icon-box icon-red">
             <i class="pi pi-database text-white" />
           </div>
           <div>
@@ -180,10 +183,10 @@
             <span class="text-xs text-color-secondary">数据备份与维护设置</span>
           </div>
         </div>
-        <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded flex items-center justify-center bg-red-100 dark:bg-red-900/30">
-              <i class="pi pi-history text-red-600 dark:text-red-400" />
+        <div class="config-row">
+          <div class="config-info">
+            <div class="icon-badge icon-red">
+              <i class="pi pi-history" />
             </div>
             <div>
               <label class="text-sm font-medium text-color">自动备份</label>
@@ -192,7 +195,7 @@
               </p>
             </div>
           </div>
-          <ToggleSwitch
+          <BaseToggleSwitch
             v-model="localConfigs.auto_backup"
             @change="markChanged('auto_backup')"
           />
@@ -221,18 +224,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
-import { useToast } from 'primevue/usetoast'
-import { usePermission } from '@/composables/system/usePermission'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseInput from '@/components/common/ui/input/BaseInput.vue'
 import BaseInputNumber from '@/components/common/ui/input/BaseInputNumber.vue'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
-import ToggleSwitch from 'primevue/toggleswitch'
-import SystemConfigTable from './SystemConfigTable.vue'
+import BaseToggleSwitch from '@/components/common/ui/input/BaseToggleSwitch.vue'
+import { usePermission } from '@/composables/system/usePermission'
+import {
+    BOOLEAN_CONFIG_KEYS,
+    EXPORT_FORMAT_SELECT_OPTIONS,
+    NUMERIC_CONFIG_KEYS,
+    SCORING_MODE_OPTIONS,
+    SYSTEM_CONFIG_DEFAULTS
+} from '@/constants/settings'
+import { settingsService } from '@/services'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, reactive, ref } from 'vue'
 import UploadParseParamsPanel from '../upload/UploadParseParamsPanel.vue'
 import CacheCleanupParamsPanel from './CacheCleanupParamsPanel.vue'
-import { settingsService } from '@/services'
+import SystemConfigTable from './SystemConfigTable.vue'
 
 const toast = useToast()
 const { can } = usePermission()
@@ -245,30 +255,10 @@ const originalConfigs = ref<Record<string, string>>({})
 const allConfigs = ref<any[]>([])
 const changedConfigs = ref<Set<string>>(new Set())
 
-const localConfigs = reactive({
-  scoring_mode: 'role_based',
-  default_server: 'Tarnished Coast',
-  parse_parallel: 1,
-  retention_days: 365,
-  export_format: 'json',
-  auto_backup: true,
-  upload_max_file_size: 50,
-  upload_allowed_extensions: '[".zevtc", ".evtc"]',
-  analysis_max_fight_duration: 3600,
-  cache_menu_ttl: 3600,
-  auto_cleanup_enabled: true,
-  auto_cleanup_retention_days: 30,
-})
+const localConfigs = reactive({ ...SYSTEM_CONFIG_DEFAULTS })
 
-const scoringModeOptions = [
-  { label: '角色定位评分', value: 'role_based' },
-  { label: '职业评分', value: 'profession_based' },
-]
-const exportFormatOptions = [
-  { label: 'JSON', value: 'json' },
-  { label: 'CSV', value: 'csv' },
-  { label: 'Excel', value: 'xlsx' },
-]
+const scoringModeOptions = SCORING_MODE_OPTIONS
+const exportFormatOptions = EXPORT_FORMAT_SELECT_OPTIONS
 
 const hasChanges = computed(() => changedConfigs.value.size > 0)
 
@@ -282,11 +272,9 @@ async function loadConfigs() {
     for (const config of configs) {
       originalConfigs.value[config.config_key] = config.config_value
       if (config.config_key in localConfigs) {
-        const numericKeys = ['parse_parallel', 'retention_days', 'upload_max_file_size', 'analysis_max_fight_duration', 'cache_menu_ttl', 'auto_cleanup_retention_days']
-        const booleanKeys = ['auto_backup', 'auto_cleanup_enabled']
-        if (numericKeys.includes(config.config_key)) {
+        if (NUMERIC_CONFIG_KEYS.includes(config.config_key)) {
           (localConfigs as any)[config.config_key] = parseInt(config.config_value) || 0
-        } else if (booleanKeys.includes(config.config_key)) {
+        } else if (BOOLEAN_CONFIG_KEYS.includes(config.config_key)) {
           (localConfigs as any)[config.config_key] = config.config_value === 'true'
         } else {
           (localConfigs as any)[config.config_key] = config.config_value
@@ -337,4 +325,73 @@ onMounted(() => loadConfigs())
 </script>
 
 <style scoped>
+.config-card {
+  @apply bg-neutral-card border border-neutral-border rounded-2xl p-5 shadow-sm;
+}
+
+.card-header {
+  @apply flex items-center gap-3 mb-4;
+}
+
+.config-row {
+  @apply flex items-center justify-between p-3 bg-neutral-bg-secondary rounded-lg;
+}
+
+.config-info {
+  @apply flex items-center gap-3;
+}
+
+.icon-box {
+  @apply w-10 h-10 rounded-lg flex items-center justify-center;
+}
+
+.icon-primary {
+  @apply bg-gradient-to-br from-primary to-secondary;
+}
+
+.icon-amber {
+  @apply bg-gradient-to-br from-amber-500 to-orange-600;
+}
+
+.icon-cyan {
+  @apply bg-gradient-to-br from-cyan-500 to-blue-600;
+}
+
+.icon-red {
+  @apply bg-gradient-to-br from-red-500 to-pink-600;
+}
+
+.icon-badge {
+  @apply w-8 h-8 rounded flex items-center justify-center;
+}
+
+.icon-blue {
+  background-color: var(--color-primary-alpha-10);
+  color: var(--color-primary);
+}
+
+.icon-green {
+  background-color: var(--color-success-alpha-10);
+  color: var(--color-success);
+}
+
+.icon-purple {
+  background-color: var(--color-secondary-alpha-10);
+  color: var(--color-secondary);
+}
+
+.icon-teal {
+  background-color: var(--color-ai-alpha-10);
+  color: var(--color-ai);
+}
+
+.icon-cyan {
+  background-color: var(--color-ai-alpha-10);
+  color: var(--color-ai);
+}
+
+.icon-red {
+  background-color: var(--color-error-alpha-10);
+  color: var(--color-error);
+}
 </style>

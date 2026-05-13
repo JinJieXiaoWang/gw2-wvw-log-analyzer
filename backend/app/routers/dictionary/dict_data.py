@@ -20,6 +20,7 @@ from app.schemas.game.dictionary import (
     DictDataUpdate,
 )
 from app.services.auth.auth_service import get_current_admin, require_super_admin
+from app.services.game.profession_service import ProfessionService
 from app.services.system.dictionary_service import DictionaryService
 from app.utils.error.exceptions import (
     BadRequestException,
@@ -203,11 +204,11 @@ async def delete_dict_data(
     "/cascade/profession-specs",
     response_model=ApiResponse,
     summary="获取职业-精英特长级联数据",
-    description="返回职业与精英特长的级联结构（从数据库读取）",
+    description="返回职业与精英特长的级联结构（从 profession 专用表读取，不从字典表获取）",
 )
 async def get_profession_specs_cascade(db: Session = Depends(get_db)):
-    service = DictionaryService(db)
-    result = service.get_profession_specs_cascade()
+    service = ProfessionService(db)
+    result = service.get_profession_spec_cascade()
     return ApiResponse.success_response(
         code=HTTP_200_OK,
         message="获取职业级联数据成功",

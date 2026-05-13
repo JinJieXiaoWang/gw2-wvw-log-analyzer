@@ -1,10 +1,7 @@
 <template>
   <div class="card relative overflow-hidden">
     <!-- 装饰性背景 -->
-    <div
-      class="absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30"
-      style="background: radial-gradient(circle, var(--color-primary-alpha-10) 0%, transparent 70%)"
-    />
+    <div class="deco-bg-primary" />
 
     <div class="relative z-10">
       <!-- 卡片头部 -->
@@ -25,10 +22,10 @@
       <!-- 头像区域 -->
       <div class="flex items-start gap-6 mb-8">
         <div class="relative group">
-          <div class="w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
-            <span class="text-white text-3xl font-bold">A</span>
+          <div class="avatar-gradient">
+            <span class="avatar-letter">{{ avatarLetter }}</span>
           </div>
-          <div class="absolute inset-0 rounded-2xl bg-neutral-card/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer backdrop-blur-sm">
+          <div class="avatar-overlay">
             <i class="pi pi-camera text-neutral-text text-xl" />
           </div>
         </div>
@@ -110,26 +107,54 @@
 /**
  * 账号设置组件
  * 功能：显示和编辑账号信息
- * 更新日期：2026-05-04
  */
 
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseInput from '@/components/common/ui/input/BaseInput.vue'
 import BaseTextarea from '@/components/common/ui/input/BaseTextarea.vue'
+import { computed } from 'vue'
 
-defineProps<{
+interface Props {
   accountSettings: {
     username: string
     email: string
     bio: string
   }
-}>()
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  accountSettings: () => ({ username: '', email: '', bio: '' })
+})
 
 const emit = defineEmits<{
   'save-account-settings': []
 }>()
 
+const avatarLetter = computed(() => {
+  const name = props.accountSettings.username || ''
+  return name.charAt(0).toUpperCase() || 'U'
+})
+
 const saveAccountSettings = () => {
   emit('save-account-settings')
 }
 </script>
+
+<style scoped>
+.deco-bg-primary {
+  @apply absolute top-0 right-0 w-64 h-64 rounded-full -translate-y-1/2 translate-x-1/4 pointer-events-none opacity-30;
+  background: radial-gradient(circle, var(--color-primary-alpha-10) 0%, transparent 70%);
+}
+
+.avatar-gradient {
+  @apply w-24 h-24 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0 shadow-lg shadow-primary/20 transition-transform duration-300 group-hover:scale-105;
+}
+
+.avatar-letter {
+  @apply text-white text-3xl font-bold;
+}
+
+.avatar-overlay {
+  @apply absolute inset-0 rounded-2xl bg-neutral-card/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center cursor-pointer backdrop-blur-sm;
+}
+</style>

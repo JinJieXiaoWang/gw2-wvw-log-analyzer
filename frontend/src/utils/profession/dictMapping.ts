@@ -1,17 +1,16 @@
 /**
- * 字典值映射工具模块
- * 功能：提供字典值到标签和颜色的映射功能，支持职业和精英特长两种字典类型
+ * 职业与精英特长映射工具模块
+ * 功能：提供职业和精英特长的值到标签和颜色的映射功能
  * 作者：帅姐姐
  * 创建日期：2026-05-01
  * 
- * 该模块实现了前端字典值映射功能：
- * 1. 优先从字典API获取数据
- * 2. 失败时使用本地硬编码数据作为回退
- * 3. 支持职业(profession)和精英特长(specialization)两种字典类型
- * 4. 提供缓存机制优化性能
+ * 说明：
+ * 1. 职业和精英特长数据由 professionService 管理，不从字典表获取
+ * 2. 本模块保留本地硬编码数据作为纯本地回退（当 API 不可用时）
+ * 3. 字典表（sys_dict）不再存储 profession/specialization 类型数据
  */
 
-import { dictionaryService, type DictOption } from '@/services/system/dictionaryService'
+import type { DictOption } from '@/services/system/dictionaryService'
 
 /**
  * 字典映射缓存结构
@@ -183,6 +182,9 @@ function isCacheValid(cache: DictMappingCache | undefined): boolean {
  * @param dictType 字典类型（支持 profession/occupation, specialization/elite_specialty）
  * @param useCache 是否使用缓存（默认true）
  * @returns Promise<DictMappingCache>
+ * 
+ * 注意：profession/specialization 数据由 professionService 管理，
+ * 本模块仅提供本地硬编码数据作为回退，不查询字典表
  */
 export async function loadDictMapping(
   dictType: string,
@@ -199,18 +201,9 @@ export async function loadDictMapping(
     }
   }
   
-  // 尝试从API获取数据
-  let options: DictOption[] = []
-  try {
-    options = await dictionaryService.getOptions(normalizedType)
-  } catch (error) {
-    console.warn(`[DictMapping] 从API获取字典数据失败，使用回退数据: ${normalizedType}`, error)
-  }
-  
-  // 如果API返回为空，使用硬编码数据
-  if (!options || options.length === 0) {
-    options = getHardcodedOptions(normalizedType)
-  }
+  // profession/specialization 数据由 professionService 管理，不从字典表查询
+  // 直接使用本地硬编码数据
+  const options = getHardcodedOptions(normalizedType)
   
   // 构建并缓存
   const cache = buildCache(options)

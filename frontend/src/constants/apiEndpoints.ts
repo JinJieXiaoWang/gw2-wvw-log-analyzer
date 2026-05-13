@@ -65,7 +65,9 @@ export const API_ENDPOINTS = {
     COMPARE_PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/compare/${memberAccount}`,
     HISTORY: `${API_V1}/skill-rotation/history`,
     PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/player/${memberAccount}`,
-    ERRORS: `${API_V1}/skill-rotation/errors`
+    ERRORS: `${API_V1}/skill-rotation/errors`,
+    EXPORT_REPORT: `${API_V1}/skill-rotation/export-report`,
+    IDEAL_ROTATIONS: `${API_V1}/skill-rotation/ideal-rotations`
   },
 
   // Build解析（保留 /api/bdcode 特殊前缀）

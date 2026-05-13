@@ -3,8 +3,20 @@ import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { settingsService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
-import { authStore } from '@/composables/system/usePermission'
 import { useSettingsStore } from '@/store/system/settings'
+import { authStore } from '@/composables/system/usePermission'
+import {
+  SETTING_SECTIONS,
+  EXPORT_FORMAT_OPTIONS,
+  THEME_COLOR_OPTIONS,
+  NUMBER_FORMAT_OPTIONS,
+  ACCOUNT_SETTINGS_DEFAULTS,
+  PARSING_SETTINGS_DEFAULTS,
+  EXPORT_SETTINGS_DEFAULTS,
+  THEME_SETTINGS_DEFAULTS,
+  NOTIFICATION_SETTINGS_DEFAULTS,
+  SECURITY_SETTINGS_DEFAULTS
+} from '@/constants/settings'
 
 export function useSystemSettings() {
   const toast = useToast()
@@ -17,55 +29,19 @@ export function useSystemSettings() {
 
   const activeSection = ref('account')
 
-  const settingSections = [
-    { id: 'account', label: '账号设置', icon: 'pi pi-user' },
-    { id: 'parsing', label: '解析参数', icon: 'pi pi-sliders-h' },
-    { id: 'export', label: '导出格式', icon: 'pi pi-file-export' },
-    { id: 'theme', label: '界面主题', icon: 'pi pi-palette' },
-    { id: 'notifications', label: '通知设置', icon: 'pi pi-bell' },
-    { id: 'scoring-rules', label: '评分规则', icon: 'pi pi-chart-line', isExternal: true, path: '/scoring-rules' },
-    { id: 'profession-mgmt', label: '职业管理', icon: 'pi pi-users', isExternal: true, path: '/professions' },
-    { id: 'system-params', label: '系统参数', icon: 'pi pi-database' },
-    { id: 'dictionary', label: '字典管理', icon: 'pi pi-book' },
-    { id: 'security', label: '安全设置', icon: 'pi pi-shield' },
-    { id: 'watermark', label: '水印设置', icon: 'pi pi-circle-on' }
-  ]
+  const settingSections = SETTING_SECTIONS
 
-  const accountSettings = reactive({
-    username: 'Admin',
-    email: 'admin@example.com',
-    bio: 'WVW战场数据分析师'
-  })
+  const accountSettings = reactive({ ...ACCOUNT_SETTINGS_DEFAULTS })
 
-  const parsingSettings = reactive({
-    includeOverkill: true,
-    ignoreSmallDamage: true,
-    preFightBuffer: 5,
-    autoCategorizeSkills: true
-  })
+  const parsingSettings = reactive({ ...PARSING_SETTINGS_DEFAULTS })
 
-  const exportSettings = reactive({
-    defaultFormat: 'csv',
-    includeHeader: true,
-    utf8Encoding: true,
-    numberFormat: 'auto'
-  })
+  const exportSettings = reactive({ ...EXPORT_SETTINGS_DEFAULTS })
 
-  const themeSettings = reactive({
-    mode: 'dark',
-    primaryColor: '#165DFF',
-    zoom: 100
-  })
+  const themeSettings = reactive({ ...THEME_SETTINGS_DEFAULTS })
 
-  const notificationSettings = reactive({
-    email: true,
-    push: false,
-    parseComplete: true
-  })
+  const notificationSettings = reactive({ ...NOTIFICATION_SETTINGS_DEFAULTS })
 
-  const securitySettings = reactive({
-    twoFactorAuth: false
-  })
+  const securitySettings = reactive({ ...SECURITY_SETTINGS_DEFAULTS })
 
   const watermarkSettings = reactive({
     watermarkEnabled: settingsStore.settings.watermarkEnabled,
@@ -73,28 +49,13 @@ export function useSystemSettings() {
     watermarkScreenshotEnabled: settingsStore.settings.watermarkScreenshotEnabled
   })
 
-  const lastLoginTime = ref('2024-01-15 14:30:00')
+  const lastLoginTime = ref('')
 
-  const exportFormats = [
-    { id: 'csv', label: 'CSV', icon: 'pi pi-file', color: '#00B42A' },
-    { id: 'excel', label: 'Excel', icon: 'pi pi-file-excel', color: '#00B42A' },
-    { id: 'json', label: 'JSON', icon: 'pi pi-code', color: '#165DFF' },
-    { id: 'pdf', label: 'PDF', icon: 'pi pi-file-pdf', color: '#F53F3F' }
-  ]
+  const exportFormats = EXPORT_FORMAT_OPTIONS
 
-  const themeColors = [
-    { id: 'blue', value: '#165DFF' },
-    { id: 'purple', value: '#722ED1' },
-    { id: 'green', value: '#00B42A' },
-    { id: 'orange', value: '#FF7D00' },
-    { id: 'red', value: '#F53F3F' }
-  ]
+  const themeColors = THEME_COLOR_OPTIONS
 
-  const numberFormatOptions = [
-    { label: '自动', value: 'auto' },
-    { label: '千位分隔符 (1,000)', value: 'comma' },
-    { label: '科学计数法 (1.0e6)', value: 'scientific' }
-  ]
+  const numberFormatOptions = NUMBER_FORMAT_OPTIONS
 
   const fetchSettings = async () => {
     isLoadingSettings.value = true
@@ -108,6 +69,15 @@ export function useSystemSettings() {
         themeSettings.mode = data.theme === 'light' ? 'light' : 'dark'
         exportSettings.defaultFormat = data.export_format || 'csv'
         parsingSettings.preFightBuffer = data.parse_parallel || 5
+        if (data.last_login_time) {
+          lastLoginTime.value = data.last_login_time
+        }
+        if (data.username) {
+          accountSettings.username = data.username
+        }
+        if (data.email) {
+          accountSettings.email = data.email
+        }
       }
     } finally {
       isLoadingSettings.value = false
@@ -131,26 +101,81 @@ export function useSystemSettings() {
     }
   }
 
-  const saveAccountSettings = () => {
-    toast.add({ severity: 'success', summary: '保存成功', detail: '账号设置已保存', life: 3000 })
+  const saveAccountSettings = async () => {
+    try {
+      await ApiResponseWrapper.wrap(
+        settingsService.updateSettings({
+          username: accountSettings.username,
+          email: accountSettings.email,
+          bio: accountSettings.bio
+        }),
+        { showSuccessMessage: true, successMessage: '账号设置已保存', showErrorMessage: true }
+      )
+    } catch {
+      // 错误已由 ApiResponseWrapper 处理
+    }
   }
 
-  const saveParsingSettings = () => {
-    toast.add({ severity: 'success', summary: '保存成功', detail: '解析参数已保存', life: 3000 })
+  const saveParsingSettings = async () => {
+    try {
+      await ApiResponseWrapper.wrap(
+        settingsService.updateSettings({
+          include_overkill: parsingSettings.includeOverkill,
+          ignore_small_damage: parsingSettings.ignoreSmallDamage,
+          pre_fight_buffer: parsingSettings.preFightBuffer,
+          auto_categorize_skills: parsingSettings.autoCategorizeSkills
+        }),
+        { showSuccessMessage: true, successMessage: '解析参数已保存', showErrorMessage: true }
+      )
+    } catch {
+      // 错误已由 ApiResponseWrapper 处理
+    }
   }
 
-  const saveExportSettings = () => {
-    toast.add({ severity: 'success', summary: '保存成功', detail: '导出格式已保存', life: 3000 })
-    saveSettings()
+  const saveExportSettings = async () => {
+    try {
+      await ApiResponseWrapper.wrap(
+        settingsService.updateSettings({
+          export_format: exportSettings.defaultFormat,
+          include_header: exportSettings.includeHeader,
+          utf8_encoding: exportSettings.utf8Encoding,
+          number_format: exportSettings.numberFormat
+        }),
+        { showSuccessMessage: true, successMessage: '导出格式已保存', showErrorMessage: true }
+      )
+    } catch {
+      // 错误已由 ApiResponseWrapper 处理
+    }
   }
 
-  const applyTheme = () => {
-    toast.add({ severity: 'success', summary: '应用成功', detail: '主题已应用', life: 3000 })
-    saveSettings()
+  const applyTheme = async () => {
+    try {
+      await ApiResponseWrapper.wrap(
+        settingsService.updateSettings({
+          theme: themeSettings.mode,
+          primary_color: themeSettings.primaryColor,
+          zoom: themeSettings.zoom
+        }),
+        { showSuccessMessage: true, successMessage: '主题已应用', showErrorMessage: true }
+      )
+    } catch {
+      // 错误已由 ApiResponseWrapper 处理
+    }
   }
 
-  const saveNotificationSettings = () => {
-    toast.add({ severity: 'success', summary: '保存成功', detail: '通知设置已保存', life: 3000 })
+  const saveNotificationSettings = async () => {
+    try {
+      await ApiResponseWrapper.wrap(
+        settingsService.updateSettings({
+          notify_email: notificationSettings.email,
+          notify_push: notificationSettings.push,
+          notify_parse_complete: notificationSettings.parseComplete
+        }),
+        { showSuccessMessage: true, successMessage: '通知设置已保存', showErrorMessage: true }
+      )
+    } catch {
+      // 错误已由 ApiResponseWrapper 处理
+    }
   }
 
   const saveWatermarkSettings = async (settings: { watermarkEnabled: boolean; watermarkText: string; watermarkScreenshotEnabled: boolean }) => {

@@ -6,7 +6,10 @@
     >
       <div class="text-center">
         <div class="relative w-32 h-32 mx-auto mb-6">
-          <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+          <svg
+            class="w-full h-full -rotate-90"
+            viewBox="0 0 100 100"
+          >
             <circle
               cx="50"
               cy="50"
@@ -28,9 +31,21 @@
               class="transition-all duration-300"
             />
             <defs>
-              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#3B82F6" />
-                <stop offset="100%" stop-color="#8B5CF6" />
+              <linearGradient
+                id="gradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="100%"
+              >
+                <stop
+                  offset="0%"
+                  stop-color="#3B82F6"
+                />
+                <stop
+                  offset="100%"
+                  stop-color="#8B5CF6"
+                />
               </linearGradient>
             </defs>
           </svg>

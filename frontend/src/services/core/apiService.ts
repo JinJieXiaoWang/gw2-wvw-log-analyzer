@@ -5,12 +5,12 @@
  * 创建日期：2024-01-15
  */
 
-import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
-import type { ApiResponse, ApiError, PaginationParams, PaginatedResponse } from '@/types/api'
-import { getToken, clearToken } from '@/utils/auth/tokenManager'
 import { configManager } from '@/services/core/configManager'
+import type { ApiError, ApiResponse, PaginatedResponse, PaginationParams } from '@/types/api'
+import { clearToken, getToken } from '@/utils/auth/tokenManager'
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios'
 
-export type { ApiResponse, ApiError, PaginationParams, PaginatedResponse }
+export type { ApiError, ApiResponse, PaginatedResponse, PaginationParams }
 
 // 记录连续失败次数
 let consecutiveFailures = 0

@@ -2,18 +2,9 @@
   <div class="relative min-h-screen p-6 overflow-hidden">
     <!-- 背景装饰 -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
-      <div
-        class="absolute rounded-full blur-[80px] opacity-15 animate-pulse"
-        style="width: 600px; height: 600px; background: linear-gradient(135deg, var(--color-primary), var(--color-ai)); top: -200px; right: -100px;"
-      />
-      <div
-        class="absolute rounded-full blur-[80px] opacity-15 animate-pulse"
-        style="width: 400px; height: 400px; background: linear-gradient(135deg, var(--color-secondary), var(--color-error)); bottom: -100px; left: -100px; animation-delay: 1s;"
-      />
-      <div
-        class="absolute inset-0"
-        style="background-image: linear-gradient(rgba(22,93,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(22,93,255,0.03) 1px, transparent 1px); background-size: 50px 50px;"
-      />
+      <div class="deco-circle deco-circle-top" />
+      <div class="deco-circle deco-circle-bottom" />
+      <div class="deco-grid" />
     </div>
 
     <div class="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-6">
@@ -144,9 +135,10 @@ import ScoringRoleCards from '@/components/settings/scoring/ScoringRoleCards.vue
 import ScoringGradeCards from '@/components/settings/scoring/ScoringGradeCards.vue'
 import RecalcTaskPanel from '@/components/settings/scoring/RecalcTaskPanel.vue'
 import VersionHistoryTable from '@/components/settings/scoring/VersionHistoryTable.vue'
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useScoringRules } from '@/composables/scoring/useScoringRules'
 import { usePermission } from '@/composables/system/usePermission'
+import { professionService } from '@/services'
 
 const { can } = usePermission()
 const canWrite = can('write')
@@ -183,39 +175,82 @@ const weightProgress = computed(() => {
   return map
 })
 
-// 职业定位管理（暂保留在视图层）
+// 职业定位管理
 const scoringMode = ref<'role_based' | 'profession_based'>('role_based')
 const roleEditMode = ref(false)
-const professionRoleMapping = ref([
-  { profession: 'Guardian', role: 'support', roleLabel: '辅助', icon: 'pi pi-sun', eliteSpecs: ['Dragonhunter', 'Firebrand', 'Willbender', 'Luminary'], currentRole: 'support' },
-  { profession: 'Warrior', role: 'dps', roleLabel: '输出', icon: 'pi pi-bolt', eliteSpecs: ['Berserker', 'Spellbreaker', 'Bladesworn', 'Paragon'], currentRole: 'dps' },
-  { profession: 'Engineer', role: 'support', roleLabel: '辅助', icon: 'pi pi-cog', eliteSpecs: ['Scrapper', 'Holosmith', 'Mechanist', 'Amalgam'], currentRole: 'support' },
-  { profession: 'Ranger', role: 'dps', roleLabel: '输出', icon: 'pi pi-user', eliteSpecs: ['Druid', 'Soulbeast', 'Untamed', 'Galeshot'], currentRole: 'dps' },
-  { profession: 'Thief', role: 'dps', roleLabel: '输出', icon: 'pi pi-eye', eliteSpecs: ['Daredevil', 'Deadeye', 'Specter', 'Antiquary'], currentRole: 'dps' },
-  { profession: 'Elementalist', role: 'dps', roleLabel: '输出', icon: 'pi pi-sitemap', eliteSpecs: ['Tempest', 'Weaver', 'Catalyst', 'Evoker'], currentRole: 'dps' },
-  { profession: 'Mesmer', role: 'support', roleLabel: '辅助', icon: 'pi pi-star', eliteSpecs: ['Chronomancer', 'Mirage', 'Virtuoso', 'Troubadour'], currentRole: 'support' },
-  { profession: 'Necromancer', role: 'support', roleLabel: '辅助', icon: 'pi pi-exclamation-triangle', eliteSpecs: ['Reaper', 'Scourge', 'Harbinger', 'Ritualist'], currentRole: 'support' },
-  { profession: 'Revenant', role: 'support', roleLabel: '辅助', icon: 'pi pi-moon', eliteSpecs: ['Herald', 'Renegade', 'Vindicator', 'Conduit'], currentRole: 'support' },
-])
+const professionRoleMapping = ref<any[]>([])
+const isLoadingRoleMapping = ref(false)
+
+async function loadProfessionRoleMapping() {
+  isLoadingRoleMapping.value = true
+  try {
+    const professions = await professionService.getProfessions(false)
+    professionRoleMapping.value = professions.map(p => ({
+      profession: p.profession_key,
+      professionName: p.profession_name,
+      role: p.default_role || 'dps',
+      roleLabel: p.default_role || 'dps',
+      icon: 'pi pi-user',
+      eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_key),
+      currentRole: p.default_role || 'dps'
+    }))
+  } catch (error) {
+    console.error('加载职业角色映射失败:', error)
+  } finally {
+    isLoadingRoleMapping.value = false
+  }
+}
 
 function toggleRoleEditMode() {
   roleEditMode.value = !roleEditMode.value
   if (roleEditMode.value) {
     professionRoleMapping.value.forEach(p => { p.currentRole = p.role })
-  } else {
-    professionRoleMapping.value.forEach(p => { p.currentRole = p.role })
   }
 }
 
 function updateProfessionRole(prof: any) {
-  // 提示预览模式
+  const item = professionRoleMapping.value.find(p => p.profession === prof.profession)
+  if (item) {
+    item.currentRole = prof.currentRole
+  }
 }
 
 function saveRoleMapping() {
   professionRoleMapping.value.forEach(p => { p.role = p.currentRole })
   roleEditMode.value = false
+  // TODO: 调用 API 保存角色映射
 }
+
+onMounted(() => {
+  loadProfessionRoleMapping()
+})
 </script>
 
 <style scoped>
+.deco-circle {
+  @apply absolute rounded-full blur-[80px] opacity-15 animate-pulse;
+}
+
+.deco-circle-top {
+  width: 600px;
+  height: 600px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-ai));
+  top: -200px;
+  right: -100px;
+}
+
+.deco-circle-bottom {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, var(--color-secondary), var(--color-error));
+  bottom: -100px;
+  left: -100px;
+  animation-delay: 1s;
+}
+
+.deco-grid {
+  @apply absolute inset-0;
+  background-image: linear-gradient(rgba(22,93,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(22,93,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
 </style>

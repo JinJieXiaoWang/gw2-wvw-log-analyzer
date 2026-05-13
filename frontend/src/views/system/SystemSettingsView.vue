@@ -89,19 +89,19 @@
 </template>
 
 <script setup lang="ts">
-import PageHeader from '@/layout/components/PageHeader.vue'
+import DictionaryManagementWrapper from '@/components/common/dictionary/DictionaryManagementWrapper.vue'
 import SettingSidebar from '@/components/settings/SettingSidebar.vue'
 import AccountSettings from '@/components/settings/account/AccountSettings.vue'
-import ParsingSettings from '@/components/settings/upload/ParsingSettings.vue'
 import ExportSettings from '@/components/settings/account/ExportSettings.vue'
-import ThemeSettings from '@/components/settings/appearance/ThemeSettings.vue'
-import NotificationSettings from '@/components/settings/appearance/NotificationSettings.vue'
 import SecuritySettings from '@/components/settings/account/SecuritySettings.vue'
+import NotificationSettings from '@/components/settings/appearance/NotificationSettings.vue'
+import ThemeSettings from '@/components/settings/appearance/ThemeSettings.vue'
 import WatermarkSettings from '@/components/settings/appearance/WatermarkSettings.vue'
 import SystemParamsSettings from '@/components/settings/system/SystemParamsSettings.vue'
-import DictionaryManagementWrapper from '@/components/common/dictionary/DictionaryManagementWrapper.vue'
-import Toast from 'primevue/toast'
+import ParsingSettings from '@/components/settings/upload/ParsingSettings.vue'
 import { useSystemSettings } from '@/composables/system/useSystemSettings'
+import PageHeader from '@/layout/components/PageHeader.vue'
+import Toast from 'primevue/toast'
 
 const {
   activeSection,
