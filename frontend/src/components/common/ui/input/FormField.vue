@@ -17,7 +17,7 @@
     </p>
     <p
       v-if="error"
-      class="mt-1 text-sm text-red-500"
+      :class="errorClass || 'mt-1 text-sm text-red-500'"
     >
       {{ error }}
     </p>
@@ -29,6 +29,7 @@ defineProps<{
   label?: string
   required?: boolean
   error?: string
+  errorClass?: string
   hint?: string
 }>()
 </script>

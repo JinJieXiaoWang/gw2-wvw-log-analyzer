@@ -2,17 +2,26 @@
   <div class="player-detail-card">
     <div class="card-header">
       <div class="player-info-header">
-        <img :src="getProfIcon(player.profession)" class="player-avatar-lg">
+        <img
+          :src="getProfIcon(player.profession)"
+          class="player-avatar-lg"
+        >
         <div class="player-main-info">
           <h3 class="player-name-lg">
             {{ player.name }}
           </h3>
-          <span class="profession-tag" :style="{ backgroundColor: getProfessionColor(player.profession) }">
+          <span
+            class="profession-tag"
+            :style="{ backgroundColor: getProfessionColor(player.profession) }"
+          >
             {{ getProfessionName(player.profession) }}
           </span>
         </div>
       </div>
-      <button class="close-btn" @click="$emit('close')">
+      <button
+        class="close-btn"
+        @click="$emit('close')"
+      >
         <i class="pi pi-times" />
       </button>
     </div>
@@ -105,14 +114,20 @@
           战斗状态
         </h4>
         <div class="status-grid">
-          <div class="status-item" :class="{ danger: player.downs > 0 }">
+          <div
+            class="status-item"
+            :class="{ danger: player.downs > 0 }"
+          >
             <i class="pi pi-skull-crossbones" />
             <div class="status-data">
               <span class="status-value">{{ player.downs }}</span>
               <span class="status-label">倒地</span>
             </div>
           </div>
-          <div class="status-item" :class="{ danger: player.deaths > 0 }">
+          <div
+            class="status-item"
+            :class="{ danger: player.deaths > 0 }"
+          >
             <i class="pi pi-heart-broken" />
             <div class="status-data">
               <span class="status-value">{{ player.deaths }}</span>

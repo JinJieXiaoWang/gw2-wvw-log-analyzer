@@ -2,13 +2,16 @@
  * useDictOptions - 字典选项动态获取组合式函数
  * 功能：从字典表动态获取选项列表，替代前端硬编码选项
  * 说明：与 useDictMapping 互补，专注于获取选项列表（下拉框、单选等）
+ *       底层缓存统一使用 useDictMapping 的 globalCache + TTL 机制
  */
 
 import { ref, computed, onMounted } from 'vue'
 import { dictionaryService } from '@/services'
 import type { DictOption } from '@/services'
+import { globalCache, cleanExpiredCache } from '@/composables/core/useDictMapping'
 
-// 全局缓存字典选项
+// 本地 reactive 镜像，用于向消费端提供响应式接口
+// 真正的缓存源为 useDictMapping 中的 globalCache（Map + TTL）
 const optionsCache = ref<Record<string, DictOption[]>>({})
 const optionsLoading = ref<Record<string, boolean>>({})
 const optionsError = ref<Record<string, Error | null>>({})
@@ -25,22 +28,38 @@ export function useDictOptions(
   fallbackOptions: DictOption[] = []
 ) {
   const options = computed<DictOption[]>(() => {
-    const cached = optionsCache.value[dictType]
-    if (cached && cached.length > 0) return cached
+    // 优先同步 globalCache（含 TTL），再回退到本地镜像和 fallback
+    cleanExpiredCache(dictType)
+    const cached = globalCache.get(dictType)
+    if (cached && cached.data.length > 0) {
+      return cached.data
+    }
+    const local = optionsCache.value[dictType]
+    if (local && local.length > 0) return local
     return fallbackOptions
   })
   const loading = computed(() => optionsLoading.value[dictType] || false)
   const error = computed(() => optionsError.value[dictType] || null)
 
   const loadOptions = async (force: boolean = false): Promise<DictOption[]> => {
-    if (!force && optionsCache.value[dictType]) {
-      return optionsCache.value[dictType]
+    if (!force) {
+      cleanExpiredCache(dictType)
+      const cached = globalCache.get(dictType)
+      if (cached) {
+        optionsCache.value[dictType] = cached.data
+        return cached.data
+      }
+    } else {
+      // 强制刷新时同时清理全局缓存
+      globalCache.delete(dictType)
     }
+
     optionsLoading.value[dictType] = true
     optionsError.value[dictType] = null
     try {
       const data = await dictionaryService.getOptions(dictType)
       optionsCache.value[dictType] = data
+      globalCache.set(dictType, { data, timestamp: Date.now() })
       return data
     } catch (err) {
       const e = err instanceof Error ? err : new Error(`加载字典 ${dictType} 失败`)
@@ -87,21 +106,28 @@ export function useMultiDictOptions(dictTypes: string[]) {
     dictTypes.some(t => optionsLoading.value[t])
   )
   const allLoaded = computed(() =>
-    dictTypes.every(t => optionsCache.value[t] !== undefined)
+    dictTypes.every(t => {
+      cleanExpiredCache(t)
+      return globalCache.has(t) || optionsCache.value[t] !== undefined
+    })
   )
 
   const loadAll = async (): Promise<Record<string, DictOption[]>> => {
     const results: Record<string, DictOption[]> = {}
     await Promise.all(
       dictTypes.map(async (type) => {
-        if (optionsCache.value[type]) {
-          results[type] = optionsCache.value[type]
+        cleanExpiredCache(type)
+        const cached = globalCache.get(type)
+        if (cached) {
+          optionsCache.value[type] = cached.data
+          results[type] = cached.data
           return
         }
         optionsLoading.value[type] = true
         try {
           const data = await dictionaryService.getOptions(type)
           optionsCache.value[type] = data
+          globalCache.set(type, { data, timestamp: Date.now() })
           results[type] = data
         } catch (err) {
           console.error(`[useMultiDictOptions] ${type}:`, err)
@@ -115,11 +141,13 @@ export function useMultiDictOptions(dictTypes: string[]) {
   }
 
   const getOptions = (dictType: string): DictOption[] => {
-    return optionsCache.value[dictType] || []
+    cleanExpiredCache(dictType)
+    const cached = globalCache.get(dictType)
+    return cached?.data || optionsCache.value[dictType] || []
   }
 
   const getLabel = (dictType: string, value: string): string => {
-    const opts = optionsCache.value[dictType] || []
+    const opts = getOptions(dictType)
     const opt = opts.find(o => o.value === value)
     return opt?.label || value
   }

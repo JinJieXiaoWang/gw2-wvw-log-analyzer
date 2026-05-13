@@ -7,45 +7,39 @@
     :loading="saving"
     @confirm="$emit('save')"
   >
-    <div class="dialog-form">
-      <div class="form-row">
-        <label class="form-label">显示标签 *</label>
+    <div class="space-y-4">
+      <FormField label="显示标签 *">
         <InputText
           v-model="localForm.dict_label"
           placeholder="请输入显示标签"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">存储值 *</label>
+      </FormField>
+      <FormField label="存储值 *">
         <InputText
           v-model="localForm.dict_value"
           placeholder="请输入存储值"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">排序</label>
+      </FormField>
+      <FormField label="排序">
         <InputNumber
           v-model="localForm.dict_sort"
           :min="0"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">CSS类</label>
+      </FormField>
+      <FormField label="CSS类">
         <ColorPickerInput v-model="localForm.css_class" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">列表类</label>
+      </FormField>
+      <FormField label="列表类">
         <InputText
           v-model="localForm.list_class"
           placeholder="如: primary, secondary"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">状态</label>
+      </FormField>
+      <FormField label="状态">
         <BaseSelect
           v-model="localForm.status"
           :options="statusOptions"
@@ -53,16 +47,15 @@
           option-value="value"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">备注</label>
+      </FormField>
+      <FormField label="备注">
         <Textarea
           v-model="localForm.remark"
           placeholder="请输入备注说明"
           rows="3"
           class="w-full"
         />
-      </div>
+      </FormField>
     </div>
   </BaseDialog>
 </template>
@@ -71,6 +64,7 @@
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import ColorPickerInput from '@/components/common/ui/input/ColorPickerInput.vue'
+import FormField from '@/components/common/ui/input/FormField.vue'
 import type { DictData } from '@/services/system/dictionaryService'
 import InputNumber from 'primevue/inputnumber'
 import InputText from 'primevue/inputtext'
@@ -111,9 +105,3 @@ const localForm = ref<DataForm>({ ...form.value })
 watch(() => form.value, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
 watch(localForm, (v) => { form.value = { ...v } }, { deep: true })
 </script>
-
-<style scoped>
-.dialog-form { display: flex; flex-direction: column; gap: 16px; }
-.form-row { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 14px; font-weight: 500; color: #e5e5e5; }
-</style>

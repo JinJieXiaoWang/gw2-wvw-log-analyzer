@@ -130,10 +130,17 @@
         <i class="pi pi-th-large" /> 主要增益覆盖
       </h4>
       <div class="boon-list">
-        <div v-for="(value, id) in player.buffs" :key="id" class="boon-item">
+        <div
+          v-for="(value, id) in player.buffs"
+          :key="id"
+          class="boon-item"
+        >
           <span class="boon-id">{{ id }}</span><span class="boon-value">{{ value.uptime_ms }}ms</span>
         </div>
-        <div v-if="!player.buffs || Object.keys(player.buffs).length === 0" class="empty-boons">
+        <div
+          v-if="!player.buffs || Object.keys(player.buffs).length === 0"
+          class="empty-boons"
+        >
           暂无增益数据
         </div>
       </div>

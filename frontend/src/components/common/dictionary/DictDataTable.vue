@@ -135,7 +135,10 @@
         </template>
       </Column>
       <template #empty>
-        <EmptyState icon="pi pi-inbox" title="暂无数据" />
+        <EmptyState
+          icon="pi pi-inbox"
+          title="暂无数据"
+        />
       </template>
     </DataTable>
     <div

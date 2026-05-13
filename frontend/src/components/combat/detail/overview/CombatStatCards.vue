@@ -13,42 +13,19 @@
         @click="emit('show-damage-detail')"
       >
         <div class="flex flex-col items-center">
-          <div class="relative w-12 h-12 mb-2">
-            <svg
-              viewBox="0 0 100 100"
-              class="w-full h-full -rotate-90"
-            >
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                fill="none"
-                stroke="var(--color-border)"
-                stroke-width="8"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                fill="none"
-                stroke="#165DFF"
-                stroke-width="8"
-                :stroke-dasharray="donut.pd"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r="42"
-                fill="none"
-                stroke="#22c55e"
-                stroke-width="8"
-                :stroke-dashoffset="donut.co"
-              />
-            </svg>
-            <div class="absolute inset-0 flex items-center justify-center">
-              <i class="pi pi-chart-pie text-primary text-sm" />
-            </div>
-          </div>
+          <DonutChart
+            class="mb-2"
+            :size="48"
+            :stroke-width="8"
+            :radius="42"
+            track-color="var(--color-border)"
+            :segments="[
+              { color: '#165DFF', value: agg.total_power_damage },
+              { color: '#22c55e', value: agg.total_condi_damage + agg.total_breakbar_damage },
+            ]"
+          >
+            <i class="pi pi-chart-pie text-primary text-sm" />
+          </DonutChart>
           <p class="text-lg font-bold text-neutral-text">
             {{ fmtCompact(donut.total) }}
           </p>
@@ -306,6 +283,7 @@
 
 <script setup lang="ts">
 import type { EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
+import DonutChart from '@/components/common/charts/DonutChart.vue'
 import { fmtCompact } from '@/composables/combat/useCombatHelpers'
 
 const { agg, averages, donut } = defineProps<{

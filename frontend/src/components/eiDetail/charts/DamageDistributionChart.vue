@@ -8,56 +8,19 @@
     </div>
     <div class="card-content">
       <div class="donut-chart">
-        <div class="chart-circle">
-          <svg
-            viewBox="0 0 100 100"
-            class="donut-svg"
-          >
-            <!-- 直伤部分 -->
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              fill="none"
-              :stroke="powerColor"
-              stroke-width="12"
-              :stroke-dasharray="powerDashArray"
-              stroke-dashoffset="0"
-              transform="rotate(-90 50 50)"
-              class="donut-segment"
-            />
-            <!-- 症状部分 -->
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              fill="none"
-              :stroke="condiColor"
-              stroke-width="12"
-              :stroke-dasharray="condiDashArray"
-              :stroke-dashoffset="condiOffset"
-              transform="rotate(-90 50 50)"
-              class="donut-segment"
-            />
-            <!-- 破甲部分 -->
-            <circle
-              cx="50"
-              cy="50"
-              r="40"
-              fill="none"
-              :stroke="breakbarColor"
-              stroke-width="12"
-              :stroke-dasharray="breakbarDashArray"
-              :stroke-dashoffset="breakbarOffset"
-              transform="rotate(-90 50 50)"
-              class="donut-segment"
-            />
-          </svg>
-          <div class="chart-center">
-            <span class="center-value">{{ formatLargeNumber(total) }}</span>
-            <span class="center-label">总伤害</span>
-          </div>
-        </div>
+        <DonutChart
+          :size="140"
+          :stroke-width="12"
+          :radius="40"
+          :segments="[
+            { color: powerColor, value: powerDamage },
+            { color: condiColor, value: condiDamage },
+            { color: breakbarColor, value: breakbarDamage },
+          ]"
+        >
+          <span class="center-value">{{ formatLargeNumber(total) }}</span>
+          <span class="center-label">总伤害</span>
+        </DonutChart>
         <div class="chart-legend">
           <div class="legend-item">
             <span
@@ -91,6 +54,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import DonutChart from '@/components/common/charts/DonutChart.vue'
 
 const props = defineProps<{
   powerDamage: number
@@ -119,31 +83,6 @@ const condiPercent = computed(() => {
 const breakbarPercent = computed(() => {
   if (total.value === 0) return 0
   return Math.round((props.breakbarDamage / total.value) * 100)
-})
-
-const circumference = 2 * Math.PI * 40
-
-const powerDashArray = computed(() => {
-  const length = (powerPercent.value / 100) * circumference
-  return `${length} ${circumference}`
-})
-
-const condiDashArray = computed(() => {
-  const length = (condiPercent.value / 100) * circumference
-  return `${length} ${circumference}`
-})
-
-const condiOffset = computed(() => {
-  return -(powerPercent.value / 100) * circumference
-})
-
-const breakbarDashArray = computed(() => {
-  const length = (breakbarPercent.value / 100) * circumference
-  return `${length} ${circumference}`
-})
-
-const breakbarOffset = computed(() => {
-  return -((powerPercent.value + condiPercent.value) / 100) * circumference
 })
 
 function formatLargeNumber(num: number): string {
@@ -192,29 +131,6 @@ function formatLargeNumber(num: number): string {
   display: flex;
   align-items: center;
   gap: 2rem;
-}
-
-.chart-circle {
-  position: relative;
-  width: 140px;
-  height: 140px;
-}
-
-.donut-svg {
-  width: 100%;
-  height: 100%;
-}
-
-.donut-segment {
-  transition: stroke-dasharray 0.5s ease;
-}
-
-.chart-center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
 }
 
 .center-value {

@@ -20,17 +20,17 @@ interface CacheEntry<T> {
 /**
  * 缓存有效期（毫秒）- 默认5分钟
  */
-const DEFAULT_CACHE_TTL = 5 * 60 * 1000
+export const DEFAULT_CACHE_TTL = 5 * 60 * 1000
 
 /**
  * 全局字典缓存
  */
-const globalCache = new Map<string, CacheEntry<any>>()
+export const globalCache = new Map<string, CacheEntry<any>>()
 
 /**
  * 清理过期缓存
  */
-function cleanExpiredCache(dictType?: string): void {
+export function cleanExpiredCache(dictType?: string): void {
   const now = Date.now()
   if (dictType) {
     const entry = globalCache.get(dictType)

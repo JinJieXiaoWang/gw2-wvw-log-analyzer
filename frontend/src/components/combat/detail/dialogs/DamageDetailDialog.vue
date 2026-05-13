@@ -9,59 +9,21 @@
     <div class="space-y-6">
       <!-- 环形图 + 图例 -->
       <div class="flex flex-col sm:flex-row items-center gap-6">
-        <div class="relative w-48 h-48">
-          <svg
-            viewBox="0 0 100 100"
-            class="w-full h-full -rotate-90 transform transition-all duration-500"
-            aria-label="伤害构成环形图"
-            role="img"
-          >
-            <circle
-              cx="50"
-              cy="50"
-              r="42"
-              fill="none"
-              stroke="var(--color-border)"
-              stroke-width="12"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="42"
-              fill="none"
-              stroke="var(--color-primary)"
-              stroke-width="12"
-              :stroke-dasharray="donut.pd"
-              class="transition-all duration-700"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="42"
-              fill="none"
-              stroke="var(--color-success)"
-              stroke-width="12"
-              :stroke-dasharray="donut.cd"
-              :stroke-dashoffset="donut.co"
-              class="transition-all duration-700"
-            />
-            <circle
-              cx="50"
-              cy="50"
-              r="42"
-              fill="none"
-              stroke="var(--color-secondary)"
-              stroke-width="12"
-              :stroke-dasharray="donut.bd"
-              :stroke-dashoffset="donut.bo"
-              class="transition-all duration-700"
-            />
-          </svg>
-          <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-            <span class="text-3xl font-bold text-neutral-text">{{ fmtCompact(donut.total) }}</span>
-            <span class="text-xs text-neutral-text-secondary mt-1">总伤害</span>
-          </div>
-        </div>
+        <DonutChart
+          :size="192"
+          :stroke-width="12"
+          :radius="42"
+          track-color="var(--color-border)"
+          aria-label="伤害构成环形图"
+          :segments="[
+            { color: 'var(--color-primary)', value: agg.total_power_damage },
+            { color: 'var(--color-success)', value: agg.total_condi_damage },
+            { color: 'var(--color-secondary)', value: agg.total_breakbar_damage },
+          ]"
+        >
+          <span class="text-3xl font-bold text-neutral-text">{{ fmtCompact(donut.total) }}</span>
+          <span class="text-xs text-neutral-text-secondary mt-1">总伤害</span>
+        </DonutChart>
         <div class="flex-1 space-y-4">
           <div
             v-for="item in legendItems"
@@ -200,6 +162,7 @@ import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import DonutChart from '@/components/common/charts/DonutChart.vue'
 import { fmtCompact, getProfessionIconUrl, getProfessionName, rankClass } from '@/composables/combat/useCombatHelpers'
 import type { EiAnalysisAggregate, EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
 

@@ -6,15 +6,33 @@
         <div class="time-indicator">
           <span>{{ formatTime(currentTime) }}</span>
         </div>
-        <div v-for="player in displayPlayers" :key="player.instanceID" class="player-marker"
-          :style="getPlayerPosition(player)" :class="{ selected: player.instanceID === selectedPlayerId }">
-          <div class="marker-dot" :style="{ backgroundColor: player.color }" />
+        <div
+          v-for="player in displayPlayers"
+          :key="player.instanceID"
+          class="player-marker"
+          :style="getPlayerPosition(player)"
+          :class="{ selected: player.instanceID === selectedPlayerId }"
+        >
+          <div
+            class="marker-dot"
+            :style="{ backgroundColor: player.color }"
+          />
           <span class="marker-name">{{ player.name }}</span>
         </div>
-        <div v-for="effect in activeEffects" :key="effect.id" class="skill-effect" :style="effect.style">
+        <div
+          v-for="effect in activeEffects"
+          :key="effect.id"
+          class="skill-effect"
+          :style="effect.style"
+        >
           <i :class="effect.icon" />
         </div>
-        <div v-for="target in targets" :key="target.uniqueID" class="target-marker" :style="getTargetPosition(target)">
+        <div
+          v-for="target in targets"
+          :key="target.uniqueID"
+          class="target-marker"
+          :style="getTargetPosition(target)"
+        >
           <div class="target-icon">
             <i class="pi pi-target" />
           </div>
@@ -22,12 +40,25 @@
       </div>
     </div>
 
-    <ReplayControls :is-playing="isPlaying" :current-time="currentTime" :duration="duration"
-      :progress-percent="progressPercent" :playback-speed="playbackSpeed" :show-players="showPlayers"
-      :show-targets="showTargets" :show-effects="showEffects" @toggle-play="togglePlay" @step-backward="stepBackward"
-      @step-forward="stepForward" @restart="restart" @seek="seekTo" @update:playback-speed="playbackSpeed = $event"
-      @update:show-players="showPlayers = $event" @update:show-targets="showTargets = $event"
-      @update:show-effects="showEffects = $event" />
+    <ReplayControls
+      :is-playing="isPlaying"
+      :current-time="currentTime"
+      :duration="duration"
+      :progress-percent="progressPercent"
+      :playback-speed="playbackSpeed"
+      :show-players="showPlayers"
+      :show-targets="showTargets"
+      :show-effects="showEffects"
+      @toggle-play="togglePlay"
+      @step-backward="stepBackward"
+      @step-forward="stepForward"
+      @restart="restart"
+      @seek="seekTo"
+      @update:playback-speed="playbackSpeed = $event"
+      @update:show-players="showPlayers = $event"
+      @update:show-targets="showTargets = $event"
+      @update:show-effects="showEffects = $event"
+    />
 
     <!-- 战斗事件日志 -->
     <div class="event-log">
@@ -35,7 +66,12 @@
         <i class="pi pi-list" /> 战斗事件
       </h3>
       <div class="log-content">
-        <div v-for="event in recentEvents" :key="event.id" class="log-item" :class="event.type">
+        <div
+          v-for="event in recentEvents"
+          :key="event.id"
+          class="log-item"
+          :class="event.type"
+        >
           <span class="log-time">{{ formatTime(event.time) }}</span>
           <span class="log-content-text">{{ event.content }}</span>
         </div>

@@ -16,8 +16,7 @@
     @confirm="handleChangePassword"
   >
     <div class="space-y-4 pt-2">
-      <div>
-        <label class="block text-sm font-medium text-neutral-text mb-1.5">当前密码</label>
+      <FormField label="当前密码">
         <Password
           v-model="passwordForm.oldPassword"
           :feedback="false"
@@ -27,9 +26,11 @@
           :input-class="'w-full'"
           @keydown.enter="handleChangePassword"
         />
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-neutral-text mb-1.5">新密码</label>
+      </FormField>
+      <FormField
+        label="新密码"
+        hint="密码长度至少8位，需包含大小写字母和数字"
+      >
         <Password
           v-model="passwordForm.newPassword"
           toggle-mask
@@ -41,12 +42,11 @@
           medium-label="中"
           strong-label="强"
         />
-        <p class="text-xs text-neutral-text-secondary mt-1">
-          密码长度至少8位，需包含大小写字母和数字
-        </p>
-      </div>
-      <div>
-        <label class="block text-sm font-medium text-neutral-text mb-1.5">确认新密码</label>
+      </FormField>
+      <FormField
+        label="确认新密码"
+        :error="confirmPasswordError"
+      >
         <Password
           v-model="passwordForm.confirmPassword"
           :feedback="false"
@@ -57,11 +57,7 @@
           :class="{ 'p-invalid': confirmPasswordError }"
           @keydown.enter="handleChangePassword"
         />
-        <small
-          v-if="confirmPasswordError"
-          class="text-status-error block mt-1"
-        >{{ confirmPasswordError }}</small>
-      </div>
+      </FormField>
       <div
         v-if="passwordValidation.errors.length > 0"
         class="p-3 bg-warning/5 rounded-lg border border-warning/10"
@@ -88,6 +84,7 @@
 import { ref, reactive, computed, onUnmounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
+import FormField from '@/components/common/ui/input/FormField.vue'
 import Password from 'primevue/password'
 import { authService } from '@/services/auth/authService'
 import { authStore } from '@/composables/system/usePermission'
