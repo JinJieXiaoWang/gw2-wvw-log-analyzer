@@ -1,3 +1,4 @@
+import { usePagination } from '@/composables/common/usePagination'
 import { attendanceService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { scoringRulesService } from '@/services/core/scoringRulesService'
@@ -41,7 +42,7 @@ export function useAttendancePage() {
   })
 
   const accountList = ref<any[]>([])
-  const pagination = ref({ page: 1, pageSize: 20, total: 0 })
+  const { page, pageSize, total, pagination, onPageChange: _onPageChange, resetPage: _resetPage } = usePagination({ defaultPageSize: 20 })
   const currentSort = ref({ field: 'attendance_count', order: 'desc' })
 
   const statCards = ref({
@@ -96,8 +97,8 @@ export function useAttendancePage() {
     loading.value = true
     try {
       const params: any = {
-        page: pagination.value.page,
-        page_size: pagination.value.pageSize,
+        page: page.value,
+        page_size: pageSize.value,
         sort_by: currentSort.value.field,
         sort_order: currentSort.value.order
       }
@@ -123,14 +124,14 @@ export function useAttendancePage() {
       if (result.success && result.data) {
         const data = result.data
         accountList.value = data.items || []
-        pagination.value.total = data.total || 0
-        statCards.value.totalAccounts = pagination.value.total
+        total.value = data.total || 0
+        statCards.value.totalAccounts = total.value
         statCards.value.totalDuration = accountList.value.reduce((sum, item) => sum + (item.total_duration_sec || 0), 0)
         statCards.value.totalDamage = accountList.value.reduce((sum, item) => sum + (item.total_damage || 0), 0)
         statCards.value.totalDowned = accountList.value.reduce((sum, item) => sum + (item.total_downed || 0), 0)
       } else {
         accountList.value = []
-        pagination.value.total = 0
+        total.value = 0
         toast.add({ severity: 'warn', summary: '提示', detail: '暂无数据', life: 3000 })
       }
     } catch (e: any) {
@@ -173,7 +174,7 @@ export function useAttendancePage() {
   }
 
   const onPageChange = (event: { page: number }) => {
-    pagination.value.page = (event.page || 0) + 1
+    _onPageChange(event)
     fetchAccounts()
   }
 
@@ -190,7 +191,7 @@ export function useAttendancePage() {
     searchQuery.value = ''
     filterMap.value = null
     filterProfession.value = null
-    pagination.value.page = 1
+    _resetPage()
     currentSort.value = { field: 'attendance_count', order: 'desc' }
     fetchAccounts()
   }

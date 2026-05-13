@@ -44,6 +44,7 @@
  * 更新：2026-05-04 - 替代 MapWinRate
  */
 
+import { useEChartsTheme } from '@/composables/common/useEChartsTheme'
 import { computed } from 'vue'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -64,15 +65,15 @@ const props = defineProps<{
   isLoading: boolean
 }>()
 
+const { tooltip, grid, axisLine, axisLabel, splitLine } = useEChartsTheme()
+
 const chartOption = computed(() => {
   if (!props.items?.length) return {}
   const data = [...props.items].sort((a, b) => b.fight_count - a.fight_count).slice(0, 8)
   return {
     tooltip: {
+      ...tooltip,
       trigger: 'axis',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-      borderColor: 'rgba(148, 163, 184, 0.2)',
-      textStyle: { color: '#e2e8f0' },
       formatter: (params: any) => {
         const p = params[0]
         const item = data[p.dataIndex]
@@ -82,18 +83,18 @@ const chartOption = computed(() => {
                 <div>平均人数: ${item.avg_player_count}人</div>`
       }
     },
-    grid: { left: 10, right: 20, top: 10, bottom: 5, containLabel: true },
+    grid: { ...grid, left: 10, top: 10, bottom: 5, containLabel: true },
     xAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(148,163,184,0.1)' } },
-      axisLabel: { color: '#94a3b8', fontSize: 11 }
+      splitLine,
+      axisLabel
     },
     yAxis: {
       type: 'category',
       data: data.map(i => i.map_name).reverse(),
-      axisLine: { lineStyle: { color: 'rgba(148,163,184,0.2)' } },
-      axisLabel: { color: '#94a3b8', fontSize: 11 }
+      axisLine,
+      axisLabel
     },
     series: [{
       type: 'bar',

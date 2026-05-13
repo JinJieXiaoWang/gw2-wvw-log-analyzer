@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
+import { usePagination } from '@/composables/common/usePagination'
 import { logsService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { formatDate } from '@/utils/core/helpers'
@@ -30,9 +31,13 @@ export function useCombatLogList() {
   const showDeleteDialog = ref(false)
   const showParseDetailDialog = ref(false)
   const logToDelete = ref<LogFile | null>(null)
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const totalRecords = ref(0)
+  const {
+    page: currentPage,
+    pageSize,
+    total: totalRecords,
+    onPageChange: _handlePageChange,
+    resetPage: _resetPage
+  } = usePagination({ defaultPageSize: 10 })
   let isFetchingLogs = false
 
   const batchTaskId = ref<number | null>(null)
@@ -48,7 +53,7 @@ export function useCombatLogList() {
   const parseProgressList = computed(() => Array.from(parseProgressMap.value.values()))
 
   const filters = ref({ search: '', status: null as string | null })
-  watch(filters, () => { currentPage.value = 1; fetchLogs() }, { deep: true })
+  watch(filters, () => { _resetPage(); fetchLogs() }, { deep: true })
 
   const logs = ref<LogFile[]>([])
 
@@ -89,8 +94,7 @@ export function useCombatLogList() {
   }
 
   function handlePageChange(event: { page: number; rows: number }) {
-    currentPage.value = event.page + 1
-    pageSize.value = event.rows
+    _handlePageChange(event)
     fetchLogs()
   }
 
