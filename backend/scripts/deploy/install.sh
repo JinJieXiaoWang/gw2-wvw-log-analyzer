@@ -314,14 +314,30 @@ install_system_deps() {
     success "  系统依赖安装完成"
 }
 
-# 从源码编译安装 Python 3.13
-install_python() {
-    info "  正在编译安装 Python ${PYTHON_VERSION}..."
+# 查找可用的 Python 版本（>=3.11）
+find_python() {
+    for py in python3.13 python3.12 python3.11 python3; do
+        if command -v "$py" &> /dev/null; then
+            PY_VERSION=$($py --version 2>&1 | awk '{print $2}')
+            PY_MAJOR=$(echo "$PY_VERSION" | cut -d. -f1)
+            PY_MINOR=$(echo "$PY_VERSION" | cut -d. -f2)
+            if [[ "$PY_MAJOR" -ge 3 && "$PY_MINOR" -ge 11 ]]; then
+                PYTHON_CMD="$py"
+                info "  找到可用 Python: $py (版本 $PY_VERSION)"
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
 
-    if command -v python3.13 &> /dev/null; then
-        warn "  Python 3.13 已存在，跳过编译"
+# 安装 Python（优先使用系统已有 >=3.11 版本，否则编译 3.13）
+install_python() {
+    if find_python; then
         return 0
     fi
+
+    info "  未找到系统 Python 3.11+，开始编译安装 Python ${PYTHON_VERSION}..."
 
     cd /tmp
     wget -q "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
@@ -345,8 +361,13 @@ install_python() {
     cd /tmp
     rm -rf "Python-${PYTHON_VERSION}" "Python-${PYTHON_VERSION}.tgz"
 
-    success "  Python ${PYTHON_VERSION} 编译安装完成"
-    python3.13 --version
+    # 编译完成后再次查找
+    if find_python; then
+        success "  Python ${PYTHON_VERSION} 编译安装完成"
+    else
+        error "  Python 编译安装后仍无法找到可用版本"
+        return 1
+    fi
 }
 
 # 安装 Node.js（用于前端构建）
@@ -445,7 +466,7 @@ setup_venv() {
     cd "$PROJECT_DIR"
 
     # 创建虚拟环境
-    python3.13 -m venv "$VENV_DIR"
+    $PYTHON_CMD -m venv "$VENV_DIR"
 
     # 升级 pip
     "$VENV_DIR/bin/pip" install --upgrade pip setuptools wheel

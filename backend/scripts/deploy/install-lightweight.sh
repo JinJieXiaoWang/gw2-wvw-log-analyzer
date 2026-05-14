@@ -338,10 +338,18 @@ setup_project() {
 deploy_backend() {
     info "  正在部署后端代码..."
 
-    SOURCE_DIR="$(pwd)/backend"
+    # 智能检测当前目录位置（支持在项目根目录或 backend 子目录运行）
+    if [[ "$(basename "$(pwd)")" == "backend" ]]; then
+        SOURCE_DIR="$(pwd)"
+        FRONTEND_SOURCE="$(dirname "$(pwd)")/frontend"
+    else
+        SOURCE_DIR="$(pwd)/backend"
+        FRONTEND_SOURCE="$(pwd)/frontend"
+    fi
+
     if [[ ! -d "$SOURCE_DIR" ]]; then
         error "  后端源码目录不存在: ${SOURCE_DIR}"
-        error "  请确保在项目根目录运行此脚本"
+        error "  请确保在项目根目录或 backend 目录运行此脚本"
         return 1
     fi
 
@@ -350,7 +358,6 @@ deploy_backend() {
         "${SOURCE_DIR}/" "${PROJECT_DIR}/"
 
     # 复制前端源码（用于构建）
-    FRONTEND_SOURCE="$(pwd)/frontend"
     if [[ -d "$FRONTEND_SOURCE" ]]; then
         mkdir -p "${PROJECT_DIR}/frontend"
         rsync -av --exclude='node_modules' --exclude='.git' --exclude='dist' \
