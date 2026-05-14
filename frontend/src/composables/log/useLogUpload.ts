@@ -142,8 +142,8 @@ export function useLogUpload(options: UseLogUploadOptions = {}) {
       )
       if (wrappedResult.success) return { success: true }
       return { success: false, message: wrappedResult.error?.message || '上传失败' }
-    } catch (error: any) {
-      return { success: false, message: error.message || '上传失败' }
+    } catch (error: unknown) {
+      return { success: false, message: error instanceof Error ? error.message : '上传失败' }
     }
   }
 

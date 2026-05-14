@@ -72,7 +72,7 @@ export function useAttendancePage() {
     try {
       const result = await scoringRulesService.getRules()
       if (result) {
-        scoringRulesData.value = result
+        scoringRulesData.value = result as Record<string, unknown>
       }
     } catch (e: unknown) {
       toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分规则失败', life: 5000 })

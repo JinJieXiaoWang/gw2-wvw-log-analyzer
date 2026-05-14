@@ -54,8 +54,8 @@ const loadFights = async () => {
       pageSize: pageSize.value
     })
     if (response.success && response.data) {
-      fights.value = response.data
-      hasMore.value = response.data.length === pageSize.value
+      fights.value = response.data as Fight[]
+      hasMore.value = (response.data as Fight[]).length === pageSize.value
       page.value = 1
     }
   } catch (error) {
@@ -81,8 +81,8 @@ const loadMoreFights = async () => {
       pageSize: pageSize.value
     })
     if (response.success && response.data) {
-      fights.value = [...fights.value, ...response.data]
-      hasMore.value = response.data.length === pageSize.value
+      fights.value = [...fights.value, ...(response.data as Fight[])]
+      hasMore.value = (response.data as Fight[]).length === pageSize.value
     }
   } catch (error) {
     console.error('加载更多战斗失败:', error)
@@ -93,9 +93,9 @@ const loadMoreFights = async () => {
 
 const viewFightDetail = async (fightId: string) => {
   try {
-    const response = await fightsService.getFightDetail(fightId)
+    const response = await fightsService.getFight(fightId)
     if (response.success && response.data) {
-      selectedFight.value = response.data
+      selectedFight.value = response.data as Fight
       selectedFightStats.value = null
     }
   } catch (error) {
@@ -107,11 +107,11 @@ const viewFightStats = async (fightId: string) => {
   try {
     const response = await fightsService.getFightStats(fightId)
     if (response.success && response.data) {
-      selectedFightStats.value = response.data
+      selectedFightStats.value = response.data as FightStats
       if (!selectedFight.value) {
-        const fightResponse = await fightsService.getFightDetail(fightId)
+        const fightResponse = await fightsService.getFight(fightId)
         if (fightResponse.success && fightResponse.data) {
-          selectedFight.value = fightResponse.data
+          selectedFight.value = fightResponse.data as Fight
         }
       }
     }

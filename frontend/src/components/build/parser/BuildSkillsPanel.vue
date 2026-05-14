@@ -84,7 +84,23 @@
 <script setup lang="ts">
 import { cleanIconUrl } from '@/utils/build/buildParserUtils'
 
+interface BuildSkill {
+  icon?: string
+  name_cn?: string
+  recharge?: number
+}
+
+interface BuildSkills {
+  heal?: BuildSkill
+  utility: BuildSkill[]
+  elite?: BuildSkill
+}
+
+interface BuildParsedData {
+  skills: BuildSkills
+}
+
 defineProps<{
-  parsedData: any
+  parsedData: BuildParsedData
 }>()
 </script>

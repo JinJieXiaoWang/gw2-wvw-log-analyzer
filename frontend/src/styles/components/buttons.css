@@ -45,7 +45,7 @@
   }
 
   .btn-secondary:hover {
-    @apply bg-secondary-light;
+    background-color: var(--color-secondary-light);
     box-shadow: 0 0 30px var(--color-secondary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.15);
     transform: translateY(-2px);
   }

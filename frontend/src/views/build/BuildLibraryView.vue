@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen pb-10">
+  <div class="min-h-screen pb-6 sm:pb-10">
     <PageHeader
       title="配置图书馆"
       subtitle="格林特职业学院战场配置百科"
@@ -9,18 +9,19 @@
 
     <div
       v-permission="'write'"
-      class="flex items-center justify-end gap-3 mt-4 mb-2"
+      class="flex items-center justify-end gap-3 mt-3 sm:mt-4 mb-2"
     >
       <Button
         icon="pi pi-plus"
         label="新增配置"
         severity="primary"
+        class="w-full sm:w-auto"
         @click="openCreateDialog"
       />
     </div>
 
-    <div class="flex gap-8 mt-6">
-      <aside class="w-80 flex-shrink-0 hidden lg:block">
+    <div class="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8 mt-4 sm:mt-6">
+      <aside class="w-full lg:w-80 flex-shrink-0 hidden lg:block">
         <div class="sticky top-20">
           <BuildFilterSidebar
             :professions="professions"
@@ -49,6 +50,7 @@
           label="筛选"
           severity="secondary"
           outlined
+          class="w-full"
           @click="showMobileFilter = true"
         />
       </div>
@@ -56,7 +58,7 @@
       <main class="flex-1 min-w-0">
         <div
           v-if="selectedBuildIds.length > 0"
-          class="flex items-center gap-4 mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20"
+          class="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20"
         >
           <span class="text-sm text-surface-400">已选择 {{ selectedBuildIds.length }} 个配置</span>
           <BaseButton
@@ -76,9 +78,9 @@
           />
         </div>
 
-        <div class="flex items-center justify-between mb-4">
-          <p class="text-base text-surface-400">
-            共 <span class="text-surface-0 font-bold text-lg">{{ filteredBuilds.length }}</span> 个配置
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 sm:mb-4">
+          <p class="text-sm sm:text-base text-surface-400">
+            共 <span class="text-surface-0 font-bold text-sm sm:text-lg">{{ filteredBuilds.length }}</span> 个配置
           </p>
           <div
             v-if="filteredBuilds.length > 0"
@@ -94,14 +96,14 @@
 
         <div
           v-if="filteredBuilds.length > 0"
-          class="grid grid-cols-1 md:grid-cols-2 gap-5"
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-5"
         >
           <div
             v-for="build in filteredBuilds"
             :key="build.id"
             class="relative"
           >
-            <div class="absolute top-3 left-3 z-10">
+            <div class="absolute top-2 sm:top-3 left-2 sm:left-3 z-10">
               <BaseCheckbox
                 :model-value="selectedBuildIds.includes(build.id)"
                 class="bg-surface-900"
@@ -119,13 +121,13 @@
 
         <div
           v-else
-          class="text-center py-20 rounded-xl border border-surface-700"
+          class="text-center py-12 sm:py-20 rounded-xl border border-surface-700"
         >
-          <i class="pi pi-inbox text-5xl text-surface-500 mb-4" />
-          <h3 class="text-lg font-semibold mb-2">
+          <i class="pi pi-inbox text-4xl sm:text-5xl text-surface-500 mb-3 sm:mb-4" />
+          <h3 class="text-base sm:text-lg font-semibold mb-2">
             未找到匹配的配置
           </h3>
-          <p class="text-base text-surface-400 mb-4">
+          <p class="text-sm sm:text-base text-surface-400 mb-3 sm:mb-4">
             尝试调整筛选条件或搜索关键词
           </p>
           <BaseButton
@@ -133,6 +135,7 @@
             icon="pi pi-filter-slash"
             severity="secondary"
             outlined
+            class="w-full sm:w-auto"
             @click="clearFilters"
           />
         </div>

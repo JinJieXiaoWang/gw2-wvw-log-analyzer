@@ -109,8 +109,8 @@ export function useScoringRulesSettings() {
       base.originalRules.value[base.activeRole.value] = JSON.parse(JSON.stringify(base.editableRules.value))
       base.changedRoles.value.delete(base.activeRole.value)
       toast.add({ severity: 'success', summary: '成功', detail: '保存成功', life: configManager.get('ui').toastLife })
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '保存失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '保存失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       base.saving.value = false
     }
@@ -128,8 +128,8 @@ export function useScoringRulesSettings() {
           await base.fetchRules()
           base.changedRoles.value.delete(base.activeRole.value)
           toast.add({ severity: 'success', summary: '成功', detail: '已重置为默认规则', life: configManager.get('ui').toastLife })
-        } catch (e: any) {
-          toast.add({ severity: 'error', summary: '错误', detail: e?.message || '重置失败', life: configManager.get('ui').toastErrorLife })
+        } catch (e: unknown) {
+          toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '重置失败', life: configManager.get('ui').toastErrorLife })
         } finally {
           base.loading.value = false
         }

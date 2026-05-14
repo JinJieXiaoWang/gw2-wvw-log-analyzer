@@ -16,8 +16,8 @@ export const SUB_ROLE_OPTIONS: { label: string; value: SubRoleType }[] = [
 ]
 
 // 缓存字典数据，避免重复加载
-let cachedCascadeData: any[] = []
-let cachedRolesDict: any[] = []
+let cachedCascadeData: unknown[] = []
+let cachedRolesDict: unknown[] = []
 let isCacheLoaded = false
 
 export function useBuildEditDialog(props: { visible: boolean; editingBuild?: BuildEntry | null }, emit: { (e: 'update:visible', value: boolean): void; (e: 'saved', build: BuildEntry): void }) {
@@ -29,17 +29,17 @@ export function useBuildEditDialog(props: { visible: boolean; editingBuild?: Bui
   const submitting = ref(false)
   const parsing = ref(false)
 
-  const cascadeData = ref<any[]>([])
-  const rolesDict = ref<any[]>([])
+  const cascadeData = ref<unknown[]>([])
+  const rolesDict = ref<unknown[]>([])
   const loadingDicts = ref(false)
 
-  const professionOptions = computed(() => cascadeData.value.map((p: any) => ({ label: p.label, value: p.value })))
-  const roleOptions = computed(() => rolesDict.value.map((r: any) => ({ label: r.label, value: r.value })))
+  const professionOptions = computed(() => cascadeData.value.map((p) => ({ label: (p as Record<string, unknown>).label as string, value: (p as Record<string, unknown>).value as string })))
+  const roleOptions = computed(() => rolesDict.value.map((r) => ({ label: (r as Record<string, unknown>).label as string, value: (r as Record<string, unknown>).value as string })))
   const eliteSpecOptions = computed(() => {
     if (!form.value.profession || cascadeData.value.length === 0) return []
-    const prof = cascadeData.value.find((p: any) => p.value === form.value.profession)
-    if (!prof || !prof.elite_specs) return []
-    return prof.elite_specs.map((s: any) => ({ label: s.label, value: s.value }))
+    const prof = cascadeData.value.find((p) => (p as Record<string, unknown>).value === form.value.profession)
+    if (!prof || !(prof as Record<string, unknown>).elite_specs) return []
+    return ((prof as Record<string, unknown>).elite_specs as Record<string, unknown>[]).map((s) => ({ label: s.label as string, value: s.value as string }))
   })
 
   function createEmptyForm(): BuildCreateDto {
@@ -232,20 +232,20 @@ export function useBuildEditDialog(props: { visible: boolean; editingBuild?: Bui
         form.value.profession = profMap[data.profession]
       }
       const specs = data.specializations || []
-      const eliteSpec = specs.find((s: any) => s.is_elite)
+      const eliteSpec = specs.find((s: { is_elite?: boolean; name_cn?: string; name?: string }) => s.is_elite)
       if (eliteSpec?.name_cn || eliteSpec?.name) {
         form.value.eliteSpec = eliteSpec.name_cn || eliteSpec.name
       }
       form.value.traitLines = specs
-        .filter((s: any) => Array.isArray(s.selected_traits) && s.selected_traits.length === 3)
-        .map((s: any) => ({ 
+        .filter((s: { selected_traits?: unknown }) => Array.isArray(s.selected_traits) && s.selected_traits.length === 3)
+        .map((s: { name_cn?: string; name?: string; selected_traits?: unknown }) => ({ 
           name: s.name_cn || s.name || '', 
           choices: s.selected_traits as [number, number, number] 
         }))
-        .filter((t: any) => t.name)
+        .filter((t: { name: string }) => t.name)
       toast.add({ severity: 'success', summary: '解析成功', detail: `已自动填充职业、${form.value.traitLines.length} 条特性线`, life: configManager.get('ui').toastLife })
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '解析失败', detail: e?.message || '网络错误', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '解析失败', detail: e instanceof Error ? e.message : '网络错误', life: configManager.get('ui').toastErrorLife })
     } finally {
       parsing.value = false
     }
@@ -255,23 +255,24 @@ export function useBuildEditDialog(props: { visible: boolean; editingBuild?: Bui
     if (!isValid.value) return
     submitting.value = true
     try {
-      let result: any
+      let result: unknown
       if (isEdit.value && props.editingBuild) {
-        result = await store.updateBuild(props.editingBuild.id, form.value as any)
+        result = await store.updateBuild(props.editingBuild.id, form.value as Partial<BuildEntry>)
       } else {
         result = await store.createBuild(form.value)
       }
-      if (result.success) {
+      const res = result as { success?: boolean; data?: unknown; error?: string }
+      if (res.success) {
         toast.add({ severity: 'success', summary: isEdit.value ? '修改成功' : '创建成功', detail: `配置「${form.value.title}」已${isEdit.value ? '更新' : '创建'}`, life: configManager.get('ui').toastLife })
         localVisible.value = false
-        if (result.data) {
-          emit('saved', result.data)
+        if (res.data) {
+          emit('saved', res.data as BuildEntry)
         }
       } else {
-        toast.add({ severity: 'error', summary: isEdit.value ? '修改失败' : '创建失败', detail: result.error || '未知错误', life: configManager.get('ui').toastErrorLife })
+        toast.add({ severity: 'error', summary: isEdit.value ? '修改失败' : '创建失败', detail: res.error || '未知错误', life: configManager.get('ui').toastErrorLife })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '提交失败', detail: e?.message || '网络错误或服务器异常', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '提交失败', detail: e instanceof Error ? e.message : '网络错误或服务器异常', life: configManager.get('ui').toastErrorLife })
     } finally {
       submitting.value = false
     }

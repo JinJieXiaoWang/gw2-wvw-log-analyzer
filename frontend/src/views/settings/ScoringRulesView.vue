@@ -1,5 +1,5 @@
 <template>
-  <div class="relative min-h-screen p-6 overflow-hidden">
+  <div class="relative min-h-screen bg-neutral-bg p-4 sm:p-6 overflow-hidden">
     <!-- 背景装饰 -->
     <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       <div class="deco-circle deco-circle-top" />
@@ -7,7 +7,7 @@
       <div class="deco-grid" />
     </div>
 
-    <div class="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-6">
+    <div class="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-4 sm:gap-6">
       <PageHeader
         title="评分规则配置"
         subtitle="为不同角色类型定制评分维度和权重"

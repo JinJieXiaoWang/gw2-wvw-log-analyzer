@@ -56,17 +56,17 @@ export interface RecalculateFilters {
 
 class ScoringRulesService {
   /** 获取角色类型列表 */
-  async getRoleTypes(): Promise<any[]> {
-    const resp = await apiFactory.get<any[]>(API_ENDPOINTS.SCORING_RULES.ROLES)
+  async getRoleTypes(): Promise<Record<string, unknown>[]> {
+    const resp = await apiFactory.get<Record<string, unknown>[]>(API_ENDPOINTS.SCORING_RULES.ROLES)
     return resp.success && resp.data ? resp.data : []
   }
 
   /** 获取评分规则（按角色类型和职业） */
-  async getRules(roleType?: string, profession?: string | null): Promise<any> {
-    const params: any = {}
+  async getRules(roleType?: string, profession?: string | null): Promise<unknown> {
+    const params: Record<string, unknown> = {}
     if (roleType) params.role_type = roleType
     if (profession) params.profession = profession
-    const resp = await apiFactory.get(API_ENDPOINTS.SCORING_RULES.RULES, { params })
+    const resp = await apiFactory.get<unknown>(API_ENDPOINTS.SCORING_RULES.RULES, { params })
     return resp.success && resp.data ? resp.data : null
   }
 
@@ -95,8 +95,8 @@ class ScoringRulesService {
   }
 
   /** 批量更新（支持职业特定规则） */
-  async batchUpdate(roleType: string, rules: Partial<ScoringRule>[], profession?: string | null, autoBumpVersion: boolean = true): Promise<any> {
-    const resp = await apiFactory.post(API_ENDPOINTS.SCORING_RULES.BATCH, {
+  async batchUpdate(roleType: string, rules: Partial<ScoringRule>[], profession?: string | null, autoBumpVersion: boolean = true): Promise<unknown> {
+    const resp = await apiFactory.post<unknown>(API_ENDPOINTS.SCORING_RULES.BATCH, {
       role_type: roleType,
       profession,
       rules,
@@ -107,10 +107,10 @@ class ScoringRulesService {
   }
 
   /** 重置为默认 */
-  async resetDefault(roleType?: string): Promise<any> {
-    const params: any = {}
+  async resetDefault(roleType?: string): Promise<unknown> {
+    const params: Record<string, unknown> = {}
     if (roleType) params.role_type = roleType
-    const resp = await apiFactory.post(API_ENDPOINTS.SCORING_RULES.RESET, null, { params })
+    const resp = await apiFactory.post<unknown>(API_ENDPOINTS.SCORING_RULES.RESET, null, { params })
     return resp.success && resp.data ? resp.data : null
   }
 
@@ -123,8 +123,8 @@ class ScoringRulesService {
   }
 
   /** 为指定职业创建/更新完整规则集 */
-  async upsertProfessionRules(profession: string, roleType: string, rules: Partial<ScoringRule>[]): Promise<any> {
-    const resp = await apiFactory.post(API_ENDPOINTS.SCORING_RULES.PROFESSION_RULES(profession), {
+  async upsertProfessionRules(profession: string, roleType: string, rules: Partial<ScoringRule>[]): Promise<unknown> {
+    const resp = await apiFactory.post<unknown>(API_ENDPOINTS.SCORING_RULES.PROFESSION_RULES(profession), {
       role_type: roleType,
       rules,
     })
@@ -132,10 +132,10 @@ class ScoringRulesService {
   }
 
   /** 删除职业特定规则 */
-  async deleteProfessionRules(profession: string, roleType?: string): Promise<any> {
-    const params: any = {}
+  async deleteProfessionRules(profession: string, roleType?: string): Promise<unknown> {
+    const params: Record<string, unknown> = {}
     if (roleType) params.role_type = roleType
-    const resp = await apiFactory.delete(API_ENDPOINTS.SCORING_RULES.PROFESSION_RULES(profession), { params })
+    const resp = await apiFactory.delete<unknown>(API_ENDPOINTS.SCORING_RULES.PROFESSION_RULES(profession), { params })
     return resp.success && resp.data ? resp.data : null
   }
 
@@ -182,8 +182,8 @@ class ScoringRulesService {
   }
 
   /** 获取重算任务进度 */
-  async getRecalculationStatus(versionId: number): Promise<any> {
-    const resp = await apiFactory.get(API_ENDPOINTS.SCORING.RECALCULATE_STATUS(versionId))
+  async getRecalculationStatus(versionId: number): Promise<unknown> {
+    const resp = await apiFactory.get<unknown>(API_ENDPOINTS.SCORING.RECALCULATE_STATUS(versionId))
     return resp.success && resp.data ? resp.data : null
   }
 }

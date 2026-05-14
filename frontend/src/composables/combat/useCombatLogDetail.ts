@@ -198,7 +198,7 @@ export function useCombatLogDetail() {
   })
 
   const sortedPlayerList = computed(() => {
-    return [...players.value].sort((a: any, b: any) => (b.damage || 0) - (a.damage || 0))
+    return [...players.value].sort((a, b) => (b.damage || 0) - (a.damage || 0))
   })
 
   const quickInfoItems = computed(() => [
@@ -224,7 +224,7 @@ export function useCombatLogDetail() {
   const rotationEvents = computed(() => {
     if (!playerRotation.value?.rotation) return []
     const map = playerRotation.value.skill_map || {}
-    const events: any[] = []
+    const events: Record<string, unknown>[] = []
     for (const rot of playerRotation.value.rotation) {
       if (!rot || typeof rot !== 'object') continue
       const rawSkillId = rot.id ?? 0
@@ -281,9 +281,9 @@ export function useCombatLogDetail() {
       } else {
         toast.add({ severity: 'warn', summary: '暂无解析数据', detail: '该日志尚未解析或解析失败', life: configManager.get('ui').toastLife })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (reqId !== loadDataRequestId) return
-      error.value = e.message || '获取数据失败'
+      error.value = e instanceof Error ? e.message : '获取数据失败'
       toast.add({ severity: 'error', summary: '加载失败', detail: error.value, life: configManager.get('ui').toastLife })
     } finally {
       if (reqId === loadDataRequestId) loading.value = false
@@ -307,8 +307,8 @@ export function useCombatLogDetail() {
             toast.add({ severity: 'info', summary: '重新解析', detail: '正在解析，请稍后刷新', life: configManager.get('ui').toastLife })
             startPollProgress(logId)
           } else throw new Error(res.message)
-        } catch (e: any) {
-          toast.add({ severity: 'error', summary: '解析失败', detail: e.message || '重新解析失败', life: configManager.get('ui').toastLife })
+        } catch (e: unknown) {
+          toast.add({ severity: 'error', summary: '解析失败', detail: e instanceof Error ? e.message : '重新解析失败', life: configManager.get('ui').toastLife })
         } finally {
           parsing.value = false
         }
@@ -384,16 +384,16 @@ export function useCombatLogDetail() {
       } else {
         toast.add({ severity: 'warn', summary: '暂无数据', detail: res.message || '该玩家没有技能循环数据', life: configManager.get('ui').toastLife })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '加载失败', detail: e.message || '获取技能数据失败', life: configManager.get('ui').toastLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '加载失败', detail: e instanceof Error ? e.message : '获取技能数据失败', life: configManager.get('ui').toastLife })
     } finally {
       rotationLoading.value = false
     }
   }
 
   /** DataTable 行点击 */
-  const onRowClick = (event: any) => {
-    const player = event.data as EiAnalysisPlayer
+  const onRowClick = (event: { data?: EiAnalysisPlayer }) => {
+    const player = event.data
     if (player) openPlayerDialog(player)
   }
 

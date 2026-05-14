@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { buildsService } from '@/services/build/buildsService'
+import { buildsService, type BuildCreate, type BuildParseResponse } from '@/services/build/buildsService'
 import { configManager } from '@/services/core/configManager'
 
 export function useBuildParser() {
@@ -15,7 +15,7 @@ export function useBuildParser() {
 
   const eliteSpecName = computed(() => {
     if (!parsedData.value?.specializations) return ''
-    const eliteSpec = parsedData.value.specializations.find((spec: any) => spec.is_elite)
+    const eliteSpec = (parsedData.value.specializations as BuildParseResponse['specializations']).find((spec) => spec.is_elite)
     return eliteSpec?.name_cn || ''
   })
 
@@ -47,7 +47,7 @@ export function useBuildParser() {
   const handleClearCode = () => { buildCode.value = ''; parsedData.value = null; parseError.value = '' }
   const handleImportBuildCode = (code: string) => { buildCode.value = code; showImportDialog.value = false }
 
-  const handleSaveBuild = async (buildData: any) => {
+  const handleSaveBuild = async (buildData: BuildCreate) => {
     if (isSaving.value) return
     isSaving.value = true
     try {

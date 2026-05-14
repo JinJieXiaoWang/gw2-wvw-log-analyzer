@@ -19,7 +19,7 @@ export function useLogTable(filteredLogs: LogFile[]) {
     else parsingLogs.value = parsingLogs.value.filter((id) => id !== logId)
   }
 
-  const onSelectAllChange = (event: any) => {
+  const onSelectAllChange = (event: { checked?: boolean }) => {
     const checked = event.checked
     const pageIds = new Set(filteredLogs.map((l) => l.id))
     if (checked) {

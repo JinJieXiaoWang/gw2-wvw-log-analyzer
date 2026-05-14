@@ -29,11 +29,11 @@ export function useSkillRotation() {
     try {
       const response = await logsService.getLogs({})
       if (response.success && response.data) {
-        const data = response.data as any
-        const items = Array.isArray(data) ? data : (data.items || [])
-        logOptions.value = items.map((log: any) => ({ value: log.id, label: log.filename || log.fileName || `Log ${log.id}` }))
+        const data = response.data as Record<string, unknown>
+        const items = Array.isArray(data) ? data : ((data.items as unknown[]) || [])
+        logOptions.value = items.map((log) => ({ value: (log as Record<string, unknown>).id, label: (log as Record<string, unknown>).filename as string || (log as Record<string, unknown>).fileName as string || `Log ${(log as Record<string, unknown>).id}` }))
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '日志列表加载失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     }
   }
@@ -45,8 +45,8 @@ export function useSkillRotation() {
       const response = await logsService.getLog(Number(selectedLogId.value))
       const data = response.success ? response.data : null
       const members = data?.members || data?.players || []
-      memberOptions.value = members.map((m: any) => ({ id: m.id || m.member_id, name: m.name || m.character_name || m.account || m.accountName || `Player ${m.id}` }))
-    } catch (error: any) {
+      memberOptions.value = members.map((m) => ({ id: (m as Record<string, unknown>).id || (m as Record<string, unknown>).member_id, name: (m as Record<string, unknown>).name as string || (m as Record<string, unknown>).character_name as string || (m as Record<string, unknown>).account as string || (m as Record<string, unknown>).accountName as string || `Player ${(m as Record<string, unknown>).id}` }))
+    } catch (error: unknown) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '日志详情加载失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     }
   }

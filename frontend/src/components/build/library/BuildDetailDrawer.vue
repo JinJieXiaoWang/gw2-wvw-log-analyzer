@@ -68,7 +68,7 @@
           <i class="pi pi-code text-primary" />
         </template>
         <div
-          class="p-4 rounded-lg bg-surface-900 font-mono text-sm break-all mb-4 leading-relaxed border border-surface-700"
+          class="p-4 rounded-lg bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/5 font-mono text-sm break-all mb-4 leading-relaxed border border-primary/20"
         >
           {{ build.bdCode }}
         </div>
@@ -106,7 +106,7 @@
           <div
             v-for="(line, idx) in build.traitLines"
             :key="idx"
-            class="flex items-center gap-4 p-3 rounded-lg bg-surface-900 border border-surface-700"
+            class="flex items-center gap-4 p-3 rounded-lg bg-gradient-to-br from-ai/10 via-ai/5 to-primary/5 border border-ai/20"
           >
             <span class="text-base font-semibold min-w-[100px]">{{ line.name }}</span>
             <div class="flex gap-2">

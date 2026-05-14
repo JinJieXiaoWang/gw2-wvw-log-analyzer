@@ -158,7 +158,7 @@ export function useStatDetail(
         return bRate - aRate
       })
     }
-    return list.sort((a: any, b: any) => (b[sortKey] || 0) - (a[sortKey] || 0))
+    return list.sort((a: EiAnalysisPlayer, b: EiAnalysisPlayer) => ((b[sortKey] as number) || 0) - ((a[sortKey] as number) || 0))
   })
 
   const statDetailAverage = computed(() => {

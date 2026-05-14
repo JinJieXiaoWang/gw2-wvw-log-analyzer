@@ -78,7 +78,7 @@ function checkPermission(binding: PermissionBinding): boolean {
   return true
 }
 
-function updateDirective(el: HTMLElement, binding: PermissionBinding, _vnode: any) {
+function updateDirective(el: HTMLElement, binding: PermissionBinding, _vnode: unknown) {
   const hasPermission = checkPermission(binding)
   const showMode = binding.modifiers?.show || false
 

@@ -132,7 +132,7 @@ class AuthStore {
         error_code?: string
         data?: {
           access_token: string
-          user: any
+          user: Record<string, unknown>
           permissions: string[]
           menus: MenuItem[]
         }
@@ -147,9 +147,9 @@ class AuthStore {
         // 更新状态
         this.state.isAuthenticated = true
         this.state.user = {
-          id: user.id.toString(),
-          username: user.username,
-          role: (user.role as Role) || 'operator',
+          id: String((user as Record<string, unknown>).id),
+          username: (user as Record<string, unknown>).username as string,
+          role: ((user as Record<string, unknown>).role as Role) || 'operator',
           loginTime: new Date().toISOString(),
           lastActiveTime: new Date().toISOString()
         }

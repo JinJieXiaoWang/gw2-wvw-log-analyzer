@@ -58,15 +58,16 @@ const loadReports = async () => {
   try {
     const response = await aiService.getReports({
       page: page.value,
-      pageSize: pageSize.value
+      page_size: pageSize.value
     })
     if (response.success && response.data) {
+      const data = response.data as AiReport[]
       if (page.value === 1) {
-        reports.value = response.data
+        reports.value = data
       } else {
-        reports.value = [...reports.value, ...response.data]
+        reports.value = [...reports.value, ...data]
       }
-      hasMore.value = response.data.length === pageSize.value
+      hasMore.value = data.length === pageSize.value
     }
   } catch (error) {
     console.error('加载AI报告失败:', error)
@@ -86,7 +87,7 @@ const loadSuggestions = async () => {
   try {
     const response = await aiService.getSuggestions()
     if (response.success && response.data) {
-      suggestions.value = response.data
+      suggestions.value = response.data as AiSuggestion[]
     }
   } catch (error) {
     console.error('加载AI优化建议失败:', error)
@@ -98,9 +99,9 @@ const loadSuggestions = async () => {
 const loadTrend = async () => {
   loadingTrend.value = true
   try {
-    const response = await aiService.getTrend()
+    const response = await aiService.getTrendAnalysis()
     if (response.success && response.data) {
-      trend.value = response.data
+      trend.value = response.data as AiTrend[]
     }
   } catch (error) {
     console.error('加载AI趋势分析失败:', error)
@@ -115,7 +116,7 @@ const viewReport = (reportId: string) => {
 
 const analyzeFight = async (fightId: string) => {
   try {
-    const response = await aiService.analyzeFight(fightId)
+    const response = await aiService.analyzeFight(parseInt(fightId))
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表
@@ -129,7 +130,7 @@ const analyzeFight = async (fightId: string) => {
 
 const analyzeMember = async (memberId: string) => {
   try {
-    const response = await aiService.analyzeMember(memberId)
+    const response = await aiService.analyzeMemberSkills(parseInt(memberId))
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表
@@ -143,7 +144,7 @@ const analyzeMember = async (memberId: string) => {
 
 const analyzeBuild = async (buildId: string) => {
   try {
-    const response = await aiService.analyzeBuild(buildId)
+    const response = await aiService.analyzeBuild(parseInt(buildId))
     if (response.success) {
       // 处理分析结果
       // 重新加载报告列表

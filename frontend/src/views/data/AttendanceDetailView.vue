@@ -1,7 +1,9 @@
 <template>
-  <div class="space-y-6">
-    <!-- 页面头部 -->
-    <div class="bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 rounded-xl p-6 border border-primary/20">
+  <div class="min-h-screen bg-neutral-bg py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="space-y-6">
+        <!-- 页面头部 -->
+        <div class="bg-gradient-to-r from-primary/10 via-transparent to-secondary/10 rounded-xl p-4 sm:p-6 border border-primary/20">
       <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div class="flex-1">
           <div class="flex items-center gap-3 mb-3">
@@ -206,6 +208,8 @@
       :fights="characterFights"
     />
     <Toast />
+      </div>
+    </div>
   </div>
 </template>
 

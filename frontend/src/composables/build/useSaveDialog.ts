@@ -8,7 +8,7 @@ export interface SaveFormData {
   role: string
   subRoles: string[]
   armorType: string
-  weapons: any[]
+  weapons: unknown[]
   relic: string
   rune: string
   food: string
@@ -16,16 +16,16 @@ export interface SaveFormData {
   infusion: string
   attrRequirements: string[]
   bdCode: string
-  traitLines: any[]
-  rotationCommands: any[]
-  mechanics: any[]
-  videos: any[]
+  traitLines: unknown[]
+  rotationCommands: unknown[]
+  mechanics: unknown[]
+  videos: unknown[]
   author: string
   notes: string
   isMeta: boolean
 }
 
-export function useSaveDialog(visible: Ref<boolean>, parsedData?: any, buildCode?: string) {
+export function useSaveDialog(visible: Ref<boolean>, parsedData?: Record<string, unknown>, buildCode?: string) {
   const isSaving = ref(false)
   const formData = ref<SaveFormData>({
     title: '', profession: '', eliteSpec: null, role: '', subRoles: [],
@@ -40,20 +40,20 @@ export function useSaveDialog(visible: Ref<boolean>, parsedData?: any, buildCode
   const { data: roleDictData } = useDictMapping('role', false)
 
   const professionOptions = computed(() => professionDictData.value.length > 0
-    ? professionDictData.value.map((p: any) => ({ label: p.label, value: p.value }))
+    ? professionDictData.value.map((p) => ({ label: p.label, value: p.value }))
     : [])
   const roleOptions = computed(() => roleDictData.value.length > 0
-    ? roleDictData.value.map((r: any) => ({ label: r.label, value: r.value }))
+    ? roleDictData.value.map((r) => ({ label: r.label, value: r.value }))
     : [])
 
   const initializeForm = () => {
     if (parsedData) {
       formData.value = {
-        title: '', profession: parsedData.profession || '', eliteSpec: parsedData.elite_spec || null,
-        role: '', subRoles: [], armorType: parsedData.armor_type || '', weapons: parsedData.weapons || [],
-        relic: parsedData.relic || '', rune: parsedData.rune || '', food: '', wrench: '',
+        title: '', profession: (parsedData.profession as string) || '', eliteSpec: (parsedData.elite_spec as string | null) || null,
+        role: '', subRoles: [], armorType: (parsedData.armor_type as string) || '', weapons: (parsedData.weapons as unknown[]) || [],
+        relic: (parsedData.relic as string) || '', rune: (parsedData.rune as string) || '', food: '', wrench: '',
         infusion: '', attrRequirements: [], bdCode: buildCode || '',
-        traitLines: parsedData.traits || [], rotationCommands: [], mechanics: [],
+        traitLines: (parsedData.traits as unknown[]) || [], rotationCommands: [], mechanics: [],
         videos: [], author: '', notes: '', isMeta: false,
       }
     }

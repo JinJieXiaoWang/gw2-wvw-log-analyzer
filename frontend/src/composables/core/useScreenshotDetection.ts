@@ -144,7 +144,7 @@ export function useScreenshotDetection(options: ScreenshotDetectionOptions = {})
       window.addEventListener('focus', handleFocus)
     }
     if (detectClipboard && 'clipboard' in navigator) {
-      // @ts-expect-error clipboardchange is non-standard - clipboardchange 是非标准事件
+      // @ts-expect-error clipboardchange is non-standard event
       navigator.clipboard?.addEventListener?.('clipboardchange', handleClipboardChange)
     }
     if (detectDevTools) {

@@ -51,10 +51,12 @@ export interface ProfessionCascade {
   value: string
   label: string
   color: string
+  default_role?: string
   elite_specs: Array<{
     value: string
     label: string
     color: string
+    default_role?: string
   }>
 }
 

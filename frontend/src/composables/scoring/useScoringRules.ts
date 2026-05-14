@@ -7,7 +7,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { scoringRulesService, type ScoringRule, type DimensionInfo } from '@/services/core/scoringRulesService'
+import { scoringRulesService, type ScoringRule, type DimensionInfo, type ScoringRuleVersion } from '@/services/core/scoringRulesService'
 import { dictionaryService, type ProfessionCascade } from '@/services/system/dictionaryService'
 import { professionService } from '@/services/professionService'
 import { configManager } from '@/services/core/configManager'
@@ -58,10 +58,10 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   const cascadeProfessions = ref<ProfessionCascade[]>([])
   const selectedBaseProfession = ref('')
 
-  const recalcTask = ref<any>(null)
+  const recalcTask = ref<Record<string, unknown> | null>(null)
   let recalcPollTimer: ReturnType<typeof setInterval> | null = null
 
-  const versionHistory = ref<any[]>([])
+  const versionHistory = ref<ScoringRuleVersion[]>([])
 
   // ========== Computed ==========
   const roleColors = computed(() => {
@@ -177,11 +177,11 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     try {
       const data = await scoringRulesService.getRoleTypes()
       if (data && data.length > 0) {
-        roleTypes.value = data.map((r: any) => ({
-          type: r.type, label: r.label, description: r.description || '',
-          icon: ROLE_ICON_MAP[r.type] || 'pi pi-star', color: r.color || '#6b7280',
+        roleTypes.value = data.map((r) => ({
+          type: r.type as string, label: r.label as string, description: (r.description as string) || '',
+          icon: ROLE_ICON_MAP[r.type as string] || 'pi pi-star', color: (r.color as string) || '#6b7280',
         }))
-        if (!activeRole.value) activeRole.value = data[0].type
+        if (!activeRole.value) activeRole.value = data[0].type as string
       }
     } catch {
       roleTypes.value = DEFAULT_ROLE_TYPES.map(r => ({ ...r }))
@@ -193,22 +193,26 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     loading.value = true
     try {
       if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
-        const data = await scoringRulesService.getRules(activeRole.value, selectedProfession.value)
-        if (data?.rules) professionRulesMap.value[selectedProfession.value] = data.rules
+        const data = await scoringRulesService.getRules(activeRole.value, selectedProfession.value) as Record<string, unknown> | null
+        if (data && (data.rules as ScoringRule[])) professionRulesMap.value[selectedProfession.value] = data.rules as ScoringRule[]
       } else {
-        const data = await scoringRulesService.getRules()
+        const data = await scoringRulesService.getRules() as Record<string, unknown> | null
         if (data) {
           for (const key of ['dps', 'support', 'tank']) {
-            if (data[key]) {
-              currentRules.value[key] = data[key].rules || []
-              originalRules.value[key] = JSON.parse(JSON.stringify(data[key].rules || []))
+            const group = data[key] as Record<string, unknown> | undefined
+            if (group) {
+              const rules = group.rules as ScoringRule[] | undefined
+              if (rules) {
+                currentRules.value[key] = rules
+                originalRules.value[key] = JSON.parse(JSON.stringify(rules))
+              }
             }
           }
         }
       }
       syncEditableRules()
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分规则失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分规则失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
     }
@@ -224,23 +228,23 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     try {
       const cascadeData = await professionService.getProfessionCascade()
       if (cascadeData && cascadeData.length > 0) {
-        cascadeProfessions.value = cascadeData.map((prof: any) => ({
+        cascadeProfessions.value = cascadeData.map((prof) => ({
           value: prof.value, label: prof.label, color: prof.color,
           default_role: prof.default_role || prof.value,
-          elite_specs: (prof.elite_specs || []).map((spec: any) => ({
+          elite_specs: (prof.elite_specs || []).map((spec) => ({
             value: spec.value, label: spec.label, color: spec.color,
             default_role: spec.default_role || spec.value,
           })),
         }))
         professionOptions.value = []
         for (const prof of cascadeProfessions.value) {
-          for (const spec of (prof as any).elite_specs) {
+          for (const spec of prof.elite_specs) {
             professionOptions.value.push({ label: `${spec.label} (${prof.label})`, value: spec.value })
           }
         }
       } else {
-        const data = await dictionaryService.getProfessionSpecsCascade()
-        if (data?.professions) {
+        const data = await dictionaryService.getProfessionSpecsCascade() as { professions?: ProfessionCascade[] } | null
+        if (data && data.professions) {
           cascadeProfessions.value = data.professions
           professionOptions.value = []
           for (const prof of data.professions) {
@@ -330,21 +334,21 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
       }))
       if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
         await scoringRulesService.upsertProfessionRules(selectedProfession.value, activeRole.value, rulesToSave)
-        const refreshed = await scoringRulesService.getRules(activeRole.value, selectedProfession.value)
-        if (refreshed?.rules) professionRulesMap.value[selectedProfession.value] = refreshed.rules
+        const refreshed = await scoringRulesService.getRules(activeRole.value, selectedProfession.value) as Record<string, unknown> | null
+        if (refreshed && refreshed.rules) professionRulesMap.value[selectedProfession.value] = refreshed.rules as ScoringRule[]
         toast.add({ severity: 'success', summary: '保存成功', detail: `${selectedProfession.value} 职业特定规则已更新`, life: configManager.get('ui').toastLife })
       } else {
         await scoringRulesService.batchUpdate(activeRole.value, rulesToSave)
-        const refreshed = await scoringRulesService.getRules(activeRole.value)
-        if (refreshed?.rules) currentRules.value[activeRole.value] = refreshed.rules
-        originalRules.value[activeRole.value] = JSON.parse(JSON.stringify(refreshed?.rules || []))
+        const refreshed = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
+        if (refreshed && refreshed.rules) currentRules.value[activeRole.value] = refreshed.rules as ScoringRule[]
+        originalRules.value[activeRole.value] = JSON.parse(JSON.stringify((refreshed && refreshed.rules) || []))
         toast.add({ severity: 'success', summary: '保存成功', detail: `${activeRoleLabel.value}通用评分规则已更新`, life: configManager.get('ui').toastLife })
       }
       changedRoles.value.delete(activeRole.value)
       syncEditableRules()
       if (enableVersionHistory) await fetchVersions()
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '保存失败', detail: e?.message || '更新评分规则失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '保存失败', detail: e instanceof Error ? e.message : '更新评分规则失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       saving.value = false
     }
@@ -368,8 +372,8 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
           changedRoles.value.delete(activeRole.value)
           await fetchRules()
           toast.add({ severity: 'success', summary: '重置成功', detail: `${activeRoleLabel.value}评分规则已重置为默认`, life: configManager.get('ui').toastLife })
-        } catch (e: any) {
-          toast.add({ severity: 'error', summary: '重置失败', detail: e?.message || '操作失败', life: configManager.get('ui').toastErrorLife })
+        } catch (e: unknown) {
+          toast.add({ severity: 'error', summary: '重置失败', detail: e instanceof Error ? e.message : '操作失败', life: configManager.get('ui').toastErrorLife })
         } finally { resetting.value = false }
       },
     })
@@ -404,8 +408,8 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
         toast.add({ severity: 'info', summary: '重算任务已创建', detail: `版本 v${result.version}，正在后台执行`, life: configManager.get('ui').toastErrorLife })
         pollRecalcStatus(result.version_id)
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '重算任务创建失败', detail: e?.message || '操作失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '重算任务创建失败', detail: e instanceof Error ? e.message : '操作失败', life: configManager.get('ui').toastErrorLife })
     } finally { recalculating.value = false }
   }
 
@@ -414,12 +418,13 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     if (recalcPollTimer) { clearInterval(recalcPollTimer); recalcPollTimer = null }
     recalcPollTimer = setInterval(async () => {
       try {
-        const status = await scoringRulesService.getRecalculationStatus(versionId)
+        const status = await scoringRulesService.getRecalculationStatus(versionId) as Record<string, unknown> | null
         if (status) {
           recalcTask.value = status
-          if (status.status === 'completed' || status.status === 'failed') {
+          const st = status.status as string
+          if (st === 'completed' || st === 'failed') {
             if (recalcPollTimer) { clearInterval(recalcPollTimer); recalcPollTimer = null }
-            if (status.status === 'completed') toast.add({ severity: 'success', summary: '重算完成', detail: `已更新 ${status.updated_records} 条记录`, life: configManager.get('ui').toastErrorLife })
+            if (st === 'completed') toast.add({ severity: 'success', summary: '重算完成', detail: `已更新 ${status.updated_records} 条记录`, life: configManager.get('ui').toastErrorLife })
             if (enableVersionHistory) await fetchVersions()
           }
         }
@@ -438,8 +443,8 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
           professionRulesMap.value[selectedProfession.value] = []
           syncEditableRules()
           toast.add({ severity: 'success', summary: '删除成功', detail: `${selectedProfession.value} 职业特定规则已删除`, life: configManager.get('ui').toastLife })
-        } catch (e: any) {
-          toast.add({ severity: 'error', summary: '删除失败', detail: e?.message || '操作失败', life: configManager.get('ui').toastErrorLife })
+        } catch (e: unknown) {
+          toast.add({ severity: 'error', summary: '删除失败', detail: e instanceof Error ? e.message : '操作失败', life: configManager.get('ui').toastErrorLife })
         } finally { deletingProfession.value = false }
       },
     })

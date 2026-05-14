@@ -29,16 +29,17 @@ export function usePlayerRotation(
   const rotationEvents = computed(() => {
     if (!playerRotation.value?.rotation) return []
     const map = playerRotation.value.skill_map || {}
-    const events: any[] = []
-    playerRotation.value.rotation.forEach((rot: any) => {
+    const events: Record<string, unknown>[] = []
+    playerRotation.value.rotation.forEach((rot: unknown) => {
       if (!rot || typeof rot !== 'object') return
-      const skillId = rot.id ?? 0
+      const r = rot as Record<string, unknown>
+      const skillId = (r.id as number) ?? 0
       const name = map[String(skillId)]?.name || `技能 #${skillId}`
       const iconUrl = map[String(skillId)]?.icon || ''
       const icon = getSkillIconUrl(name, iconUrl)
-      ;(rot.skills || []).forEach((cast: any) => {
+      ;((r.skills as Record<string, unknown>[]) || []).forEach((cast: Record<string, unknown>) => {
         events.push({
-          time: (cast.castTime ?? 0) / 1000,
+          time: ((cast.castTime as number) ?? 0) / 1000,
           skillId,
           duration: cast.duration ?? 0,
           casts: 1,

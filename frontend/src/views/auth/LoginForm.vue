@@ -16,14 +16,14 @@
         </span>
         <input
           id="username"
-          v-model="localForm.username"
+          v-model="username"
           type="text"
           :disabled="loading"
           class="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           :class="{ 'border-red-500 bg-red-900/20': errors.username }"
           placeholder="请输入用户名"
           @blur="emit('validate-username')"
-          @input="emit('clear-error', 'username')"
+          @input="emit('clear-error', 'username'); updateForm()"
         >
       </div>
       <p
@@ -47,14 +47,14 @@
         </span>
         <input
           id="password"
-          v-model="localForm.password"
+          v-model="password"
           :type="showPassword ? 'text' : 'password'"
           :disabled="loading"
           class="w-full pl-12 pr-12 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
           :class="{ 'border-red-500 bg-red-900/20': errors.password }"
           placeholder="请输入密码"
           @blur="emit('validate-password')"
-          @input="emit('clear-error', 'password')"
+          @input="emit('clear-error', 'password'); updateForm()"
         >
         <button
           type="button"
@@ -110,7 +110,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, watch } from 'vue'
+import { ref } from 'vue';
 
 const props = defineProps<{
   form: { username: string; password: string }
@@ -129,14 +129,10 @@ const emit = defineEmits<{
 }>()
 
 const showPassword = ref(false)
+const username = ref(props.form.username)
+const password = ref(props.form.password)
 
-const localForm = reactive({ ...props.form })
-
-watch(() => props.form, (val) => {
-  Object.assign(localForm, val)
-}, { deep: true })
-
-watch(localForm, (val) => {
-  emit('update:form', { ...val })
-}, { deep: true })
+function updateForm() {
+  emit('update:form', { username: username.value, password: password.value })
+}
 </script>

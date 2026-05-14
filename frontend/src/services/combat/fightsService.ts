@@ -58,22 +58,22 @@ export interface FightQueryParams {
 
 export interface FightsListParams {
   page?: number
-  page_size?: number
+  pageSize?: number
   map_name?: string | null
   server_name?: string | null
 }
 
 export class FightsService {
-  async getFights(params: FightsListParams): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.FIGHTS.LIST, { params })
+  async getFights(params: FightsListParams): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.FIGHTS.LIST, { params })
   }
 
-  async getFight(fightId: number): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.FIGHTS.DETAIL(fightId))
+  async getFight(fightId: string): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.FIGHTS.DETAIL(fightId))
   }
 
-  async getFightStats(fightId: number): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.FIGHTS.STATS(fightId))
+  async getFightStats(fightId: string): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.FIGHTS.STATS(fightId))
   }
 }
 

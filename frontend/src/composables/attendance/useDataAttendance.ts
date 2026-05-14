@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { usePagination } from '@/composables/common/usePagination'
+import { usePagination, type PageChangeEvent } from '@/composables/common/usePagination'
 import { attendanceService } from '@/services'
 import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
@@ -19,7 +19,7 @@ export function useDataAttendance() {
 
   // 防抖
   let sortDebounceTimer: ReturnType<typeof setTimeout> | null = null
-  const debounce = <T extends (...args: any[]) => void>(fn: T, delay: number) => {
+  const debounce = <T extends (...args: unknown[]) => void>(fn: T, delay: number) => {
     return (...args: Parameters<T>) => {
       if (sortDebounceTimer) clearTimeout(sortDebounceTimer)
       sortDebounceTimer = setTimeout(() => fn(...args), delay)
@@ -38,7 +38,7 @@ export function useDataAttendance() {
   const filterProfession = ref<string | null>(null)
   const filterOptions = ref({ maps: [] as string[], professions: [] as string[] })
 
-  const accountList = ref<any[]>([])
+  const accountList = ref<Record<string, unknown>[]>([])
   const { page, pageSize, total, pagination, onPageChange: _onPageChange, resetPage: _resetPage } = usePagination({ defaultPageSize: 20 })
   const currentSort = ref({ field: 'attendance_count', order: 'desc' })
 
@@ -47,18 +47,18 @@ export function useDataAttendance() {
   // 详情
   const detailVisible = ref(false)
   const selectedAccount = ref('')
-  const detailData = ref<any>(null)
+  const detailData = ref<unknown>(null)
 
   // 评分维度
   const scoreBreakdownVisible = ref(false)
   const scoreBreakdownLoading = ref(false)
-  const scoreBreakdownData = ref<any>(null)
+  const scoreBreakdownData = ref<unknown>(null)
   const scoreBreakdownAccount = ref('')
 
   // 评分规则
   const scoringRulesVisible = ref(false)
   const scoringRulesLoading = ref(false)
-  const scoringRulesData = ref<Record<string, any>>({})
+  const scoringRulesData = ref<Record<string, unknown>>({})
   const scoringRulesActiveTab = ref(0)
 
   const fetchCurrentRuleVersion = async () => {
@@ -74,9 +74,9 @@ export function useDataAttendance() {
     scoringRulesData.value = {}
     try {
       const result = await scoringRulesService.getRules()
-      if (result) scoringRulesData.value = result
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分规则失败', life: configManager.get('ui').toastErrorLife })
+      if (result) scoringRulesData.value = result as Record<string, unknown>
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分规则失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       scoringRulesLoading.value = false
     }
@@ -86,15 +86,15 @@ export function useDataAttendance() {
     try {
       const result = await ApiResponseWrapper.wrap(attendanceService.getFilters(), { showErrorMessage: false })
       if (result.success && result.data) {
-        const data = result.data as any
-        filterOptions.value.maps = data.maps || []
-        filterOptions.value.professions = data.professions || []
+        const data = result.data as Record<string, unknown>
+        filterOptions.value.maps = (data.maps as string[]) || []
+        filterOptions.value.professions = (data.professions as string[]) || []
       }
     } catch (e) { console.error('获取筛选选项失败', e) }
   }
 
   const buildParams = () => {
-    const params: any = {
+    const params: Record<string, unknown> = {
       page: page.value,
       page_size: pageSize.value,
       sort_by: currentSort.value.field,
@@ -115,20 +115,20 @@ export function useDataAttendance() {
     try {
       const result = await ApiResponseWrapper.wrap(attendanceService.getAccounts(buildParams()), { showErrorMessage: true })
       if (result.success && result.data) {
-        const data = result.data as any
-        accountList.value = data.items || []
-        total.value = data.total || 0
+        const data = result.data as Record<string, unknown>
+        accountList.value = (data.items as Record<string, unknown>[]) || []
+        total.value = (data.total as number) || 0
         statCards.value.totalAccounts = total.value
-        statCards.value.totalDuration = accountList.value.reduce((s, i) => s + (i.total_duration_sec || 0), 0)
-        statCards.value.totalDamage = accountList.value.reduce((s, i) => s + (i.total_damage || 0), 0)
-        statCards.value.totalDowned = accountList.value.reduce((s, i) => s + (i.total_downed || 0), 0)
+        statCards.value.totalDuration = accountList.value.reduce((s, i) => s + ((i.total_duration_sec as number) || 0), 0)
+        statCards.value.totalDamage = accountList.value.reduce((s, i) => s + ((i.total_damage as number) || 0), 0)
+        statCards.value.totalDowned = accountList.value.reduce((s, i) => s + ((i.total_downed as number) || 0), 0)
       } else {
         accountList.value = []
         total.value = 0
         toast.add({ severity: 'warn', summary: '提示', detail: '暂无数据', life: configManager.get('ui').toastLife })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取数据失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取数据失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
     }
@@ -153,8 +153,8 @@ export function useDataAttendance() {
       const result = await ApiResponseWrapper.wrap(attendanceService.getAccountDetail(account, start, end), { showErrorMessage: true })
       if (result.success && result.data) detailData.value = result.data
       else toast.add({ severity: 'warn', summary: '提示', detail: '暂无详情数据', life: configManager.get('ui').toastLife })
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取详情失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取详情失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       detailLoading.value = false
     }
@@ -170,22 +170,23 @@ export function useDataAttendance() {
       const result = await ApiResponseWrapper.wrap(attendanceService.getAccountScoreBreakdown(account, start, end), { showErrorMessage: true })
       if (result.success && result.data) scoreBreakdownData.value = result.data
       else toast.add({ severity: 'warn', summary: '提示', detail: '暂无评分数据', life: configManager.get('ui').toastLife })
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取评分维度详情失败', life: configManager.get('ui').toastErrorLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分维度详情失败', life: configManager.get('ui').toastErrorLife })
     } finally {
       scoreBreakdownLoading.value = false
     }
   }
 
-  const onPageChange = (event: any) => {
-    _onPageChange(event)
+  const onPageChange = (event: unknown) => {
+    _onPageChange(event as PageChangeEvent)
     fetchAccounts()
   }
 
-  const onSort = debounce((event: any) => {
-    if (event.sortField) {
-      currentSort.value.field = event.sortField
-      currentSort.value.order = event.sortOrder === 1 ? 'asc' : 'desc'
+  const onSort = debounce((event: unknown) => {
+    const ev = event as Record<string, unknown>
+    if (ev.sortField) {
+      currentSort.value.field = ev.sortField as string
+      currentSort.value.order = ev.sortOrder === 1 ? 'asc' : 'desc'
       fetchAccounts()
     }
   }, 300)

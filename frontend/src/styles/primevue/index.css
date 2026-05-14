@@ -107,7 +107,7 @@
 }
 
 .p-datatable .p-datatable-tbody > tr.p-highlight {
-  @apply bg-primary-alpha-10;
+  background-color: var(--color-primary-alpha-10);
 }
 
 .p-datatable .p-button.p-button-text {
@@ -177,7 +177,8 @@
 }
 
 .p-dropdown-item.p-highlight {
-  @apply bg-primary-alpha-10 text-primary;
+  background-color: var(--color-primary-alpha-10);
+  color: var(--color-primary);
 }
 
 /* ==================== 标签组件 ==================== */
@@ -458,7 +459,8 @@
 }
 
 .p-datepicker table td > span:hover {
-  @apply bg-primary-alpha-10 text-primary;
+  background-color: var(--color-primary-alpha-10);
+  color: var(--color-primary);
 }
 
 .p-datepicker table td.p-datepicker-today > span {

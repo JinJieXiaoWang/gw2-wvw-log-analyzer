@@ -52,6 +52,7 @@
           @validate-username="validateUsername"
           @validate-password="validatePassword"
           @clear-error="clearError"
+          @update:form="updateLoginForm"
         />
 
         <transition name="slide-down">
@@ -131,7 +132,15 @@ const loginSuccess = ref('')
 const errorType = ref('error')
 const remainingAttempts = ref(5)
 
-const isFormValid = computed(() => loginForm.username.length >= 3 && loginForm.password.length >= 6)
+const isFormValid = computed(() => {
+  const valid = loginForm.username.length >= 3 && loginForm.password.length >= 6
+  return valid
+})
+
+function updateLoginForm(form: { username: string; password: string }) {
+  loginForm.username = form.username
+  loginForm.password = form.password
+}
 
 function validateUsername() {
   if (!loginForm.username) errors.username = '请输入用户名'
