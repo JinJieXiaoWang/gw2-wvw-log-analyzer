@@ -33,7 +33,7 @@ def run_command(command, description):
 
 
 def main():
-    project_root = Path(__file__).parent.parent
+    project_root = Path(__file__).parent.parent.parent
 
     # 检查是否安装了 black 和 isort
     try:

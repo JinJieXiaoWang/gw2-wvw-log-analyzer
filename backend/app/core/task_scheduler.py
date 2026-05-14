@@ -27,7 +27,7 @@ async def scheduled_sync_skill_icons():
         import subprocess
         import sys
         from pathlib import Path
-        script_path = Path(__file__).resolve().parent.parent.parent / "scripts" / "sync_skill_icons.py"
+        script_path = Path(__file__).resolve().parent.parent.parent / "scripts" / "maintenance" / "sync_skill_icons.py"
         result = subprocess.run(
             [sys.executable, str(script_path)],
             capture_output=True,

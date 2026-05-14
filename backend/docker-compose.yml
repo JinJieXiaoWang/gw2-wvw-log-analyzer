@@ -11,7 +11,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: scripts/docker/Dockerfile
     container_name: gw2-backend
     restart: unless-stopped
     environment:

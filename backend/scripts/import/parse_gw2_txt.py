@@ -9,7 +9,7 @@
 4. 从描述中尝试提取：护甲类型、武器、符文、古物
 
 使用方法：
-    python -m scripts.parse_gw2_txt
+    python scripts/import/parse_gw2_txt.py
 
 作者: System
 创建日期: 2026-05-05
@@ -20,11 +20,11 @@ import os
 import sys
 from typing import List, Dict, Any
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 GW2_TXT_PATH = os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-    "tests", "GW2.txt"
+    "scripts", "import", "GW2.txt"
 )
 
 

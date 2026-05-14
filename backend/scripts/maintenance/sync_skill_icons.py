@@ -7,7 +7,7 @@
 
 用法:
     cd backend
-    python scripts/sync_skill_icons.py
+    python scripts/maintenance/sync_skill_icons.py
 """
 
 import json
@@ -20,7 +20,7 @@ from pathlib import Path
 import requests
 
 # 项目根目录（backend 的父目录）
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent
 SKILLS_JSON = PROJECT_ROOT / "backend" / "app" / "data" / "bdcode_skills.json"
 SKILLS_DIR = PROJECT_ROOT / "frontend" / "src" / "assets" / "images" / "skills"
 CONCURRENT_LIMIT = 10

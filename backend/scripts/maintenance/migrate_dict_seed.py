@@ -7,7 +7,7 @@ with open(filepath, 'r', encoding='utf-8') as f:
 start = content.find('# 字典类型种子数据')
 end = content.find('# 角色定位种子数据')
 
-new_block = open('scripts/new_dict_seed.txt', 'r', encoding='utf-8').read()
+new_block = open('scripts/maintenance/new_dict_seed.txt', 'r', encoding='utf-8').read()
 
 new_content = content[:start] + new_block + content[end:]
 with open(filepath, 'w', encoding='utf-8') as f:

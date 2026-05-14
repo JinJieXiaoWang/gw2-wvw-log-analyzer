@@ -10,7 +10,7 @@
 
 使用方法：
     cd D:\Code\Gw2-wvw-log-analyzer\backend
-    python -m scripts.import_gw2_txt_builds
+    python scripts/import/import_gw2_txt_builds.py
 
 作者: System
 创建日期: 2026-05-06
@@ -22,7 +22,7 @@ import sys
 from datetime import datetime
 from typing import List, Dict, Any, Tuple
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from app.config.database import SessionLocal, init_db
 from app.services.build_service import create_build

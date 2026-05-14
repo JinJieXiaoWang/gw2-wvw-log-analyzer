@@ -14,7 +14,7 @@ import re
 from typing import List, Tuple
 
 # 添加项目路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
