@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-800 rounded-lg p-4">
+  <div class="bg-gray-800 rounded-lg p-4" :class="{ 'opacity-50': disabled }">
     <h2 class="text-xl font-semibold mb-4">
       AI报告列表
     </h2>
@@ -13,7 +13,8 @@
       v-else-if="reports.length === 0"
       class="text-center py-8 text-gray-400"
     >
-      暂无AI报告
+      <p>暂无AI报告</p>
+      <p class="text-sm mt-2 text-gray-500">配置AI后可生成分析报告</p>
     </div>
     <div
       v-else
@@ -22,8 +23,9 @@
       <div 
         v-for="report in reports" 
         :key="report.id" 
-        class="bg-gray-700 rounded p-4 hover:bg-gray-600 transition-colors"
-        @click="viewReport(report.id)"
+        class="bg-gray-700 rounded p-4 hover:bg-gray-600 transition-colors cursor-pointer"
+        :class="{ 'cursor-not-allowed opacity-70': disabled }"
+        @click="!disabled && viewReport(report.id)"
       >
         <div class="flex justify-between items-center">
           <h3 class="font-medium">
@@ -38,7 +40,7 @@
     </div>
     <div class="mt-4 flex justify-center">
       <BaseLoadMore
-        v-if="reports.length > 0"
+        v-if="reports.length > 0 && !disabled"
         :load-callback="handleLoadMore"
         :has-more="hasMore"
         :show-no-more="true"
@@ -60,6 +62,7 @@
  * 作者：System
  * 创建日期：2026-04-27
  * 更新日期：2026-05-11 - 集成BaseLoadMore组件
+ * 更新日期：2026-05-20 - 添加disabled状态支持
  */
 
 import BaseLoadMore from '@/components/common/ui/overlay/BaseLoadMore.vue'
@@ -69,6 +72,7 @@ defineProps<{
   reports: AiReport[]
   loading: boolean
   hasMore: boolean
+  disabled?: boolean
 }>()
 
 const emit = defineEmits<{

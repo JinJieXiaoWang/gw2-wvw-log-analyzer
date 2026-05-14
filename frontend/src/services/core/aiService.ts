@@ -1,6 +1,6 @@
-import { apiFactory } from '../core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '@/types/api'
+import { apiFactory } from '../core/apiService'
 
 export interface ReportsListParams {
   page?: number
@@ -40,6 +40,27 @@ export class AIService {
 
   async getSuggestions(): Promise<ApiResponse<any>> {
     return apiFactory.get<any>(API_ENDPOINTS.AI.SUGGESTIONS)
+  }
+
+  async getStatus(): Promise<ApiResponse<any>> {
+    return apiFactory.get<any>(API_ENDPOINTS.AI.STATUS)
+  }
+
+  async testConfiguration(): Promise<ApiResponse<any>> {
+    return apiFactory.get<any>(API_ENDPOINTS.AI.TEST)
+  }
+
+  async testConfigurationWithKey(provider: string, apiKey: string): Promise<ApiResponse<any>> {
+    return apiFactory.post<any>(API_ENDPOINTS.AI.TEST, null, {
+      params: {
+        provider,
+        api_key: apiKey
+      }
+    })
+  }
+
+  async clearCache(): Promise<ApiResponse<void>> {
+    return apiFactory.post<void>(API_ENDPOINTS.AI.CLEAR_CACHE)
   }
 }
 

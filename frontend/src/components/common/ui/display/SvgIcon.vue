@@ -1,168 +1,70 @@
 <template>
-  <svg
-    class="svg-icon"
-    :class="svgClasses"
-    :style="svgStyle"
-    :width="width || iconSize"
-    :height="height || iconSize"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    :aria-hidden="true"
-    :aria-label="title"
-  >
-    <title v-if="title">{{ title }}</title>
-    <use :xlink:href="iconHref" />
+  <div v-if="isExternalResult" :style="styleExternalIcon" class="svg-external-icon svg-icon" v-bind="$attrs" />
+  <svg v-else :class="svgClass" aria-hidden="true" v-bind="$attrs">
+    <use :xlink:href="iconName" />
   </svg>
 </template>
 
 <script setup lang="ts">
-/**
- * SvgIcon 组件
- * 功能：统一的SVG图标组件，支持自定义尺寸、颜色、旋转和动画
- * 作者：System
- * 创建日期：2026-05-11
- * 
- * Props:
- * - name: 图标名称（必填）
- * - category: 图标分类（默认 'ui'）
- * - size: 图标尺寸（'xs' | 'sm' | 'md' | 'lg' | 'xl'）
- * - width/height: 自定义宽高
- * - color: 自定义颜色
- * - spin: 是否旋转动画
- * - inline: 是否内联显示
- * - title: 无障碍标签
- * - customClass: 自定义CSS类名
- * 
- * 使用示例：
- * <SvgIcon name="home" />
- * <SvgIcon name="log" category="ui" size="lg" color="var(--primary)" />
- */
-
 import { computed } from 'vue'
 
 interface Props {
-  /** 图标名称 */
-  name: string
-  /** 图标分类：ui, combat, status, profession, buff, decor */
-  category?: 'ui' | 'combat' | 'status' | 'profession' | 'buff' | 'decor'
-  /** 图标尺寸 */
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
-  /** 自定义宽度 */
-  width?: number | string
-  /** 自定义高度 */
-  height?: number | string
-  /** 自定义颜色 */
-  color?: string
-  /** 是否旋转动画 */
-  spin?: boolean
-  /** 是否内联显示 */
-  inline?: boolean
-  /** 无障碍标签 */
-  title?: string
-  /** 自定义CSS类名 */
-  customClass?: string
+  iconClass?: string
+  className?: string
+  icon?: string
+  size?: number | 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  category: 'ui',
-  size: 'md',
-  spin: false,
-  inline: false
+  className: '',
+  icon: '',
+  size: 'md'
 })
 
-/**
- * 尺寸映射表
- */
-const sizeMap: Record<string, number> = {
-  xs: 12,
-  sm: 16,
-  md: 20,
-  lg: 24,
-  xl: 32
-}
+const iconClass = computed(() => props.iconClass || props.icon || '')
 
-/**
- * 计算图标大小
- */
-const iconSize = computed(() => sizeMap[props.size] || sizeMap.md)
-
-/**
- * 计算图标href
- */
-const iconHref = computed(() => {
-  return `#icon-${props.category}-${props.name}`
+const isExternalResult = computed(() => {
+  const value = iconClass.value
+  return /^(https?:|data:)/.test(value)
 })
 
-/**
- * 计算SVG类名
- */
-const svgClasses = computed(() => {
-  const classes: string[] = [`svg-icon--${props.size}`]
+const iconName = computed(() => `#icon-${iconClass.value}`)
+
+const svgClass = computed(() => {
+  const classes: string[] = ['svg-icon']
   
-  if (props.spin) {
-    classes.push('svg-icon--spin')
-  }
-  if (props.inline) {
-    classes.push('svg-icon--inline')
-  }
-  if (props.customClass) {
-    classes.push(props.customClass)
+  if (props.className) {
+    classes.push(props.className)
   }
   
-  return classes
+  if (typeof props.size === 'string') {
+    classes.push(`svg-icon--${props.size}`)
+  }
+  
+  return classes.join(' ')
 })
 
-/**
- * 计算SVG样式
- */
-const svgStyle = computed(() => {
-  const style: Record<string, string> = {}
-  if (props.color) {
-    style.color = props.color
-  }
-  return style
-})
+const styleExternalIcon = computed(() => ({
+  mask: `url(${iconClass.value}) no-repeat 50% 50%`,
+  '-webkit-mask': `url(${iconClass.value}) no-repeat 50% 50%`
+}))
 </script>
 
 <style scoped>
-/**
- * SVG图标基础样式
- */
 .svg-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
 }
 
-/**
- * 内联显示
- */
-.svg-icon--inline {
-  display: inline;
-  vertical-align: middle;
+.svg-external-icon {
+  background-color: currentColor;
+  mask-size: cover!important;
+  display: inline-block;
 }
 
-/**
- * 旋转动画
- */
-.svg-icon--spin {
-  animation: svg-spin 2s linear infinite;
-}
-
-@keyframes svg-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/**
- * 尺寸变体
- */
 .svg-icon--xs {
   width: 12px;
   height: 12px;
@@ -186,21 +88,5 @@ const svgStyle = computed(() => {
 .svg-icon--xl {
   width: 32px;
   height: 32px;
-}
-
-/**
- * 悬停效果
- */
-.svg-icon:hover {
-  opacity: 0.8;
-}
-
-/**
- * 焦点样式
- */
-.svg-icon:focus {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-  border-radius: 2px;
 }
 </style>

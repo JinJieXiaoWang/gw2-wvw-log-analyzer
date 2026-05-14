@@ -234,8 +234,9 @@ class BaseModelClient:
 class OpenAIClient(BaseModelClient):
     """OpenAI客户端"""
 
-    def __init__(self):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         super().__init__(ModelProvider.OPENAI)
+        self._config = config  # 临时配置，用于测试
 
     async def chat_completion(
         self,
@@ -243,7 +244,8 @@ class OpenAIClient(BaseModelClient):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
     ) -> AIResponse:
-        config = ai_config.get_active_provider_config()
+        # 使用临时配置或全局配置
+        config = self._config if self._config else ai_config.get_active_provider_config()
 
         url = f"{config['api_base']}/chat/completions"
         headers = {
@@ -263,8 +265,9 @@ class OpenAIClient(BaseModelClient):
 class DeepSeekClient(BaseModelClient):
     """DeepSeek客户端"""
 
-    def __init__(self):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         super().__init__(ModelProvider.DEEPSEEK)
+        self._config = config  # 临时配置，用于测试
 
     async def chat_completion(
         self,
@@ -272,7 +275,8 @@ class DeepSeekClient(BaseModelClient):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
     ) -> AIResponse:
-        config = ai_config.get_active_provider_config()
+        # 使用临时配置或全局配置
+        config = self._config if self._config else ai_config.get_active_provider_config()
 
         url = f"{config['api_base']}/chat/completions"
         headers = {
@@ -292,8 +296,9 @@ class DeepSeekClient(BaseModelClient):
 class QwenClient(BaseModelClient):
     """通义千问客户端"""
 
-    def __init__(self):
+    def __init__(self, config: Optional[Dict[str, Any]] = None):
         super().__init__(ModelProvider.QWEN)
+        self._config = config  # 临时配置，用于测试
 
     async def chat_completion(
         self,
@@ -301,7 +306,8 @@ class QwenClient(BaseModelClient):
         temperature: Optional[float] = None,
         max_tokens: Optional[int] = None,
     ) -> AIResponse:
-        config = ai_config.get_active_provider_config()
+        # 使用临时配置或全局配置
+        config = self._config if self._config else ai_config.get_active_provider_config()
 
         url = f"{config['api_base']}/chat/completions"
         headers = {
@@ -472,3 +478,53 @@ _ai_service = AIModelService()
 def get_ai_service() -> AIModelService:
     """获取AI模型服务实例"""
     return _ai_service
+
+
+async def test_provider_connection(provider: ModelProvider, config: Dict[str, Any]) -> AIResponse:
+    """
+    测试指定提供商的连接（使用临时配置）
+    
+    参数:
+        provider: 模型提供商
+        config: 测试配置（包含 api_key, api_base, model 等）
+    
+    返回:
+        AIResponse: 测试响应
+    """
+    # 创建客户端实例（根据提供商类型）
+    if provider == ModelProvider.DEEPSEEK:
+        client = DeepSeekClient(config=config)
+    elif provider == ModelProvider.OPENAI:
+        client = OpenAIClient()
+        client._config = config  # 临时配置
+    elif provider == ModelProvider.QWEN:
+        client = QwenClient()
+        client._config = config  # 临时配置
+    else:
+        return AIResponse(
+            content="",
+            provider=provider,
+            model="unknown",
+            status=RequestStatus.FAILED,
+            response_time=0,
+            error=f"不支持的提供商: {provider}",
+        )
+    
+    try:
+        async with client:
+            # 发送测试请求
+            response = await client.chat_completion(
+                messages=[{"role": "user", "content": "Say 'Hello, World!'"}],
+                max_tokens=50,
+                temperature=0.1,
+            )
+            return response
+    except Exception as e:
+        return AIResponse(
+            content="",
+            provider=provider,
+            model=config.get("model", "unknown"),
+            status=RequestStatus.FAILED,
+            response_time=0,
+            error=str(e),
+        )

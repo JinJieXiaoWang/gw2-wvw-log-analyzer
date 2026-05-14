@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 统一数据初始化入口
 
@@ -104,9 +104,23 @@ _SYS_MENU_SEED = [
         "remark": "技能循环分析页面（公开）",
     },
     {
-        "menu_name": "配置图书馆",
+        "menu_name": "AI分析",
         "parent_id": 0,
         "order_num": 5,
+        "path": "/ai-analysis",
+        "component": "data/ai-analysis",
+        "route_name": "AiAnalysis",
+        "menu_type": "C",
+        "visible": "0",
+        "status": "0",
+        "icon": "sparkles",
+        "perms": None,
+        "remark": "AI分析页面（公开）",
+    },
+    {
+        "menu_name": "配置图书馆",
+        "parent_id": 0,
+        "order_num": 6,
         "path": "/builds",
         "component": "builds/library",
         "route_name": "builds",
@@ -120,7 +134,7 @@ _SYS_MENU_SEED = [
     {
         "menu_name": "Build解析",
         "parent_id": 0,
-        "order_num": 6,
+        "order_num": 7,
         "path": "/build-parser",
         "component": "builds/parser",
         "route_name": "build-parser",
@@ -134,7 +148,7 @@ _SYS_MENU_SEED = [
     {
         "menu_name": "系统管理",
         "parent_id": 0,
-        "order_num": 7,
+        "order_num": 8,
         "path": "",
         "component": None,
         "route_name": "",
@@ -1246,24 +1260,51 @@ _ELITE_SPEC_SEED = [
 
 
 def _init_sys_menu(db: Session) -> int:
-    """初始化系统菜单"""
-    if db.query(SysMenu).count() > 0:
-        logger.info("sys_menu 已有数据，跳过")
-        return 0
+    """初始化系统菜单（支持新增和更新）"""
+    from app.utils.cache.cache import Cache
+    
     now = datetime.now()
+    created = 0
+    updated = 0
+    
     for record in _SYS_MENU_SEED:
-        db.add(
-            SysMenu(
-                **record,
-                create_time=now,
-                update_time=now,
-                create_by="system",
-                update_by="system",
+        existing = db.query(SysMenu).filter(
+            SysMenu.menu_name == record["menu_name"],
+            SysMenu.parent_id == record["parent_id"]
+        ).first()
+        
+        if existing:
+            # 更新现有菜单
+            for key, value in record.items():
+                if key != "menu_name" and key != "parent_id":
+                    setattr(existing, key, value)
+            existing.update_time = now
+            existing.update_by = "system"
+            updated += 1
+        else:
+            # 创建新菜单
+            db.add(
+                SysMenu(
+                    **record,
+                    create_time=now,
+                    update_time=now,
+                    create_by="system",
+                    update_by="system",
+                )
             )
-        )
+            created += 1
+    
     db.commit()
-    logger.info(f"sys_menu 初始化完成 {len(_SYS_MENU_SEED)} 条记录")
-    return len(_SYS_MENU_SEED)
+    
+    # 清除菜单缓存
+    cache = Cache()
+    keys_to_delete = [key for key in cache.cache if key.startswith("menu:")]
+    for key in keys_to_delete:
+        cache.delete(key)
+    logger.info(f"菜单缓存已清除")
+    
+    logger.info(f"sys_menu 初始化完成：新增 {created} 条，更新 {updated} 条")
+    return created
 
 
 def _init_sys_dict_type(db: Session) -> int:

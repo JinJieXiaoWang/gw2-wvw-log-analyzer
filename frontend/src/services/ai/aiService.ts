@@ -1,6 +1,6 @@
-import { apiFactory } from '../core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '../../models'
+import { apiFactory } from '../core/apiService'
 
 export interface AiReport {
   id: string
@@ -72,6 +72,18 @@ export class AIService {
 
   async getSuggestions(): Promise<ApiResponse<unknown>> {
     return apiFactory.get<unknown>(API_ENDPOINTS.AI.SUGGESTIONS)
+  }
+
+  async getStatus(): Promise<ApiResponse<any>> {
+    return apiFactory.get<any>(API_ENDPOINTS.AI.STATUS)
+  }
+
+  async testConfiguration(): Promise<ApiResponse<any>> {
+    return apiFactory.get<any>(API_ENDPOINTS.AI.TEST)
+  }
+
+  async clearCache(): Promise<ApiResponse<void>> {
+    return apiFactory.post<void>(API_ENDPOINTS.AI.CLEAR_CACHE)
   }
 }
 

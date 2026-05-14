@@ -351,6 +351,12 @@ class AuthStore {
         menu_type: 'C'
       },
       {
+        menu_name: 'AI分析',
+        path: '/ai-analysis',
+        icon: 'pi pi-sparkles',
+        menu_type: 'C'
+      },
+      {
         menu_name: 'Build管理',
         path: '',
         icon: 'pi pi-code',

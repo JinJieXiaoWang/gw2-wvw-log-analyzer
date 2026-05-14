@@ -37,6 +37,7 @@ from app.routers.system.monitor import router as monitor_router
 from app.routers.system.monitoring import router as monitoring_router
 from app.routers.system.notice import router as notice_router
 from app.routers.system.settings import router as settings_router
+from app.routers.system.menus import router as menus_router
 from app.routers.test.test_dps_report import router as test_dps_report_router
 from app.services.auth.auth_service import init_predefined_admin
 from app.services.zevtc.batch_parse_service import start_workers, stop_workers
@@ -149,6 +150,7 @@ app.include_router(skill_rotation_router, prefix=settings.API_PREFIX)
 app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
 app.include_router(notice_router, prefix=settings.API_PREFIX)
+app.include_router(menus_router, prefix=settings.API_PREFIX)
 app.include_router(config_router, prefix=settings.API_PREFIX)
 app.include_router(dps_report_queue_router, prefix=settings.API_PREFIX)
 

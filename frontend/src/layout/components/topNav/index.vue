@@ -146,7 +146,7 @@ import LogoutConfirmDialog from '@/layout/components/LogoutConfirmDialog.vue'
 import MobileNavMenu from '@/layout/components/MobileNavMenu.vue'
 import NavNotifications from '@/layout/components/NavNotifications.vue'
 import UserDropdownMenu from './UserDropdownMenu.vue'
-import { menuItems } from './menuConfig'
+import { menuItems as fallbackMenuItems } from './menuConfig'
 
 const router = useRouter()
 const toast = useToast()
@@ -158,7 +158,24 @@ const mobileMenuOpen = ref(false)
 const showLogoutConfirmDialog = ref(false)
 const isLoggingOut = ref(false)
 
-const visibleMenuItems = computed(() => menuItems.filter(item => !item.requireAuth || can('write')))
+// 使用后端API获取的菜单数据，如果没有则使用硬编码的备用菜单
+const backendMenuItems = computed(() => {
+  const menus = authStore.menus || []
+  if (menus.length === 0) {
+    return fallbackMenuItems
+  }
+  
+  // 将后端菜单格式转换为前端需要的格式
+  return menus.map(menu => ({
+    path: menu.path || '',
+    label: menu.menu_name || '',
+    icon: menu.icon ? `pi pi-${menu.icon}` : 'pi pi-circle',
+    description: menu.remark || '',
+    requireAuth: !!menu.perms
+  }))
+})
+
+const visibleMenuItems = computed(() => backendMenuItems.value.filter(item => !item.requireAuth || can('write')))
 
 const notifications = ref<NoticeItem[]>([])
 const unreadCount = ref(0)

@@ -1,6 +1,6 @@
-﻿# 模块功能：菜单管理API路由
+# 模块功能：菜单管理API路由
 # 作者：帅妹妹丶.8297
-# 创建日期?2026-05-11
+# 创建日期：2026-05-11
 # 依赖说明：FastAPI, Depends
 
 from typing import List, Optional
@@ -30,7 +30,7 @@ router = APIRouter(prefix="/menus", tags=["菜单管理"])
     "/tree",
     response_model=ApiResponse,
     summary="获取菜单树形结构",
-    description="获取所有菜单的树形结构，支持按父菜单ID筛?,
+    description="获取所有菜单的树形结构，支持按父菜单ID筛选",
 )
 async def get_menu_tree(
     parent_id: int = Query(0, description="父菜单ID，默认为0（顶级菜单）"),
@@ -46,7 +46,7 @@ async def get_menu_tree(
     "/public",
     response_model=ApiResponse,
     summary="获取公开菜单",
-    description="获取游客可以访问的公开菜单，不需要登?,
+    description="获取游客可以访问的公开菜单，不需要登录",
 )
 async def get_public_menus(
     db: Session = Depends(get_db),
@@ -60,7 +60,7 @@ async def get_public_menus(
     "/user",
     response_model=ApiResponse,
     summary="获取用户可用菜单",
-    description="根据当前登录用户的角色和权限，返回用户有权限访问的菜单树形结构。支持游客模式，游客只能访问公开菜单?,
+    description="根据当前登录用户的角色和权限，返回用户有权限访问的菜单树形结构。支持游客模式，游客只能访问公开菜单",
 )
 async def get_user_menus(
     current_admin=Depends(get_current_user_optional),
@@ -81,7 +81,7 @@ async def get_user_menus(
     "/",
     response_model=ApiResponse,
     summary="分页查询菜单列表",
-    description="分页查询菜单列表，支持多种筛选条?,
+    description="分页查询菜单列表，支持多种筛选条件",
 )
 async def list_menus(
     query: MenuQueryRequest = Depends(),
@@ -146,7 +146,7 @@ async def create_menu(
     "/{menu_id}",
     response_model=ApiResponse,
     summary="更新菜单",
-    description="更新指定菜单的信?,
+    description="更新指定菜单的信息",
 )
 async def update_menu(
     menu_id: int,
@@ -181,7 +181,7 @@ async def delete_menu(
     service = MenuService(db)
     menu = service.get_menu_by_id(menu_id)
     if not menu:
-        raise NotFoundException(detail="菜单不存?)
+        raise NotFoundException(detail="菜单不存在")
     success = service.delete_menu(menu_id)
     if not success:
         raise BadRequestException(detail="删除失败：菜单存在子菜单，不允许删除")
@@ -192,7 +192,7 @@ async def delete_menu(
     "/batch",
     response_model=ApiResponse,
     summary="批量更新菜单",
-    description="批量更新多个菜单的状态、显示、排序等属?,
+    description="批量更新多个菜单的状态、显示、排序等属性",
 )
 async def batch_update_menus(
     menus_data: List[dict],
@@ -201,14 +201,14 @@ async def batch_update_menus(
 ):
     service = MenuService(db)
     updated_count = service.batch_update_menus(menus_data, update_by=current_admin.username)
-    return ApiResponse.success_response(data={"updated_count": updated_count}, message=f"批量更新成功，共更新 {updated_count} 条记?)
+    return ApiResponse.success_response(data={"updated_count": updated_count}, message=f"批量更新成功，共更新 {updated_count} 条记录")
 
 
 @router.get(
     "/permissions/all",
     response_model=ApiResponse,
-    summary="获取所有权限标?,
-    description="从菜单表中提取所有权限标?,
+    summary="获取所有权限标识",
+    description="从菜单表中提取所有权限标识",
 )
 async def get_all_permissions(
     current_admin=Depends(get_current_admin),
@@ -222,7 +222,7 @@ async def get_all_permissions(
 @router.post(
     "/init",
     response_model=ApiResponse,
-    summary="初始化默认菜?,
+    summary="初始化默认菜单",
     description="初始化系统默认菜单数据（仅在菜单为空时执行）",
 )
 async def init_default_menus(
@@ -231,7 +231,7 @@ async def init_default_menus(
 ):
     service = MenuService(db)
     created_count = service.init_default_menus(init_by=current_admin.username)
-    return ApiResponse.success_response(data={"created_count": created_count}, message=f"初始化完成，共创?{created_count} 个菜?)
+    return ApiResponse.success_response(data={"created_count": created_count}, message=f"初始化完成，共创建 {created_count} 个菜单")
 
 
 @router.post(
@@ -246,4 +246,4 @@ async def refresh_menu_cache(
 ):
     service = MenuService(db)
     service._clear_cache()
-    return ApiResponse.success_response(message="菜单缓存已刷?)
+    return ApiResponse.success_response(message="菜单缓存已刷新")

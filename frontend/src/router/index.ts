@@ -213,7 +213,9 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: false,
           title: 'AI分析',
-          hidden: true
+          icon: 'sparkles',
+          iconCategory: 'ui',
+          hidden: false
         }
       },
       {

@@ -1,4 +1,4 @@
-﻿# 模块功能：默认菜单数据定义
+# 模块功能：默认菜单数据定义
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-05-12
 # 说明：纯数据，不包含任何数据库依赖
@@ -95,7 +95,7 @@ DEFAULT_MENUS = [
         "perms": None,
         "remark": "出勤统计页面（公开）",
     },
-    # 技能循环分析 ?- 公开访问
+    # 技能循环分析 - 公开访问
     {
         "key": "skill_analysis",
         "menu_name": "技能循环分析",
@@ -110,6 +110,22 @@ DEFAULT_MENUS = [
         "icon": "activity",
         "perms": None,
         "remark": "技能循环分析页面（公开）",
+    },
+    # AI分析 - 公开访问
+    {
+        "key": "ai_analysis",
+        "menu_name": "AI分析",
+        "parent_key": None,
+        "order_num": 4.5,
+        "path": "/ai-analysis",
+        "component": "data/ai-analysis",
+        "route_name": "AiAnalysis",
+        "menu_type": "C",
+        "visible": "0",
+        "status": "0",
+        "icon": "sparkles",
+        "perms": None,
+        "remark": "AI分析页面（公开）",
     },
     # Build管理 - 公开访问
     {
@@ -154,7 +170,7 @@ DEFAULT_MENUS = [
         "status": "0",
         "icon": "code",
         "perms": None,
-        "remark": "Build代码解析页面（公开?）",
+        "remark": "Build代码解析页面（公开）",
     },
     # 系统管理 - 需管理员权限
     {

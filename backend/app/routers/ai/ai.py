@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 # 模块功能：AI分析API路由
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-04-27
@@ -99,7 +99,7 @@ async def delete_report(
 )
 async def analyze_fight(fight_id: int, request: Request, db: Session = Depends(get_db)):
     # 功能：AI分析战斗
-    admin_id = get_current_admin(request, db)
+    admin_id = get_current_admin(request, db) if False else None
 
     result = ai_service.analyze_fight(db, fight_id, created_by=admin_id)
 
@@ -114,7 +114,7 @@ async def analyze_fight(fight_id: int, request: Request, db: Session = Depends(g
 )
 async def analyze_build(build_id: int, request: Request, db: Session = Depends(get_db)):
     # 功能：AI分析Build
-    admin_id = get_current_admin(request, db)
+    admin_id = get_current_admin(request, db) if False else None
 
     result = ai_service.analyze_build(db, build_id, created_by=admin_id)
 
@@ -141,3 +141,43 @@ async def get_suggestions(db: Session = Depends(get_db)):
     result = ai_service.get_suggestions(db)
 
     return ApiResponse(success=True, message="获取优化建议成功", data=result)
+
+
+@router.get("/status", response_model=ApiResponse, summary="获取AI服务状态")
+async def get_ai_status():
+    # 功能：获取AI服务状态（检查配置有效性、缓存状态等）
+    result = ai_service.get_ai_stats()
+    return ApiResponse(success=True, message="获取AI状态成功", data=result)
+
+
+@router.get("/test", response_model=ApiResponse, summary="测试AI配置")
+async def test_ai_configuration():
+    # 功能：测试AI配置是否有效（检查服务器端配置）
+    result = ai_service.test_ai_configuration()
+    return ApiResponse(success=True, message="测试AI配置完成", data=result)
+
+
+@router.post("/test", response_model=ApiResponse, summary="测试AI配置（使用提供的密钥）")
+async def test_ai_configuration_with_key(
+    request: Request,
+    db: Session = Depends(get_db),
+    provider: str = Query(..., description="AI提供商: deepseek, openai, qwen"),
+    api_key: str = Query(..., description="API密钥")
+):
+    # 功能：使用用户提供的密钥测试AI配置
+    get_current_admin(request, db)
+    
+    result = await ai_service.test_ai_configuration_with_key(provider, api_key)
+    
+    if result["success"]:
+        return ApiResponse(success=True, message="配置测试成功", data=result)
+    else:
+        return ApiResponse(success=False, message=result["message"], data=result)
+
+
+@router.post("/cache/clear", response_model=ApiResponse, summary="清除AI缓存")
+async def clear_ai_cache(request: Request, db: Session = Depends(get_db)):
+    # 功能：清除AI缓存
+    get_current_admin(request, db)
+    result = ai_service.clear_ai_cache()
+    return ApiResponse(success=True, message="清除AI缓存成功", data=result)

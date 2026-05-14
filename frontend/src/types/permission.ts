@@ -24,11 +24,16 @@ export interface LoginCredentials {
 }
 
 export interface MenuItem {
+  menu_id?: number
   menu_name: string
   path: string
   icon: string
   menu_type: 'M' | 'C'
   children?: MenuItem[]
+  remark?: string
+  perms?: string
+  visible?: string
+  status?: string
 }
 
 export interface AuthState {

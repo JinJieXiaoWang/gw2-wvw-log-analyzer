@@ -144,7 +144,10 @@ export const API_ENDPOINTS = {
     ANALYZE_MEMBER: (memberId: string | number) => `${API_V1}/ai/analyze/member/${memberId}`,
     ANALYZE_BUILD: (buildId: string | number) => `${API_V1}/ai/analyze/build/${buildId}`,
     TREND: `${API_V1}/ai/trend`,
-    SUGGESTIONS: `${API_V1}/ai/suggestions`
+    SUGGESTIONS: `${API_V1}/ai/suggestions`,
+    STATUS: `${API_V1}/ai/status`,
+    TEST: `${API_V1}/ai/test`,
+    CLEAR_CACHE: `${API_V1}/ai/cache/clear`
   },
 
   // 战斗数据
