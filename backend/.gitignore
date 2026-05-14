@@ -11,8 +11,8 @@ __pycache__/
 *.db
 /database/
 
-# 日志文件
-logs/
+# 日志文件（仅忽略根目录下的 logs 目录，避免误伤 app/routers/logs 等子目录）
+/logs/
 *.log
 
 # 上传文件
