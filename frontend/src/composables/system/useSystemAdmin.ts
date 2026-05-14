@@ -58,8 +58,8 @@ export function useSystemAdmin() {
         const result = authStore.setAdminConfig(accountForm.username, accountForm.newPassword)
         if (!result.success) { accountErrors.value = result.message; return }
       } else {
-        const currentConfig = authStore.getAdminConfig()
-        localStorage.setItem(STORAGE_KEYS.ADMIN_CONFIG, JSON.stringify({ username: accountForm.username, password: currentConfig.password }))
+        // 安全修复：不再在 localStorage 中存储密码
+        localStorage.setItem(STORAGE_KEYS.ADMIN_CONFIG, JSON.stringify({ username: accountForm.username }))
       }
       toast.add({ severity: 'success', summary: '保存成功', detail: '管理员账号配置已更新', life: configManager.get('ui').toastLife })
       accountForm.newPassword = ''; accountForm.confirmPassword = ''

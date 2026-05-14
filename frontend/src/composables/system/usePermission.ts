@@ -454,9 +454,10 @@ class AuthStore {
     return { valid: errors.length === 0, errors }
   }
 
-  setAdminConfig(username: string, password: string): { success: boolean; message: string } {
+  setAdminConfig(username: string, _password: string): { success: boolean; message: string } {
     try {
-      localStorage.setItem('gw2_admin_config', JSON.stringify({ username, password }))
+      // 安全修复：不再在 localStorage 中存储密码
+      localStorage.setItem('gw2_admin_config', JSON.stringify({ username }))
       return { success: true, message: '保存成功' }
     } catch {
       return { success: false, message: '保存失败' }
@@ -468,7 +469,8 @@ class AuthStore {
       const stored = localStorage.getItem('gw2_admin_config')
       if (stored) {
         const parsed = JSON.parse(stored)
-        return { username: parsed.username || '', password: parsed.password || '' }
+        // 安全修复：不再从 localStorage 读取密码（历史数据中可能存在的密码将被忽略）
+        return { username: parsed.username || '', password: '' }
       }
     } catch {
       // ignore

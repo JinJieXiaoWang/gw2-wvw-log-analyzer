@@ -155,14 +155,6 @@ def get_account_detail(
         db.query(Member).filter(Member.account_name == account_name).first()
     )
 
-    # 该账号下所有角色（来自 account_characters）
-    characters = (
-        db.query(AccountCharacter)
-        .filter(AccountCharacter.account_name == account_name)
-        .order_by(AccountCharacter.last_seen_date.desc())
-        .all()
-    )
-
     # 每个角色的出勤统计（按角色名分组，不按 profession 拆分）
     # 角色换了职业仍然是同一个角色，profession 取最新战斗的职业
     char_stats_query = (
@@ -406,7 +398,7 @@ def _calculate_comprehensive_abilities(
     if most_used_profession:
         try:
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
-        except:
+        except Exception:
             # 如果找不到对应职业规则，使用dps规则
             rules = ScoringService.get_scoring_rules(db, "dps")
     else:
@@ -784,7 +776,7 @@ def get_account_score_breakdown(
         try:
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
             role_type = _determine_role_type(most_used_profession, rules)
-        except:
+        except Exception:
             rules = ScoringService.get_scoring_rules(db, "dps")
     else:
         rules = ScoringService.get_scoring_rules(db, "dps")

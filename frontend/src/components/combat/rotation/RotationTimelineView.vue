@@ -66,7 +66,10 @@
                   class="w-full h-full object-cover opacity-70"
                   loading="lazy"
                 >
-                <span v-else class="cast-duration text-[0.55rem] text-white/80 whitespace-nowrap">{{ cast.duration }}ms</span>
+                <span
+                  v-else
+                  class="cast-duration text-[0.55rem] text-white/80 whitespace-nowrap"
+                >{{ cast.duration }}ms</span>
               </div>
             </div>
           </div>

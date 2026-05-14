@@ -155,10 +155,9 @@ const save = async () => {
         return
       }
     } else {
-      const currentConfig = authStore.getAdminConfig()
+      // 安全修复：不再在 localStorage 中存储密码
       localStorage.setItem('gw2_wvw_admin_config', JSON.stringify({
-        username: accountForm.username,
-        password: currentConfig.password
+        username: accountForm.username
       }))
     }
     toast.add({ severity: 'success', summary: '保存成功', detail: '管理员账号配置已更新', life: 3000 })

@@ -6,7 +6,6 @@
 
 from fastapi import APIRouter, Depends
 
-from app.config.database import get_db
 from app.models.auth.sys_user import SysUser
 from app.routers.auth.auth import get_current_admin
 from app.schemas.auth.common import ApiResponse
@@ -65,6 +64,8 @@ async def export_errors(
 
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         filename = f"errors_export_{timestamp}.json"
+        # 安全防御：使用 basename 防止路径遍历（filename 虽为本地生成，但防御性编程）
+        filename = os.path.basename(filename)
         filepath = os.path.join(os.getcwd(), filename)
 
         success = export_errors_to_file(filepath, limit)
