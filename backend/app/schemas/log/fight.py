@@ -31,7 +31,8 @@ class FightUpdate(BaseModel):
 
 
 class FightResponse(FightBase):
-    # 功能：战斗响应模型    model_config = ConfigDict(from_attributes=True)
+    # 功能：战斗响应模型
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     log_id: int
@@ -42,6 +43,10 @@ class FightResponse(FightBase):
     total_healing: int
     kill_count: int
     death_count: int
+    player_count: int = 0
+    friendly_player_count: int = 0
+    enemy_player_count: int = 0
+    enemy_composition: Optional[str] = None
     is_ai_analyzed: bool
 
 
@@ -55,13 +60,13 @@ class FightStatsBase(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     damage: int = 0
+    dps: int = 0
     healing: int = 0
-    kills: int = 0
-    deaths: int = 0
-    time_in_combat: int = 0
+    killed: int = 0
+    dead_count: int = 0
     damage_taken: int = 0
     down_count: int = 0
-    res_count: int = 0
+    resurrects: int = 0
 
 
 class FightStatsCreate(FightStatsBase):
@@ -75,8 +80,11 @@ class FightStatsResponse(FightStatsBase):
     id: int
     fight_id: int
     member_id: int
-    member_name: Optional[str] = None
+    account: Optional[str] = None
+    character_name: Optional[str] = None
     profession: Optional[str] = None
+    group_id: int = 0
+    has_commander_tag: bool = False
 
 
 class FightListResponse(BaseModel):

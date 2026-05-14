@@ -25,7 +25,7 @@ from app.services.system.dps_report_service import (
     DpsReportTimeoutError,
     upload_and_parse,
 )
-from app.services.zevtc.cache_service import (
+from app.services.zevtc.ei_json_cache_service import (
     get_ei_json_from_cache,
     store_ei_json_cache,
 )
@@ -36,6 +36,10 @@ from app.models.auth.member import Member
 from app.models.log.zevtc_data import EiPlayer, EiSkillMap, EiTarget
 from app.services.zevtc.data_validator import EIJsonValidator
 from app.services.zevtc.field_mapper import EIJsonFieldMapper
+from app.services.zevtc.fight_data_extractor import (
+    extract_enemy_composition,
+    resolve_friendly_team_id,
+)
 from app.utils.logger import logger
 
 # 无效账号名称统计（用于日志记录）
@@ -215,8 +219,9 @@ class LogImportService:
             # =============================================
             # 步骤 3: 提取标量数据
             # =============================================
-            fight_data = self._extract_fight_data(ei_json)
-            player_stats = self._extract_player_stats(ei_json)
+            friendly_team_id = resolve_friendly_team_id(ei_json)
+            fight_data = self._extract_fight_data(ei_json, friendly_team_id)
+            player_stats = self._extract_player_stats(ei_json, friendly_team_id)
 
             # =============================================
             # 步骤 4: 写入数据库
@@ -298,8 +303,12 @@ class LogImportService:
                 pass
             return {"success": False, "error": str(e)}
 
-    def _extract_fight_data(self, ei_json: Dict) -> Dict[str, Any]:
-        """提取战斗级标量数据（直接从 EI JSON）。"""
+    def _extract_fight_data(self, ei_json: Dict, friendly_team_id: int = 0) -> Dict[str, Any]:
+        """提取战斗级标量数据（直接从 EI JSON）。
+        
+        Args:
+            friendly_team_id: 友方 teamID，用于区分敌我统计
+        """
         ei_duration_ms = ei_json.get("durationMS", 0)
         duration_sec = max(1, int(ei_duration_ms / 1000))
 
@@ -311,17 +320,35 @@ class LogImportService:
         total_damage = 0
         total_kills = 0
         total_deaths = 0
-        player_count = 0
+        friendly_count = 0
+        enemy_count = 0
+        
         for p in ei_players:
             if p.get("isFake") or p.get("friendlyNPC"):
                 continue
+            
+            team_id = p.get("teamID", 0)
+            is_friendly = (team_id == friendly_team_id) if friendly_team_id else True
+            
             dps_all = p.get("dpsAll", [{}])[0]
-            total_damage += dps_all.get("damage", 0)
             stats_all = p.get("statsAll", [{}])[0]
-            total_kills += stats_all.get("killed", 0)
             defenses = p.get("defenses", [{}])[0]
+            
+            total_damage += dps_all.get("damage", 0)
+            total_kills += stats_all.get("killed", 0)
             total_deaths += defenses.get("deadCount", 0)
-            player_count += 1
+            
+            if is_friendly:
+                friendly_count += 1
+            else:
+                enemy_count += 1
+
+        # 从 targets 提取敌方职业统计
+        extracted_enemy_count, enemy_comp_json = extract_enemy_composition(ei_json, friendly_team_id)
+        
+        # 如果 targets 中没统计到，但 players 中有敌方，用 players 计数兜底
+        if extracted_enemy_count == 0 and enemy_count > 0:
+            extracted_enemy_count = enemy_count
 
         parsed_start = self._parse_ei_time(ei_start)
         parsed_end = self._parse_ei_time(ei_end)
@@ -344,19 +371,37 @@ class LogImportService:
             "total_damage": total_damage,
             "total_healing": sum(
                 self._extract_player_healing(p) for p in ei_json.get("players", [])
+                if not p.get("isFake") and not p.get("friendlyNPC")
             ),
             "kill_count": total_kills,
             "death_count": total_deaths,
-            "player_count": player_count,
+            "player_count": friendly_count + enemy_count,  # 总玩家数（向后兼容）
+            "friendly_player_count": friendly_count,
+            "enemy_player_count": extracted_enemy_count,
+            "enemy_composition": enemy_comp_json,
         }
 
-    def _extract_player_stats(self, ei_json: Dict) -> List[Dict[str, Any]]:
-        """提取每个玩家的标量统计（直接从 EI JSON）。"""
+    def _extract_player_stats(self, ei_json: Dict, friendly_team_id: int = 0) -> List[Dict[str, Any]]:
+        """提取每个玩家的标量统计（直接从 EI JSON），仅提取友方玩家。
+        
+        Args:
+            friendly_team_id: 友方 teamID，用于过滤敌方玩家
+        """
         results = []
 
         for ei_p in ei_json.get("players", []):
             if self._should_skip_player(ei_p):
                 continue
+            
+            # 排除敌方玩家
+            if friendly_team_id:
+                player_team_id = ei_p.get("teamID", 0)
+                if player_team_id != friendly_team_id:
+                    logger.debug(
+                        f"[import] 跳过敌方玩家: {ei_p.get('account')} "
+                        f"(teamID={player_team_id} != friendly={friendly_team_id})"
+                    )
+                    continue
 
             dps_all = ei_p.get("dpsAll", [{}])[0]
             stats_all = ei_p.get("statsAll", [{}])[0]
@@ -510,6 +555,9 @@ class LogImportService:
             kill_count=data.get("kill_count", 0),
             death_count=data.get("death_count", 0),
             player_count=data.get("player_count", 0),
+            friendly_player_count=data.get("friendly_player_count", 0),
+            enemy_player_count=data.get("enemy_player_count", 0),
+            enemy_composition=data.get("enemy_composition"),
             is_ai_analyzed=False,
         )
         self.db.add(fight)

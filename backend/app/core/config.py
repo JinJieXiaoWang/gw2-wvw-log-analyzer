@@ -254,7 +254,7 @@ class Settings(BaseSettings):
     # ==================================================================
     # 8. AI 模型配置
     # ==================================================================
-    AI_ENABLED: bool = Field(default=False, description="AI 功能启用状态")
+    AI_ENABLED: bool = Field(default=True, description="AI 功能启用状态")
     AI_MODEL_PROVIDER: ModelProvider = Field(
         default=ModelProvider.DEEPSEEK,
         description="默认 AI 模型提供商",

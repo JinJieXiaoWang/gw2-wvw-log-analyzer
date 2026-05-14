@@ -119,7 +119,7 @@
  */
 
 import type { BuildEntry } from '@/types/buildLibrary'
-import { getProfessionName } from '@/utils/profession/professionUtils'
+import { getProfessionName, getProfessionColor } from '@/services/professionService'
 import { computed } from 'vue'
 
 interface Props {
@@ -138,21 +138,48 @@ defineEmits<{
   'delete': [buildId: string]
 }>()
 
-const professionMeta: Record<string, { color: string; initial: string; label: string }> = {
-  Warrior: { color: '#E85D04', initial: '战', label: '战士' },
-  Guardian: { color: '#FAA307', initial: '守', label: '守护者' },
-  Revenant: { color: '#9D4EDD', initial: '魂', label: '魂武者' },
-  Ranger: { color: '#06D6A0', initial: '游', label: '游侠' },
-  Engineer: { color: '#7B8FA1', initial: '工', label: '工程师' },
-  Necromancer: { color: '#8D0801', initial: '死', label: '唤灵者' },
-  Mesmer: { color: '#4361EE', initial: '幻', label: '幻术师' },
-  Elementalist: { color: '#FF6B6B', initial: '元', label: '元素使' },
+const professionInitialMap: Record<string, string> = {
+  Warrior: '战',
+  Guardian: '守',
+  Revenant: '魂',
+  Ranger: '游',
+  Engineer: '工',
+  Necromancer: '死',
+  Mesmer: '幻',
+  Elementalist: '元',
+  Thief: '潜',
+  Dragonhunter: '龙',
+  Firebrand: '燃',
+  Willbender: '破',
+  Berserker: '狂',
+  Spellbreaker: '破',
+  Bladesworn: '誓',
+  Scrapper: '机',
+  Holosmith: '全',
+  Mechanist: '机',
+  Druid: '德',
+  Soulbeast: '兽',
+  Untamed: '野',
+  Daredevil: '冒',
+  Deadeye: '狙',
+  Specter: '缚',
+  Tempest: '风',
+  Weaver: '编',
+  Catalyst: '元',
+  Chronomancer: '时',
+  Mirage: '蜃',
+  Virtuoso: '灵',
+  Reaper: '夺',
+  Scourge: '灾',
+  Harbinger: '先',
+  Herald: '预',
+  Renegade: '叛',
+  Vindicator: '裁'
 }
 
-const meta = computed(() => professionMeta[props.build.profession])
-const displayProfessionColor = computed(() => props.build.professionColor || meta.value?.color || '#6C757D')
-const professionInitial = computed(() => meta.value?.initial || props.build.profession.charAt(0))
-const professionLabel = computed(() => meta.value?.label || props.build.profession)
+const displayProfessionColor = computed(() => props.build.professionColor || getProfessionColor(props.build.profession))
+const professionInitial = computed(() => professionInitialMap[props.build.profession] || props.build.profession.charAt(0))
+const professionLabel = computed(() => getProfessionName(props.build.profession))
 
 const displayTitle = computed(() => {
   const t = props.build.title

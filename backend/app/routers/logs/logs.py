@@ -27,7 +27,7 @@ from app.routers.auth.auth import get_current_admin
 from app.schemas.auth.common import ApiResponse
 from app.schemas.log.log import LogResponse, LogUpdate
 from app.services.zevtc import log_service
-from app.services.zevtc.cache_service import get_ei_json_by_sha256
+from app.services.zevtc.ei_json_cache_service import get_ei_json_by_sha256
 from app.services.zevtc.file_service import FileService
 from app.services.zevtc.log_import_service import LogImportService
 from app.services.zevtc.parse_progress_service import parse_progress_service

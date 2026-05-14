@@ -25,16 +25,16 @@
         :key="report.id" 
         class="bg-gray-700 rounded p-4 hover:bg-gray-600 transition-colors cursor-pointer"
         :class="{ 'cursor-not-allowed opacity-70': disabled }"
-        @click="!disabled && viewReport(report.id)"
+        @click="!disabled && viewReport(String(report.id))"
       >
         <div class="flex justify-between items-center">
           <h3 class="font-medium">
-            {{ report.targetName }}
+            {{ report.summary || report.target_type || 'AI分析报告' }}
           </h3>
-          <span class="text-xs px-2 py-1 rounded bg-blue-900 text-blue-200">{{ report.type }}</span>
+          <span class="text-xs px-2 py-1 rounded bg-blue-900 text-blue-200">{{ report.report_type }}</span>
         </div>
         <p class="text-sm text-gray-400 mt-1">
-          {{ report.createdAt }}
+          {{ report.created_at }}
         </p>
       </div>
     </div>

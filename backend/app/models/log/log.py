@@ -18,6 +18,7 @@ from sqlalchemy import (
     String,
     Text,
 )
+from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -67,7 +68,7 @@ class Log(Base):
         Integer, nullable=False, default=1, comment="permalink是否有效: 1-有效, 0-失效"
     )
     ei_json_cache = Column(
-        Text, nullable=True, comment="gzip+base64压缩后的EI JSON缓存"
+        Text().with_variant(LONGTEXT, "mysql"), nullable=True, comment="gzip+base64压缩后的EI JSON缓存"
     )
     ei_json_cached_at = Column(
         DateTime(timezone=True), nullable=True, comment="EI JSON缓存时间"

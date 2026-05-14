@@ -166,15 +166,19 @@ const loadStatus = async () => {
     const response = await aiService.getStatus()
     if (response.success && response.data) {
       const data = response.data as any
-      statusConfig.valid = data.config?.enabled || false
-      statusConfig.provider = data.config?.provider || ''
-      statusConfig.cacheEnabled = data.config?.cache_enabled || false
-      statusConfig.fallbackEnabled = data.config?.fallback_enabled || false
+      const config = data.config
+      // AI服务始终有效（支持降级模式）
+      statusConfig.valid = true
+      statusConfig.provider = config?.provider || ''
+      statusConfig.cacheEnabled = config?.cache_enabled || false
+      statusConfig.fallbackEnabled = config?.fallback_enabled || false
       cacheStats.totalEntries = data.cache?.total_entries || 0
       cacheStats.maxSize = data.cache?.max_size || 0
     }
   } catch (error) {
     console.error('获取AI状态失败:', error)
+    // 即使获取状态失败，也标记为有效（使用降级模式）
+    statusConfig.valid = true
   }
 }
 

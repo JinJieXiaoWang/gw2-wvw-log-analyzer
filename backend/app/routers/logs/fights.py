@@ -58,7 +58,8 @@ async def get_fight(fight_id: int, db: Session = Depends(get_db)):
         raise NotFoundException(f"战斗ID {fight_id} 不存在")
 
     fight_data = FightResponse.model_validate(fight)
-    stats_data = fight_svc.build_fight_stats_data(fight)
+    stats = fight_svc.get_fight_stats(db, fight_id)
+    stats_data = [FightStatsResponse.model_validate(s) for s in stats]
 
     return ApiResponse.success_response(
         data={"fight": fight_data, "stats": stats_data},

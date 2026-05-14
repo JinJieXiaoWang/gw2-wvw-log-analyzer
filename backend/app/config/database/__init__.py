@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-"""数据库配置模块 (DEPRECATED)
+"""数据库配置模块
 
-警告：本目录下的模块为历史遗留，内容与上级目录的 database.py 存在重复且可能不同步。
-新代码请直接从 app.config.database 导入，而非本目录。
-计划在未来版本中移除本目录。
+统一入口，所有数据库相关导入应通过 app.config.database
 """
 
 from .database import (

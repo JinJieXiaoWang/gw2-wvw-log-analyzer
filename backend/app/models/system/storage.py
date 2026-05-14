@@ -3,9 +3,10 @@
 # 创建日期：2026-04-30
 # 依赖说明：SQLAlchemy
 
-from app.config.database import Base
 from sqlalchemy import Boolean, Column, DateTime, Float, Index, Integer, String, Text
 from sqlalchemy.sql import func
+
+from app.config.database import Base
 
 
 class StorageCleanupRecord(Base):

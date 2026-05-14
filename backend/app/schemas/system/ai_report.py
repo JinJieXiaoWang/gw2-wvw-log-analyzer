@@ -15,7 +15,7 @@ class AIReportBase(BaseModel):
 
     report_type: str = Field(..., description="报告类型: fight/skill/build/trend")
     target_type: str = Field(..., description="目标类型: fight/member/build")
-    target_id: int
+    target_id: str
 
 
 class AIReportCreate(AIReportBase):

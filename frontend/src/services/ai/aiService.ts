@@ -3,14 +3,15 @@ import type { ApiResponse } from '../../models'
 import { apiFactory } from '../core/apiService'
 
 export interface AiReport {
-  id: string
-  type: string
-  targetType: string
-  targetId: string
-  targetName: string
-  analysis: unknown
-  createdAt: string
-  updatedAt: string
+  id: string | number
+  report_type: string
+  target_type: string
+  target_id: number
+  summary?: string
+  ai_score?: number
+  created_at: string
+  content?: string
+  metadata?: Record<string, unknown>
 }
 
 export interface AiTrend {
@@ -39,6 +40,7 @@ export interface ReportsListParams {
   page_size?: number
   report_type?: string | null
   target_type?: string | null
+  type?: string | undefined
 }
 
 export class AIService {
@@ -66,8 +68,8 @@ export class AIService {
     return apiFactory.post<unknown>(API_ENDPOINTS.AI.ANALYZE_BUILD(buildId))
   }
 
-  async getTrendAnalysis(): Promise<ApiResponse<unknown>> {
-    return apiFactory.get<unknown>(API_ENDPOINTS.AI.TREND)
+  async getTrendAnalysis(params?: { time_range?: string }): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.AI.TREND, { params })
   }
 
   async getSuggestions(): Promise<ApiResponse<unknown>> {
@@ -79,7 +81,7 @@ export class AIService {
   }
 
   async testConfiguration(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.AI.TEST)
+    return apiFactory.post<any>(API_ENDPOINTS.AI.TEST)
   }
 
   async clearCache(): Promise<ApiResponse<void>> {

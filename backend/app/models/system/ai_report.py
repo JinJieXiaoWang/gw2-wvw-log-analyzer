@@ -29,7 +29,7 @@ class AIReport(Base):
     )
     report_type = Column(String(50), nullable=False, comment="报告类型")
     target_type = Column(String(50), nullable=False, comment="目标类型")
-    target_id = Column(Integer, nullable=False, comment="目标ID")
+    target_id = Column(String(100), nullable=False, comment="目标ID")
     content = Column(Text, nullable=False, comment="报告内容")
     summary = Column(Text, nullable=True, comment="报告摘要")
     ai_score = Column(Float, nullable=True, comment="AI评分")

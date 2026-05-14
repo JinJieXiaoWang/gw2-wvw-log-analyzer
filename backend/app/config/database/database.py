@@ -412,10 +412,14 @@ def _sync_table_columns(engine) -> Dict[str, Any]:
 
             # 数据库类型映射标准化
             type_mapping = {
-                "integer": ["int", "integer", "bigint", "smallint"],
-                "string": ["varchar", "char", "text", "string"],
+                "integer": ["int", "integer", "bigint", "smallint", "tinyint"],
+                "string": [
+                    "varchar", "char", "text", "string",
+                    "longtext", "mediumtext", "tinytext",
+                    "longblob", "mediumblob", "tinyblob", "blob",
+                ],
                 "float": ["float", "double", "real", "decimal", "numeric"],
-                "boolean": ["bool", "boolean", "tinyint"],
+                "boolean": ["bool", "boolean", "tinyint(1)"],
                 "datetime": ["datetime", "timestamp", "date"],
             }
 
@@ -836,7 +840,7 @@ def init_db(force_recreate: bool = False) -> bool:
             _log_initialization_summary(stats)
             try:
                 from app.services.system.sys_config_service import SysConfigService
-                from app.config.database.database import SessionLocal
+                from .database import SessionLocal
                 db = SessionLocal()
                 try:
                     SysConfigService.init_default_configs(db)

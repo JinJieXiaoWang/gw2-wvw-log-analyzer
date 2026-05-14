@@ -158,6 +158,27 @@ const mobileMenuOpen = ref(false)
 const showLogoutConfirmDialog = ref(false)
 const isLoggingOut = ref(false)
 
+// 展平树形菜单结构，只保留可直接访问的菜单项
+function flattenMenus(menus: any[]): any[] {
+  let result: any[] = []
+  menus.forEach(menu => {
+    if (menu.menu_type === 'C' && menu.path) {
+      result.push({
+        path: menu.path || '',
+        label: menu.menu_name || '',
+        icon: menu.icon ? `pi pi-${menu.icon}` : 'pi pi-circle',
+        description: menu.remark || '',
+        requireAuth: !!menu.perms,
+        perms: menu.perms
+      })
+    }
+    if (menu.children && menu.children.length > 0) {
+      result = result.concat(flattenMenus(menu.children))
+    }
+  })
+  return result
+}
+
 // 使用后端API获取的菜单数据，如果没有则使用硬编码的备用菜单
 const backendMenuItems = computed(() => {
   const menus = authStore.menus || []
@@ -165,17 +186,26 @@ const backendMenuItems = computed(() => {
     return fallbackMenuItems
   }
   
-  // 将后端菜单格式转换为前端需要的格式
-  return menus.map(menu => ({
-    path: menu.path || '',
-    label: menu.menu_name || '',
-    icon: menu.icon ? `pi pi-${menu.icon}` : 'pi pi-circle',
-    description: menu.remark || '',
-    requireAuth: !!menu.perms
-  }))
+  // 展平树形菜单
+  return flattenMenus(menus)
 })
 
-const visibleMenuItems = computed(() => backendMenuItems.value.filter(item => !item.requireAuth || can('write')))
+const visibleMenuItems = computed(() => {
+  return backendMenuItems.value.filter(item => {
+    if (!item.requireAuth) {
+      return true
+    }
+    if (!can('write')) {
+      return false
+    }
+    // 检查具体权限，系统设置需要manage_users权限
+    if (item.perms) {
+      const requiredPerms = item.perms.split(',')
+      return requiredPerms.some(p => can(p as any))
+    }
+    return true
+  })
+})
 
 const notifications = ref<NoticeItem[]>([])
 const unreadCount = ref(0)

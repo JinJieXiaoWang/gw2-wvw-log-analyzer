@@ -29,42 +29,27 @@ async def analyze_rotation(
 
     请求体:
         - log_id: 日志ID（必填）
-        - member_id: 成员ID（可选，与 account 二选一）
-        - account: 玩家账号（可选，与 member_id 二选一）
+        - member_id: 成员ID（必填，用于查找玩家）
 
-    返回指标:
-        - fight_count: 参与战斗数
-        - total_damage: 总伤害
-        - avg_dps: 平均DPS
-        - total_healing: 总治疗
-        - skill_cast_uptime: 技能施法占比
-        - buffs: Buff平均覆盖率
-        - survival: 生存数据
-        - combat: 战斗贡献数据
+    返回完整的技能循环分析数据
     """
     log_id = request.get("log_id")
     member_id = request.get("member_id")
-    account = request.get("account")
 
     if not log_id:
         return ApiResponse(success=False, message="缺少必要参数: log_id")
 
-    if member_id is None and not account:
+    if not member_id:
         return ApiResponse(
-            success=False, message="缺少必要参数: member_id 或 account 至少提供一个"
+            success=False, message="缺少必要参数: member_id"
         )
 
-    data = analyze_skill_rotation(
-        db,
-        int(log_id),
-        int(member_id) if member_id is not None else None,
-        account,
-    )
-
-    if data is None:
+    try:
+        data = analyze_skill_rotation(int(log_id), str(member_id), db)
+    except Exception as e:
         return ApiResponse(
-            success=True,
-            message="未找到该玩家的战斗数据",
+            success=False,
+            message=f"分析失败: {str(e)}",
             data=None,
         )
 

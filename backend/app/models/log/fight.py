@@ -14,6 +14,7 @@ from sqlalchemy import (
     Index,
     Integer,
     String,
+    Text,
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
@@ -41,6 +42,9 @@ class Fight(Base):
     kill_count = Column(Integer, default=0, comment="击杀数")
     death_count = Column(Integer, default=0, comment="死亡数")
     player_count = Column(Integer, default=0, comment="玩家数量")
+    friendly_player_count = Column(Integer, default=0, comment="友方玩家数量")
+    enemy_player_count = Column(Integer, default=0, comment="敌方玩家数量")
+    enemy_composition = Column(Text, nullable=True, comment="敌方职业统计(JSON格式)")
     is_ai_analyzed = Column(Boolean, default=False, comment="是否已完成AI分析")
     created_at = Column(DateTime(timezone=True), default=func.now(), server_default=func.now(), comment="记录创建时间")
 

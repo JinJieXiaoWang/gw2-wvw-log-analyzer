@@ -1,12 +1,94 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """战斗数据提取模块"""
+import json
+import re
 from datetime import datetime, timezone
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional
 
 from app.constants.buffs import BUFF_ID_MAP
 from app.utils.logger import logger
 
 from .player_validator import resolve_commander_tag, should_skip_player
+
+# EI 在 targets 中嵌入敌方职业名的正则模式: "Mechanist pl-2994"
+_ENEMY_PROF_PATTERN = re.compile(r'^([A-Za-z]+)\s+pl-\d+$')
+
+
+def resolve_friendly_team_id(ei_json: Dict[str, Any]) -> int:
+    """从 EI JSON 中解析友方 teamID。
+    
+    策略：
+    1. 优先从 recordedBy / recordedAccountBy 找到录制者，取其 teamID
+    2. 如找不到，返回 players 数组中第一个非 fake 玩家的 teamID
+    """
+    recorded_by = ei_json.get("recordedBy") or ""
+    recorded_account = ei_json.get("recordedAccountBy") or ""
+    
+    for p in ei_json.get("players", []):
+        if p.get("isFake") or p.get("friendlyNPC"):
+            continue
+        if recorded_by and p.get("name") == recorded_by:
+            return p.get("teamID", 0)
+        if recorded_account and p.get("account") == recorded_account:
+            return p.get("teamID", 0)
+    
+    # 兜底：取第一个有效玩家的 teamID
+    for p in ei_json.get("players", []):
+        if not p.get("isFake") and not p.get("friendlyNPC"):
+            return p.get("teamID", 0)
+    return 0
+
+
+def extract_enemy_composition(ei_json: Dict[str, Any], friendly_team_id: int) -> tuple:
+    """从 EI JSON targets 数组中提取敌方职业统计。
+    
+    EI 解析器在无法获取敌方 profession 字段时，会将职业名嵌入 target.name：
+        "Mechanist pl-2994" -> profession = "Mechanist"
+    
+    Returns:
+        (enemy_count: int, composition_json: str | None)
+        composition_json 格式: {"Mechanist": 10, "Herald": 4, ...}
+    """
+    prof_counts: Dict[str, int] = {}
+    enemy_count = 0
+    
+    for t in ei_json.get("targets", []):
+        # 跳过非敌方目标
+        if not t.get("enemyPlayer", False):
+            continue
+        if t.get("isFake", False):
+            continue
+        
+        enemy_count += 1
+        name = t.get("name", "")
+        
+        # 尝试从 name 中提取职业
+        match = _ENEMY_PROF_PATTERN.match(name)
+        if match:
+            prof = match.group(1)
+            prof_counts[prof] = prof_counts.get(prof, 0) + 1
+            continue
+        
+        # 备用：尝试 profession 字段（某些日志直接提供）
+        prof = t.get("profession")
+        if prof:
+            prof_counts[prof] = prof_counts.get(prof, 0) + 1
+            continue
+        
+        # 尝试从 players 数组中按 name 匹配（log_id=57 的情况）
+        for p in ei_json.get("players", []):
+            if p.get("name") == name and p.get("teamID") != friendly_team_id:
+                prof = p.get("profession")
+                if prof:
+                    prof_counts[prof] = prof_counts.get(prof, 0) + 1
+                break
+    
+    if not prof_counts:
+        return enemy_count, None
+    
+    # 按数量降序排列
+    sorted_comp = dict(sorted(prof_counts.items(), key=lambda x: -x[1]))
+    return enemy_count, json.dumps(sorted_comp, ensure_ascii=False)
 
 
 def extract_uptime(bu: dict) -> float:
@@ -42,8 +124,13 @@ def extract_player_healing(player: Dict) -> int:
     return 0
 
 
-def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
-    """提取战斗级标量数据（直接从EI JSON）"""
+def extract_fight_data(ei_json: Dict[str, Any], friendly_team_id: int = 0) -> Dict[str, Any]:
+    """提取战斗级标量数据（直接从EI JSON）
+    
+    Args:
+        ei_json: EI解析后的JSON数据
+        friendly_team_id: 友方teamID，用于区分敌我玩家统计
+    """
     ei_duration_ms = ei_json.get("durationMS", 0)
     duration_sec = max(1, int(ei_duration_ms / 1000))
 
@@ -54,17 +141,36 @@ def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
     total_damage = 0
     total_kills = 0
     total_deaths = 0
-    player_count = 0
+    friendly_count = 0
+    enemy_count = 0
+    
     for p in ei_players:
         if p.get("isFake") or p.get("friendlyNPC"):
             continue
+        
+        team_id = p.get("teamID", 0)
+        is_friendly = (team_id == friendly_team_id) if friendly_team_id else True
+        
         dps_all = p.get("dpsAll", [{}])[0]
-        total_damage += dps_all.get("damage", 0)
         stats_all = p.get("statsAll", [{}])[0]
-        total_kills += stats_all.get("killed", 0)
         defenses = p.get("defenses", [{}])[0]
+        
+        # 总伤害/击杀/死亡统计（包含双方，用于战斗总览）
+        total_damage += dps_all.get("damage", 0)
+        total_kills += stats_all.get("killed", 0)
         total_deaths += defenses.get("deadCount", 0)
-        player_count += 1
+        
+        if is_friendly:
+            friendly_count += 1
+        else:
+            enemy_count += 1
+
+    # 提取敌方职业统计（从 targets 数组）
+    extracted_enemy_count, enemy_comp_json = extract_enemy_composition(ei_json, friendly_team_id)
+    
+    # 如果 targets 中没统计到敌方，但 players 中有，用 players 中的计数兜底
+    if extracted_enemy_count == 0 and enemy_count > 0:
+        extracted_enemy_count = enemy_count
 
     parsed_start = parse_ei_time(ei_start)
     parsed_end = parse_ei_time(ei_end)
@@ -87,20 +193,39 @@ def extract_fight_data(ei_json: Dict[str, Any]) -> Dict[str, Any]:
         "total_damage": total_damage,
         "total_healing": sum(
             extract_player_healing(p) for p in ei_json.get("players", [])
+            if not p.get("isFake") and not p.get("friendlyNPC")
         ),
         "kill_count": total_kills,
         "death_count": total_deaths,
-        "player_count": player_count,
+        "player_count": friendly_count + enemy_count,  # 总玩家数（向后兼容）
+        "friendly_player_count": friendly_count,
+        "enemy_player_count": extracted_enemy_count,
+        "enemy_composition": enemy_comp_json,
     }
 
 
-def extract_player_stats(ei_json: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """提取每个玩家的标量统计（直接从EI JSON）"""
+def extract_player_stats(ei_json: Dict[str, Any], friendly_team_id: int = 0) -> List[Dict[str, Any]]:
+    """提取每个玩家的标量统计（直接从EI JSON），仅提取友方玩家。
+    
+    Args:
+        ei_json: EI解析后的JSON数据
+        friendly_team_id: 友方teamID，用于过滤敌方玩家
+    """
     results = []
 
     for ei_p in ei_json.get("players", []):
         if should_skip_player(ei_p):
             continue
+        
+        # 排除敌方玩家（teamID不同）
+        if friendly_team_id:
+            player_team_id = ei_p.get("teamID", 0)
+            if player_team_id != friendly_team_id:
+                logger.debug(
+                    f"[import] 跳过敌方玩家: {ei_p.get('account')} "
+                    f"(teamID={player_team_id} != friendly={friendly_team_id})"
+                )
+                continue
 
         dps_all = ei_p.get("dpsAll", [{}])[0]
         stats_all = ei_p.get("statsAll", [{}])[0]

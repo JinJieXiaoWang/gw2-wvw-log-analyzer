@@ -3,7 +3,6 @@
 # 创建日期：2026-05-11
 # 依赖说明：SQLAlchemy
 
-from app.config.database import Base
 from sqlalchemy import (
     BIGINT,
     CHAR,
@@ -16,6 +15,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 
+from app.config.database import Base
+
 
 class SysMenu(Base):
     """
@@ -24,9 +25,9 @@ class SysMenu(Base):
     对应数据库表：sys_menu
 
     菜单类型说明?
-    - M: 目录（Menu?
-    - C: 菜单（Component?
-    - F: 按钮（Function?
+    - M: 目录（Menu)
+    - C: 菜单（Component)
+    - F: 按钮（Function)
     """
 
     __tablename__ = "sys_menu"
@@ -49,9 +50,9 @@ class SysMenu(Base):
 
     route_name = Column(VARCHAR(50), default="", comment="路由名称")
 
-    is_frame = Column(INTEGER, default=1, comment="是否为外链（0?1否）")
+    is_frame = Column(INTEGER, default=1, comment="是否为外链（0否 1是）")
 
-    is_cache = Column(INTEGER, default=0, comment="是否缓存?缓存 1不缓存）")
+    is_cache = Column(INTEGER, default=0, comment="是否缓存（0不缓存 1缓存）")
 
     menu_type = Column(CHAR(1), default="", comment="菜单类型（M目录, C菜单, F按钮）")
 

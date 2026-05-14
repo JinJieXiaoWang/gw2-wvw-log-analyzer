@@ -5,7 +5,7 @@
 # 创建日期：2026-04-27
 # 更新说明：v2.0 扩展字段，支持DPS、Buff 覆盖率等 WvW 核心指标
 
-from sqlalchemy import BigInteger, Column, ForeignKey, Index, Integer, JSON, Numeric, String
+from sqlalchemy import BigInteger, Column, ForeignKey, Float, Index, Integer, JSON, Numeric, String
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
@@ -64,12 +64,12 @@ class FightStats(Base):
     boon_strips_ally = Column(Integer, default=0, comment="移除队友增益次数")
 
     # === 关键 Buff 覆盖率（标量，直接查询排序）===
-    might_uptime = Column(Numeric(5, 2), default=0, comment="力量覆盖(百分比)")
-    fury_uptime = Column(Numeric(5, 2), default=0, comment="狂怒覆盖(百分比)")
-    quickness_uptime = Column(Numeric(5, 2), default=0, comment="急速覆盖(百分比)")
-    alacrity_uptime = Column(Numeric(5, 2), default=0, comment="敏捷覆盖(百分比)")
-    protection_uptime = Column(Numeric(5, 2), default=0, comment="保护覆盖(百分比)")
-    stability_uptime = Column(Numeric(5, 2), default=0, comment="稳定覆盖(百分比)")
+    might_uptime = Column(Float, default=0, comment="力量覆盖(百分比)")
+    fury_uptime = Column(Float, default=0, comment="狂怒覆盖(百分比)")
+    quickness_uptime = Column(Float, default=0, comment="急速覆盖(百分比)")
+    alacrity_uptime = Column(Float, default=0, comment="敏捷覆盖(百分比)")
+    protection_uptime = Column(Float, default=0, comment="保护覆盖(百分比)")
+    stability_uptime = Column(Float, default=0, comment="稳定覆盖(百分比)")
 
     # === 高级战斗指标（dps.report API 专有）===
     down_contribution = Column(Integer, default=0, comment="倒地贡献")
@@ -80,18 +80,18 @@ class FightStats(Base):
     condition_damage_taken = Column(BigInteger, default=0, comment="症状承受伤害")
     power_damage_taken = Column(BigInteger, default=0, comment="直伤承受伤害")
     received_cc_duration = Column(Integer, default=0, comment="受到CC时长(ms)")
-    might_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期力量覆盖(%)")
-    quickness_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期急速覆盖(%)")
-    alacrity_uptime_active = Column(Numeric(5, 2), default=0, comment="战斗活跃期敏捷覆盖(%)")
-    avg_boons = Column(Numeric(5, 2), default=0, comment="平均增益层数")
-    avg_conditions = Column(Numeric(5, 2), default=0, comment="平均症状层数")
+    might_uptime_active = Column(Float, default=0, comment="战斗活跃期力量覆盖(%)")
+    quickness_uptime_active = Column(Float, default=0, comment="战斗活跃期急速覆盖(%)")
+    alacrity_uptime_active = Column(Float, default=0, comment="战斗活跃期敏捷覆盖(%)")
+    avg_boons = Column(Float, default=0, comment="平均增益层数")
+    avg_conditions = Column(Float, default=0, comment="平均症状层数")
 
     # === 技能效率与位置（EI 扩展字段）===
     wasted = Column(Integer, default=0, comment="技能浪费量")
     saved = Column(Integer, default=0, comment="技能节省量")
-    skill_cast_uptime = Column(Numeric(5, 2), default=0, comment="技能施法占比(%)")
-    stack_dist = Column(Numeric(10, 2), default=0, comment="堆叠距离")
-    dist_to_com = Column(Numeric(10, 2), default=0, comment="与指挥官距离")
+    skill_cast_uptime = Column(Float, default=0, comment="技能施法占比(%)")
+    stack_dist = Column(Float, default=0, comment="堆叠距离")
+    dist_to_com = Column(Float, default=0, comment="与指挥官距离")
 
     # === 倒地/死亡详情（EI 扩展字段）===
     downed_damage_taken = Column(BigInteger, default=0, comment="倒地时承受伤害")
@@ -103,10 +103,10 @@ class FightStats(Base):
 
     # === 支援详情（EI 扩展字段）===
     stun_break = Column(Integer, default=0, comment="解控次数")
-    removed_stun_duration = Column(Numeric(8, 3), default=0, comment="解除眩晕时长(s)")
+    removed_stun_duration = Column(Float, default=0, comment="解除眩晕时长(s)")
 
     # === AI 评分（后续计算或解析时生成）===
-    ai_score = Column(Numeric(5, 2), default=0, comment="AI评分")
+    ai_score = Column(Float, default=0, comment="AI评分")
     score_grade = Column(String(10), default="", comment="评分等级（S/A/B/C/D）")
     score_breakdown = Column(JSON, nullable=True, comment="评分维度明细JSON")
 

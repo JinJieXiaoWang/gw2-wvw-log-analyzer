@@ -5,6 +5,7 @@
  */
 
 import { apiFactory } from './core/apiService'
+import { getDictLabel, getDictColor } from '@/utils/profession/dictMapping'
 
 export interface RoleType {
   id: number
@@ -197,7 +198,7 @@ export async function getProfessionAsync(professionKey: string): Promise<Profess
 export function getProfessionName(professionKey: string): string {
   if (!isLoaded) {
     triggerLoadData()
-    return professionKey
+    return getDictLabel('profession', professionKey, professionKey)
   }
   
   const profession = getProfession(professionKey)
@@ -210,7 +211,7 @@ export function getProfessionName(professionKey: string): string {
     return spec.spec_name
   }
   
-  return professionKey
+  return getDictLabel('profession', professionKey, professionKey)
 }
 
 /**
@@ -220,7 +221,7 @@ export function getProfessionColor(professionKey: string): string {
   // 如果缓存未加载，触发异步加载
   if (!isLoaded) {
     triggerLoadData()
-    return '#6b7280'
+    return getDictColor('profession', professionKey, '#6b7280')
   }
   
   // 先尝试查找基础职业
@@ -235,7 +236,7 @@ export function getProfessionColor(professionKey: string): string {
     return spec.color
   }
   
-  return '#6b7280'
+  return getDictColor('profession', professionKey, '#6b7280')
 }
 
 /**

@@ -147,7 +147,12 @@ export const API_ENDPOINTS = {
     SUGGESTIONS: `${API_V1}/ai/suggestions`,
     STATUS: `${API_V1}/ai/status`,
     TEST: `${API_V1}/ai/test`,
-    CLEAR_CACHE: `${API_V1}/ai/cache/clear`
+    CLEAR_CACHE: `${API_V1}/ai/cache/clear`,
+    ANALYZE_PERSONAL_GROWTH: `${API_V1}/ai/analyze/personal-growth`,
+    ANALYZE_DEATH_ATTRIBUTION: `${API_V1}/ai/analyze/death-attribution`,
+    ANALYZE_SQUAD_SYNERGY: `${API_V1}/ai/analyze/squad-synergy`,
+    ANALYZE_BUILD_EXECUTION: `${API_V1}/ai/analyze/build-execution`,
+    ANALYZE_CRITICAL_MOMENTS: `${API_V1}/ai/analyze/critical-moments`,
   },
 
   // 战斗数据

@@ -908,6 +908,7 @@ def get_ai_stats() -> Dict[str, Any]:
             "provider": ai_config.AI_MODEL_PROVIDER.value,
             "cache_enabled": ai_config.AI_CACHE_ENABLED,
             "fallback_enabled": ai_config.AI_FALLBACK_ENABLED,
+            "has_api_key": bool(ai_config.get_active_provider_config()["api_key"]),
         },
         "cache": cache.get_cache_stats(),
         "fallback": fallback.get_stats(),
