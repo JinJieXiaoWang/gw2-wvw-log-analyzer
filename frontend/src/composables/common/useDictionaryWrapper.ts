@@ -8,7 +8,7 @@ export function useDictionaryWrapper() {
   const toast = useToast()
   const { isOperator, isSuperAdmin } = usePermission()
 
-  const viewMode = ref<'overview' | 'management'>('overview')
+  const viewMode = ref<'overview' | 'management'>('management')
   const dictManagementRef = ref()
   const dictTypes = ref<DictType[]>([])
   const loading = ref(false)

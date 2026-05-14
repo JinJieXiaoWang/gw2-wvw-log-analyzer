@@ -2,6 +2,7 @@
   <div class="management-header">
     <div class="header-left">
       <BaseButton
+        v-if="showBack"
         icon="pi pi-arrow-left"
         severity="secondary"
         text
@@ -56,6 +57,7 @@ defineProps<{
   isAdmin: boolean
   isCollapsed: boolean
   refreshing: boolean
+  showBack?: boolean
 }>()
 
 defineEmits<{

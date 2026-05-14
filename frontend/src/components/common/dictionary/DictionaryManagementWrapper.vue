@@ -14,20 +14,19 @@
       />
     </template>
     <template v-else>
-      <template v-if="!isEmbedded">
-        <DictManagementHeader
-          :is-admin="isAdmin"
-          :is-collapsed="isCollapsed"
-          :refreshing="refreshing"
-          @back="viewMode = 'overview'"
-          @toggle-sidebar="toggleSidebar"
-          @reload-cache="handleReloadCache"
-          @init-data="showInitDialog = true"
-        />
-      </template>
+      <DictManagementHeader
+        :is-admin="isAdmin"
+        :is-collapsed="isCollapsed"
+        :refreshing="refreshing"
+        :show-back="!isEmbedded"
+        @back="viewMode = 'overview'"
+        @toggle-sidebar="toggleSidebar"
+        @reload-cache="handleReloadCache"
+        @init-data="showInitDialog = true"
+      />
       <DictionaryManagementCore 
         ref="dictManagementRef" 
-        :show-overview-cards="!isEmbedded"
+        :show-overview-cards="true"
       />
     </template>
 
