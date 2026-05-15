@@ -265,11 +265,7 @@ server {
     location / {
         root /opt/gw2-backend/frontend/dist;
         index index.html;
-        try_files $uri $uri/ @spa;
-    }
-
-    location @spa {
-        rewrite ^ /index.html break;
+        try_files $uri $uri/ /index.html;
     }
 
     location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot|otf)$ {
