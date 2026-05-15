@@ -421,6 +421,22 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
             raise Exception(result.get("error", "日志导入失败"))
 
         logger.info(f"[batch] log_id={log_id} 导入成功")
+
+        # 解析成功后自动执行入库评分
+        try:
+            from app.services.wvw.scoring_service import ScoringService
+            fight_id = result.get("fight_id")
+            if fight_id:
+                scoring_result = ScoringService.recalculate_fight_scores(fight_id, db)
+                logger.info(
+                    f"[batch] 日志 {log_id} 战斗 {fight_id} 评分完成: "
+                    f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                )
+        except Exception as score_err:
+            logger.error(
+                f"[batch] 日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+            )
+
         BatchParseService.update_task_item_status(db, task_id, log_id, "completed")
         db.commit()
 
@@ -494,6 +510,25 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
         raise Exception(result.get("error", "日志导入失败"))
 
     logger.info(f"[batch] log_id={log_id} 子进程导入成功")
+
+    # 解析成功后自动执行入库评分
+    try:
+        from app.services.wvw.scoring_service import ScoringService
+        fight_id = result.get("fight_id")
+        if fight_id:
+            db = SessionLocal()
+            try:
+                scoring_result = ScoringService.recalculate_fight_scores(fight_id, db)
+                logger.info(
+                    f"[batch] 日志 {log_id} 战斗 {fight_id} 评分完成: "
+                    f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                )
+            finally:
+                db.close()
+    except Exception as score_err:
+        logger.error(
+            f"[batch] 日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+        )
 
     # 更新状态
     db = SessionLocal()
