@@ -105,6 +105,12 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         db.close()
 
 
+def _parse_worker(queue, log_id: int, file_path: str) -> None:
+    """子进程工作函数（必须在模块级别定义，否则无法被 pickle）"""
+    result = _import_log_subprocess(log_id, file_path)
+    queue.put(result)
+
+
 def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -> None:
     """使用子进程隔离执行解析，主进程只负责状态更新
 
@@ -128,11 +134,7 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     ctx = multiprocessing.get_context("spawn")
     queue = ctx.Queue()
 
-    def _worker(q, lid, fpath):
-        result = _import_log_subprocess(lid, fpath)
-        q.put(result)
-
-    proc = ctx.Process(target=_worker, args=(queue, log_id, file_path))
+    proc = ctx.Process(target=_parse_worker, args=(queue, log_id, file_path))
     proc.start()
     proc.join(timeout=SUBPROCESS_TIMEOUT)
 
