@@ -360,7 +360,8 @@ deploy_backend() {
     # 复制前端源码（用于构建）
     if [[ -d "$FRONTEND_SOURCE" ]]; then
         mkdir -p "${PROJECT_DIR}/frontend"
-        rsync -av --exclude='node_modules' --exclude='.git' --exclude='dist' \
+        # 保留 dist（支持本地预打包上传）
+        rsync -av --exclude='node_modules' --exclude='.git' \
             "${FRONTEND_SOURCE}/" "${PROJECT_DIR}/frontend/"
     fi
 
@@ -389,11 +390,20 @@ setup_venv() {
     success "  虚拟环境和依赖安装完成"
 }
 
-# 构建前端
+# 构建前端（支持本地预打包跳过）
 build_frontend() {
-    info "  正在构建前端..."
+    info "  正在部署前端..."
 
     FRONTEND_DIR="${PROJECT_DIR}/frontend"
+
+    # 如果 dist 已存在（本地预打包上传），直接复用
+    if [[ -d "${FRONTEND_DIR}/dist" ]] && [[ -f "${FRONTEND_DIR}/dist/index.html" ]]; then
+        info "  检测到前端 dist 已存在，跳过服务器端构建（本地预打包模式）"
+        chown -R "${PROJECT_USER}:${PROJECT_GROUP}" "$FRONTEND_DIR"
+        success "  前端 dist 已部署"
+        return 0
+    fi
+
     if [[ ! -f "${FRONTEND_DIR}/package.json" ]]; then
         warn "  前端源码不存在，跳过构建"
         return 0
