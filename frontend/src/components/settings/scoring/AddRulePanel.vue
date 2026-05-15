@@ -6,14 +6,14 @@
       <div class="flex items-center gap-2 mb-4 font-semibold text-color-secondary">
         <i class="pi pi-plus-circle text-primary-500" /><span>添加新评分规则</span>
       </div>
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="flex flex-wrap items-start sm:items-center gap-3">
         <BaseSelect
           v-model="localDim"
           :options="availableDimensions"
           option-label="label"
           option-value="key"
           placeholder="选择维度"
-          class="w-52"
+          class="w-full sm:w-48"
         >
           <template #value="{ value }">
             <div
@@ -45,7 +45,7 @@
             </div>
           </template>
         </BaseSelect>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
           <label class="text-sm text-color-secondary whitespace-nowrap">权重</label>
           <BaseInputNumber
             v-model="localWt"
@@ -54,15 +54,15 @@
             :step="0.01"
             :max-fraction-digits="2"
             size="small"
-            class="w-24"
+            class="w-20"
           />
           <span class="text-xs text-color-secondary">(0-1)</span>
+          <BaseInput
+            v-model="localDc"
+            placeholder="规则描述（可选）"
+            class="flex-1 min-w-0"
+          />
         </div>
-        <BaseInput
-          v-model="localDc"
-          placeholder="规则描述（可选）"
-          class="flex-1 min-w-[200px]"
-        />
         <BaseButton
           label="添加"
           icon="pi pi-plus"

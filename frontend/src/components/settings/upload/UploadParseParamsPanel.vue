@@ -14,8 +14,8 @@
       </div>
     </div>
     <div class="space-y-4">
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-violet-100 dark:bg-violet-900/30">
             <i class="pi pi-file text-violet-600 dark:text-violet-400" />
           </div>
@@ -31,12 +31,12 @@
           :min="1"
           :max="500"
           suffix=" MB"
-          class="w-32"
+          class="w-full sm:w-32 max-w-full"
           @blur="markChanged('upload_max_file_size')"
         />
       </div>
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-violet-100 dark:bg-violet-900/30">
             <i class="pi pi-code text-violet-600 dark:text-violet-400" />
           </div>
@@ -49,12 +49,12 @@
         </div>
         <BaseInput
           v-model="localConfigs.upload_allowed_extensions"
-          class="w-56"
+          class="w-full sm:w-56 max-w-full"
           @input="markChanged('upload_allowed_extensions')"
         />
       </div>
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-violet-100 dark:bg-violet-900/30">
             <i class="pi pi-clock text-violet-600 dark:text-violet-400" />
           </div>
@@ -70,7 +70,7 @@
           :min="60"
           :max="7200"
           suffix=" 秒"
-          class="w-32"
+          class="w-full sm:w-32 max-w-full"
           @blur="markChanged('analysis_max_fight_duration')"
         />
       </div>

@@ -51,7 +51,7 @@
               :options="scoringModeOptions"
               option-label="label"
               option-value="value"
-              class="w-40"
+              class="w-full sm:w-40 max-w-full"
               @change="markChanged('scoring_mode')"
             />
           </div>
@@ -69,7 +69,7 @@
             </div>
             <BaseInput
               v-model="localConfigs.default_server"
-              class="w-40"
+              class="w-full sm:w-40 max-w-full"
               @input="markChanged('default_server')"
             />
           </div>
@@ -106,7 +106,7 @@
               v-model="localConfigs.parse_parallel"
               :min="1"
               :max="8"
-              class="w-24"
+              class="w-full sm:w-24 max-w-full"
               @blur="markChanged('parse_parallel')"
             />
           </div>
@@ -127,7 +127,7 @@
               :min="30"
               :max="3650"
               suffix=" 天"
-              class="w-32"
+              class="w-full sm:w-32 max-w-full"
               @blur="markChanged('retention_days')"
             />
           </div>
@@ -164,7 +164,7 @@
             :options="exportFormatOptions"
             option-label="label"
             option-value="value"
-            class="w-32"
+            class="w-full sm:w-32 max-w-full"
             @change="markChanged('export_format')"
           />
         </div>
@@ -339,11 +339,11 @@ onMounted(() => {
 }
 
 .config-row {
-  @apply flex items-center justify-between p-3 bg-neutral-bg-secondary rounded-lg;
+  @apply flex items-center gap-3 p-3 bg-neutral-bg-secondary rounded-lg flex-wrap sm:flex-nowrap;
 }
 
 .config-info {
-  @apply flex items-center gap-3;
+  @apply flex items-center gap-3 flex-1 min-w-0;
 }
 
 .icon-box {

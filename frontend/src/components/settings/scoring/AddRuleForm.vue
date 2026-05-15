@@ -10,14 +10,14 @@
         <i class="pi pi-plus-circle text-primary-500" />
         <span>添加新评分规则</span>
       </div>
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="flex flex-wrap items-start sm:items-center gap-3">
         <Dropdown
           v-model="localDim"
           :options="availableDimensions"
           option-label="label"
           option-value="key"
           placeholder="选择维度"
-          class="w-52"
+          class="w-full sm:w-48"
         >
           <template #value="{ value }">
             <div
@@ -49,7 +49,7 @@
             </div>
           </template>
         </Dropdown>
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-2 flex-1 min-w-0">
           <label class="text-sm text-color-secondary whitespace-nowrap">权重</label>
           <InputNumber
             v-model="localWt"
@@ -57,15 +57,15 @@
             :max="10"
             :step="0.01"
             size="small"
-            class="w-24"
+            class="w-20"
           />
           <span class="text-xs text-color-secondary">%</span>
+          <InputText
+            v-model="localDc"
+            placeholder="规则描述（可选）"
+            class="flex-1 min-w-0"
+          />
         </div>
-        <InputText
-          v-model="localDc"
-          placeholder="规则描述（可选）"
-          class="flex-1 min-w-[200px]"
-        />
         <Button
           label="添加"
           icon="pi pi-plus"

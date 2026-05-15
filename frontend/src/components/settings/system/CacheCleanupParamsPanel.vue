@@ -14,8 +14,8 @@
       </div>
     </div>
     <div class="space-y-4">
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-bars text-emerald-600 dark:text-emerald-400" />
           </div>
@@ -31,12 +31,12 @@
           :min="60"
           :max="86400"
           suffix=" 秒"
-          class="w-32"
+          class="w-full sm:w-32 max-w-full"
           @blur="markChanged('cache_menu_ttl')"
         />
       </div>
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-sync text-emerald-600 dark:text-emerald-400" />
           </div>
@@ -52,8 +52,8 @@
           @change="markChanged('auto_cleanup_enabled')"
         />
       </div>
-      <div class="flex items-center justify-between p-3 bg-surface-50 dark:bg-surface-800 rounded-lg">
-        <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 p-3 bg-surface-50 dark:bg-surface-800 rounded-lg flex-wrap sm:flex-nowrap">
+        <div class="flex items-center gap-3 flex-1 min-w-0">
           <div class="w-8 h-8 rounded flex items-center justify-center bg-emerald-100 dark:bg-emerald-900/30">
             <i class="pi pi-calendar text-emerald-600 dark:text-emerald-400" />
           </div>
@@ -69,7 +69,7 @@
           :min="1"
           :max="365"
           suffix=" 天"
-          class="w-32"
+          class="w-full sm:w-32 max-w-full"
           @blur="markChanged('auto_cleanup_retention_days')"
         />
       </div>
