@@ -112,6 +112,17 @@ export const GradeLevel = {
 export type GradeLevelValue = (typeof GradeLevel)[keyof typeof GradeLevel]
 
 // =============================================================================
+// 评分模式 (scoring_mode)
+// =============================================================================
+
+export const ScoringMode = {
+  ROLE_BASED: 'role_based',
+  PROFESSION_BASED: 'profession_based',
+} as const
+
+export type ScoringModeValue = (typeof ScoringMode)[keyof typeof ScoringMode]
+
+// =============================================================================
 // 评分规则版本状态 (scoring_rule_status)
 // =============================================================================
 

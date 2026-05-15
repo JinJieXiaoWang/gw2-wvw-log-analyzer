@@ -1,7 +1,9 @@
 /**
  * 设置页面常量定义
- * 集中管理设置相关的硬编码配置数据
+ * 集中管理设置相关的配置数据
  */
+
+import { ScoringMode } from '@/constants/dictValues'
 
 /** 设置侧边栏导航项 */
 export const SETTING_SECTIONS = [
@@ -44,8 +46,8 @@ export const NUMBER_FORMAT_OPTIONS = [
 
 /** 评分模式选项 - 作为字典API加载失败的fallback */
 export const SCORING_MODE_OPTIONS = [
-  { label: '角色定位评分', value: 'role_based', is_default: 1 },
-  { label: '职业评分', value: 'profession_based', is_default: 0 }
+  { label: '角色定位评分', value: ScoringMode.ROLE_BASED, is_default: 1 },
+  { label: '职业评分', value: ScoringMode.PROFESSION_BASED, is_default: 0 }
 ]
 
 /** 数据导出格式选项 - 作为字典API加载失败的fallback */
@@ -57,7 +59,7 @@ export const EXPORT_FORMAT_SELECT_OPTIONS = [
 
 /** 系统参数本地配置默认值 */
 export const SYSTEM_CONFIG_DEFAULTS = {
-  scoring_mode: 'role_based',
+  scoring_mode: ScoringMode.ROLE_BASED,
   default_server: 'Tarnished Coast',
   parse_parallel: 1,
   retention_days: 365,

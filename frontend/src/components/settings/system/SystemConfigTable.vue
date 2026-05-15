@@ -47,14 +47,14 @@
         header="配置值"
       >
         <template #body="{ data }">
-          <div v-if="data.config_type === 'N'">
+          <div v-if="data.config_type === YesNo.NO">
             <BaseInput
               v-model="data.config_value"
               class="p-inputtext-sm w-full"
               @blur="emit('update', data)"
             />
           </div>
-          <div v-else-if="data.config_type === 'Y' && isBoolean(data.config_key)">
+          <div v-else-if="data.config_type === YesNo.YES && isBoolean(data.config_key)">
             <ToggleSwitch
               :model-value="data.config_value === 'true'"
               @update:model-value="emit('boolChange', data, $event)"
@@ -84,9 +84,9 @@
         style="width: 100px"
       >
         <template #body="{ data }">
-          <BaseTag
-            :value="data.config_type === 'Y' ? '可见' : '隐藏'"
-            :severity="data.config_type === 'Y' ? 'success' : 'secondary'"
+          <DictTag
+            dict-type="sys_yes_no"
+            :value="data.config_type"
           />
         </template>
       </Column>
@@ -95,12 +95,13 @@
 </template>
 
 <script setup lang="ts">
+import DictTag from '@/components/common/dict/DictTag.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseInput from '@/components/common/ui/input/BaseInput.vue'
-import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import ToggleSwitch from 'primevue/toggleswitch'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import { YesNo } from '@/constants/dictValues'
 
 const { configs, loading, expanded } = defineProps<{
   configs: any[]

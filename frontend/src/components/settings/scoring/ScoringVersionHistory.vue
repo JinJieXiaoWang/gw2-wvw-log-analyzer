@@ -28,9 +28,9 @@
         style="width: 100px"
       >
         <template #body="{ data }">
-          <BaseTag
+          <DictTag
+            dict-type="scoring_rule_status"
             :value="data.status"
-            :severity="data.status === 'completed' ? 'success' : data.status === 'processing' ? 'warning' : data.status === 'failed' ? 'danger' : 'info'"
             class="text-xs"
           />
         </template>
@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+import DictTag from '@/components/common/dict/DictTag.vue'
 
 interface VersionHistoryData {
   versions: any[]

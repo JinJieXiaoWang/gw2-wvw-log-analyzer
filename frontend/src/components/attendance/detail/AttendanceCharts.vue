@@ -334,11 +334,8 @@ const { detailData } = defineProps<{
 const emit = defineEmits(['timeRangeChange'])
 
 const timeRange = ref('7d')
-const timeRangeOptions = [
-  { label: '近7天', value: '7d' },
-  { label: '近30天', value: '30d' },
-  { label: '近90天', value: '90d' },
-]
+import { TIME_RANGE_OPTIONS_NO_ALL } from '@/constants/options'
+const timeRangeOptions = TIME_RANGE_OPTIONS_NO_ALL
 
 const {
   abilities, chartPoints, chartLinePath, chartAreaPath,

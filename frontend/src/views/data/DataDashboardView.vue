@@ -10,7 +10,7 @@
       <template #actions>
         <Select
           v-model="timeRange"
-          :options="timeRangeOptions"
+          :options="TIME_RANGE_OPTIONS"
           option-label="label"
           option-value="value"
           class="w-32"
@@ -90,13 +90,8 @@ import { ApiResponseWrapper } from '@/services/core/errorHandler'
 // ============================================
 // 时间范围
 // ============================================
+import { TIME_RANGE_OPTIONS } from '@/constants/options'
 const timeRange = ref('30d')
-const timeRangeOptions = [
-  { label: '最近7天', value: '7d' },
-  { label: '最近30天', value: '30d' },
-  { label: '最近90天', value: '90d' },
-  { label: '全部', value: 'all' }
-]
 
 const daysFromRange = (range: string): number => {
   const map: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90, 'all': 365 }

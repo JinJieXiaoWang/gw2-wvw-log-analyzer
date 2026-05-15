@@ -4,6 +4,7 @@
  * 通过 options 控制功能开关，支持多种使用场景
  */
 
+import { ScoringRuleStatus } from '@/constants/dictValues'
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
@@ -422,9 +423,9 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
         if (status) {
           recalcTask.value = status
           const st = status.status as string
-          if (st === 'completed' || st === 'failed') {
+          if (st === ScoringRuleStatus.COMPLETED || st === ScoringRuleStatus.FAILED) {
             if (recalcPollTimer) { clearInterval(recalcPollTimer); recalcPollTimer = null }
-            if (st === 'completed') toast.add({ severity: 'success', summary: '重算完成', detail: `已更新 ${status.updated_records} 条记录`, life: configManager.get('ui').toastErrorLife })
+            if (st === ScoringRuleStatus.COMPLETED) toast.add({ severity: 'success', summary: '重算完成', detail: `已更新 ${status.updated_records} 条记录`, life: configManager.get('ui').toastErrorLife })
             if (enableVersionHistory) await fetchVersions()
           }
         }

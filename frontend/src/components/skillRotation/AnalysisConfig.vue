@@ -52,11 +52,8 @@ const compareModeOptions = [
   { label: '效率对比', value: 'efficiency' }
 ]
 
-const timeRangeOptions = [
-  { label: '完整战斗', value: 'full' },
-  { label: '前5分钟', value: 'first5' },
-  { label: '后5分钟', value: 'last5' }
-]
+import { LOG_TIME_RANGE_OPTIONS } from '@/constants/options'
+const timeRangeOptions = LOG_TIME_RANGE_OPTIONS
 
 watch(
   () => props.selectedLogId,

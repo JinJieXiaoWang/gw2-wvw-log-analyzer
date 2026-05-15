@@ -1,3 +1,4 @@
+import { SESSION_TIMEOUT_OPTIONS } from '@/constants/options'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { authStore } from '@/composables/system/usePermission'
@@ -16,12 +17,7 @@ export function useSystemAdmin() {
     { id: 'system', label: '系统信息', icon: 'pi pi-info-circle' }
   ]
 
-  const sessionTimeoutOptions = [
-    { label: '30分钟', value: 30 },
-    { label: '1Сʱ', value: 60 },
-    { label: '6Сʱ', value: 360 },
-    { label: '24Сʱ', value: 1440 }
-  ]
+  const sessionTimeoutOptions = SESSION_TIMEOUT_OPTIONS
 
   const sessionTimeout = ref(60)
 

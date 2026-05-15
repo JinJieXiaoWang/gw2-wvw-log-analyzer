@@ -8,7 +8,7 @@
 
 import { reactive, computed } from 'vue'
 import type { User, Permission, Role, LoginCredentials, AuthState, MenuItem } from '@/types/permission'
-import { GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from '@/types/permission'
+import { SystemRole, GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from '@/types/permission'
 import { apiFactory } from '@/services/core/apiService'
 import { authService } from '@/services/auth/authService'
 import { saveAccessToken, clearToken } from '@/utils/auth/tokenManager'
@@ -77,9 +77,9 @@ class AuthStore {
    */
   private getPermissionsByRole(role: Role): Permission[] {
     switch (role) {
-      case 'super_admin':
+      case SystemRole.SUPER_ADMIN:
         return SUPER_ADMIN_PERMISSIONS
-      case 'operator':
+      case SystemRole.OPERATOR:
         return OPERATOR_PERMISSIONS
       default:
         return GUEST_PERMISSIONS
@@ -150,13 +150,13 @@ class AuthStore {
         this.state.user = {
           id: String((user as Record<string, unknown>).id),
           username: (user as Record<string, unknown>).username as string,
-          role: ((user as Record<string, unknown>).role as Role) || 'operator',
+          role: ((user as Record<string, unknown>).role as Role) || SystemRole.OPERATOR,
           loginTime: new Date().toISOString(),
           lastActiveTime: new Date().toISOString()
         }
         this.state.permissions = permissions.length > 0 
           ? this.parsePermissions(permissions) 
-          : this.getPermissionsByRole((user.role as Role) || 'operator')
+          : this.getPermissionsByRole((user.role as Role) || SystemRole.OPERATOR)
         this.state.token = access_token
         this.state.menus = menus || []
         
@@ -249,13 +249,13 @@ class AuthStore {
           this.state.user = {
             id: user.id.toString(),
             username: user.username,
-            role: (user.role as Role) || 'operator',
+            role: (user.role as Role) || SystemRole.OPERATOR,
             loginTime: user.last_login,
             lastActiveTime: new Date().toISOString()
           }
           this.state.permissions = permissions.length > 0 
             ? this.parsePermissions(permissions) 
-            : this.getPermissionsByRole((user.role as Role) || 'operator')
+            : this.getPermissionsByRole((user.role as Role) || SystemRole.OPERATOR)
           this.state.menus = menus || []
           
           this.saveToStorage()
@@ -497,9 +497,9 @@ export function usePermission() {
     permissions: computed(() => authStore.permissions),
     token: computed(() => authStore.token),
     menus: computed(() => authStore.menus),
-    isAdmin: computed(() => authStore.user?.role === 'super_admin'),
-    isOperator: computed(() => authStore.user?.role === 'operator'),
-    isSuperAdmin: computed(() => authStore.user?.role === 'super_admin'),
+    isAdmin: computed(() => authStore.user?.role === SystemRole.SUPER_ADMIN),
+    isOperator: computed(() => authStore.user?.role === SystemRole.OPERATOR),
+    isSuperAdmin: computed(() => authStore.user?.role === SystemRole.SUPER_ADMIN),
     login: authStore.login.bind(authStore),
     logout: authStore.logout.bind(authStore),
     getStatus: authStore.getStatus.bind(authStore),

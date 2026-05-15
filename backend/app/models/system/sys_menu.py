@@ -16,6 +16,7 @@ from sqlalchemy import (
 from sqlalchemy.orm import foreign, relationship, remote
 
 from app.config.database import Base
+from app.constants.dict_values import MenuStatus, MenuType, MenuVisible, YesNo
 
 
 class SysMenu(Base):
@@ -53,15 +54,15 @@ class SysMenu(Base):
 
     route_name = Column(VARCHAR(50), default="", comment="路由名称")
 
-    is_frame = Column(INTEGER, default=1, comment="是否为外链（0否 1是）")
+    is_frame = Column(INTEGER, default=YesNo.YES, comment="是否为外链（0否 1是）")
 
-    is_cache = Column(INTEGER, default=0, comment="是否缓存（0不缓存 1缓存）")
+    is_cache = Column(INTEGER, default=YesNo.NO, comment="是否缓存（0不缓存 1缓存）")
 
     menu_type = Column(CHAR(1), default="", comment="菜单类型（M目录, C菜单, F按钮）")
 
-    visible = Column(CHAR(1), default="0", comment="菜单状态（0显示 1隐藏）")
+    visible = Column(CHAR(1), default=MenuVisible.SHOW, comment="菜单状态（0显示 1隐藏）")
 
-    status = Column(CHAR(1), default="0", comment="菜单状态（0正常 1停用）")
+    status = Column(CHAR(1), default=MenuStatus.NORMAL, comment="菜单状态（0正常 1停用）")
 
     perms = Column(VARCHAR(100), nullable=True, comment="权限标识")
 

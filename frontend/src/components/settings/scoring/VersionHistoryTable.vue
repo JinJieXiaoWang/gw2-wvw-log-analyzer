@@ -29,9 +29,9 @@
         style="width: 100px"
       >
         <template #body="{ data }">
-          <Tag
+          <DictTag
+            dict-type="scoring_rule_status"
             :value="data.status"
-            :severity="data.status === 'completed' ? 'success' : data.status === 'processing' ? 'warning' : data.status === 'failed' ? 'danger' : 'info'"
             class="text-xs"
           />
         </template>
@@ -75,7 +75,7 @@
 <script setup lang="ts">
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import Tag from 'primevue/tag'
+import DictTag from '@/components/common/dict/DictTag.vue'
 
 const { versions, formatDate } = defineProps<{
   versions: any[]

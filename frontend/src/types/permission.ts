@@ -9,6 +9,12 @@ export type Permission = 'read' | 'write' | 'upload' | 'delete' | 'manage_users'
 
 export type Role = 'guest' | 'operator' | 'super_admin'
 
+export const SystemRole = {
+  GUEST: 'guest' as Role,
+  OPERATOR: 'operator' as Role,
+  SUPER_ADMIN: 'super_admin' as Role
+} as const
+
 export interface User {
   id: string
   username: string

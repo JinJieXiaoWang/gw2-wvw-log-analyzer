@@ -59,12 +59,8 @@
 import { ref } from 'vue'
 import Dropdown from 'primevue/dropdown'
 
-const sessionTimeoutOptions = [
-  { label: '30分钟', value: 30 },
-  { label: '1小时', value: 60 },
-  { label: '6小时', value: 360 },
-  { label: '24小时', value: 1440 }
-]
+import { SESSION_TIMEOUT_OPTIONS } from '@/constants/options'
+const sessionTimeoutOptions = SESSION_TIMEOUT_OPTIONS
 
 const sessionTimeout = ref(60)
 </script>
