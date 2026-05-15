@@ -1267,6 +1267,30 @@ def _init_sys_menu(db: Session) -> int:
     created = 0
     updated = 0
     
+    # 【兼容性】确保虚拟根节点存在（menu_id=0），解决 parent_id=0 的外键引用问题
+    # MySQL 严格模式下，parent_id=0 必须引用存在的 menu_id=0
+    root = db.query(SysMenu).filter(SysMenu.menu_id == 0).first()
+    if not root:
+        db.add(
+            SysMenu(
+                menu_id=0,
+                menu_name="ROOT",
+                parent_id=0,
+                order_num=0,
+                path="",
+                menu_type="M",
+                visible="1",
+                status="0",
+                icon="",
+                create_time=now,
+                update_time=now,
+                create_by="system",
+                update_by="system",
+            )
+        )
+        db.flush()
+        logger.info("已插入虚拟根节点 menu_id=0")
+    
     for record in _SYS_MENU_SEED:
         existing = db.query(SysMenu).filter(
             SysMenu.menu_name == record["menu_name"],
