@@ -11,6 +11,7 @@ import { usePermission } from '@/composables/system/usePermission'
 import { useDictStore } from '@/store/system/dict'
 import { configManager } from '@/services/core/configManager'
 import { STATUS_OPTIONS, EMPTY_DATA_FORM, EMPTY_TYPE_FORM } from '@/utils/core/dictConstants'
+import { NormalDisable } from '@/constants/dictValues'
 
 export function useDictionaryManagement() {
   const toast = useToast()
@@ -84,8 +85,8 @@ export function useDictionaryManagement() {
     return result
   })
 
-  const enabledCount = computed(() => dictData.value.filter(d => d.status === 0).length)
-  const disabledCount = computed(() => dictData.value.filter(d => d.status === 1).length)
+  const enabledCount = computed(() => dictData.value.filter(d => String(d.status) === NormalDisable.ENABLED).length)
+  const disabledCount = computed(() => dictData.value.filter(d => String(d.status) === NormalDisable.DISABLED).length)
   const loading = computed(() => dataLoading.value || typesLoading.value)
 
   // ========== 表单 ==========

@@ -8,7 +8,7 @@ from typing import Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session
 
 from app.constants.default_menus import DEFAULT_MENUS
-from app.constants.dict_values import MenuStatus, MenuVisible, YesNo
+from app.constants.dict_values import MenuStatus, MenuType, MenuVisible, MenuYesNo
 from app.models.system.sys_menu import SysMenu
 from app.utils.cache.cache import Cache
 from app.utils.logger import logger
@@ -48,8 +48,8 @@ class MenuService:
             component=menu_create.get("component"),
             query=menu_create.get("query", ""),
             route_name=menu_create.get("route_name", ""),
-            is_frame=menu_create.get("is_frame", YesNo.YES),
-            is_cache=menu_create.get("is_cache", YesNo.NO),
+            is_frame=menu_create.get("is_frame", MenuYesNo.YES),
+            is_cache=menu_create.get("is_cache", MenuYesNo.NO),
             menu_type=menu_create.get("menu_type", MenuType.MENU),
             visible=menu_create.get("visible", MenuVisible.SHOW),
             status=menu_create.get("status", MenuStatus.NORMAL),
@@ -272,8 +272,8 @@ class MenuService:
             path=menu_def["path"],
             component=menu_def["component"],
             route_name=menu_def.get("route_name", ""),
-            is_frame=menu_def.get("is_frame", YesNo.YES),
-            is_cache=menu_def.get("is_cache", YesNo.NO),
+            is_frame=menu_def.get("is_frame", MenuYesNo.YES),
+            is_cache=menu_def.get("is_cache", MenuYesNo.NO),
             menu_type=menu_def["menu_type"],
             visible=menu_def["visible"],
             status=menu_def["status"],

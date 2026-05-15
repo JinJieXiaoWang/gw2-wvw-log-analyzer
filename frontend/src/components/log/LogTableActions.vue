@@ -34,6 +34,7 @@
       @click="$emit('parse', data)"
     />
     <BaseButton
+      v-permission="'delete'"
       v-tooltip.top="'删除日志'"
       icon="pi pi-trash"
       size="small"

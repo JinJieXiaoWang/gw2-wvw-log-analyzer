@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 from app.core.ai_prompt_templates import AnalysisType
 from app.models.log.fight import Fight
 from app.services.ai_analysis.data_aggregator import SquadAggregator
+from app.constants.dict_values import AiRating, ImportanceLevel
 from app.utils.logger import logger
 
 
@@ -114,7 +115,7 @@ class CriticalMomentsAnalyzer:
                 "time_start": duration * 0.4,
                 "time_end": duration * 0.7,
                 "description": f"团队出现{len(down_members)}次倒地、{len(dead_members)}次死亡的关键时段",
-                "importance": "critical",
+                "importance": ImportanceLevel.CRITICAL.value,
             })
 
         # 关键片段3: 收尾阶段（最后15%时间）
@@ -182,7 +183,7 @@ class CriticalMomentsAnalyzer:
                 eval_entry["performance"] = {
                     "dps": dps,
                     "might_uptime": might,
-                    "rating": "excellent" if dps > 4000 and might > 60 else ("good" if dps > 2500 else "needs_improvement"),
+                    "rating": AiRating.EXCELLENT.value if dps > 4000 and might > 60 else (AiRating.GOOD.value if dps > 2500 else AiRating.NEEDS_IMPROVEMENT.value),
                 }
                 eval_entry["note"] = "开场爆发期应全力输出并确保吃到团队增益"
 
@@ -195,7 +196,7 @@ class CriticalMomentsAnalyzer:
                     "damage_taken": dt,
                     "deaths": dead,
                     "resurrects": res,
-                    "rating": "excellent" if dead == 0 and res > 2 else ("good" if dead == 0 else "critical"),
+                    "rating": AiRating.EXCELLENT.value if dead == 0 and res > 2 else (AiRating.GOOD.value if dead == 0 else AiRating.CRITICAL.value),
                 }
                 eval_entry["note"] = "危机时刻优先保证生存，有余力时支援队友"
 
@@ -206,14 +207,14 @@ class CriticalMomentsAnalyzer:
                 eval_entry["performance"] = {
                     "weapon_swaps": swap,
                     "skill_uptime": skill_uptime,
-                    "rating": "excellent" if skill_uptime > 70 else "good" if skill_uptime > 50 else "needs_improvement",
+                    "rating": AiRating.EXCELLENT.value if skill_uptime > 70 else AiRating.GOOD.value if skill_uptime > 50 else AiRating.NEEDS_IMPROVEMENT.value,
                 }
                 eval_entry["note"] = "收尾阶段保持输出节奏，保留关键技能应对变数"
 
             elif moment_type == "damage_spike":
                 eval_entry["performance"] = {
                     "dps": member.dps or 0,
-                    "rating": "excellent" if (member.dps or 0) > 5000 else "good",
+                    "rating": AiRating.EXCELLENT.value if (member.dps or 0) > 5000 else AiRating.GOOD.value,
                 }
                 eval_entry["note"] = "输出峰值期应最大化伤害输出"
 
@@ -221,7 +222,7 @@ class CriticalMomentsAnalyzer:
                 eval_entry["performance"] = {
                     "healing": member.healing or 0,
                     "cleanses": member.condi_cleanse_ally or 0,
-                    "rating": "excellent" if (member.healing or 0) > 1000000 else "good",
+                    "rating": AiRating.EXCELLENT.value if (member.healing or 0) > 1000000 else AiRating.GOOD.value,
                 }
                 eval_entry["note"] = "辅助高光时刻确保团队生存能力"
 
@@ -245,7 +246,7 @@ class CriticalMomentsAnalyzer:
             # 选取最重要的2个时刻给LLM分析
             top_moments = sorted(
                 rule_result["moments"],
-                key=lambda m: {"critical": 3, "high": 2, "medium": 1}.get(m.get("importance", ""), 0),
+                key=lambda m: {ImportanceLevel.CRITICAL.value: 3, ImportanceLevel.HIGH.value: 2, ImportanceLevel.MEDIUM.value: 1}.get(m.get("importance", ""), 0),
                 reverse=True,
             )[:2]
 

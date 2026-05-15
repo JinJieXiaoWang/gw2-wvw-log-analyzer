@@ -14,7 +14,7 @@ from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.services.scoring.scoring_rule_service import ScoringRuleService
 from app.services.system.sys_config_service import SysConfigService
-from app.constants.dict_values import RoleType
+from app.constants.dict_values import RoleType, get_grade, get_grade_label
 from app.utils.logger import logger
 
 

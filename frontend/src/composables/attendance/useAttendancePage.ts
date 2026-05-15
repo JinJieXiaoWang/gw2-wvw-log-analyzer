@@ -14,12 +14,6 @@ export function useAttendancePage() {
   const router = useRouter()
   const toast = useToast()
 
-  const currentRoleType = ref('dps')
-  const currentRoleLabel = computed(() => {
-    const map: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
-    return map[currentRoleType.value] || '输出'
-  })
-
   const currentRuleVersion = ref(0)
 
   const fetchCurrentRuleVersion = async () => {
@@ -206,8 +200,6 @@ export function useAttendancePage() {
   })
 
   return {
-    currentRoleType,
-    currentRoleLabel,
     currentRuleVersion,
     loading,
     dateRange,

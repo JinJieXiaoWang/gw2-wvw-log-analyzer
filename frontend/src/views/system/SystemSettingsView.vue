@@ -61,7 +61,7 @@
             :key="'dictionary'"
             class="dictionary-embedded-container"
           >
-            <DictionaryManagementWrapper :is-embedded="true" />
+            <DictionaryManagementWrapper />
           </div>
           <SystemParamsSettings
             v-else-if="activeSection === 'system-params'"

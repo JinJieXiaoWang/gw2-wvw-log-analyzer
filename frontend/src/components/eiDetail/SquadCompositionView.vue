@@ -23,7 +23,7 @@
               {{ cmd.name }}
             </p>
             <p class="text-xs text-neutral-text-secondary">
-              {{ cmd.profession }}
+              {{ getProfessionName(cmd.profession) }}
             </p>
           </div>
         </div>
@@ -94,7 +94,7 @@
                     title="指挥官"
                   />
                 </div>
-                <span class="text-[10px] text-neutral-text-secondary">{{ player.profession }}</span>
+                <span class="text-[10px] text-neutral-text-secondary">{{ getProfessionName(player.profession) }}</span>
               </div>
             </div>
           </div>
@@ -107,6 +107,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
+import { getProfessionName } from '@/services/professionService';
 
 const props = defineProps<{
   players: any[];

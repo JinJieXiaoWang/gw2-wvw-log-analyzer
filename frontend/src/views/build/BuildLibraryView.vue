@@ -58,6 +58,7 @@
       <main class="flex-1 min-w-0">
         <div
           v-if="selectedBuildIds.length > 0"
+          v-permission="'delete'"
           class="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20"
         >
           <span class="text-sm text-surface-400">已选择 {{ selectedBuildIds.length }} 个配置</span>
@@ -87,8 +88,8 @@
             class="flex items-center gap-2"
           >
             <BaseCheckbox
-              v-model="selectAllCheckbox"
-              @click="toggleSelectAll"
+              :model-value="selectAllCheckbox"
+              @change="toggleSelectAll"
             />
             <span class="text-sm text-surface-400">全选</span>
           </div>
@@ -107,7 +108,7 @@
               <BaseCheckbox
                 :model-value="selectedBuildIds.includes(build.id)"
                 class="bg-surface-900"
-                @click="toggleSelectBuild(build.id)"
+                @change="toggleSelectBuild(build.id)"
               />
             </div>
             <BuildCard
@@ -200,7 +201,7 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import Drawer from 'primevue/drawer'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -318,12 +319,20 @@ const updateSelectAllCheckbox = () => {
 }
 
 const toggleSelectAll = () => {
-  if (selectAllCheckbox.value) {
+  const checked = !selectAllCheckbox.value
+  selectAllCheckbox.value = checked
+  if (checked) {
     selectedBuildIds.value = filteredBuilds.value.map(b => b.id)
   } else {
     selectedBuildIds.value = []
   }
 }
+
+watch(filteredBuilds, () => {
+  const ids = new Set(filteredBuilds.value.map(b => b.id))
+  selectedBuildIds.value = selectedBuildIds.value.filter(id => ids.has(id))
+  updateSelectAllCheckbox()
+})
 
 const batchDelete = () => {
   if (selectedBuildIds.value.length === 0) return

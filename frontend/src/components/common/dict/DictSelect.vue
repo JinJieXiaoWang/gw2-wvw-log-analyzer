@@ -53,8 +53,15 @@ const options = computed(() => {
   return dictData.map((item) => ({
     label: item.label,
     value: item.value,
-    color: item.css_class || '',
+    color: item.css_class?.startsWith('#') ? item.css_class : '',
   }))
+})
+
+/** 当前选中项的选项对象（用于 #value 插槽颜色预览） */
+const selectedOption = computed(() => {
+  const val = modelValue.value
+  if (val === undefined || val === null) return null
+  return options.value.find(opt => String(opt.value) === String(val)) || null
 })
 
 /** 自动加载字典 */
@@ -104,15 +111,15 @@ watch(
       #value="slotProps"
     >
       <div
-        v-if="slotProps.value"
+        v-if="slotProps.value !== undefined && slotProps.value !== null"
         class="dict-option"
       >
         <span
-          v-if="slotProps.value.color"
+          v-if="selectedOption?.color"
           class="dict-option-dot"
-          :style="{ background: slotProps.value.color }"
+          :style="{ background: selectedOption.color }"
         />
-        <span class="dict-option-label">{{ slotProps.value.label }}</span>
+        <span class="dict-option-label">{{ selectedOption?.label ?? slotProps.value }}</span>
       </div>
       <span v-else>{{ placeholder }}</span>
     </template>

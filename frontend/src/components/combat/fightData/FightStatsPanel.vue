@@ -78,7 +78,7 @@
               {{ p.accountName }}
             </td>
             <td class="py-3 px-4">
-              {{ p.profession }}
+              {{ getProfessionName(p.profession) }}
             </td>
             <td class="py-3 px-4">
               {{ p.damage.toLocaleString() }}
@@ -100,6 +100,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName } from '@/services/professionService'
 import type { FightStats } from '@/services/combat/fightsService';
 
 defineProps<{

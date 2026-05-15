@@ -136,7 +136,7 @@
                 </div>
                 <div class="flex-1">
                   <span class="text-sm text-gray-200">{{ member.name }}</span>
-                  <span class="text-xs text-gray-500 ml-2">{{ member.profession }}</span>
+                  <span class="text-xs text-gray-500 ml-2">{{ getProfessionName(member.profession) }}</span>
                 </div>
                 <SvgIcon icon="chevron-right" :size="14" class="text-gray-500" />
               </button>
@@ -324,6 +324,7 @@
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
+import { getProfessionName } from '@/services/professionService'
 import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
 
 interface FightOption {
@@ -390,61 +391,37 @@ const formatDate = (dateString: string): string => {
   return date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' })
 }
 
-// 获取职业颜色
-const getProfessionColor = (profession: string): string => {
+// 获取职业颜色（英文 key → Tailwind class）
+const getProfessionColor = (professionKey: string): string => {
   const colors: Record<string, string> = {
-    '战士': 'bg-red-400',
-    '守护者': 'bg-blue-400',
-    '游侠': 'bg-green-400',
-    '盗贼': 'bg-yellow-400',
-    '工程师': 'bg-orange-400',
-    '元素使': 'bg-purple-400',
-    '死灵法师': 'bg-gray-400',
-    '幻术师': 'bg-pink-400',
-    '魂武者': 'bg-cyan-400',
-    '玉偃师': 'bg-teal-400',
-    '裁决者': 'bg-amber-400',
-    '先驱者': 'bg-indigo-400'
+    'Warrior': 'bg-red-400', 'Guardian': 'bg-blue-400', 'Ranger': 'bg-green-400',
+    'Thief': 'bg-yellow-400', 'Engineer': 'bg-orange-400', 'Elementalist': 'bg-purple-400',
+    'Necromancer': 'bg-gray-400', 'Mesmer': 'bg-pink-400', 'Revenant': 'bg-cyan-400',
+    'Mechanist': 'bg-teal-400', 'Vindicator': 'bg-amber-400', 'Harbinger': 'bg-indigo-400',
   }
-  return colors[profession] || 'bg-gray-400'
+  return colors[professionKey] || 'bg-gray-400'
 }
 
 // 获取职业背景色
-const getProfessionBg = (profession: string): string => {
+const getProfessionBg = (professionKey: string): string => {
   const colors: Record<string, string> = {
-    '战士': 'bg-red-500/20',
-    '守护者': 'bg-blue-500/20',
-    '游侠': 'bg-green-500/20',
-    '盗贼': 'bg-yellow-500/20',
-    '工程师': 'bg-orange-500/20',
-    '元素使': 'bg-purple-500/20',
-    '死灵法师': 'bg-gray-500/20',
-    '幻术师': 'bg-pink-500/20',
-    '魂武者': 'bg-cyan-500/20',
-    '玉偃师': 'bg-teal-500/20',
-    '裁决者': 'bg-amber-500/20',
-    '先驱者': 'bg-indigo-500/20'
+    'Warrior': 'bg-red-500/20', 'Guardian': 'bg-blue-500/20', 'Ranger': 'bg-green-500/20',
+    'Thief': 'bg-yellow-500/20', 'Engineer': 'bg-orange-500/20', 'Elementalist': 'bg-purple-500/20',
+    'Necromancer': 'bg-gray-500/20', 'Mesmer': 'bg-pink-500/20', 'Revenant': 'bg-cyan-500/20',
+    'Mechanist': 'bg-teal-500/20', 'Vindicator': 'bg-amber-500/20', 'Harbinger': 'bg-indigo-500/20',
   }
-  return colors[profession] || 'bg-gray-500/20'
+  return colors[professionKey] || 'bg-gray-500/20'
 }
 
 // 获取职业文字颜色
-const getProfessionText = (profession: string): string => {
+const getProfessionText = (professionKey: string): string => {
   const colors: Record<string, string> = {
-    '战士': 'text-red-400',
-    '守护者': 'text-blue-400',
-    '游侠': 'text-green-400',
-    '盗贼': 'text-yellow-400',
-    '工程师': 'text-orange-400',
-    '元素使': 'text-purple-400',
-    '死灵法师': 'text-gray-400',
-    '幻术师': 'text-pink-400',
-    '魂武者': 'text-cyan-400',
-    '玉偃师': 'text-teal-400',
-    '裁决者': 'text-amber-400',
-    '先驱者': 'text-indigo-400'
+    'Warrior': 'text-red-400', 'Guardian': 'text-blue-400', 'Ranger': 'text-green-400',
+    'Thief': 'text-yellow-400', 'Engineer': 'text-orange-400', 'Elementalist': 'text-purple-400',
+    'Necromancer': 'text-gray-400', 'Mesmer': 'text-pink-400', 'Revenant': 'text-cyan-400',
+    'Mechanist': 'text-teal-400', 'Vindicator': 'text-amber-400', 'Harbinger': 'text-indigo-400',
   }
-  return colors[profession] || 'text-gray-400'
+  return colors[professionKey] || 'text-gray-400'
 }
 
 // 自动选择最近战斗

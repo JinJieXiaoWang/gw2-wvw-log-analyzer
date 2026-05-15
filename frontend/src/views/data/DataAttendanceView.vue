@@ -8,7 +8,6 @@
     />
 
     <ScoreTipCard
-      :role-label="currentRoleLabel"
       :rule-version="currentRuleVersion"
       @open-rules="openScoringRulesDialog"
     />
@@ -54,7 +53,6 @@
       :loading="scoringRulesLoading"
       :rules-data="scoringRulesData"
       :rule-version="currentRuleVersion"
-      :role-type="currentRoleType"
     />
 
     <Toast />
@@ -73,8 +71,6 @@ import PageHeader from '@/layout/components/PageHeader.vue'
 import Toast from 'primevue/toast'
 
 const {
-  currentRoleType,
-  currentRoleLabel,
   currentRuleVersion,
   loading,
   dateRange,

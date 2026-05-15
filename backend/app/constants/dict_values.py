@@ -15,6 +15,32 @@ from enum import Enum
 
 
 # =============================================================================
+# 批量解析任务状态 (batch_parse_task / batch_parse_task_item)
+# 与 ParseStatus 不同：BatchTask 有 partial（任务级）和 retrying（子项级）
+# =============================================================================
+
+class BatchTaskStatus(str, Enum):
+    """批量解析任务状态"""
+
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    PARTIAL = "partial"
+    RETRYING = "retrying"
+
+    @classmethod
+    def is_terminal(cls, status: str) -> bool:
+        """是否为终态"""
+        return status in (cls.COMPLETED.value, cls.FAILED.value, cls.PARTIAL.value)
+
+    @classmethod
+    def is_processing(cls, status: str) -> bool:
+        """是否处理中"""
+        return status in (cls.PROCESSING.value, cls.RETRYING.value)
+
+
+# =============================================================================
 # 解析状态 (parse_status)
 # =============================================================================
 
@@ -72,20 +98,21 @@ class RoleType(str, Enum):
 
 # =============================================================================
 # 通用状态 (sys_normal_disable)
+# 注意：dict_value 字段为字符串类型，故使用 str Enum
 # =============================================================================
 
-class NormalDisable(int, Enum):
+class NormalDisable(str, Enum):
     """通用启用/禁用状态"""
 
-    ENABLED = 0
-    DISABLED = 1
+    ENABLED = "0"
+    DISABLED = "1"
 
     @classmethod
-    def is_enabled(cls, status: int) -> bool:
+    def is_enabled(cls, status: str) -> bool:
         return status == cls.ENABLED.value
 
     @classmethod
-    def is_disabled(cls, status: int) -> bool:
+    def is_disabled(cls, status: str) -> bool:
         return status == cls.DISABLED.value
 
 
@@ -130,12 +157,12 @@ GRADE_THRESHOLDS = [
 
 # 评分等级中文标签映射
 GRADE_LABELS = {
-    GradeLevel.S: "S级",
-    GradeLevel.A: "A级",
-    GradeLevel.B: "B级",
-    GradeLevel.C: "C级",
-    GradeLevel.D: "D级",
-    GradeLevel.F: "F级",
+    "s": "S级",
+    "a": "A级",
+    "b": "B级",
+    "c": "C级",
+    "d": "D级",
+    "f": "F级",
 }
 
 
@@ -191,6 +218,13 @@ class MenuType(str, Enum):
     BUTTON = "F"
 
 
+class MenuYesNo(int, Enum):
+    """菜单是/否（用于 INTEGER 字段）"""
+
+    NO = 0
+    YES = 1
+
+
 # =============================================================================
 # 通知状态 (sys_notice_status)
 # =============================================================================
@@ -207,3 +241,70 @@ class NoticeType(str, Enum):
 
     NOTICE = "1"
     ANNOUNCEMENT = "2"
+
+
+# =============================================================================
+# AI 分析模块 Build 类型 (ai_build_type)
+# =============================================================================
+
+class AiBuildType(str, Enum):
+    """AI Build 执行分析类型"""
+
+    POWER = "power"
+    CONDI = "condi"
+    SUPPORT = "support"
+    TANK = "tank"
+
+
+class SquadRole(str, Enum):
+    """AI 小队协同分析角色类型"""
+
+    DAMAGE = "damage"
+    SUPPORT = "support"
+    CONTROL = "control"
+    TANK = "tank"
+
+
+class CheckStatus(str, Enum):
+    """AI 分析检查结果状态"""
+
+    PASS = "pass"
+    FAIL = "fail"
+    WARN = "warn"
+
+
+class AiRating(str, Enum):
+    """AI 分析评级"""
+
+    EXCELLENT = "excellent"
+    GOOD = "good"
+    NEEDS_IMPROVEMENT = "needs_improvement"
+    CRITICAL = "critical"
+
+
+class TrendStatus(str, Enum):
+    """趋势状态"""
+
+    IMPROVING = "improving"
+    DECLINING = "declining"
+    STABLE = "stable"
+
+
+class ImportanceLevel(str, Enum):
+    """重要性级别"""
+
+    CRITICAL = "critical"
+    HIGH = "high"
+    MEDIUM = "medium"
+    LOW = "low"
+
+
+class DeathCategory(str, Enum):
+    """死亡归因分类"""
+
+    FOCUSED_FIRE = "focused_fire"
+    POSITIONING_ERROR = "positioning_error"
+    BUFF_GAP = "buff_gap"
+    COOLDOWN_MISMATCH = "cooldown_mismatch"
+    HEALING_DEFICIT = "healing_deficit"
+    CC_CHAIN = "cc_chain"

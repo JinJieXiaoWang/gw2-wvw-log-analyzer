@@ -200,7 +200,6 @@
           :loading="scoringRulesLoading"
           :rules-data="scoringRulesData"
           :rule-version="currentRuleVersion"
-          :role-type="currentRoleType"
         />
         <AttendanceCharDialog
           v-model:visible="showCharModal"
@@ -245,7 +244,6 @@ const scoringRulesActiveTab = ref(0)
 const scoringRulesLoading = ref(false)
 const scoringRulesData = ref<Record<string, any>>({})
 const currentRuleVersion = ref(0)
-const currentRoleType = ref('dps')
 
 const { summary, characters, recentFights } = useAttendanceDetail(() => detailData.value)
 

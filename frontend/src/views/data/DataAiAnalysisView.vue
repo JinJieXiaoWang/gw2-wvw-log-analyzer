@@ -84,7 +84,7 @@
             <label class="block text-sm text-neutral-text-secondary mb-1.5">选择玩家</label>
             <select v-model="selectedPlayerAccount" class="w-full bg-neutral-card-active text-white px-4 py-2.5 rounded-lg border border-neutral-border">
               <option value="">请选择玩家</option>
-              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ p.profession }})</option>
+              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ getProfessionName(p.profession) }})</option>
             </select>
           </div>
           <div>
@@ -109,7 +109,7 @@
             <label class="block text-sm text-neutral-text-secondary mb-1.5">选择玩家</label>
             <select v-model="selectedPlayerAccount" class="w-full bg-neutral-card-active text-white px-4 py-2.5 rounded-lg border border-neutral-border">
               <option value="">请选择玩家</option>
-              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ p.profession }})</option>
+              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ getProfessionName(p.profession) }})</option>
             </select>
           </div>
           <button @click="runDeathAttribution" :disabled="!selectedPlayerAccount || loadingDeathAttribution" class="px-6 py-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-400 hover:to-orange-400 text-white rounded-lg font-medium transition-all disabled:opacity-50">
@@ -157,7 +157,7 @@
             <label class="block text-sm text-neutral-text-secondary mb-1.5">选择玩家</label>
             <select v-model="selectedPlayerAccount" class="w-full bg-neutral-card-active text-white px-4 py-2.5 rounded-lg border border-neutral-border">
               <option value="">请选择玩家</option>
-              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ p.profession }})</option>
+              <option v-for="p in recentPlayers" :key="p.id" :value="p.name">{{ p.name }} ({{ getProfessionName(p.profession) }})</option>
             </select>
           </div>
           <button @click="runBuildExecution" :disabled="!selectedPlayerAccount || loadingBuildExecution" class="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-400 hover:to-pink-400 text-white rounded-lg font-medium transition-all disabled:opacity-50">
@@ -180,7 +180,7 @@
               <span class="text-sm text-white">{{ check.label }}</span>
               <div class="flex items-center gap-3">
                 <span class="text-xs text-neutral-text-secondary">实际: {{ check.actual }}</span>
-                <span class="text-xs px-2 py-0.5 rounded font-medium" :class="check.status === 'pass' ? 'bg-status-success/20 text-status-success' : check.status === 'fail' ? 'bg-error/20 text-error' : 'bg-neutral-card-active text-neutral-text-secondary'">{{ check.status.toUpperCase() }}</span>
+                <span class="text-xs px-2 py-0.5 rounded font-medium" :class="check.status === CheckStatus.PASS ? 'bg-status-success/20 text-status-success' : check.status === CheckStatus.FAIL ? 'bg-error/20 text-error' : 'bg-neutral-card-active text-neutral-text-secondary'">{{ check.status.toUpperCase() }}</span>
               </div>
             </div>
           </div>
@@ -211,7 +211,7 @@
             <p class="text-sm text-neutral-text-secondary mb-3">{{ m.description }}</p>
             <div v-if="m.evaluations?.length" class="space-y-2">
               <div v-for="(evalItem, j) in m.evaluations" :key="j" class="flex items-center justify-between p-2 bg-black/20 rounded-lg">
-                <span class="text-sm text-white">{{ evalItem.character_name }} ({{ evalItem.profession }})</span>
+                <span class="text-sm text-white">{{ evalItem.character_name }} ({{ getProfessionName(evalItem.profession) }})</span>
                 <span class="text-xs px-2 py-0.5 rounded" :class="evalItem.performance?.rating === 'excellent' ? 'bg-status-success/20 text-status-success' : evalItem.performance?.rating === 'good' ? 'bg-warning/20 text-warning' : 'bg-error/20 text-error'">{{ evalItem.performance?.rating }}</span>
               </div>
             </div>
@@ -252,7 +252,9 @@ import AiTrendPanel from '@/components/ai/AiTrendPanel.vue'
 import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
 import { useAiAnalysis, useAiReports } from '@/composables/useAiAnalysis'
 import { aiService, attendanceService, fightsService } from '@/services'
+import { CheckStatus } from '@/constants/dictValues'
 import { computed, onMounted, reactive, ref } from 'vue'
+import { getProfessionName } from '@/services/professionService'
 
 const analysisTabs = [
   { key: 'overview', label: '概览', icon: 'layout-dashboard' },

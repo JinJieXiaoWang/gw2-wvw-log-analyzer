@@ -247,17 +247,18 @@ def _calculate_mobility_ability(
 def _apply_role_type_adjustments(
     abilities: Dict[str, float], role_type: str
 ) -> None:
-    """根据角色类型调整各维度权重（原地修改）"""
+    """根据角色类型调整各维度权重（原地修改，从 JSON 配置加载）"""
+    config = load_json_config("scoring_rules") or {}
+    adjustments = config.get("role_adjustments", {})
+    adj = adjustments.get(role_type, {})
+
     if role_type == RoleType.SUPPORT or role_type == RoleType.HEALING:
-        # 辅助/治疗职业：提升治疗和辅助权重
-        abilities["healing"] = min(100, abilities["healing"] + 15)
-        abilities["support"] = min(100, abilities["support"] + 10)
+        abilities["healing"] = min(100, abilities["healing"] + adj.get("healing_bonus", 15))
+        abilities["support"] = min(100, abilities["support"] + adj.get("support_bonus", 10))
     elif role_type == RoleType.TANK:
-        # 坦克职业：提升生存权重
-        abilities["survival"] = min(100, abilities["survival"] + 15)
+        abilities["survival"] = min(100, abilities["survival"] + adj.get("survival_bonus", 15))
     elif role_type == RoleType.CONDITION:
-        # 症状输出职业：输出评分调整
-        abilities["damage"] = min(100, abilities["damage"] + 5)
+        abilities["damage"] = min(100, abilities["damage"] + adj.get("damage_bonus", 5))
     # dps 保持不变
 
 

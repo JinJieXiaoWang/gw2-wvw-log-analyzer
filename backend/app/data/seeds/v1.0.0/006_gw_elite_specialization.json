@@ -1,0 +1,679 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "target_table": "gw_elite_specialization",
+    "min_app_version": "1.0.0"
+  },
+  "data": [
+    {
+      "spec_key": "Dragonhunter",
+      "spec_name": "猎龙者",
+      "spec_name_en": "Dragonhunter",
+      "profession_key": "Guardian",
+      "color": "#ffc107",
+      "icon": "Dragonhunter.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Firebrand",
+      "spec_name": "燃火者",
+      "spec_name_en": "Firebrand",
+      "profession_key": "Guardian",
+      "color": "#ff7043",
+      "icon": "Firebrand.png",
+      "default_role": "support",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 20,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 15,
+        "healing": 20
+      },
+      "is_key_support": 1,
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Willbender",
+      "spec_name": "破锋者",
+      "spec_name_en": "Willbender",
+      "profession_key": "Guardian",
+      "color": "#ffa726",
+      "icon": "Willbender.png",
+      "default_role": "dps",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 15
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Luminary",
+      "spec_name": "圣辉者",
+      "spec_name_en": "Luminary",
+      "profession_key": "Guardian",
+      "color": "#ffca28",
+      "icon": "Luminary.png",
+      "default_role": "support",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Berserker",
+      "spec_name": "狂战士",
+      "spec_name_en": "Berserker",
+      "profession_key": "Warrior",
+      "color": "#ff5722",
+      "icon": "Berserker.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 50,
+        "breakbar": 25,
+        "kills": 15,
+        "survival": 10
+      },
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Spellbreaker",
+      "spec_name": "破法者",
+      "spec_name_en": "Spellbreaker",
+      "profession_key": "Warrior",
+      "color": "#ff7043",
+      "icon": "Spellbreaker.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 35,
+        "breakbar": 20,
+        "strips": 20,
+        "kills": 15,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Bladesworn",
+      "spec_name": "誓剑士",
+      "spec_name_en": "Bladesworn",
+      "profession_key": "Warrior",
+      "color": "#ff8a65",
+      "icon": "Bladesworn.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 55,
+        "breakbar": 20,
+        "kills": 15,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Paragon",
+      "spec_name": "圣言者",
+      "spec_name_en": "Paragon",
+      "profession_key": "Warrior",
+      "color": "#ffa726",
+      "icon": "Paragon.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 10,
+        "boons": 20,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Scrapper",
+      "spec_name": "机械师",
+      "spec_name_en": "Scrapper",
+      "profession_key": "Engineer",
+      "color": "#795548",
+      "icon": "Scrapper.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Holosmith",
+      "spec_name": "全息师",
+      "spec_name_en": "Holosmith",
+      "profession_key": "Engineer",
+      "color": "#8d6e63",
+      "icon": "Holosmith.png",
+      "default_role": "dps",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Mechanist",
+      "spec_name": "玉偃师",
+      "spec_name_en": "Mechanist",
+      "profession_key": "Engineer",
+      "color": "#a1887f",
+      "icon": "Mechanist.png",
+      "default_role": "support",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 10,
+        "alacrity": 20,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Amalgam",
+      "spec_name": "流金师",
+      "spec_name_en": "Amalgam",
+      "profession_key": "Engineer",
+      "color": "#bcaaa4",
+      "icon": "Amalgam.png",
+      "default_role": "dps",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "cleanses": 5,
+        "survival": 10
+      },
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Druid",
+      "spec_name": "德鲁伊",
+      "spec_name_en": "Druid",
+      "profession_key": "Ranger",
+      "color": "#4caf50",
+      "icon": "Druid.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 45
+      },
+      "is_key_support": 1,
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Soulbeast",
+      "spec_name": "魂兽师",
+      "spec_name_en": "Soulbeast",
+      "profession_key": "Ranger",
+      "color": "#66bb6a",
+      "icon": "Soulbeast.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Untamed",
+      "spec_name": "狂兽师",
+      "spec_name_en": "Untamed",
+      "profession_key": "Ranger",
+      "color": "#81c784",
+      "icon": "Untamed.png",
+      "default_role": "dps",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 15
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Galeshot",
+      "spec_name": "风行者",
+      "spec_name_en": "Galeshot",
+      "profession_key": "Ranger",
+      "color": "#a5d6a7",
+      "icon": "Galeshot.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Daredevil",
+      "spec_name": "独行侠",
+      "spec_name_en": "Daredevil",
+      "profession_key": "Thief",
+      "color": "#607d8b",
+      "icon": "Daredevil.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Deadeye",
+      "spec_name": "神枪手",
+      "spec_name_en": "Deadeye",
+      "profession_key": "Thief",
+      "color": "#78909c",
+      "icon": "Deadeye.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Specter",
+      "spec_name": "缚影者",
+      "spec_name_en": "Specter",
+      "profession_key": "Thief",
+      "color": "#90a4ae",
+      "icon": "Specter.png",
+      "default_role": "dps",
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 20,
+        "kills": 20,
+        "cleanses": 10,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Antiquary",
+      "spec_name": "彩戏师",
+      "spec_name_en": "Antiquary",
+      "profession_key": "Thief",
+      "color": "#b0bec5",
+      "icon": "Antiquary.png",
+      "default_role": "support",
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 35,
+        "breakbar": 15,
+        "strips": 15,
+        "kills": 15,
+        "cleanses": 10,
+        "survival": 10
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Tempest",
+      "spec_name": "暴风使",
+      "spec_name_en": "Tempest",
+      "profession_key": "Elementalist",
+      "color": "#e91e63",
+      "icon": "Tempest.png",
+      "default_role": "support",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 20,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 10,
+        "healing": 40
+      },
+      "is_key_support": 1,
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Weaver",
+      "spec_name": "编织者",
+      "spec_name_en": "Weaver",
+      "profession_key": "Elementalist",
+      "color": "#ec407a",
+      "icon": "Weaver.png",
+      "default_role": "dps",
+      "dps_type": "hybrid",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Catalyst",
+      "spec_name": "元晶师",
+      "spec_name_en": "Catalyst",
+      "profession_key": "Elementalist",
+      "color": "#f06292",
+      "icon": "Catalyst.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Evoker",
+      "spec_name": "唤元师",
+      "spec_name_en": "Evoker",
+      "profession_key": "Elementalist",
+      "color": "#f48fb1",
+      "icon": "Evoker.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Chronomancer",
+      "spec_name": "时空术士",
+      "spec_name_en": "Chronomancer",
+      "profession_key": "Mesmer",
+      "color": "#9c27b0",
+      "icon": "Chronomancer.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 20,
+        "alacrity": 20,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 10,
+        "healing": 10
+      },
+      "is_key_support": 1,
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Mirage",
+      "spec_name": "幻象术士",
+      "spec_name_en": "Mirage",
+      "profession_key": "Mesmer",
+      "color": "#ab47bc",
+      "icon": "Mirage.png",
+      "default_role": "dps",
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Virtuoso",
+      "spec_name": "灵刃术士",
+      "spec_name_en": "Virtuoso",
+      "profession_key": "Mesmer",
+      "color": "#ba68c8",
+      "icon": "Virtuoso.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Troubadour",
+      "spec_name": "吟游诗人",
+      "spec_name_en": "Troubadour",
+      "profession_key": "Mesmer",
+      "color": "#ce93d8",
+      "icon": "Troubadour.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Reaper",
+      "spec_name": "夺魂者",
+      "spec_name_en": "Reaper",
+      "profession_key": "Necromancer",
+      "color": "#00bcd4",
+      "icon": "Reaper.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Scourge",
+      "spec_name": "灾厄师",
+      "spec_name_en": "Scourge",
+      "profession_key": "Necromancer",
+      "color": "#26c6da",
+      "icon": "Scourge.png",
+      "default_role": "support",
+      "dps_type": "condi",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 10,
+        "strips": 20,
+        "cleanses": 20,
+        "survival": 15,
+        "healing": 35
+      },
+      "is_key_support": 1,
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Harbinger",
+      "spec_name": "先驱者",
+      "spec_name_en": "Harbinger",
+      "profession_key": "Necromancer",
+      "color": "#4dd0e1",
+      "icon": "Harbinger.png",
+      "default_role": "dps",
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Ritualist",
+      "spec_name": "祭祀者",
+      "spec_name_en": "Ritualist",
+      "profession_key": "Necromancer",
+      "color": "#80deea",
+      "icon": "Ritualist.png",
+      "default_role": "support",
+      "dps_type": "condi",
+      "scoring_config": {
+        "quickness": 10,
+        "alacrity": 10,
+        "boons": 15,
+        "strips": 15,
+        "cleanses": 15,
+        "survival": 15,
+        "healing": 20
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    },
+    {
+      "spec_key": "Herald",
+      "spec_name": "预告者",
+      "spec_name_en": "Herald",
+      "profession_key": "Revenant",
+      "color": "#3f51b5",
+      "icon": "Herald.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 0,
+        "alacrity": 0,
+        "boons": 25,
+        "strips": 15,
+        "cleanses": 10,
+        "survival": 20,
+        "healing": 30
+      },
+      "is_key_support": 1,
+      "sort_order": 1
+    },
+    {
+      "spec_key": "Renegade",
+      "spec_name": "龙魂使",
+      "spec_name_en": "Renegade",
+      "profession_key": "Revenant",
+      "color": "#5c6bc0",
+      "icon": "Renegade.png",
+      "default_role": "dps",
+      "dps_type": "condi",
+      "scoring_config": {
+        "damage": 40,
+        "breakbar": 25,
+        "strips": 15,
+        "kills": 10,
+        "survival": 10
+      },
+      "sort_order": 2
+    },
+    {
+      "spec_key": "Vindicator",
+      "spec_name": "裁决者",
+      "spec_name_en": "Vindicator",
+      "profession_key": "Revenant",
+      "color": "#7986cb",
+      "icon": "Vindicator.png",
+      "default_role": "dps",
+      "dps_type": "power",
+      "scoring_config": {
+        "damage": 45,
+        "breakbar": 25,
+        "kills": 20,
+        "survival": 10
+      },
+      "sort_order": 3
+    },
+    {
+      "spec_key": "Conduit",
+      "spec_name": "契灵使",
+      "spec_name_en": "Conduit",
+      "profession_key": "Revenant",
+      "color": "#9fa8da",
+      "icon": "Conduit.png",
+      "default_role": "support",
+      "dps_type": "power",
+      "scoring_config": {
+        "quickness": 15,
+        "alacrity": 15,
+        "boons": 20,
+        "strips": 10,
+        "cleanses": 10,
+        "survival": 15,
+        "healing": 15
+      },
+      "is_key_support": 1,
+      "sort_order": 4
+    }
+  ]
+}

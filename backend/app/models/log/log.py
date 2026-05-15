@@ -58,7 +58,7 @@ class Log(Base):
     parse_status = Column(
         String(20),
         nullable=False,
-        default=ParseStatus.PENDING,
+        default=ParseStatus.PENDING.value,
         comment="解析状态",
     )
     parse_time_ms = Column(Integer, comment="解析耗时(毫秒)")

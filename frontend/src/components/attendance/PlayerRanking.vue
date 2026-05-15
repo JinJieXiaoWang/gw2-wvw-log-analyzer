@@ -45,7 +45,7 @@
         </div>
         <div
           class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg"
-          :style="{ backgroundColor: getProfessionColor(player.profession) }"
+          :style="{ backgroundColor: getSvcProfessionColor(player.profession) }"
         >
           {{ player.name.charAt(0) }}
         </div>
@@ -54,7 +54,7 @@
             {{ player.name }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            {{ player.profession }}
+            {{ getProfessionName(player.profession) }}
           </p>
         </div>
         <div class="text-right">
@@ -71,6 +71,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName, getProfessionColor as getSvcProfessionColor } from '@/services/professionService'
 /**
  * 个人排名组件
  * 功能：显示个人排名信息
@@ -125,21 +126,6 @@ const formatNumber = (num: any) => {
     return num.toString()
   }
   return num
-}
-
-const getProfessionColor = (profession: string) => {
-  const colors: Record<string, string> = {
-    '战士': '#E85D04',
-    '守护者': '#FAA307',
-    '潜行者': '#9D4EDD',
-    '元素使': '#FF6B6B',
-    '工程师': '#7B8FA1',
-    '猎人': '#06D6A0',
-    '唤灵师': '#8D0801',
-    '镜像师': '#4361EE',
-    '游侠': '#2EC4B6'
-  }
-  return colors[profession] || '#6C757D'
 }
 
 const getRankTypeLabel = (type: string) => {

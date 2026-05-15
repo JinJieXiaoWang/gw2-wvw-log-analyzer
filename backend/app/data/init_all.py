@@ -18,12 +18,13 @@
 创建日期: 2026-05-12
 """
 
+import json
 from datetime import datetime
 from typing import Any, Dict, List
 
 from sqlalchemy.orm import Session
 
-from app.data import seed_data
+from app.core.initialization import SeedDataLoader
 from app.models.game.build import Build
 from app.models.game.dictionary import SysDictData, SysDictType
 from app.models.game.game_static_data import (
@@ -42,6 +43,33 @@ from app.models.system.sys_menu import SysMenu
 from app.services.game.build_service import create_build
 from app.services.system.sys_config_service import SysConfigService
 from app.utils.logger import logger
+
+# =============================================================================
+# 种子数据加载（优先从构建模块加载，回退到内嵌数据）
+# =============================================================================
+
+def _try_load_seed_from_module(var_name: str, default_data: Any) -> Any:
+    """尝试从构建生成的 seed_modules.py 加载种子数据"""
+    try:
+        from app.data._generated.seed_modules import load_seed
+        file_map = {
+            "_SYS_MENU_SEED": "v1.0.0/001_sys_menu.json",
+            "_SYS_DICT_TYPE_SEED": "v1.0.0/002_sys_dict_type.json",
+            "_SYS_DICT_DATA_SEED": "v1.0.0/003_sys_dict_data.json",
+            "_ROLE_TYPE_SEED": "v1.0.0/004_gw_role_type.json",
+            "_PROFESSION_SEED": "v1.0.0/005_gw_profession.json",
+            "_ELITE_SPEC_SEED": "v1.0.0/006_gw_elite_specialization.json",
+        }
+        file_name = file_map.get(var_name)
+        if file_name:
+            loaded = load_seed(file_name)
+            data = loaded.get("data", default_data)
+            logger.info(f"[init_all] 从 seed_modules 加载 {var_name}")
+            return data
+    except Exception:
+        pass
+    return default_data
+
 
 # =============================================================================
 # 系统菜单种子数据
@@ -458,6 +486,8 @@ _SYS_DICT_DATA_SEED = {
         ("parsing", "\u89e3\u6790\u4e2d", "#f59e0b", ""),
         ("completed", "\u5df2\u5b8c\u6210", "#10b981", ""),
         ("failed", "\u5931\u8d25", "#ef4444", ""),
+        ("retrying", "\u91cd\u8bd5\u4e2d", "#3b82f6", ""),
+        ("partial", "\u90e8\u5206\u5b8c\u6210", "#f97316", ""),
     ],
     "buff": [
         ("717", "Regeneration", "#4caf50", ""),
@@ -551,6 +581,9 @@ _SYS_DICT_DATA_SEED = {
         ("cleanse", "\u6e05\u75c7", "#3b82f6", ""),
         ("stab", "\u7a33\u56fa", "#8b5cf6", ""),
         ("dodge", "\u95ea\u907f", "#06b6d4", ""),
+        ("downed", "\u51fb\u5012", "#f59e0b", ""),
+        ("fights", "\u573a\u6b21", "#3b82f6", ""),
+        ("active_accounts", "\u6d3b\u8dc3", "#a855f7", ""),
     ],
     "export_format": [
         ("json", "JSON", "#3b82f6", ""),
@@ -1293,6 +1326,17 @@ _ELITE_SPEC_SEED = [
 
 
 # =============================================================================
+# 种子数据动态覆盖（优先使用构建模块中的数据）
+# =============================================================================
+_SYS_MENU_SEED = _try_load_seed_from_module("_SYS_MENU_SEED", _SYS_MENU_SEED)
+_SYS_DICT_TYPE_SEED = _try_load_seed_from_module("_SYS_DICT_TYPE_SEED", _SYS_DICT_TYPE_SEED)
+_SYS_DICT_DATA_SEED = _try_load_seed_from_module("_SYS_DICT_DATA_SEED", _SYS_DICT_DATA_SEED)
+_ROLE_TYPE_SEED = _try_load_seed_from_module("_ROLE_TYPE_SEED", _ROLE_TYPE_SEED)
+_PROFESSION_SEED = _try_load_seed_from_module("_PROFESSION_SEED", _PROFESSION_SEED)
+_ELITE_SPEC_SEED = _try_load_seed_from_module("_ELITE_SPEC_SEED", _ELITE_SPEC_SEED)
+
+
+# =============================================================================
 # 初始化系统菜单
 # =============================================================================
 
@@ -1516,12 +1560,12 @@ def _init_elite_specializations(db: Session) -> int:
 
 
 def _init_game_static_data(db: Session) -> Dict[str, int]:
-    """初始化游戏静态数据（seed_data 解压导入口）"""
+    """初始化游戏静态数据（从 seed_modules 加载）"""
     results = {}
 
     # gw_skill
     if db.query(GwSkill).count() == 0:
-        data = seed_data.get_skills()
+        data = SeedDataLoader.load("game_static_bdcode_skills")
         batch_size = 500
         for idx, item in enumerate(data, 1):
             db.add(
@@ -1550,7 +1594,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
     # gw_specialization
     if db.query(GwSpecialization).count() == 0:
-        data = seed_data.get_specializations()
+        data = SeedDataLoader.load("game_static_bdcode_specializations")
         for item in data:
             db.add(
                 GwSpecialization(
@@ -1572,7 +1616,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
     # gw_trait
     if db.query(GwTrait).count() == 0:
-        data = seed_data.get_traits()
+        data = SeedDataLoader.load("game_static_bdcode_traits")
         batch_size = 500
         for idx, item in enumerate(data, 1):
             db.add(
@@ -1598,7 +1642,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
     # gw_skill_palette
     if db.query(GwSkillPalette).count() == 0:
-        data = seed_data.get_skill_palettes()
+        data = SeedDataLoader.load("game_static_skill_palettes")
         batch_size = 500
         for idx, item in enumerate(data, 1):
             db.add(
@@ -1618,7 +1662,7 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
     # gw_buff
     if db.query(GwBuff).count() == 0:
-        data = seed_data.get_buffs()
+        data = SeedDataLoader.load("game_static_buffs")
         for buff_name, item in data.get("buffs", {}).items():
             db.add(
                 GwBuff(
@@ -1643,14 +1687,14 @@ def _init_game_static_data(db: Session) -> Dict[str, int]:
 
 
 def _init_builds(db: Session) -> Dict[str, Any]:
-    """初始化Build 图书馆数据（seed_data 解压导入口）"""
+    """初始化Build 图书馆数据（从 seed_modules 加载）"""
     from app.services.game.bdcode_service import get_bdcode_service
 
     existing = db.query(Build).count()
     if existing > 0:
         return {"initialized": False, "count": 0, "errors": []}
 
-    builds_data = seed_data.get_builds_initial()
+    builds_data = SeedDataLoader.load("builds_initial")
     bdcode_service = get_bdcode_service()
     success_count = 0
     failure_count = 0
@@ -1869,9 +1913,9 @@ def _load_dictionaries(db: Session) -> Dict[str, Any]:
     return {"initialized": True}
 
 
-def initialize_all(db: Session) -> Dict[str, Any]:
+def initialize_all(db: Session, force: bool = False) -> Dict[str, Any]:
     """
-    执行所有数据初始化
+    执行所有数据初始化（强化版）
 
     按顺序：
     1. sys_menu
@@ -1884,39 +1928,61 @@ def initialize_all(db: Session) -> Dict[str, Any]:
     8. 预置管理员
     9. 评分规则
     10. 字典缓存
+
+    Args:
+        db: 数据库会话
+        force: 强制重新初始化（忽略版本记录）
+
+    Returns:
+        初始化结果摘要
+
+    Raises:
+        InitializationError: 任何步骤失败时抛出，调用方必须终止启动
     """
+    from app.core.initialization import InitializationError, RetryConfig
+    from app.services.system.initialization_service import InitializationService
+
     logger.info("=" * 60)
-    logger.info("开始执行统一数据初始化")
+    logger.info("开始执行统一数据初始化（强化版）")
     logger.info("=" * 60)
 
-    results = {
-        "sys_menu": _init_sys_menu(db),
-        "sys_dict_type": _init_sys_dict_type(db),
-        "sys_dict_data": _init_sys_dict_data(db),
-        "sys_config": _init_sys_config(db),
-        "gw_role_type": _init_role_types(db),
-        "gw_profession": _init_professions(db),
-        "gw_elite_specialization": _init_elite_specializations(db),
-        "game_static": _init_game_static_data(db),
-        "builds": _init_builds(db),
-        "admin": _init_admin(db),
-        "scoring_rules": _init_scoring_rules(db),
-        "dictionaries": _load_dictionaries(db),
-    }
+    try:
+        retry_config = RetryConfig(max_attempts=5, base_delay=1.0, max_delay=30.0)
+        service = InitializationService(db, retry_config=retry_config, force=force)
+        summary = service.run()
 
-    def _extract_count(v):
-        if isinstance(v, int):
-            return v
-        if isinstance(v, dict):
-            # game_static: Dict[str, int]
-            if all(isinstance(x, int) for x in v.values()):
-                return sum(v.values())
-            # builds: {"initialized": ..., "count": int, "errors": list}
-            return v.get("count", 0)
-        return 0
+        # 【关键】SKIPPED 不是错误，是正常状态——版本已应用
+        if summary.get("skipped"):
+            logger.info("=" * 60)
+            logger.info(f"统一数据初始化已跳过: {summary.get('message', '版本已应用')}")
+            logger.info("=" * 60)
+            return summary.get("results", {})
 
-    total = sum(_extract_count(v) for v in results.values())
-    logger.info("=" * 60)
-    logger.info(f"统一数据初始化完成，共导入{total} 条记录")
-    logger.info("=" * 60)
-    return results
+        # 兼容旧版返回值格式
+        results = summary.get("results", {})
+
+        def _extract_count(v):
+            if isinstance(v, int):
+                return v
+            if isinstance(v, dict):
+                if all(isinstance(x, int) for x in v.values()):
+                    return sum(v.values())
+                return v.get("count", 0)
+            return 0
+
+        total = sum(_extract_count(v) for v in results.values())
+        logger.info("=" * 60)
+        logger.info(f"统一数据初始化完成，共导入 {total} 条记录")
+        logger.info("=" * 60)
+        return results
+
+    except InitializationError as e:
+        logger.error("=" * 60)
+        logger.error(f"初始化失败: {e}")
+        logger.error(f"失败步骤: {e.step}")
+        logger.error(f"错误类型: {e.error_type}")
+        logger.error(f"建议: {e.suggestion}")
+        if e.data_snippet:
+            logger.error(f"数据片段: {json.dumps(e.data_snippet, ensure_ascii=False, default=str)[:1000]}")
+        logger.error("=" * 60)
+        raise

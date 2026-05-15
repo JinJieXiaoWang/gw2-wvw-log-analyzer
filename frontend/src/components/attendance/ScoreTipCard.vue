@@ -8,9 +8,7 @@
     </div>
     <div class="flex-1 min-w-0">
       <p class="text-sm text-neutral-text">
-        当前评分基于
-        <span class="font-semibold text-primary">{{ roleLabel }}</span>
-        角色类型的评分规则计算
+        当前评分基于角色定位评分规则计算
         <Tag
           v-if="ruleVersion > 0"
           :value="'v' + ruleVersion"
@@ -19,7 +17,7 @@
         />
       </p>
       <p class="text-xs text-neutral-text-secondary">
-        不同角色类型（输出/辅助/承伤）使用不同的评分维度和权重，支持按职业配置独立规则
+        系统根据玩家职业和定位（输出/辅助/承伤）自动匹配对应的评分维度和权重
       </p>
     </div>
     <BaseButton
@@ -42,7 +40,7 @@ import Tag from 'primevue/tag'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 defineProps<{
-  roleLabel: string
+  roleLabel?: string
   ruleVersion: number
 }>()
 

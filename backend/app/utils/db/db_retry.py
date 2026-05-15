@@ -83,7 +83,7 @@ def retry_on_lock_wait(
 
 def execute_with_retry(db_session, query_func, *args, max_retries: int = 3):
     """
-    执行数据库操作并在锁等待超时时重?
+    执行数据库操作并在锁等待超时时重试
     Args:
         db_session: 数据库会话
         query_func: 查询函数，接收db_session, *args

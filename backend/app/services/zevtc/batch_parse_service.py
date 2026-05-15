@@ -26,7 +26,7 @@ from app.config.database import SessionLocal
 from app.core.zevtc.parser import ZevtcParseError
 from app.models.log.batch_parse import BatchParseTask, BatchParseTaskItem
 from app.models.log.log import Log
-from app.constants.dict_values import ParseStatus
+from app.constants.dict_values import BatchTaskStatus, ParseStatus
 from app.services.zevtc import log_service
 from app.utils.logger import logger
 
@@ -232,7 +232,7 @@ class BatchParseService:
         task.status = status
         if error_message:
             task.error_message = error_message
-        if status == "processing" and not task.started_at:
+        if status == BatchTaskStatus.PROCESSING.value and not task.started_at:
             task.started_at = datetime.now(timezone.utc)
         if status in ["completed", "failed", "partial"] and not task.completed_at:
             task.completed_at = datetime.now(timezone.utc)
@@ -261,7 +261,7 @@ class BatchParseService:
         if error_code:
             item.error_code = error_code
 
-        if status == "processing" and not item.started_at:
+        if status == BatchTaskStatus.PROCESSING.value and not item.started_at:
             item.started_at = datetime.now(timezone.utc)
         if status in ["completed", "failed"] and not item.completed_at:
             item.completed_at = datetime.now(timezone.utc)
@@ -269,10 +269,10 @@ class BatchParseService:
         # 更新任务统计
         task = db.query(BatchParseTask).filter(BatchParseTask.id == task_id).first()
         if task:
-            if status == "completed":
+            if status == BatchTaskStatus.COMPLETED.value:
                 task.processed_count += 1
                 task.success_count += 1
-            elif status == "failed":
+            elif status == BatchTaskStatus.FAILED.value:
                 task.processed_count += 1
                 task.failed_count += 1
 
@@ -318,7 +318,7 @@ class BatchParseService:
                 task.processed_count += 1
                 task.failed_count += 1
                 if task.processed_count == task.total_count:
-                    task.status = "failed" if task.success_count == 0 else "partial"
+                    task.status = BatchTaskStatus.FAILED.value if task.success_count == 0 else BatchTaskStatus.PARTIAL.value
                     task.completed_at = datetime.now(timezone.utc)
             db.commit()
             return False
@@ -646,7 +646,7 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
     # 先查 pending
     item = (
         db.query(BatchParseTaskItem)
-        .filter(BatchParseTaskItem.status == "pending")
+        .filter(BatchParseTaskItem.status == BatchTaskStatus.PENDING.value)
         .order_by(BatchParseTaskItem.id.asc())
         .first()
     )
@@ -657,7 +657,7 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
     item = (
         db.query(BatchParseTaskItem)
         .filter(
-            BatchParseTaskItem.status == "retrying",
+            BatchParseTaskItem.status == BatchTaskStatus.RETRYING.value,
             BatchParseTaskItem.next_retry_at <= now,
         )
         .order_by(BatchParseTaskItem.next_retry_at.asc())
@@ -702,8 +702,8 @@ def worker():
 
                 # 更新父任务状态（内部会 commit，导致 ORM 对象 expired）
                 task = BatchParseService.get_task_by_id(db, task_id)
-                if task and task.status == "pending":
-                    BatchParseService.update_task_status(db, task_id, "processing")
+                if task and task.status == BatchTaskStatus.PENDING.value:
+                    BatchParseService.update_task_status(db, task_id, BatchTaskStatus.PROCESSING.value)
 
             finally:
                 db.close()
@@ -747,7 +747,7 @@ def _reset_stuck_processing_items():
         try:
             stuck_items = (
                 db.query(BatchParseTaskItem)
-                .filter(BatchParseTaskItem.status == "processing")
+                .filter(BatchParseTaskItem.status == BatchTaskStatus.PROCESSING.value)
                 .all()
             )
             if stuck_items:
@@ -788,8 +788,8 @@ def submit_batch_task(task_id: int, db_url: str, overwrite: bool = True):
         task = BatchParseService.get_task_by_id(db, task_id)
         if not task:
             raise ValueError(f"任务不存在: {task_id}")
-        if task.status == "pending":
-            BatchParseService.update_task_status(db, task_id, "processing")
+        if task.status == BatchTaskStatus.PENDING.value:
+            BatchParseService.update_task_status(db, task_id, BatchTaskStatus.PROCESSING.value)
         logger.info(f"[batch] 任务 {task_id} 已提交，调度器将自动轮询执行")
     except Exception as e:
         logger.error(f"[batch] 提交任务失败: {e}")

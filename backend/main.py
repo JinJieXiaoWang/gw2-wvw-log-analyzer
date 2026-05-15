@@ -37,6 +37,7 @@ from app.routers.system.monitor import router as monitor_router
 from app.routers.system.monitoring import router as monitoring_router
 from app.routers.system.notice import router as notice_router
 from app.routers.system.settings import router as settings_router
+from app.routers.system.initialization import router as initialization_router
 from app.routers.system.menus import router as menus_router
 from app.routers.test.test_dps_report import router as test_dps_report_router
 from app.services.auth.auth_service import init_predefined_admin
@@ -81,9 +82,29 @@ async def lifespan(app: FastAPI):
                 try:
                     # 统一数据初始化入口（包含所有数据初始化）
                     from app.data.init_all import initialize_all
+                    from app.core.initialization import InitializationError
 
                     init_result = initialize_all(db)
                     logger.info(f"统一数据初始化完成: {init_result}")
+                except InitializationError as e:
+                    # 【强化】初始化失败立即终止启动
+                    logger.critical("=" * 60)
+                    logger.critical("数据初始化失败，启动终止")
+                    logger.critical("=" * 60)
+                    logger.critical(f"错误: {e}")
+                    logger.critical(f"步骤: {e.step}")
+                    logger.critical(f"类型: {e.error_type}")
+                    logger.critical(f"建议: {e.suggestion}")
+                    logger.critical("=" * 60)
+                    # 释放锁后抛出异常，阻止 FastAPI 继续启动
+                    try:
+                        db.execute(text("SELECT RELEASE_LOCK('gw2_init_lock')"))
+                    except Exception:
+                        pass
+                    raise RuntimeError(
+                        f"数据初始化失败 [{e.error_type}] {e.step}: {e}\n"
+                        f"建议: {e.suggestion}"
+                    ) from e
                 finally:
                     try:
                         db.execute(text("SELECT RELEASE_LOCK('gw2_init_lock')"))
@@ -93,6 +114,9 @@ async def lifespan(app: FastAPI):
             else:
                 logger.info("其他 worker 正在执行初始化，本 worker 跳过数据初始化")
 
+    except RuntimeError:
+        # 重新抛出启动终止异常
+        raise
     except Exception as e:
         logger.error(f"初始化失败: {e}")
     logger.info("GW2日志系统启动完成")
@@ -151,6 +175,7 @@ app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)
 app.include_router(notice_router, prefix=settings.API_PREFIX)
 app.include_router(menus_router, prefix=settings.API_PREFIX)
+app.include_router(initialization_router, prefix=settings.API_PREFIX)
 app.include_router(config_router, prefix=settings.API_PREFIX)
 app.include_router(dps_report_queue_router, prefix=settings.API_PREFIX)
 

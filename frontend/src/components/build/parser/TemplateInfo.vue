@@ -21,11 +21,11 @@
         class="w-16 h-16 rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg"
         :style="{ background: `linear-gradient(135deg, ${getProfessionColor(parsedBuild.profession)}, ${getProfessionColor(parsedBuild.profession)}88)` }"
       >
-        {{ parsedBuild.profession.charAt(0) }}
+        {{ getProfessionName(parsedBuild.profession).charAt(0) }}
       </div>
       <div>
         <p class="text-xl font-semibold text-neutral-text">
-          {{ parsedBuild.profession }}
+          {{ getProfessionName(parsedBuild.profession) }}
         </p>
         <p class="text-sm text-neutral-text-secondary">
           {{ parsedBuild.templateType }}
@@ -46,6 +46,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName } from '@/services/professionService'
 /**
  * 模板信息组件
  * 功能：显示解析后的Build模板信息

@@ -148,8 +148,10 @@
 </template>
 
 <script setup lang="ts">
+import { PLAYER_STATS_SORT_OPTIONS } from '@/constants/dictValues'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import { useProfession } from '@/composables/useProfession'
+import { getProfessionName } from '@/services/professionService'
 import type { Player } from '@/types/eliteInsights'
 import { formatDamage } from '@/types/eliteInsights'
 import { computed, onMounted, ref } from 'vue'
@@ -176,12 +178,7 @@ type SortKey = 'dps' | 'score' | 'dmg' | 'name'
 
 const currentSort = ref<SortKey>('dps')
 
-const sortOptions = [
-  { key: 'dps' as SortKey, label: 'DPS' },
-  { key: 'score' as SortKey, label: '评分' },
-  { key: 'dmg' as SortKey, label: '伤害' },
-  { key: 'name' as SortKey, label: '名称' }
-]
+const sortOptions = PLAYER_STATS_SORT_OPTIONS.map(o => ({ key: o.key as SortKey, label: o.label }))
 
 // =============================================
 // 计算属性
@@ -240,17 +237,7 @@ function handleIconError(event: Event): void {
 // =============================================
 
 function getName(key: string): string {
-  if (!key) return ''
-  
-  // 先尝试查找基础职业
-  const profession = professions.find(p => p.profession_key === key)
-  if (profession) return profession.profession_name
-  
-  // 再尝试查找精英特长
-  const spec = eliteSpecs.find(s => s.spec_key === key)
-  if (spec) return spec.spec_name
-  
-  return key
+  return getProfessionName(key)
 }
 
 function getColor(key: string): string {

@@ -112,7 +112,7 @@ import { usePermission } from '@/composables/system/usePermission'
 
 const route = useRoute()
 const isOpen = ref(false)
-const { isAuthenticated } = usePermission()
+const { isAuthenticated, can } = usePermission()
 
 interface MenuItem {
   path: string
@@ -120,6 +120,8 @@ interface MenuItem {
   icon: string
   description?: string
   requireAuth?: boolean
+  permissions?: string[]
+  hidden?: boolean
 }
 
 const allMenuItems: MenuItem[] = [
@@ -164,20 +166,21 @@ const allMenuItems: MenuItem[] = [
     label: '设置',
     icon: 'pi pi-cog',
     description: '系统配置',
-    requireAuth: true
-  },
-  {
-    path: '/test/dps-report',
-    label: 'EI测试',
-    icon: 'pi pi-cloud-upload',
-    description: 'dps.report API测试'
+    requireAuth: true,
+    permissions: ['write']
   }
 ]
 
 const menuItems = computed(() => {
   return allMenuItems.filter(item => {
+    if (item.hidden) {
+      return false
+    }
     if (item.requireAuth && !isAuthenticated.value) {
       return false
+    }
+    if (item.permissions && item.permissions.length > 0) {
+      return item.permissions.some(p => can(p as any))
     }
     return true
   })

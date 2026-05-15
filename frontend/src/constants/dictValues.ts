@@ -71,18 +71,18 @@ export function isSupportRole(roleType: string): boolean {
 // =============================================================================
 
 export const NormalDisable = {
-  ENABLED: 0,
-  DISABLED: 1,
+  ENABLED: '0',
+  DISABLED: '1',
 } as const
 
 export type NormalDisableValue = (typeof NormalDisable)[keyof typeof NormalDisable]
 
-export function isEnabled(status: number): boolean {
-  return status === NormalDisable.ENABLED
+export function isEnabled(status: string | number): boolean {
+  return String(status) === NormalDisable.ENABLED
 }
 
-export function isDisabled(status: number): boolean {
-  return status === NormalDisable.DISABLED
+export function isDisabled(status: string | number): boolean {
+  return String(status) === NormalDisable.DISABLED
 }
 
 // =============================================================================
@@ -134,3 +134,64 @@ export const ScoringRuleStatus = {
 } as const
 
 export type ScoringRuleStatusValue = (typeof ScoringRuleStatus)[keyof typeof ScoringRuleStatus]
+
+// =============================================================================
+// AI 分析检查结果状态
+// =============================================================================
+
+export const CheckStatus = {
+  PASS: 'pass',
+  FAIL: 'fail',
+  WARN: 'warn',
+} as const
+
+export type CheckStatusValue = (typeof CheckStatus)[keyof typeof CheckStatus]
+
+// =============================================================================
+// AI Build 类型 / 小队角色类型
+// =============================================================================
+
+export const AiBuildType = {
+  POWER: 'power',
+  CONDI: 'condi',
+  SUPPORT: 'support',
+  TANK: 'tank',
+} as const
+
+export const SquadRole = {
+  DAMAGE: 'damage',
+  SUPPORT: 'support',
+  CONTROL: 'control',
+  TANK: 'tank',
+} as const
+
+/** Dashboard 趋势分析指标选项 */
+export const DASHBOARD_METRIC_OPTIONS = [
+  { label: '伤害', value: 'damage', color: '#ef4444' },
+  { label: '击倒人数', value: 'downed', color: '#f59e0b' },
+  { label: '场次', value: 'fights', color: '#3b82f6' },
+  { label: '活跃', value: 'active_accounts', color: '#a855f7' },
+] as const
+
+/** EI 玩家统计排序选项 */
+export const PLAYER_STATS_SORT_OPTIONS = [
+  { key: 'dps', label: 'DPS' },
+  { key: 'score', label: '评分' },
+  { key: 'dmg', label: '伤害' },
+  { key: 'name', label: '名称' },
+] as const
+
+/** Build 图书馆排序选项 */
+export const BUILD_SORT_OPTIONS = [
+  { label: '最新更新', value: 'updated' },
+  { label: '最旧更新', value: 'updated-asc' },
+  { label: '职业排序', value: 'profession' },
+] as const
+
+/** Build 子角色选项 */
+export const BUILD_SUB_ROLE_OPTIONS = [
+  { label: '增益', value: 'boon' },
+  { label: '治疗', value: 'heal' },
+  { label: '承伤', value: 'tank' },
+  { label: '削控', value: 'cc' },
+] as const

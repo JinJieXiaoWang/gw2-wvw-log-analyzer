@@ -132,11 +132,17 @@ const {
   uploadFiles, reset,
 } = useLogUpload({ onUploadSuccess: () => emit('upload-success') })
 
+const UPLOAD_PHASE = {
+  UPLOADING: 'uploading',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
+} as const
+
 const progressBarClass = computed(() => {
-  if (uploadPhase.value === 'uploading') return 'bg-primary'
-  if (uploadPhase.value === 'processing' || (uploadPhase.value === 'completed' && failedCount.value > 0 && successCount.value > 0)) return 'bg-status-warning'
-  if (uploadPhase.value === 'completed' && failedCount.value === 0) return 'bg-status-success'
-  if (uploadPhase.value === 'completed' && failedCount.value > 0 && successCount.value === 0) return 'bg-status-error'
+  if (uploadPhase.value === UPLOAD_PHASE.UPLOADING) return 'bg-primary'
+  if (uploadPhase.value === UPLOAD_PHASE.PROCESSING || (uploadPhase.value === UPLOAD_PHASE.COMPLETED && failedCount.value > 0 && successCount.value > 0)) return 'bg-status-warning'
+  if (uploadPhase.value === UPLOAD_PHASE.COMPLETED && failedCount.value === 0) return 'bg-status-success'
+  if (uploadPhase.value === UPLOAD_PHASE.COMPLETED && failedCount.value > 0 && successCount.value === 0) return 'bg-status-error'
   return 'bg-primary'
 })
 

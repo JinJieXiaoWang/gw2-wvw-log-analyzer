@@ -49,7 +49,7 @@
                   {{ data.name }}
                 </div>
                 <div class="text-xs text-neutral-text-secondary">
-                  {{ data.profession }}
+                  {{ getProfessionName(data.profession) }}
                 </div>
               </div>
             </div>
@@ -141,6 +141,7 @@ import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import { formatCompactNumber as formatNumber } from '@/utils/core/helpers';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
+import { getProfessionName } from '@/services/professionService';
 
 const props = defineProps<{
   players: any[];

@@ -7,14 +7,9 @@ import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { configManager } from '@/services/core/configManager'
 import { formatDateParam } from '@/utils/common/attendanceFormatters'
 
-const ROLE_LABEL_MAP: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
-
 export function useDataAttendance() {
   const toast = useToast()
 
-  // 评分角色
-  const currentRoleType = ref('dps')
-  const currentRoleLabel = computed(() => ROLE_LABEL_MAP[currentRoleType.value] || '输出')
   const currentRuleVersion = ref(0)
 
   // 防抖
@@ -210,7 +205,7 @@ export function useDataAttendance() {
   }
 
   return {
-    currentRoleLabel, currentRuleVersion,
+    currentRuleVersion,
     loading, detailLoading,
     dateRange, searchQuery, filterMap, filterProfession, filterOptions,
     accountList, pagination, currentSort, statCards,

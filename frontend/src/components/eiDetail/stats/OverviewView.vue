@@ -95,7 +95,7 @@
                   class="text-xs"
                 />
               </div>
-              <span class="text-xs text-neutral-text-secondary">{{ player.profession }}</span>
+              <span class="text-xs text-neutral-text-secondary">{{ getProfessionName(player.profession) }}</span>
             </div>
             <div class="text-right">
               <p class="font-semibold text-primary">
@@ -125,7 +125,7 @@
               class="w-3 h-3 rounded-full shrink-0"
               :style="{ backgroundColor: getProfessionColor(prof) }"
             />
-            <span class="text-sm text-neutral-text flex-1">{{ prof }}</span>
+            <span class="text-sm text-neutral-text flex-1">{{ getProfessionName(prof) }}</span>
             <div class="flex items-center gap-2">
               <div class="w-24 h-2 rounded-full bg-neutral-bg overflow-hidden">
                 <div
@@ -147,6 +147,7 @@ import { computed } from 'vue';
 import Tag from 'primevue/tag';
 import { formatCompactNumber as formatNumber } from '@/utils/core/helpers';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
+import { getProfessionName } from '@/services/professionService';
 
 const props = defineProps<{
   players: any[];

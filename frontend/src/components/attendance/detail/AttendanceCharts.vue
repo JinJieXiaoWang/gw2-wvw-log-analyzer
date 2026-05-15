@@ -292,28 +292,19 @@
             </svg>
           </div>
           <div class="grid grid-cols-3 gap-2 mt-4">
-            <div class="text-center p-2 rounded-xl bg-surface-700/50">
-              <p class="text-lg font-bold text-status-error">
-                {{ abilities.damage }}
+            <div
+              v-for="entry in abilityEntries.slice(0, 6)"
+              :key="entry.key"
+              class="text-center p-2 rounded-xl bg-surface-700/50"
+            >
+              <p
+                class="text-lg font-bold"
+                :class="getAbilityColorClass(entry.key)"
+              >
+                {{ entry.value }}
               </p>
               <p class="text-xs text-neutral-text-secondary">
-                输出
-              </p>
-            </div>
-            <div class="text-center p-2 rounded-xl bg-surface-700/50">
-              <p class="text-lg font-bold text-status-success">
-                {{ abilities.healing }}
-              </p>
-              <p class="text-xs text-neutral-text-secondary">
-                治疗
-              </p>
-            </div>
-            <div class="text-center p-2 rounded-xl bg-surface-700/50">
-              <p class="text-lg font-bold text-secondary">
-                {{ abilities.survival }}
-              </p>
-              <p class="text-xs text-neutral-text-secondary">
-                生存
+                {{ entry.label }}
               </p>
             </div>
           </div>
@@ -338,8 +329,20 @@ import { TIME_RANGE_OPTIONS_NO_ALL } from '@/constants/options'
 const timeRangeOptions = TIME_RANGE_OPTIONS_NO_ALL
 
 const {
-  abilities, chartPoints, chartLinePath, chartAreaPath,
+  abilities, abilityEntries, chartPoints, chartLinePath, chartAreaPath,
   radarPolygonPoints, radarCirclePoints, radarLabels,
   getHexagonPoints, getAxisPoint,
 } = useAttendanceDetail(() => detailData)
+
+const getAbilityColorClass = (key: string): string => {
+  const map: Record<string, string> = {
+    damage: 'text-status-error',
+    healing: 'text-status-success',
+    survival: 'text-secondary',
+    support: 'text-status-success',
+    utility: 'text-primary',
+    mobility: 'text-info-500',
+  }
+  return map[key] || 'text-neutral-text'
+}
 </script>

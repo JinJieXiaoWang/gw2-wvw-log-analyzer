@@ -6,9 +6,10 @@
 from contextlib import contextmanager
 from typing import Any, Dict, List, Optional
 
+from sqlalchemy.orm import Session
+
 from app.models.game.dictionary import SysDictData, SysDictType
 from app.utils.logger import logger
-from sqlalchemy.orm import Session
 
 # 全局字典缓存
 _dict_cache: Dict[str, List[Dict]] = {}
@@ -132,7 +133,7 @@ def load_dict_from_db(db: Session, dict_type: str) -> List[Dict]:
 
 def load_all_dictionaries(db: Session) -> None:
     # 功能：加载所有字典数据到缓存
-    # 参数：db - 数据库会?
+    # 参数：db - 数据库会话
     # 返回：无
     # 获取所有启用的字典类型
     dict_types = (
@@ -154,7 +155,8 @@ def get_dict_datas(dict_type: str, db: Optional[Session] = None) -> List[Dict]:
     # 功能：获取字典数据（优先从缓存获取）
     # 参数：dict_type - 字典类型
     #       db - 数据库会话（可选）
-    # 返回：字典数据列?
+    # 返回：字典数据列表
+    # 从缓存获取数据
     cached_data = get_dict_cache(dict_type)
     if cached_data is not None:
         return cached_data

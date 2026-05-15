@@ -31,7 +31,7 @@ class ScoringRuleVersion(Base):
     )
     status = Column(
         String(20),
-        default=ScoringRuleStatus.PENDING,
+        default=ScoringRuleStatus.PENDING.value,
         nullable=False,
         comment="状? pending-待处? processing-执行? completed-已完成 failed-失败",
     )

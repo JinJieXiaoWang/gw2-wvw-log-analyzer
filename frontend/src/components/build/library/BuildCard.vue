@@ -36,12 +36,12 @@
       </div>
 
       <div class="flex flex-wrap gap-1.5 mb-3">
-        <span
-          class="inline-flex items-center px-2 py-1 rounded-md text-xs font-semibold"
-          :class="build.role === 'dps' ? 'bg-status-error/12 text-status-error' : 'bg-status-success/12 text-status-success'"
-        >
-          {{ build.role === 'dps' ? '输出' : '辅助' }}
-        </span>
+        <DictTag
+          dict-type="role"
+          :value="build.role"
+          variant="badge"
+          class="text-xs font-semibold"
+        />
         <span
           v-for="sub in build.subRoles"
           :key="sub"
@@ -82,6 +82,7 @@
             <i class="pi pi-copy text-xs" />
           </button>
           <button
+            v-permission="'write'"
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
             title="编辑配置"
             @click.stop="$emit('edit', build)"

@@ -27,5 +27,6 @@ from app.models.scoring.scoring_rule_version import ScoringRuleVersion
 from app.models.system.ai_report import AIReport
 from app.models.system.storage import StorageCleanupRecord, StorageMonitorRecord
 from app.models.system.sys_config import SysConfig
+from app.models.system.sys_data_version import SysDataVersion
 from app.models.system.sys_menu import SysMenu
 from app.models.system.sys_notice import SysNotice, SysNoticeRead

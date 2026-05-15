@@ -494,21 +494,23 @@ def _calculate_comprehensive_abilities(
     mobility_score = (total_dodge_count / max(total_fights * 10, 1)) * 50 + avg_stability * 0.5
     mobility_score = min(100.0, max(30.0, mobility_score))
     
-    # 根据角色定位调整权重
+    # 根据角色定位调整权重（从 JSON 配置加载）
+    from app.config.json_loader import load_json_config
+
     role_type = _determine_role_type(most_used_profession, rules)
-    
+    scoring_config = load_json_config("scoring_rules") or {}
+    adjustments = scoring_config.get("role_adjustments", {})
+    adj = adjustments.get(role_type, {})
+
     if role_type == RoleType.SUPPORT:
-        # 辅助角色：治疗和支援权重更高
-        healing_score = min(100.0, healing_score * 1.3)
-        support_score = min(100.0, support_score * 1.3)
-        damage_score = damage_score * 0.8
+        healing_score = min(100.0, healing_score * adj.get("healing_multiplier", 1.3))
+        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.3))
+        damage_score = damage_score * adj.get("damage_multiplier", 0.8)
     elif role_type == RoleType.TANK:
-        # 坦克角色：生存和支援权重更高
-        survival_score = min(100.0, survival_score * 1.3)
-        support_score = min(100.0, support_score * 1.1)
+        survival_score = min(100.0, survival_score * adj.get("survival_multiplier", 1.3))
+        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.1))
     elif role_type == RoleType.CONDITION:
-        # 症状角色：功能能力权重更高
-        utility_score = min(100.0, utility_score * 1.3)
+        utility_score = min(100.0, utility_score * adj.get("utility_multiplier", 1.3))
     
     return {
         "damage": round(damage_score, 1),

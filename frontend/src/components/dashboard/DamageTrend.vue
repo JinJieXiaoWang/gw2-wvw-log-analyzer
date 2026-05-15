@@ -56,6 +56,7 @@
  * 更新：2026-05-04 - 集成 ECharts + 真实 API
  */
 
+import { DASHBOARD_METRIC_OPTIONS } from '@/constants/dictValues'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import { BarChart, LineChart } from 'echarts/charts'
 import { DataZoomComponent, GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
@@ -77,19 +78,11 @@ const emit = defineEmits<{
   'update:metric': [value: string]
 }>()
 
-const metricOptions = [
-  { label: '伤害', value: 'damage' },
-  { label: '击倒人数', value: 'downed' },
-  { label: '场次', value: 'fights' },
-  { label: '活跃', value: 'active_accounts' },
-]
+const metricOptions = DASHBOARD_METRIC_OPTIONS.map(m => ({ label: m.label, value: m.value }))
 
-const metricColors: Record<string, string> = {
-  damage: '#ef4444',
-  downed: '#f59e0b',
-  fights: '#3b82f6',
-  active_accounts: '#a855f7',
-}
+const metricColors: Record<string, string> = Object.fromEntries(
+  DASHBOARD_METRIC_OPTIONS.map(m => [m.value, m.color])
+)
 
 const { tooltip, grid, axisLine, axisLabel, splitLine } = useEChartsTheme()
 

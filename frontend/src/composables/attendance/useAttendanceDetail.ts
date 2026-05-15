@@ -1,5 +1,21 @@
 import { computed } from 'vue'
 
+const ABILITY_LABEL_MAP: Record<string, string> = {
+  damage: '输出',
+  mobility: '机动',
+  survival: '生存',
+  healing: '治疗',
+  support: '辅助',
+  utility: '技能',
+}
+
+const DEFAULT_ABILITIES: Record<string, number> = {
+  damage: 70, mobility: 65, survival: 65,
+  healing: 60, support: 55, utility: 60,
+}
+
+const ABILITY_ORDER = ['damage', 'mobility', 'survival', 'healing', 'support', 'utility']
+
 /**
  * 出勤详情数据计算组合式函数
  * @param dataSource 返回详情数据的 getter 函数，确保响应式更新
@@ -9,17 +25,21 @@ export function useAttendanceDetail(dataSource: () => any) {
   const characters = computed(() => dataSource()?.characters || [])
   const recentFights = computed(() => dataSource()?.recent_fights || [])
 
-  // 使用后端返回的综合能力评分
+  // 使用后端返回的综合能力评分，缺失项使用默认值补齐
   const abilities = computed(() => {
     const comprehensiveAbilities = dataSource()?.comprehensive_abilities
-    if (comprehensiveAbilities) {
-      return comprehensiveAbilities
-    }
-    // 当后端未返回时，使用默认值
-    return {
-      damage: 70, healing: 60, survival: 65,
-      support: 55, utility: 60, mobility: 65,
-    }
+    return { ...DEFAULT_ABILITIES, ...comprehensiveAbilities }
+  })
+
+  // 按固定顺序排列的能力条目，支持动态渲染
+  const abilityEntries = computed(() => {
+    return ABILITY_ORDER
+      .filter(k => k in abilities.value)
+      .map(k => ({
+        key: k,
+        value: abilities.value[k],
+        label: ABILITY_LABEL_MAP[k] || k,
+      }))
   })
 
   // 从数据中计算出勤趋势，或使用默认值
@@ -51,10 +71,9 @@ export function useAttendanceDetail(dataSource: () => any) {
     return `${chartLinePath.value} L ${last.x} 220 L ${first.x} 220 Z`
   })
 
-  const radarValues = computed(() => [
-    abilities.value.damage, abilities.value.mobility, abilities.value.survival,
-    abilities.value.healing, abilities.value.support, abilities.value.utility,
-  ])
+  const radarValues = computed(() =>
+    abilityEntries.value.map(e => e.value)
+  )
 
   const radarPolygonPoints = computed(() =>
     radarValues.value.map((val, i) => {
@@ -72,14 +91,22 @@ export function useAttendanceDetail(dataSource: () => any) {
     })
   )
 
-  const radarLabels = [
-    { x: 100, y: 25, text: '输出' },
-    { x: 162, y: 52, text: '机动' },
-    { x: 162, y: 148, text: '生存' },
-    { x: 100, y: 175, text: '治疗' },
-    { x: 38, y: 148, text: '辅助' },
-    { x: 38, y: 52, text: '技能' },
-  ]
+  const radarLabels = computed(() => {
+    const positions = [
+      { x: 100, y: 25 },
+      { x: 162, y: 52 },
+      { x: 162, y: 148 },
+      { x: 100, y: 175 },
+      { x: 38, y: 148 },
+      { x: 38, y: 52 },
+    ]
+    return abilityEntries.value.map((e, i) => ({
+      x: positions[i]?.x ?? 100,
+      y: positions[i]?.y ?? 25,
+      text: e.label,
+      key: e.key,
+    }))
+  })
 
   function getHexagonPoints(radius: number) {
     const points: string[] = []
@@ -96,7 +123,7 @@ export function useAttendanceDetail(dataSource: () => any) {
   }
 
   return {
-    summary, characters, recentFights, abilities,
+    summary, characters, recentFights, abilities, abilityEntries,
     chartPoints, chartLinePath, chartAreaPath,
     radarPolygonPoints, radarCirclePoints, radarLabels,
     getHexagonPoints, getAxisPoint,

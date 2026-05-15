@@ -1,7 +1,7 @@
 <template>
   <Dialog
     v-model:visible="localVisible"
-    :header="'评分规则配置 — ' + roleLabel"
+    :header="roleLabel ? '评分规则配置 — ' + roleLabel : '评分规则配置'"
     :style="{ width: '640px', maxWidth: '95vw' }"
     modal
     :draggable="false"
@@ -124,7 +124,7 @@ const props = defineProps<{
   rulesData: Record<string, any>
   ruleVersion: number
   activeTab: number
-  roleType: string
+  roleType?: string
 }>()
 
 const emit = defineEmits<{
@@ -148,7 +148,7 @@ const roleLabel = computed(() => {
     [RoleType.SUPPORT]: '辅助',
     [RoleType.TANK]: '承伤'
   }
-  return map[props.roleType] || '输出'
+  return props.roleType ? (map[props.roleType] || '输出') : ''
 })
 
 const goToRulesManagement = () => {

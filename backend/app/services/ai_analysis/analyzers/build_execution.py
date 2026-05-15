@@ -17,6 +17,7 @@ from app.services.ai_analysis.data_aggregator import (
     EiJsonExtractor,
     FightStatsAggregator,
 )
+from app.constants.dict_values import AiBuildType, CheckStatus
 from app.utils.logger import logger
 
 
@@ -25,23 +26,23 @@ class BuildExecutionAnalyzer:
 
     # Build类型与期望指标的映射（启发式基准）
     BUILD_EXPECTATIONS = {
-        "power": {
+        AiBuildType.POWER.value: {
             "label": "直伤Build",
             "expected_power_ratio": 0.7,  # 直伤应占总伤害70%+
             "expected_crit_rate": 0.6,  # 暴击率60%+
             "expected_dps_per_1k_stats": 800,  # 每1k攻击力对应800DPS
         },
-        "condi": {
+        AiBuildType.CONDI.value: {
             "label": "症状Build",
             "expected_condi_ratio": 0.7,  # 症状应占总伤害70%+
             "expected_avg_conditions": 10,  # 平均症状层数
         },
-        "support": {
+        AiBuildType.SUPPORT.value: {
             "label": "辅助Build",
             "expected_healing_per_min": 500000,  # 每分钟治疗量
             "expected_boon_uptime": 0.6,  # 增益覆盖率60%+
         },
-        "tank": {
+        AiBuildType.TANK.value: {
             "label": "坦克Build",
             "expected_damage_taken_per_min": 800000,  # 每分钟承伤（拉仇恨）
             "expected_block_evade_rate": 0.3,  # 格挡/闪避率
@@ -85,7 +86,7 @@ class BuildExecutionAnalyzer:
 
         # 3. 识别Build类型
         build_type = self._infer_build_type(latest, build_info)
-        expectations = self.BUILD_EXPECTATIONS.get(build_type, self.BUILD_EXPECTATIONS["power"])
+        expectations = self.BUILD_EXPECTATIONS.get(build_type, self.BUILD_EXPECTATIONS[AiBuildType.POWER.value])
 
         # 4. 执行效能验证
         execution_check = self._validate_execution(latest, build_type, expectations)
@@ -144,11 +145,11 @@ class BuildExecutionAnalyzer:
         if build_info:
             desc = (build_info.get("description", "") + build_info.get("name", "")).lower()
             if any(k in desc for k in ["condi", "症状", " Condition"]):
-                return "condi"
+                return AiBuildType.CONDI.value
             if any(k in desc for k in ["support", "辅助", " heal"]):
-                return "support"
+                return AiBuildType.SUPPORT.value
             if any(k in desc for k in ["tank", "坦克", " frontline"]):
-                return "tank"
+                return AiBuildType.TANK.value
 
         # 从数据推断
         total_damage = latest.get("damage", 1)
@@ -157,13 +158,13 @@ class BuildExecutionAnalyzer:
         healing = latest.get("healing", 0)
 
         if healing > 500000:
-            return "support"
+            return AiBuildType.SUPPORT.value
         if condi_ratio > 0.6:
-            return "condi"
+            return AiBuildType.CONDI.value
         if power_ratio > 0.6:
-            return "power"
+            return AiBuildType.POWER.value
 
-        return "power"
+        return AiBuildType.POWER.value
 
     def _validate_execution(
         self,
@@ -176,7 +177,7 @@ class BuildExecutionAnalyzer:
         total_damage = max(latest.get("damage", 1), 1)
         duration = max(latest.get("duration_sec", 60), 60)
 
-        if build_type == "power":
+        if build_type == AiBuildType.POWER.value:
             # 直伤占比检查
             power_ratio = latest.get("power_damage", 0) / total_damage
             expected = expectations.get("expected_power_ratio", 0.7)
@@ -185,7 +186,7 @@ class BuildExecutionAnalyzer:
                 "label": "直伤占比",
                 "actual": round(power_ratio * 100, 1),
                 "expected": round(expected * 100, 1),
-                "status": "pass" if power_ratio >= expected * 0.8 else "fail",
+                "status": CheckStatus.PASS.value if power_ratio >= expected * 0.8 else CheckStatus.FAIL.value,
                 "gap": round((expected - power_ratio) * 100, 1),
             })
 
@@ -197,11 +198,11 @@ class BuildExecutionAnalyzer:
                 "label": "暴击率",
                 "actual": round(crit_rate * 100, 1),
                 "expected": round(expected_crit * 100, 1),
-                "status": "pass" if crit_rate >= expected_crit * 0.8 else "fail",
+                "status": CheckStatus.PASS.value if crit_rate >= expected_crit * 0.8 else CheckStatus.FAIL.value,
                 "gap": round((expected_crit - crit_rate) * 100, 1),
             })
 
-        elif build_type == "condi":
+        elif build_type == AiBuildType.CONDI.value:
             # 症状占比检查
             condi_ratio = latest.get("condi_damage", 0) / total_damage
             expected = expectations.get("expected_condi_ratio", 0.7)
@@ -210,11 +211,11 @@ class BuildExecutionAnalyzer:
                 "label": "症状占比",
                 "actual": round(condi_ratio * 100, 1),
                 "expected": round(expected * 100, 1),
-                "status": "pass" if condi_ratio >= expected * 0.8 else "fail",
+                "status": CheckStatus.PASS.value if condi_ratio >= expected * 0.8 else CheckStatus.FAIL.value,
                 "gap": round((expected - condi_ratio) * 100, 1),
             })
 
-        elif build_type == "support":
+        elif build_type == AiBuildType.SUPPORT.value:
             # 治疗量检查
             healing_per_min = latest.get("healing", 0) / (duration / 60)
             expected = expectations.get("expected_healing_per_min", 500000)
@@ -223,7 +224,7 @@ class BuildExecutionAnalyzer:
                 "label": "每分钟治疗",
                 "actual": round(healing_per_min, 0),
                 "expected": expected,
-                "status": "pass" if healing_per_min >= expected * 0.6 else "fail",
+                "status": CheckStatus.PASS.value if healing_per_min >= expected * 0.6 else CheckStatus.FAIL.value,
                 "gap": round(expected - healing_per_min, 0),
             })
 
@@ -235,7 +236,7 @@ class BuildExecutionAnalyzer:
                 "label": "增益覆盖",
                 "actual": round(boon_uptime, 1),
                 "expected": round(expected_boon * 100, 1),
-                "status": "pass" if boon_uptime >= expected_boon * 80 else "fail",
+                "status": CheckStatus.PASS.value if boon_uptime >= expected_boon * 80 else CheckStatus.FAIL.value,
                 "gap": round(expected_boon * 100 - boon_uptime, 1),
             })
 
@@ -257,12 +258,12 @@ class BuildExecutionAnalyzer:
             "label": "技能参与度",
             "actual": f"武器切换{swaps}次, 技能施放率{round(skill_uptime, 1)}%",
             "expected": "高活跃度",
-            "status": "pass" if skill_uptime > 60 else "warn",
+            "status": CheckStatus.PASS.value if skill_uptime > 60 else CheckStatus.WARN.value,
         })
 
         # 计算总分
-        pass_count = sum(1 for c in checks if c["status"] == "pass")
-        fail_count = sum(1 for c in checks if c["status"] == "fail")
+        pass_count = sum(1 for c in checks if c["status"] == CheckStatus.PASS.value)
+        fail_count = sum(1 for c in checks if c["status"] == CheckStatus.FAIL.value)
         total_scored = pass_count + fail_count
         score = round((pass_count / max(total_scored, 1)) * 100) if total_scored > 0 else 50
 
@@ -329,7 +330,7 @@ class BuildExecutionAnalyzer:
                 "profession": rule_result["profession"],
                 "build_type": rule_result["build_type"],
                 "execution_score": rule_result["execution_score"],
-                "failed_checks": [c for c in rule_result["execution_check"]["checks"] if c["status"] == "fail"],
+                "failed_checks": [c for c in rule_result["execution_check"]["checks"] if c["status"] == CheckStatus.FAIL.value],
                 "equipment_issues": rule_result["equipment_check"]["issues"],
             }
 

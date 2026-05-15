@@ -37,14 +37,14 @@
             class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold shadow-md"
             :style="{ background: `linear-gradient(135deg, ${getProfessionColor(build.profession)}, ${getProfessionColor(build.profession)}88)` }"
           >
-            {{ build.profession.charAt(0) }}
+            {{ getProfessionName(build.profession).charAt(0) }}
           </div>
           <div class="flex-1">
             <p class="text-sm font-medium text-neutral-text">
               {{ build.name }}
             </p>
             <p class="text-xs text-neutral-text-secondary">
-              {{ build.profession }}
+              {{ getProfessionName(build.profession) }}
             </p>
           </div>
         </div>
@@ -72,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName } from '@/services/professionService'
 /**
  * 已保存的Build组件
  * 功能：展示用户保存的Build列表

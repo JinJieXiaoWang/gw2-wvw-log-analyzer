@@ -16,14 +16,14 @@
         <label class="text-sm text-neutral-text-tertiary mb-2 block">选择玩家</label>
         <select v-model="selectedPlayer" class="w-full bg-neutral-card-active text-white text-sm px-4 py-2 rounded-lg border border-neutral-border">
           <option value="">请选择玩家</option>
-          <option v-for="player in recentPlayers" :key="player.id" :value="player.id">{{ player.name }} - {{ player.profession }}</option>
+          <option v-for="player in recentPlayers" :key="player.id" :value="player.id">{{ player.name }} - {{ getProfessionName(player.profession) }}</option>
         </select>
       </div>
       <div>
         <label class="text-sm text-neutral-text-tertiary mb-2 block">选择Build</label>
         <select v-model="selectedBuild" class="w-full bg-neutral-card-active text-white text-sm px-4 py-2 rounded-lg border border-neutral-border">
           <option value="">请选择Build</option>
-          <option v-for="build in recentBuilds" :key="build.id" :value="build.id">{{ build.name }} - {{ build.profession }}</option>
+          <option v-for="build in recentBuilds" :key="build.id" :value="build.id">{{ build.name }} - {{ getProfessionName(build.profession) }}</option>
         </select>
       </div>
       <div class="flex items-center gap-2 pt-2">
@@ -39,6 +39,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { getProfessionName } from '@/services/professionService'
 
 interface FightOption { id: string; name: string }
 interface PlayerOption { id: string; name: string; profession: string }

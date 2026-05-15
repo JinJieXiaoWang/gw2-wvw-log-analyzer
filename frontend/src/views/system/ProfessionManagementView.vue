@@ -186,7 +186,7 @@ const saveEdit = async () => {
       editVisible.value = false
       loadData()
     } else {
-      toast.add({ severity: 'error', summary: '保存失败', detail: data.message, life: 3000 })
+      toast.add({ severity: 'error', summary: '保存失败', detail: res.message || '未知错误', life: 3000 })
     }
   } catch (e) {
     toast.add({ severity: 'error', summary: '保存失败', detail: String(e), life: 3000 })

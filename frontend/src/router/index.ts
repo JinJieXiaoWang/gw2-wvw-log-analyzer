@@ -251,7 +251,7 @@ const routes: RouteRecordRaw[] = [
           icon: 'users',
           iconCategory: 'ui',
           permissions: ['write'],
-          hidden: false
+          hidden: true
         }
       }
     ]

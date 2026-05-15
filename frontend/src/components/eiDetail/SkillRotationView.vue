@@ -23,7 +23,7 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <span class="font-medium text-neutral-text">{{ player.name }}</span>
-                <span class="text-xs text-neutral-text-secondary">{{ player.profession }}</span>
+                <span class="text-xs text-neutral-text-secondary">{{ getProfessionName(player.profession) }}</span>
               </div>
               <!-- 武器配置 -->
               <div
@@ -66,6 +66,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
+import { getProfessionName } from '@/services/professionService';
 
 const props = defineProps<{
   players: any[];

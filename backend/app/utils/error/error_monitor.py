@@ -51,13 +51,15 @@ class ErrorMonitor:
             "request_info": request_info,
         }
 
-        # 添加到最近错误列?        ERROR_STATS["recent_errors"].append(error_record)
+        # 添加到最近错误列表
+        ERROR_STATS["recent_errors"].append(error_record)
 
         # 保持列表大小
         if len(ERROR_STATS["recent_errors"]) > MAX_RECENT_ERRORS:
             ERROR_STATS["recent_errors"].pop(0)
 
-        # 记录到日期        log_msg = f"ERROR - {endpoint} - {status_code} - {error_type}: {message}"
+        # 记录到日志
+        log_msg = f"ERROR - {endpoint} - {status_code} - {error_type}: {message}"
         if stack_trace:
             logger.error(log_msg, exc_info=True)
         else:
@@ -88,7 +90,10 @@ class ErrorMonitor:
 
 def monitor_errors(endpoint_name: str = None):
     """
-    错误监控装饰?    自动捕获并记录函数中的异?    """
+    错误监控装饰器
+    自动捕获并记录函数中的异常
+    参数：endpoint_name - 接口名称（可选）
+    """
 
     def decorator(func: Callable):
         @wraps(func)

@@ -6,8 +6,9 @@
 
 from typing import Any, Dict, List, Optional, Tuple
 
-from app.utils.error.exceptions import BadRequestException, NotFoundException
 from sqlalchemy.orm import Session
+
+from app.utils.error.exceptions import BadRequestException, NotFoundException
 
 
 def query_player(
@@ -43,9 +44,10 @@ def get_player_fight_stats(
     member_name: Optional[str] = None,
 ) -> Tuple[Optional[Dict], Optional[Dict]]:
     """
-    获取玩家战斗统计（已停用?
+    获取玩家战斗统计（已停用）
+    参数优先级：instance_id > account_name > member_name
 
-    返回?fight_stats_dict, member_dict)
+    返回值：(None, None) 或 (fight_stats_dict, member_dict)
 
     注意：由于FightStats和Member模型已被移除，此函数返回空数据
     """
@@ -56,7 +58,7 @@ def get_members_by_log(db: Session, log_id: int) -> List[Dict]:
     """
     获取日志中的所有成员（已停用）
 
-    注意：由于Member模型已被移除，此函数返回空列?
+    注意：由于Member模型已被移除，此函数返回空列表
     """
     return []
 
@@ -65,6 +67,6 @@ def get_member_fights(db: Session, member_id: int) -> List[Dict]:
     """
     获取成员参与的所有战斗（已停用）
 
-    注意：由于Fight和FightStats模型已被移除，此函数返回空列?
+    注意：由于Fight和FightStats模型已被移除，此函数返回空列表
     """
     return []

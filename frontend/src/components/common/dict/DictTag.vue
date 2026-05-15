@@ -99,10 +99,10 @@ const computedSeverity = computed(() => {
   }
   // 按常用值推断（兜底）
   const val = String(props.value).toLowerCase()
-  if (val === '0' || val === 'completed' || val === 'success' || val === 'enabled') return 'success'
-  if (val === '1' || val === 'failed' || val === 'error' || val === 'disabled') return 'danger'
-  if (val === 'pending' || val === 'warning') return 'warning'
-  if (val === 'parsing' || val === 'processing') return 'info'
+  if (['0', 'completed', 'success', 'enabled'].includes(val)) return 'success'
+  if (['1', 'failed', 'error', 'disabled'].includes(val)) return 'danger'
+  if (['pending', 'warning'].includes(val)) return 'warning'
+  if (['parsing', 'processing'].includes(val)) return 'info'
   return 'secondary'
 })
 

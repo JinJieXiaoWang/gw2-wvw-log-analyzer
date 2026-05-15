@@ -47,9 +47,9 @@
                 class="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-bold"
                 :style="{ background: `linear-gradient(135deg, ${getProfessionColor(data.profession)}, ${getProfessionColor(data.profession)}88)` }"
               >
-                {{ data.profession.charAt(0) }}
+                {{ getProfessionName(data.profession).charAt(0) }}
               </div>
-              <span>{{ data.profession }}</span>
+              <span>{{ getProfessionName(data.profession) }}</span>
             </div>
           </template>
         </Column>
@@ -95,6 +95,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName } from '@/services/professionService'
 /**
  * Build对比组件
  * 功能：对比不同Build的属性差异

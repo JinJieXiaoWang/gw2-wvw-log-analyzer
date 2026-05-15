@@ -36,7 +36,10 @@
           </div>
         </div>
       </div>
-      <div class="flex flex-wrap gap-2">
+      <div
+        v-if="canWrite"
+        class="flex flex-wrap gap-2"
+      >
         <BaseButton
           v-if="ruleScope === 'generic'"
           label="应用到历史数据"

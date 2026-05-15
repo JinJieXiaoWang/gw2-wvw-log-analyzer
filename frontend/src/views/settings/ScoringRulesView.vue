@@ -186,12 +186,12 @@ async function loadProfessionRoleMapping() {
   try {
     const professions = await professionService.getProfessions(false)
     professionRoleMapping.value = professions.map(p => ({
-      profession: p.profession_key,
-      professionName: p.profession_name,
+      profession: p.profession_name,
+      professionKey: p.profession_key,
       role: p.default_role || 'dps',
       roleLabel: p.default_role || 'dps',
       icon: 'pi pi-user',
-      eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_key),
+      eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_name),
       currentRole: p.default_role || 'dps'
     }))
   } catch (error) {

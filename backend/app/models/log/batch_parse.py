@@ -20,7 +20,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.config.database import Base
-from app.constants.dict_values import ParseStatus
+from app.constants.dict_values import BatchTaskStatus
 
 
 class BatchParseTask(Base):
@@ -34,7 +34,7 @@ class BatchParseTask(Base):
     task_name = Column(String(255), nullable=True, comment="任务名称")
     status = Column(
         String(20),
-        default=ParseStatus.PENDING,
+        default=BatchTaskStatus.PENDING.value,
         comment="状态：pending/processing/completed/failed/partial",
     )
     total_count = Column(Integer, default=0, comment="总数据量")
@@ -84,7 +84,7 @@ class BatchParseTaskItem(Base):
     )
     status = Column(
         String(20),
-        default="pending",
+        default=BatchTaskStatus.PENDING.value,
         comment="状态：pending/processing/completed/failed/retrying",
     )
     started_at = Column(DateTime(timezone=True), nullable=True, comment="开始时间")

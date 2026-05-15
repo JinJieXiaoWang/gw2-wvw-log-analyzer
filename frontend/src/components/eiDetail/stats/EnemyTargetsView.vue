@@ -94,7 +94,7 @@
               class="w-3 h-3 rounded-full"
               :style="{ backgroundColor: getProfessionColor(pc.profession) }"
             />
-            <span class="text-sm text-neutral-text">{{ pc.profession }}</span>
+            <span class="text-sm text-neutral-text">{{ getProfessionName(pc.profession) }}</span>
             <span class="text-sm font-semibold text-primary">{{ pc.count }}</span>
           </div>
         </div>
@@ -115,6 +115,7 @@
 import { computed } from 'vue';
 import Tag from 'primevue/tag';
 import { getProfessionColor } from '@/utils/profession/professionUtils';
+import { getProfessionName } from '@/services/professionService';
 
 const props = defineProps<{
   targets: any[];

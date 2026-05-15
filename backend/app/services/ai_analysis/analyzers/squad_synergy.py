@@ -14,6 +14,7 @@ from sqlalchemy.orm import Session
 
 from app.core.ai_prompt_templates import AnalysisType
 from app.services.ai_analysis.data_aggregator import SquadAggregator
+from app.constants.dict_values import SquadRole
 from app.utils.logger import logger
 
 
@@ -22,19 +23,19 @@ class SquadSynergyAnalyzer:
 
     # WvW常见角色定位（基于职业和数据的启发式判断）
     ROLE_HEURISTICS = {
-        "damage": {
+        SquadRole.DAMAGE.value: {
             "professions": [" Weaver", " Berserker", " Holosmith", " Soulbeast", " Renegade"],
             "priority_fields": ["damage", "dps", "power_damage", "condi_damage"],
         },
-        "support": {
+        SquadRole.SUPPORT.value: {
             "professions": [" Firebrand", " Scrapper", " Tempest", " Druid"],
             "priority_fields": ["healing", "resurrects", "condi_cleanse_ally", "boon_strips_ally"],
         },
-        "control": {
+        SquadRole.CONTROL.value: {
             "professions": [" Spellbreaker", " Chronomancer", " Scourge", " Herald"],
             "priority_fields": ["applied_cc_duration", "applied_cc_count", "boon_strips"],
         },
-        "tank": {
+        SquadRole.TANK.value: {
             "professions": [" Spellbreaker", " Firebrand", " Scrapper"],
             "priority_fields": ["damage_taken", "blocked_count", "barrier_damage_absorbed"],
         },
@@ -146,11 +147,11 @@ class SquadSynergyAnalyzer:
                 # 数据匹配
                 for field in config["priority_fields"]:
                     val = getattr(member, field, 0) or 0
-                    if role in ["damage", "support"]:
+                    if role in [SquadRole.DAMAGE.value, SquadRole.SUPPORT.value]:
                         score += min(val / 10000, 20)
-                    elif role == "control":
+                    elif role == SquadRole.CONTROL.value:
                         score += min(val / 1000, 20)
-                    elif role == "tank":
+                    elif role == SquadRole.TANK.value:
                         score += min(val / 50000, 20)
 
                 scores[role] = score
@@ -240,11 +241,11 @@ class SquadSynergyAnalyzer:
 
         # 角色分布加分（理想：2-3输出，1-2辅助，1控制）
         role_counts = self._summarize_roles(roles)
-        if 2 <= role_counts.get("damage", 0) <= 4:
+        if 2 <= role_counts.get(SquadRole.DAMAGE.value, 0) <= 4:
             score += 15
-        if 1 <= role_counts.get("support", 0) <= 2:
+        if 1 <= role_counts.get(SquadRole.SUPPORT.value, 0) <= 2:
             score += 15
-        if role_counts.get("control", 0) >= 1:
+        if role_counts.get(SquadRole.CONTROL.value, 0) >= 1:
             score += 10
 
         # Buff互补加分
@@ -286,7 +287,7 @@ class SquadSynergyAnalyzer:
             })
 
         # 输出不足
-        if role_counts.get("damage", 0) < 2:
+        if role_counts.get(SquadRole.DAMAGE.value, 0) < 2:
             suggestions.append({
                 "priority": "medium",
                 "category": "role_composition",

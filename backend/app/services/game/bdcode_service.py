@@ -12,7 +12,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from app.data.seed_data import get_skills, get_specializations, get_traits, get_skill_palettes
+from app.core.initialization import SeedDataLoader
 from app.services.game.game_data_service import get_global_cache
 from app.utils.logger import logger
 
@@ -185,10 +185,10 @@ class GW2LocalDataLoader:
             return
 
         try:
-            self._skills = get_skills()
-            self._specializations = get_specializations()
-            self._traits = get_traits()
-            palette_list = get_skill_palettes()
+            self._skills = SeedDataLoader.load("game_static_bdcode_skills")
+            self._specializations = SeedDataLoader.load("game_static_bdcode_specializations")
+            self._traits = SeedDataLoader.load("game_static_bdcode_traits")
+            palette_list = SeedDataLoader.load("game_static_skill_palettes")
 
             # 构建索引
             self._skill_idx = {s["id"]: s for s in self._skills}

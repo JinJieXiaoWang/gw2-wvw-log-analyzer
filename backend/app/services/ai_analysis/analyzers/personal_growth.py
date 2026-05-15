@@ -18,6 +18,7 @@ from app.core.ai_prompt_templates import AnalysisType
 from app.services.ai_analysis.data_aggregator import (
     FightStatsAggregator,
 )
+from app.constants.dict_values import TrendStatus
 from app.utils.logger import logger
 
 
@@ -132,7 +133,7 @@ class PersonalGrowthAnalyzer:
                     values.append(sum(dim_values) / len(dim_values))
 
             if not values:
-                scores[dim_key] = {"score": 0, "label": dim_config["label"], "trend": "stable"}
+                scores[dim_key] = {"score": 0, "label": dim_config["label"], "trend": TrendStatus.STABLE.value}
                 continue
 
             avg = sum(values) / len(values)
@@ -148,16 +149,16 @@ class PersonalGrowthAnalyzer:
     def _compute_single_trend(self, values: List[float]) -> str:
         """计算单维度趋势: improving / declining / stable"""
         if len(values) < 5:
-            return "stable"
+            return TrendStatus.STABLE.value
         # 取前半段和后半段比较
         mid = len(values) // 2
         first_half = sum(values[:mid]) / max(mid, 1)
         second_half = sum(values[mid:]) / max(len(values) - mid, 1)
         diff_pct = (second_half - first_half) / max(first_half, 1)
         if diff_pct > 0.15:
-            return "improving"
+            return TrendStatus.IMPROVING.value
         elif diff_pct < -0.15:
-            return "declining"
+            return TrendStatus.DECLINING.value
         return "stable"
 
     def _calculate_percentiles(self, account: str, history: List[Dict]) -> Dict[str, int]:
@@ -185,7 +186,7 @@ class PersonalGrowthAnalyzer:
     def _calculate_trends(self, history: List[Dict]) -> Dict[str, Any]:
         """计算整体趋势"""
         if len(history) < 5:
-            return {"overall": "stable", "confidence": 0, "details": "数据不足"}
+            return {"overall": TrendStatus.STABLE.value, "confidence": 0, "details": "数据不足"}
 
         # 计算DPS趋势
         dps_values = [r.get("dps", 0) for r in history]
@@ -195,7 +196,7 @@ class PersonalGrowthAnalyzer:
         dt_values = [r.get("damage_taken", 0) for r in history]
         # 伤害承受降低是好事，所以反转趋势
         survival_trend_raw = self._compute_single_trend(dt_values)
-        survival_trend = "improving" if survival_trend_raw == "declining" else ("declining" if survival_trend_raw == "improving" else "stable")
+        survival_trend = TrendStatus.IMPROVING.value if survival_trend_raw == TrendStatus.DECLINING.value else (TrendStatus.DECLINING.value if survival_trend_raw == TrendStatus.IMPROVING.value else TrendStatus.STABLE.value)
 
         # 计算评分趋势
         score_values = [r.get("ai_score", 0) for r in history]
@@ -239,8 +240,8 @@ class PersonalGrowthAnalyzer:
         # 百分位低但趋势改善
         for dim_key, perc in percentiles.items():
             dim_score = dimension_scores.get(dim_key, {}).get("score", 0)
-            trend = dimension_scores.get(dim_key, {}).get("trend", "stable")
-            if perc < 30 and trend == "improving":
+            trend = dimension_scores.get(dim_key, {}).get("trend", TrendStatus.STABLE.value)
+            if perc < 30 and trend == TrendStatus.IMPROVING.value:
                 dim_info = self.DIMENSIONS.get(dim_key, {})
                 suggestions.append({
                     "category": "encouragement",

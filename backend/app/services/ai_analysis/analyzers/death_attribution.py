@@ -16,6 +16,7 @@ from app.services.ai_analysis.data_aggregator import (
     EiJsonExtractor,
     FightStatsAggregator,
 )
+from app.constants.dict_values import DeathCategory, ImportanceLevel
 from app.utils.logger import logger
 
 
@@ -24,32 +25,32 @@ class DeathAttributionAnalyzer:
 
     # 死亡归因分类
     DEATH_CATEGORIES = {
-        "focused_fire": {
+        DeathCategory.FOCUSED_FIRE.value: {
             "label": "被集火",
             "description": "短时间内受到多个敌方目标的高额伤害",
             "indicators": ["damage_taken极高", "无有效格挡/闪避记录"],
         },
-        "positioning_error": {
+        DeathCategory.POSITIONING_ERROR.value: {
             "label": "走位失误",
             "description": "脱离团队堆叠点，暴露在敌方火力范围内",
             "indicators": ["dist_to_com过大", "stack_dist异常"],
         },
-        "buff_gap": {
+        DeathCategory.BUFF_GAP.value: {
             "label": "Buff断档",
             "description": "关键增益（保护/稳固）覆盖率不足",
             "indicators": ["protection_uptime低", "stability_uptime低"],
         },
-        "cooldown_mismatch": {
+        DeathCategory.COOLDOWN_MISMATCH.value: {
             "label": "技能未交",
             "description": "拥有解控/无敌/翻滚等生存技能但未使用",
             "indicators": ["stun_break未使用", "dodge_count为0"],
         },
-        "healing_deficit": {
+        DeathCategory.HEALING_DEFICIT.value: {
             "label": "治疗缺口",
             "description": "受到伤害量超过团队治疗能力覆盖",
             "indicators": ["damage_taken持续高于团队平均水平"],
         },
-        "cc_chain": {
+        DeathCategory.CC_CHAIN.value: {
             "label": "控制链",
             "description": "被连续控制无法操作直至死亡",
             "indicators": ["received_cc_duration长", "removed_stun_duration为0"],
@@ -174,15 +175,15 @@ class DeathAttributionAnalyzer:
             # 走位失误：距离指挥官过远
             dist = record.get("dist_to_com", 0)
             if dist > 800:
-                reasons.append("positioning_error")
-                weights["positioning_error"] = min((dist - 800) / 400, 1.0)
+                reasons.append(DeathCategory.POSITIONING_ERROR.value)
+                weights[DeathCategory.POSITIONING_ERROR.value] = min((dist - 800) / 400, 1.0)
 
             # Buff断档：保护/稳固覆盖率低
             prot = record.get("protection_uptime", 0)
             stab = record.get("stability_uptime", 0)
             if prot < 30 and stab < 20:
-                reasons.append("buff_gap")
-                weights["buff_gap"] = 1.0 - (float(prot) + float(stab)) / 100
+                reasons.append(DeathCategory.BUFF_GAP.value)
+                weights[DeathCategory.BUFF_GAP.value] = 1.0 - (float(prot) + float(stab)) / 100
 
             # 被集火：承伤极高且没有有效防御
             dt = record.get("damage_taken", 0)
@@ -190,25 +191,25 @@ class DeathAttributionAnalyzer:
             evade = record.get("evaded_count", 0)
             dodge = record.get("dodge_count", 0)
             if dt > 500000 and block + evade + dodge < 3:
-                reasons.append("focused_fire")
-                weights["focused_fire"] = min(dt / 1000000, 1.0)
+                reasons.append(DeathCategory.FOCUSED_FIRE.value)
+                weights[DeathCategory.FOCUSED_FIRE.value] = min(dt / 1000000, 1.0)
 
             # 技能未交：有翻滚但未使用
             if dodge == 0 and record.get("down_count", 0) > 0:
-                reasons.append("cooldown_mismatch")
-                weights["cooldown_mismatch"] = 0.7
+                reasons.append(DeathCategory.COOLDOWN_MISMATCH.value)
+                weights[DeathCategory.COOLDOWN_MISMATCH.value] = 0.7
 
             # 控制链：受到CC时间长
             cc_recv = record.get("received_cc_duration", 0)
             cc_removed = record.get("removed_stun_duration", 0)
             if cc_recv > 5000 and cc_removed < 1000:
-                reasons.append("cc_chain")
-                weights["cc_chain"] = min(cc_recv / 10000, 1.0)
+                reasons.append(DeathCategory.CC_CHAIN.value)
+                weights[DeathCategory.CC_CHAIN.value] = min(cc_recv / 10000, 1.0)
 
             # 治疗缺口：承伤过高
             if dt > 800000:
-                reasons.append("healing_deficit")
-                weights["healing_deficit"] = min((dt - 800000) / 400000, 1.0)
+                reasons.append(DeathCategory.HEALING_DEFICIT.value)
+                weights[DeathCategory.HEALING_DEFICIT.value] = min((dt - 800000) / 400000, 1.0)
 
             # 选择权重最高的原因
             primary_reason = max(weights, key=weights.get) if weights else "unknown"
@@ -245,9 +246,9 @@ class DeathAttributionAnalyzer:
 
         for reason, count in sorted_reasons:
             cat = self.DEATH_CATEGORIES.get(reason, {})
-            if reason == "positioning_error":
+            if reason == DeathCategory.POSITIONING_ERROR.value:
                 suggestions.append({
-                    "priority": "high" if count >= 2 else "medium",
+                    "priority": ImportanceLevel.HIGH.value if count >= 2 else ImportanceLevel.MEDIUM.value,
                     "issue": "走位失误",
                     "message": f"{count}次死亡与脱离团队有关，请紧跟指挥官标记",
                     "actions": [
@@ -256,9 +257,9 @@ class DeathAttributionAnalyzer:
                         "撤退时跟随团队移动，不要单独行动",
                     ],
                 })
-            elif reason == "buff_gap":
+            elif reason == DeathCategory.BUFF_GAP.value:
                 suggestions.append({
-                    "priority": "high",
+                    "priority": ImportanceLevel.HIGH.value,
                     "issue": "Buff断档",
                     "message": f"{count}次死亡时保护/稳固覆盖不足",
                     "actions": [
@@ -267,9 +268,9 @@ class DeathAttributionAnalyzer:
                         "在敌方爆发前预读保护",
                     ],
                 })
-            elif reason == "focused_fire":
+            elif reason == DeathCategory.FOCUSED_FIRE.value:
                 suggestions.append({
-                    "priority": "medium",
+                    "priority": ImportanceLevel.MEDIUM.value,
                     "issue": "被集火",
                     "message": f"{count}次被敌方集中火力击杀",
                     "actions": [
@@ -278,9 +279,9 @@ class DeathAttributionAnalyzer:
                         "注意敌方高伤害技能的预警",
                     ],
                 })
-            elif reason == "cooldown_mismatch":
+            elif reason == DeathCategory.COOLDOWN_MISMATCH.value:
                 suggestions.append({
-                    "priority": "medium",
+                    "priority": ImportanceLevel.MEDIUM.value,
                     "issue": "生存技能未使用",
                     "message": f"{count}次死亡时未有效使用翻滚/解控",
                     "actions": [
@@ -289,9 +290,9 @@ class DeathAttributionAnalyzer:
                         "不要吝啬生存技能，活着才有输出",
                     ],
                 })
-            elif reason == "cc_chain":
+            elif reason == DeathCategory.CC_CHAIN.value:
                 suggestions.append({
-                    "priority": "high",
+                    "priority": ImportanceLevel.HIGH.value,
                     "issue": "被控制链",
                     "message": f"{count}次被连续控制至死",
                     "actions": [

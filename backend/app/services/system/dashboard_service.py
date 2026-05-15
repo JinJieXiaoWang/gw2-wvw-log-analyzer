@@ -510,14 +510,10 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     """获取 AI 评分分布"""
     start_date, end_date = _get_date_range(days)
 
-    # 按分数段统计（使用 GRADE_THRESHOLDS 常量）
-    ranges = [
-        (0, 60, "D"),
-        (60, 70, "C"),
-        (70, 80, "B"),
-        (80, 90, "A"),
-        (90, 100, "S"),
-    ]
+    # 按分数段统计（使用 GRADE_THRESHOLDS 常量，与 get_grade() 逻辑一致）
+    # GRADE_THRESHOLDS: [(90, S), (80, A), (70, B), (60, C), (40, D)]
+    # 分段: F: <40, D: 40-59, C: 60-69, B: 70-79, A: 80-89, S: 90-99, S+: 100+
+    from app.constants.dict_values import GRADE_THRESHOLDS
 
     query = (
         db.query(FightStats.ai_score)
@@ -530,18 +526,22 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     total = len(scores)
 
     items = []
-    for low, high, grade in ranges:
-        count = sum(1 for s in scores if low <= s < high)
-        items.append({
-            "grade": grade,
-            "range": f"{low}-{high}",
+    # 从最低等级开始构建分段（GRADE_THRESHOLDS 是从高到低排序的，需要反向）
+    prev_threshold = 0
+    for threshold, grade in reversed(GRADE_THRESHOLDS):
+        count = sum(1 for s in scores if prev_threshold <= s < threshold)
+        items.insert(0, {
+            "grade": grade.value.upper(),
+            "range": f"{prev_threshold}-{threshold - 1}" if prev_threshold > 0 else f"<{threshold}",
             "count": count,
             "percentage": round((count / max(total, 1)) * 100, 2),
         })
+        prev_threshold = threshold
 
-    # 处理 >= 100 的特殊情况
+    # 处理 >= 100 的 S+ 情况
     count_s_plus = sum(1 for s in scores if s >= 100)
     if count_s_plus > 0:
+        items[-1]["range"] = "90+"
         items[-1]["count"] += count_s_plus
         items[-1]["percentage"] = round((items[-1]["count"] / max(total, 1)) * 100, 2)
 

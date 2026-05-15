@@ -51,13 +51,10 @@ export function formatDuration(seconds: number | string | undefined): string {
   return `${minutes}分钟`
 }
 
+import { getProfessionName } from '@/services/professionService'
+
 export function getProfessionLabel(profession: string): string {
-  const map: Record<string, string> = {
-    warrior: '战士', guardian: '守护者', thief: '潜行者', ranger: '游侠',
-    engineer: '工程师', elementalist: '元素使', necromancer: '死灵法师',
-    mesmer: '幻术师', reaper: '唤灵师', revenant: '魂武者',
-  }
-  return map[profession] || profession
+  return getProfessionName(profession)
 }
 
 export function getScoreColor(score: number): string {

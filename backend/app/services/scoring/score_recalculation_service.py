@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Dict, Optional
 
 from app.config.database import SessionLocal
+from app.constants.dict_values import ScoringRuleStatus
 from app.models.scoring.scoring_rule_version import ScoringRuleVersion
 from app.services.scoring.score_query_service import _clear_rules_cache
 from app.services.scoring.scoring_rule_service import ScoringRuleService
@@ -76,18 +77,18 @@ class ScoreRecalculationService:
             # 并发控制：检查是否已有任务在执行中
             running = (
                 db.query(ScoringRuleVersion)
-                .filter(ScoringRuleVersion.status == "processing")
+                .filter(ScoringRuleVersion.status == ScoringRuleStatus.PROCESSING.value)
                 .first()
             )
             if running and running.id != version_id:
-                version.status = "failed"
+                version.status = ScoringRuleStatus.FAILED.value
                 db.commit()
                 logger.warning(
                     f"重算任务被拒? 已有任务在执行中 (version_id={running.id})"
                 )
                 return
 
-            version.status = "processing"
+            version.status = ScoringRuleStatus.PROCESSING.value
             db.commit()
 
             # 统计总记录数
@@ -117,7 +118,7 @@ class ScoreRecalculationService:
             db.commit()
 
             if total == 0:
-                version.status = "completed"
+                version.status = ScoringRuleStatus.COMPLETED.value
                 version.completed_at = datetime.now()
                 db.commit()
                 logger.info(f"重算任务完成: version_id={version_id}, 无匹配记录")
@@ -151,7 +152,7 @@ class ScoreRecalculationService:
         except Exception as e:
             if version is not None:
                 try:
-                    version.status = "failed"
+                    version.status = ScoringRuleStatus.FAILED.value
                     db.commit()
                 except Exception:
                     pass
@@ -202,7 +203,7 @@ class ScoreRecalculationService:
         """
         return (
             db.query(ScoringRuleVersion)
-            .filter(ScoringRuleVersion.status == "processing")
+            .filter(ScoringRuleVersion.status == ScoringRuleStatus.PROCESSING.value)
             .first()
             is not None
         )

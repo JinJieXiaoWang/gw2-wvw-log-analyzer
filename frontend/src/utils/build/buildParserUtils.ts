@@ -13,7 +13,12 @@ export const getProfessionColor = (profession: string): string => {
 }
 
 export const getProfessionInitial = (profession: string): string => {
-  return profession.charAt(0).toUpperCase()
+  const map: Record<string, string> = {
+    Elementalist: '元', Engineer: '工', Guardian: '守', Mesmer: '幻',
+    Necromancer: '死', Ranger: '游', Revenant: '魂', Thief: '潜',
+    Warrior: '战',
+  }
+  return map[profession] || profession.charAt(0).toUpperCase()
 }
 
 export const cleanIconUrl = (iconUrl: string): string => {

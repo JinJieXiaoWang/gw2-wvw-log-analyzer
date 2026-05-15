@@ -42,3 +42,6 @@ dist/
 frontend/dist.zip
 
 backend.zip
+
+# 种子数据构建产物（自动生成）
+backend/app/data/_generated/

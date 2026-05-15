@@ -14,7 +14,7 @@ from app.utils.logger import logger
 from sqlalchemy.orm import Session
 
 from app.config.json_loader import load_json_config
-from app.constants.dict_values import RoleType
+from app.constants.dict_values import RoleType, ScoringRuleStatus
 from app.utils.db.dict_utils import get_dict_label
 
 
@@ -306,7 +306,7 @@ class ScoringRuleService:
         new_version = ScoringRuleVersion(
             version=current + 1,
             description=description or "规则变更",
-            status="pending",
+            status=ScoringRuleStatus.PENDING.value,
         )
         self.db.add(new_version)
         self.db.commit()
@@ -337,7 +337,7 @@ class ScoringRuleService:
         version = ScoringRuleVersion(
             version=0,
             description="系统初始版本",
-            status="completed",
+            status=ScoringRuleStatus.COMPLETED.value,
         )
         self.db.add(version)
         self.db.commit()

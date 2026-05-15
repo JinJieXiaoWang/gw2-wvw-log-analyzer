@@ -1,0 +1,30 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "target_table": "gw_role_type",
+    "min_app_version": "1.0.0"
+  },
+  "data": [
+    {
+      "role_key": "dps",
+      "role_name": "输出",
+      "color": "#FF4D6A",
+      "icon": "pi pi-bolt",
+      "sort_order": 1
+    },
+    {
+      "role_key": "support",
+      "role_name": "辅助",
+      "color": "#00D68F",
+      "icon": "pi pi-heart",
+      "sort_order": 2
+    },
+    {
+      "role_key": "tank",
+      "role_name": "坦克",
+      "color": "#165DFF",
+      "icon": "pi pi-shield",
+      "sort_order": 3
+    }
+  ]
+}
