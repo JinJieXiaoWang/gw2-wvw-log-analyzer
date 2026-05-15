@@ -18,7 +18,7 @@ from app.config.database import (
     switch_database,
     test_connection,
 )
-from app.config.database_settings import DatabaseType, db_settings
+from app.config.database.database_settings import DatabaseType, db_settings
 from app.utils.logger import logger
 
 
@@ -168,7 +168,7 @@ class DatabaseManager:
 # 注意：这是一个模板，真实的迁移需要使用Alembic等工具
 
 from app.config.database import SessionLocal
-from app.config.database_settings import db_settings
+from app.config.database.database_settings import db_settings
 from app.utils.logger import logger
 
 def run_migration():

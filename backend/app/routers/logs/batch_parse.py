@@ -64,7 +64,7 @@ async def create_batch_parse_task(
 
         # 提交任务到后台队列（带overwrite参数）
         # db_url 参数已废弃，worker 内部直接使用 SessionLocal()
-        from app.config.database_settings import db_settings
+        from app.config.database.database_settings import db_settings
 
         background_tasks.add_task(
             batch_parse_service.submit_batch_task,
