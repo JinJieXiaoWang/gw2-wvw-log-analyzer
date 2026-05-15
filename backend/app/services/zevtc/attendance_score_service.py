@@ -10,6 +10,7 @@ from sqlalchemy.orm import Session
 
 from app.config.json_loader import load_json_config
 from app.models.log.fight import Fight
+from app.constants.dict_values import RoleType
 from app.models.log.fight_stats import FightStats
 
 
@@ -56,7 +57,7 @@ def get_account_score_breakdown(
 
     # 确定角色类型
     game_data = GameDataService()
-    role_type = game_data.get_default_role(most_used_profession) if most_used_profession else "dps"
+    role_type = game_data.get_default_role(most_used_profession) if most_used_profession else RoleType.DPS
 
     # 获取评分规则服务
     rule_service = ScoringRuleService(db)
@@ -158,7 +159,7 @@ def _get_profession_and_role_type(
     role_type = (
         game_data.get_default_role(most_used_profession)
         if most_used_profession
-        else "dps"
+        else RoleType.DPS
     )
     return most_used_profession, role_type
 
@@ -247,14 +248,14 @@ def _apply_role_type_adjustments(
     abilities: Dict[str, float], role_type: str
 ) -> None:
     """根据角色类型调整各维度权重（原地修改）"""
-    if role_type == "support" or role_type == "healing":
+    if role_type == RoleType.SUPPORT or role_type == RoleType.HEALING:
         # 辅助/治疗职业：提升治疗和辅助权重
         abilities["healing"] = min(100, abilities["healing"] + 15)
         abilities["support"] = min(100, abilities["support"] + 10)
-    elif role_type == "tank":
+    elif role_type == RoleType.TANK:
         # 坦克职业：提升生存权重
         abilities["survival"] = min(100, abilities["survival"] + 15)
-    elif role_type == "condition":
+    elif role_type == RoleType.CONDITION:
         # 症状输出职业：输出评分调整
         abilities["damage"] = min(100, abilities["damage"] + 5)
     # dps 保持不变

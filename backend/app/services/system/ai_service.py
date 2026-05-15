@@ -26,6 +26,7 @@ from app.core.ai_quality_fallback import (
     get_fallback_handler,
 )
 from app.models.system.ai_report import AIReport
+from app.constants.dict_values import RoleType
 from app.utils.logger import logger
 
 # ==================== 基础报告管理 ====================
@@ -329,7 +330,7 @@ def _prepare_build_analysis_context(db: Session, build_id: int) -> Optional[Dict
             "title": build.title or "Unknown",
             "profession": build.profession or "Unknown",
             "elite_spec": build.elite_spec or "",
-            "role": build.role or "dps",
+            "role": build.role or RoleType.DPS,
             "weapons": build.weapons or [],
             "rune": build.rune or "",
             "food": build.food or "",
@@ -626,9 +627,9 @@ def _generate_rule_based_build_analysis(
     profession = build["profession"].lower()
     role = build["role"].lower()
 
-    if profession in ["guardian", "firebrand"] and role == "support":
+    if profession in ["guardian", "firebrand"] and role == RoleType.SUPPORT:
         suggestions.append("守护者作为辅助时注意维持增益覆盖")
-    elif profession in ["warrior", "berserker"] and role == "dps":
+    elif profession in ["warrior", "berserker"] and role == RoleType.DPS:
         suggestions.append("战士输出时注意保持武器强度增益")
 
     wvw_score = 60 + len(strengths) * 5 - len(weaknesses) * 5

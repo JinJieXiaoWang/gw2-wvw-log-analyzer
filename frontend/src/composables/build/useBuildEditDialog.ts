@@ -6,6 +6,7 @@ import { dictionaryService } from '@/services/system/dictionaryService'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import type { BuildCreateDto, BuildEntry } from '@/types/buildLibrary'
 import { useToast } from 'primevue/usetoast'
+import { RoleType } from '@/constants/dictValues'
 import { computed, onMounted, ref, watch } from 'vue'
 
 export type SubRoleType = 'boon' | 'heal' | 'tank' | 'cc'

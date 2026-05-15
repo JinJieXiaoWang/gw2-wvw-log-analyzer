@@ -68,6 +68,7 @@
 
 import { computed } from 'vue'
 import MetricCard from '@/components/common/feedback/MetricCard.vue'
+import { ParseStatus } from '@/constants/dictValues'
 
 // Props
 const props = defineProps<{
@@ -80,9 +81,9 @@ const props = defineProps<{
 
 // 计算属性
 const totalCount = computed(() => props.totalRecords ?? props.logs.length)
-const completedCount = computed(() => props.logs.filter(l => l.status === 'completed').length)
-const parsingCount = computed(() => props.logs.filter(l => l.status === 'parsing').length)
-const pendingCount = computed(() => props.logs.filter(l => l.status === 'pending').length)
+const completedCount = computed(() => props.logs.filter(l => l.status === ParseStatus.COMPLETED).length)
+const parsingCount = computed(() => props.logs.filter(l => l.status === ParseStatus.PARSING).length)
+const pendingCount = computed(() => props.logs.filter(l => l.status === ParseStatus.PENDING).length)
 
 /**
  * 动态计算今日新增日志数量

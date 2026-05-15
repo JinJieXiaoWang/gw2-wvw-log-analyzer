@@ -8,6 +8,7 @@
 #       不直接存储任何解析后的业务数据（如服务器、地图、战斗统计等），
 #       这些数据由 evtc_header / fights / ei_* 等子表独立维护。
 
+from app.constants.dict_values import ParseStatus
 from sqlalchemy import (
     CHAR,
     Column,
@@ -57,7 +58,7 @@ class Log(Base):
     parse_status = Column(
         String(20),
         nullable=False,
-        default="pending",
+        default=ParseStatus.PENDING,
         comment="解析状态",
     )
     parse_time_ms = Column(Integer, comment="解析耗时(毫秒)")

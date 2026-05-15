@@ -1,3 +1,4 @@
+import { ParseStatus } from '@/constants/dictValues'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { logsService } from '@/services'
@@ -126,7 +127,7 @@ export function useLogUpload(options: UseLogUploadOptions = {}) {
       if (checkResult.success && checkResult.data?.exists) {
         const { parse_status, has_ei_json_cache } = checkResult.data
         // 如果已有缓存的 EI JSON 且解析已完成，跳过上传
-        if (has_ei_json_cache && parse_status === 'completed') {
+        if (has_ei_json_cache && parse_status === ParseStatus.COMPLETED) {
           return {
             success: true,
             message: '文件已存在且已解析（缓存命中），跳过上传',

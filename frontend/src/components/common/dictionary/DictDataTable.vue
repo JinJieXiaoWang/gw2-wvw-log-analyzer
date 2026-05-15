@@ -92,9 +92,9 @@
         style="width: 80px"
       >
         <template #body="{ data }">
-          <BaseTag
-            :value="data.status === 0 ? '启用' : '禁用'"
-            :severity="data.status === 0 ? 'success' : 'danger'"
+          <DictTag
+            dict-type="sys_normal_disable"
+            :value="data.status"
           />
         </template>
       </Column>
@@ -154,7 +154,7 @@
 
 <script setup lang="ts">
 import EmptyState from '@/components/common/ui/display/EmptyState.vue'
-import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { DictData, DictType } from '@/services/system/dictionaryService'
 import Column from 'primevue/column'

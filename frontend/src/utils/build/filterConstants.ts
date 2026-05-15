@@ -1,3 +1,4 @@
+import { RoleType } from '@/constants/dictValues'
 import type { RoleFilter, SubRoleFilter } from '@/types/buildLibrary'
 
 export const professionData: Record<string, { label: string; initial: string; color: string }> = {
@@ -13,8 +14,8 @@ export const professionData: Record<string, { label: string; initial: string; co
 
 export const roleOptions = [
   { label: '全部', value: 'all' as RoleFilter },
-  { label: '输出', value: 'dps' as RoleFilter },
-  { label: '辅助', value: 'support' as RoleFilter },
+  { label: '输出', value: RoleType.DPS as RoleFilter },
+  { label: '辅助', value: RoleType.SUPPORT as RoleFilter },
 ]
 
 export const subRoleOptions = [

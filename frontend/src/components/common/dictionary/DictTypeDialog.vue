@@ -34,11 +34,9 @@
         />
       </FormField>
       <FormField label="状态">
-        <BaseSelect
+        <DictSelect
           v-model="localForm.status"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
+          dict-type="sys_normal_disable"
           class="w-full"
         />
       </FormField>
@@ -60,7 +58,7 @@ import InputText from 'primevue/inputtext'
 import InputNumber from 'primevue/inputnumber'
 import Textarea from 'primevue/textarea'
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
-import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+
 import FormField from '@/components/common/ui/input/FormField.vue'
 import type { DictType } from '@/services/system/dictionaryService'
 
@@ -77,7 +75,7 @@ const props = defineProps<{
   editingType: DictType | null
   saving: boolean
   form: TypeForm
-  statusOptions: { label: string; value: number | null }[]
+
 }>()
 
 const emit = defineEmits<{

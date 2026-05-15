@@ -17,6 +17,7 @@ from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.models.log.log import Log
+from app.constants.dict_values import GRADE_THRESHOLDS, ParseStatus
 from app.utils.logger import logger
 
 # =====================================================================
@@ -88,7 +89,7 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     # 解析日志数
     parsed_logs = (
         db.query(func.count(Log.id))
-        .filter(Log.parse_status == "completed")
+        .filter(Log.parse_status == ParseStatus.COMPLETED)
     )
     if start_date:
         parsed_logs = parsed_logs.filter(Log.upload_time >= start_date)
@@ -509,7 +510,7 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     """获取 AI 评分分布"""
     start_date, end_date = _get_date_range(days)
 
-    # 按分数段统计
+    # 按分数段统计（使用 GRADE_THRESHOLDS 常量）
     ranges = [
         (0, 60, "D"),
         (60, 70, "C"),

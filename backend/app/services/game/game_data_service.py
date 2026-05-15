@@ -25,6 +25,7 @@ from app.models.game.profession import (
 
 # 导入 ProfessionService 进行数据库查询
 from app.services.game.profession_service import ProfessionService
+from app.constants.dict_values import RoleType
 from app.utils.logger import logger
 
 # =============================================================================
@@ -588,13 +589,13 @@ class GameDataService:
         # 功能：获取职业默认定位
         spec = self.get_elite_spec(profession_name)
         if spec:
-            return spec.get("default_role", "dps")
+            return spec.get("default_role", RoleType.DPS)
 
         prof = self.get_profession(profession_name)
         if prof:
-            return prof.get("default_role", "dps")
+            return prof.get("default_role", RoleType.DPS)
 
-        return "dps"
+        return RoleType.DPS
 
     def get_scoring_config(self, profession_name: str) -> Optional[Dict[str, int]]:
         # 功能：获取职业评分配置

@@ -15,6 +15,8 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { authStore } from './composables/system/usePermission'
 import { GameThemePreset } from './config/themePreset'
+import DictSelect from './components/common/dict/DictSelect.vue'
+import DictTag from './components/common/dict/DictTag.vue'
 import { permissionDirective } from './directive/permission'
 import router from './router'
 import { ThemeService } from './services/system/themeService'
@@ -47,6 +49,12 @@ app.use(router)
 
 app.directive('permission', permissionDirective)
 app.directive('tooltip', Tooltip)
+
+// =============================================================================
+// 全局字典组件注册
+// =============================================================================
+app.component('DictTag', DictTag)
+app.component('DictSelect', DictSelect)
 
 // =============================================================================
 // 认证事件处理

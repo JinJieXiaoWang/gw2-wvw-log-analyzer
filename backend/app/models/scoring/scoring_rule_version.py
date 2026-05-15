@@ -3,6 +3,7 @@
 # 说明：记录评分规则的每次变更版本，支持历史追溯和重算任务跟踪
 
 from app.config.database import Base
+from app.constants.dict_values import ScoringRuleStatus
 from sqlalchemy import Column, DateTime, Integer, String, func
 
 
@@ -30,7 +31,7 @@ class ScoringRuleVersion(Base):
     )
     status = Column(
         String(20),
-        default="pending",
+        default=ScoringRuleStatus.PENDING,
         nullable=False,
         comment="状? pending-待处? processing-执行? completed-已完成 failed-失败",
     )

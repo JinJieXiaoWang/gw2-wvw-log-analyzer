@@ -40,6 +40,7 @@ from app.services.zevtc.fight_data_extractor import (
     extract_enemy_composition,
     resolve_friendly_team_id,
 )
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 # 无效账号名称统计（用于日志记录）
@@ -239,7 +240,7 @@ class LogImportService:
             # =============================================
             log = self.db.query(Log).filter(Log.id == log_id).first()
             if log:
-                log.parse_status = "completed"
+                log.parse_status = ParseStatus.COMPLETED
                 log.parsed_at = datetime.now(timezone.utc)
                 log.parse_time_ms = ei_json.get("durationMS", 0)
                 log.parser = "dps_report_ei_v1"

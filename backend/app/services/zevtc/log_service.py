@@ -11,6 +11,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
+from app.constants.dict_values import ParseStatus
 from app.models.log.batch_parse import BatchParseTaskItem
 from app.models.log.ei_report import EiReport
 from app.models.log.fight import Fight
@@ -89,7 +90,7 @@ def update_log(db: Session, log_id: int, log_update: LogUpdate) -> Optional[Log]
         return None
 
     update_data = log_update.model_dump(exclude_unset=True)
-    if "parse_status" in update_data and update_data["parse_status"] == "completed":
+    if "parse_status" in update_data and update_data["parse_status"] == ParseStatus.COMPLETED:
         log.parsed_at = datetime.now()
 
     for field, value in update_data.items():
@@ -211,7 +212,7 @@ def update_parse_status(
     log.parse_status = status
     if error_message is not None:
         log.error_message = error_message
-    if status == "parsing":
+    if status == ParseStatus.PARSING:
         log.parse_started_at = datetime.now(timezone.utc)
     db.commit()
     db.refresh(log)
@@ -277,7 +278,7 @@ async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True
                 result = import_service.import_log(log_id, log.file_path)
                 
                 if result.get("success", False):
-                    update_parse_status(db, log_id, "completed")
+                    update_parse_status(db, log_id, ParseStatus.COMPLETED)
                     logger.info(f"后台解析完成: {log.filename}")
                     
                     # 解析成功后自动执行入库评分
@@ -298,7 +299,7 @@ async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True
                         )
                 else:
                     error_msg = result.get("error", "未知错误")
-                    update_parse_status(db, log_id, "failed", error_msg)
+                    update_parse_status(db, log_id, ParseStatus.FAILED, error_msg)
                     logger.error(f"后台解析失败: {log.filename}, 错误: {error_msg}")
             else:
                 logger.info(f"跳过数据库保存: {log.filename}")

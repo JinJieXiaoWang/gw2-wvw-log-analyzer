@@ -40,11 +40,9 @@
         />
       </FormField>
       <FormField label="状态">
-        <BaseSelect
+        <DictSelect
           v-model="localForm.status"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
+          dict-type="sys_normal_disable"
           class="w-full"
         />
       </FormField>
@@ -62,7 +60,7 @@
 
 <script setup lang="ts">
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
-import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+
 import ColorPickerInput from '@/components/common/ui/input/ColorPickerInput.vue'
 import FormField from '@/components/common/ui/input/FormField.vue'
 import type { DictData } from '@/services/system/dictionaryService'
@@ -89,7 +87,7 @@ const form = defineModel<DataForm>('form', {
 const props = defineProps<{
   editingData: DictData | null
   saving: boolean
-  statusOptions: { label: string; value: number | null }[]
+
 }>()
 
 const emit = defineEmits<{

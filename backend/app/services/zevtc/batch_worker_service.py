@@ -21,6 +21,7 @@ from app.services.zevtc.batch_parse_service import (
     active_workers,
     active_workers_lock,
 )
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 # 单日志解析超时（秒），防止损坏文件导致解析永久挂?
@@ -85,7 +86,7 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         if not log:
             raise ValueError(f"日志不存在 {log_id}")
 
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
 
         importer = LogImportService(db)
         result = importer.import_log(log_id, log.file_path)
@@ -125,7 +126,7 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     try:
         logger.info(f"[batch] 子进程解析开始，任务ID: {task_id}，日志ID: {log_id}")
         BatchParseService.update_task_item_status(db, task_id, log_id, "processing")
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
         db.commit()
     finally:
         db.close()
@@ -249,7 +250,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
             error_code = "invalid_state"
 
         if error_code in ("parse_error", "invalid_state"):
-            log_service.update_parse_status(db, log_id, "failed", error_str)
+            log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
             BatchParseService.update_task_item_status(
                 db, task_id, log_id, "failed", error_str, error_code
             )
@@ -259,7 +260,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
                 db, task_id, log_id, error_str, error_code, retry_after
             )
             if not should_retry:
-                log_service.update_parse_status(db, log_id, "failed", error_str)
+                log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
                 db.commit()
     except Exception as inner_e:
         logger.error(f"[batch] 更新失败状态也失败? {inner_e}")

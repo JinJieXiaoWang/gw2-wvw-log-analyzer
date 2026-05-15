@@ -66,9 +66,9 @@
           </div>
           <div class="flex items-center justify-between text-sm">
             <span class="text-neutral-text-secondary">状态</span>
-            <Tag
-              :value="spec.is_active ? '启用' : '禁用'"
-              :severity="spec.is_active ? 'success' : 'danger'"
+            <DictTag
+              dict-type="sys_normal_disable"
+              :value="spec.is_active ? 0 : 1"
               class="text-xs"
             />
           </div>

@@ -14,6 +14,7 @@ from app.models.game.profession import (
     GwProfession,
     GwRoleType,
 )
+from app.constants.dict_values import RoleType
 from app.utils.logger import logger
 
 
@@ -123,7 +124,7 @@ class ProfessionService:
     def get_profession_default_role(self, profession_key: str) -> str:
         """获取职业默认角色定位"""
         profession = self.get_profession(profession_key)
-        return profession.get("default_role", "dps") if profession else "dps"
+        return profession.get("default_role", RoleType.DPS) if profession else RoleType.DPS
 
     # ==================== 精英特长操作 ====================
 
@@ -160,7 +161,7 @@ class ProfessionService:
     def get_spec_default_role(self, spec_key: str) -> str:
         """获取精英特长默认角色定位"""
         spec = self.get_spec_by_key(spec_key)
-        return spec.get("default_role", "dps") if spec else "dps"
+        return spec.get("default_role", RoleType.DPS) if spec else RoleType.DPS
 
     def get_spec_color(self, spec_key: str) -> Optional[str]:
         """获取精英特长颜色"""
@@ -205,7 +206,7 @@ class ProfessionService:
         professions = self.get_all_professions(include_specs=True)
 
         for prof in professions:
-            role = prof.get("default_role", "dps")
+            role = prof.get("default_role", RoleType.DPS)
             if role not in result:
                 result[role] = []
 

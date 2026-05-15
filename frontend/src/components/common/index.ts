@@ -1,4 +1,6 @@
 export { default as BaseDialog } from './ui/feedback/BaseDialog.vue'
+export { default as DictSelect } from './dict/DictSelect.vue'
+export { default as DictTag } from './dict/DictTag.vue'
 export { default as BaseState } from './ui/display/BaseState.vue'
 export { default as ColorPickerInput } from './ui/input/ColorPickerInput.vue'
 export { default as DataCard } from './feedback/DataCard.vue'

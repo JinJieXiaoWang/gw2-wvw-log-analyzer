@@ -105,6 +105,7 @@
  * 功能：展示输出/辅助/承伤三种角色的评分规则配置
  */
 
+import { RoleType } from '@/constants/dictValues'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Dialog from 'primevue/dialog'
@@ -142,7 +143,11 @@ const localActiveTab = computed({
 })
 
 const roleLabel = computed(() => {
-  const map: Record<string, string> = { dps: '输出', support: '辅助', tank: '承伤' }
+  const map: Record<string, string> = {
+    [RoleType.DPS]: '输出',
+    [RoleType.SUPPORT]: '辅助',
+    [RoleType.TANK]: '承伤'
+  }
   return map[props.roleType] || '输出'
 })
 

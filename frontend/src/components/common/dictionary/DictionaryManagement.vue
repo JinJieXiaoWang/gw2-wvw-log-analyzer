@@ -41,7 +41,6 @@
       v-model:form="dataForm"
       :editing-data="editingData"
       :saving="saving"
-      :status-options="statusOptions"
       @save="saveData"
     />
     <DictTypeDialog
@@ -49,7 +48,6 @@
       v-model:form="typeForm"
       :editing-type="editingType"
       :saving="saving"
-      :status-options="statusOptions"
       @save="saveType"
     />
     <InitConfirmDialog

@@ -20,13 +20,13 @@
             {{ build.title }}
           </h2>
           <p class="text-sm text-surface-400 mt-1">
-            {{ build.role === 'dps' ? '输出' : '辅助' }} ·
+            <DictTag dict-type="role" :value="build.role" variant="text" /> ·
             {{ build.eliteSpec ? getProfessionName(build.eliteSpec) : '核心职业' }}
           </p>
           <div class="flex flex-wrap gap-2 mt-3">
-            <Tag
-              :value="build.role === 'dps' ? '输出' : '辅助'"
-              :severity="build.role === 'dps' ? 'danger' : 'success'"
+            <DictTag
+              dict-type="role"
+              :value="build.role"
               class="text-sm font-semibold"
             />
             <Tag
@@ -236,7 +236,7 @@ import Button from 'primevue/button'
 import Divider from 'primevue/divider'
 import Drawer from 'primevue/drawer'
 import Panel from 'primevue/panel'
-import Tag from 'primevue/tag'
+
 import CommanderCheatsheet from './CommanderCheatsheet.vue'
 import GearOverviewCard from './GearOverviewCard.vue'
 

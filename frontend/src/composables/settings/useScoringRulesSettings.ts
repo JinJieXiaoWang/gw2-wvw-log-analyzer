@@ -3,6 +3,7 @@
  * 基于统一版本，关闭可选功能，并包装差异接口以完全保持原有行为
  */
 
+import { RoleType } from '@/constants/dictValues'
 import { computed } from 'vue'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
@@ -11,9 +12,9 @@ import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { configManager } from '@/services/core/configManager'
 
 export const ROLE_TYPES = [
-  { type: 'dps', label: '输出', description: '伤害输出职责', icon: 'pi pi-bolt' },
-  { type: 'support', label: '辅助', description: '治疗增益职责', icon: 'pi pi-heart' },
-  { type: 'tank', label: '承伤', description: '吸收伤害职责', icon: 'pi pi-shield' }
+  { type: RoleType.DPS, label: '输出', description: '伤害输出职责', icon: 'pi pi-bolt' },
+  { type: RoleType.SUPPORT, label: '辅助', description: '治疗增益职责', icon: 'pi pi-heart' },
+  { type: RoleType.TANK, label: '承伤', description: '吸收伤害职责', icon: 'pi pi-shield' }
 ]
 
 export const GRADE_LEVELS = [
@@ -36,7 +37,7 @@ export function useScoringRulesSettings() {
   })
 
   // 保持原有默认角色
-  if (!base.activeRole.value) base.activeRole.value = 'dps'
+  if (!base.activeRole.value) base.activeRole.value = RoleType.DPS
 
   // ========== 包装差异计算属性 ==========
   const weightStatus = computed(() => {
@@ -48,9 +49,9 @@ export function useScoringRulesSettings() {
 
   function roleIconBgClass(role: string) {
     const map: Record<string, string> = {
-      dps: 'bg-gradient-to-br from-error to-orange-500',
-      support: 'bg-gradient-to-br from-success to-info',
-      tank: 'bg-gradient-to-br from-purple-500 to-primary'
+      [RoleType.DPS]: 'bg-gradient-to-br from-error to-orange-500',
+      [RoleType.SUPPORT]: 'bg-gradient-to-br from-success to-info',
+      [RoleType.TANK]: 'bg-gradient-to-br from-purple-500 to-primary'
     }
     return map[role] || 'bg-gradient-to-br from-primary to-secondary'
   }

@@ -17,6 +17,7 @@ from app.services.system.storage_service import (
     FileCleanupService,
     StorageMonitorService,
 )
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 
@@ -160,7 +161,7 @@ async def scheduled_reset_stuck_parsing_logs():
             stuck_logs = (
                 db.query(Log)
                 .filter(
-                    Log.parse_status == "parsing",
+                    Log.parse_status == ParseStatus.PARSING,
                     Log.parse_started_at.isnot(None),
                     Log.parse_started_at <= stuck_threshold,
                 )
@@ -176,7 +177,7 @@ async def scheduled_reset_stuck_parsing_logs():
                 log_service.update_parse_status(
                     db,
                     log.id,
-                    "failed",
+                    ParseStatus.FAILED,
                     "解析任务超时或中断（超过30分钟），已由定时器自动重置",
                 )
                 reset_count += 1

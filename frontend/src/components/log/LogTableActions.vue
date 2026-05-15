@@ -24,7 +24,7 @@
       @click="$emit('view', data)"
     />
     <BaseButton
-      v-if="data.status === 'pending' || data.status === 'failed'"
+      v-if="data.status === ParseStatus.PENDING || data.status === ParseStatus.FAILED"
       v-tooltip.top="'重新解析'"
       icon="pi pi-refresh"
       size="small"
@@ -46,13 +46,14 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/input/BaseButton.vue';
-import { computed } from 'vue';
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { computed } from 'vue'
+import { ParseStatus } from '@/constants/dictValues'
 
 // 定义日志数据的接口结构
 interface LogData {
   id?: string | number;
-  status: 'pending' | 'failed' | 'success' | 'completed' | string;
+  status: string
   dpsReportPermalink?: string;
   [key: string]: any; // 如果还有其他动态字段，可保留索引签名，或尽量明确列出
 }
@@ -63,7 +64,7 @@ const props = defineProps<{
 }>()
 
 const isParsed = computed(() => {
-  return props.data.status === 'success' || props.data.status === 'completed'
+  return props.data.status === 'success' || props.data.status === ParseStatus.COMPLETED
 })
 
 defineEmits<{

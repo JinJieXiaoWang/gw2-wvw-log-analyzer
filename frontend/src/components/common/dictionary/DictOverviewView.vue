@@ -106,9 +106,9 @@
         >
           <div class="type-info">
             <span class="type-name">{{ type.dict_name }}</span>
-            <BaseTag
-              :value="type.status === 0 ? '启用' : '禁用'"
-              :severity="type.status === 0 ? 'success' : 'danger'"
+            <DictTag
+              dict-type="sys_normal_disable"
+              :value="type.status"
               size="small"
             />
           </div>
@@ -121,7 +121,7 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+
 import type { DictType } from '@/services/system/dictionaryService'
 
 defineProps<{

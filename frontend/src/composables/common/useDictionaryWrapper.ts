@@ -19,7 +19,7 @@ export function useDictionaryWrapper() {
   const isCollapsed = ref(false)
 
   const isAdmin = computed(() => isOperator.value || isSuperAdmin.value)
-  const typeStats = computed(() => ({ total: dictTypes.value.length, enabled: dictTypes.value.filter(t => t.status === 0).length }))
+  const typeStats = computed(() => ({ total: dictTypes.value.length, enabled: dictTypes.value.filter(t => t.status === 0).length, disabled: dictTypes.value.filter(t => t.status === 1).length }))
   const dataStats = computed(() => ({ total: dictTypes.value.length * 5 }))
 
   function toggleSidebar() {

@@ -33,9 +33,9 @@
           <span class="dict-type-code">{{ dictType.dict_type }}</span>
         </div>
         <div class="dict-type-meta">
-          <BaseTag
-            :value="dictType.status === 0 ? '启用' : '禁用'"
-            :severity="dictType.status === 0 ? 'success' : 'danger'"
+          <DictTag
+            dict-type="sys_normal_disable"
+            :value="dictType.status"
             class="status-tag"
           />
         </div>
@@ -50,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+
 import type { DictType } from '@/services/system/dictionaryService'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'

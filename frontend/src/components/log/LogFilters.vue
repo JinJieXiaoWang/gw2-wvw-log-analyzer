@@ -12,11 +12,9 @@
         />
       </div>
       <div class="flex flex-wrap gap-3 items-center">
-        <BaseSelect
+        <DictSelect
           v-model="localFilters.status"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
+          dict-type="parse_status"
           placeholder="选择状态"
           show-clear
           class="w-40"
@@ -42,9 +40,10 @@
  */
 import { ref, computed, watch } from 'vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import DictSelect from '@/components/common/dict/DictSelect.vue'
 import InputText from 'primevue/inputtext'
 import { debounce } from '@/utils/core/helpers'
+import { useDictStore } from '@/store/system/dict'
 
 // Props
 const props = defineProps({
@@ -63,13 +62,9 @@ const emit = defineEmits(['update:filters'])
 // 本地状漼?
 const localFilters = ref({ ...props.filters })
 
-// 筛选选项配置
-const statusOptions = [
-  { label: '已完成', value: 'completed' },
-  { label: '解析中', value: 'parsing' },
-  { label: '待解析', value: 'pending' },
-  { label: '失败', value: 'failed' }
-]
+const dictStore = useDictStore()
+// 预加载解析状态字典
+dictStore.loadDict('parse_status')
 
 // 计算属性
 const hasActiveFilters = computed(() => {

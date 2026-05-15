@@ -19,6 +19,7 @@ from sqlalchemy.orm import Session
 from app.models.auth.account_character import AccountCharacter
 from app.models.auth.member import Member
 from app.models.log.fight import Fight
+from app.constants.dict_values import RoleType
 from app.models.log.fight_stats import FightStats
 
 
@@ -400,9 +401,9 @@ def _calculate_comprehensive_abilities(
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
         except Exception:
             # 如果找不到对应职业规则，使用dps规则
-            rules = ScoringService.get_scoring_rules(db, "dps")
+            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
     else:
-        rules = ScoringService.get_scoring_rules(db, "dps")
+        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
     
     # 查询该账号在统计周期内的所有战斗数据
     query = (
@@ -496,16 +497,16 @@ def _calculate_comprehensive_abilities(
     # 根据角色定位调整权重
     role_type = _determine_role_type(most_used_profession, rules)
     
-    if role_type == "support":
+    if role_type == RoleType.SUPPORT:
         # 辅助角色：治疗和支援权重更高
         healing_score = min(100.0, healing_score * 1.3)
         support_score = min(100.0, support_score * 1.3)
         damage_score = damage_score * 0.8
-    elif role_type == "tank":
+    elif role_type == RoleType.TANK:
         # 坦克角色：生存和支援权重更高
         survival_score = min(100.0, survival_score * 1.3)
         support_score = min(100.0, support_score * 1.1)
-    elif role_type == "condi":
+    elif role_type == RoleType.CONDITION:
         # 症状角色：功能能力权重更高
         utility_score = min(100.0, utility_score * 1.3)
     
@@ -522,7 +523,7 @@ def _calculate_comprehensive_abilities(
 def _determine_role_type(profession: Optional[str], rules: Dict[str, Any]) -> str:
     """根据职业和评分规则确定角色类型"""
     if not profession:
-        return "dps"
+        return RoleType.DPS
     
     prof_lower = profession.lower()
     
@@ -534,13 +535,13 @@ def _determine_role_type(profession: Optional[str], rules: Dict[str, Any]) -> st
     condi_profs = ["scourge", "condition mirage", "soulbeast", "untamed"]
     
     if prof_lower in support_profs or rules.get("healing_weight", 0) > 0.15:
-        return "support"
+        return RoleType.SUPPORT
     elif prof_lower in tank_profs or rules.get("survival_weight", 0) > 0.15:
-        return "tank"
+        return RoleType.TANK
     elif prof_lower in condi_profs:
-        return "condi"
+        return RoleType.CONDITION
     else:
-        return "dps"
+        return RoleType.DPS
 
 
 def get_character_detail(
@@ -771,15 +772,15 @@ def get_account_score_breakdown(
 
     # 获取最常用职业和角色类型
     most_used_profession = _get_most_used_profession(stats_list)
-    role_type = "dps"
+    role_type = RoleType.DPS
     if most_used_profession:
         try:
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
             role_type = _determine_role_type(most_used_profession, rules)
         except Exception:
-            rules = ScoringService.get_scoring_rules(db, "dps")
+            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
     else:
-        rules = ScoringService.get_scoring_rules(db, "dps")
+        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
 
     # 按维度聚合
     total_score_sum = 0.0
@@ -811,10 +812,10 @@ def get_account_score_breakdown(
 
     # 角色类型标签映射
     role_labels = {
-        "dps": "伤害输出",
-        "support": "辅助治疗",
-        "tank": "坦克承伤",
-        "condi": "症状输出",
+        RoleType.DPS: "伤害输出",
+        RoleType.SUPPORT: "辅助治疗",
+        RoleType.TANK: "坦克承伤",
+        RoleType.CONDITION: "症状输出",
     }
 
     return {

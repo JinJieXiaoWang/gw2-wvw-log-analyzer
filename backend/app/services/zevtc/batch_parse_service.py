@@ -26,6 +26,7 @@ from app.config.database import SessionLocal
 from app.core.zevtc.parser import ZevtcParseError
 from app.models.log.batch_parse import BatchParseTask, BatchParseTaskItem
 from app.models.log.log import Log
+from app.constants.dict_values import ParseStatus
 from app.services.zevtc import log_service
 from app.utils.logger import logger
 
@@ -161,7 +162,7 @@ class BatchParseService:
             log = log_service.get_log_by_id(db, log_id)
             if not log:
                 continue
-            if log.parse_status == "parsing":
+            if log.parse_status == ParseStatus.PARSING:
                 skipped_count += 1
                 continue
             valid_log_ids.append(log_id)
@@ -184,7 +185,7 @@ class BatchParseService:
 
         # 立即将所有有效日志标记为解析中，让用户在列表中立即看到"解析中"状态
         for log_id in valid_log_ids:
-            log_service.update_parse_status(db, log_id, "parsing")
+            log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
 
         db.commit()
         db.refresh(task)
@@ -412,7 +413,7 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         if not log:
             raise ValueError(f"日志不存在: {log_id}")
 
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
 
         importer = LogImportService(db)
         result = importer.import_log(log_id, log.file_path)
@@ -468,7 +469,7 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     try:
         logger.info(f"[batch] 子进程解析开始，任务ID: {task_id}，日志ID: {log_id}")
         BatchParseService.update_task_item_status(db, task_id, log_id, "processing")
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
         db.commit()
     finally:
         db.close()
@@ -611,7 +612,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
             error_code = "invalid_state"
 
         if error_code in ("parse_error", "invalid_state"):
-            log_service.update_parse_status(db, log_id, "failed", error_str)
+            log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
             BatchParseService.update_task_item_status(
                 db, task_id, log_id, "failed", error_str, error_code
             )
@@ -621,7 +622,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
                 db, task_id, log_id, error_str, error_code, retry_after
             )
             if not should_retry:
-                log_service.update_parse_status(db, log_id, "failed", error_str)
+                log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
                 db.commit()
     except Exception as inner_e:
         logger.error(f"[batch] 更新失败状态也失败了: {inner_e}")

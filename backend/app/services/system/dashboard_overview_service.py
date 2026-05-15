@@ -12,6 +12,7 @@ from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.models.log.log import Log
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 
@@ -63,7 +64,7 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     total_characters = db.query(func.count(AccountCharacter.id)).scalar() or 0
     parsed_logs = (
         db.query(func.count(Log.id))
-        .filter(Log.parse_status == "completed")
+        .filter(Log.parse_status == ParseStatus.COMPLETED)
     )
     if start_date:
         parsed_logs = parsed_logs.filter(Log.upload_time >= start_date)
