@@ -10,7 +10,6 @@ from sqlalchemy import (
     INTEGER,
     VARCHAR,
     Column,
-    ForeignKey,
     func,
 )
 from sqlalchemy.orm import relationship
@@ -37,7 +36,7 @@ class SysMenu(Base):
     menu_name = Column(VARCHAR(50), nullable=False, comment="菜单名称")
 
     parent_id = Column(
-        INTEGER, ForeignKey("sys_menu.menu_id"), default=0, comment="父菜单ID"
+        INTEGER, default=0, comment="父菜单ID"
     )
 
     order_num = Column(INTEGER, default=0, comment="显示顺序")
