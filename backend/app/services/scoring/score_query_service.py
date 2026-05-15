@@ -24,20 +24,41 @@ _rules_cache: Dict[Tuple[str, Optional[str]], Tuple[Dict[str, float], float]] = 
 from app.utils.db.dict_utils import get_dict_label
 
 
-def _get_default_fallback_rules() -> Dict[str, float]:
-    """从 JSON 配置加载兜底评分规则"""
+def _get_default_fallback_rules(role_type: str = "dps") -> Dict[str, float]:
+    """从 JSON 配置加载兜底评分规则
+    
+    scoring_rules.json 格式:
+    {
+      "dps": [{"dimension": "survival", "weight": 0.4, ...}],
+      "support": [...],
+      ...
+    }
+    """
     data = load_json_config("scoring_rules")
-    if data and "group_roles" in data:
-        # 从 JSON 配置中提取通用权重
-        first_role = next(iter(data["group_roles"].values()), {})
-        rules = {}
-        for key, val in first_role.items():
-            if isinstance(val, (int, float)):
-                rules[key] = float(val)
-        rules.setdefault("min_score_threshold", 0.0)
-        rules.setdefault("max_score_cap", 100.0)
-        return rules
-    return {"min_score_threshold": 0.0, "max_score_cap": 100.0}
+    if not data or not isinstance(data, dict):
+        return {"min_score_threshold": 0.0, "max_score_cap": 100.0}
+    
+    # 查找匹配 role_type 的规则列表
+    rules_list = data.get(role_type)
+    if not rules_list or not isinstance(rules_list, list):
+        # 尝试任意一个角色类型的规则作为兜底
+        for key, val in data.items():
+            if isinstance(val, list) and val:
+                rules_list = val
+                break
+    
+    if not rules_list:
+        return {"min_score_threshold": 0.0, "max_score_cap": 100.0}
+    
+    rules = {}
+    for item in rules_list:
+        if isinstance(item, dict) and "dimension" in item and "weight" in item:
+            weight_key = f"{item['dimension']}_weight"
+            rules[weight_key] = float(item["weight"])
+    
+    rules.setdefault("min_score_threshold", 0.0)
+    rules.setdefault("max_score_cap", 100.0)
+    return rules
 
 
 def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) -> Dict[str, float]:
@@ -56,7 +77,7 @@ def _get_cached_rules(db: Session, role_type: str, profession: Optional[str]) ->
 
     # 如果表为空，使用默认兜底规则（从 JSON 配置加载）
     if not rules or len(rules) <= 2:
-        rules = _get_default_fallback_rules()
+        rules = _get_default_fallback_rules(role_type)
 
     _rules_cache[cache_key] = (rules, now + RULE_CACHE_TTL_SECONDS)
     return rules
@@ -122,7 +143,7 @@ class PlayerScoreService:
         player_role = role_type
 
         if player_role is None and player_profession:
-            player_role = GameDataService().get_default_role(player_profession)
+            player_role = GameDataService(db).get_default_role(player_profession)
         if player_role is None:
             player_role = "dps"
 

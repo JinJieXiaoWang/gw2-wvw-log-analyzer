@@ -56,10 +56,12 @@ class ScoringService:
 
         rules = service.get_rules_for_scoring(role_type, profession)
 
-        # 如果表为空，仅返回阈值配置，记录警告日志
+        # 如果表为空，从 JSON 配置加载兜底规则
         if not rules or len(rules) <= 2:
+            from app.services.scoring.score_query_service import _get_default_fallback_rules
+            rules = _get_default_fallback_rules(role_type)
             logger.warning(
-                f"评分规则表为空或数据不足，请从管理后台配置评分规则 "
+                f"评分规则表为空或数据不足，已使用 JSON 兜底规则 "
                 f"(role_type={role_type}, profession={profession})"
             )
 
@@ -282,7 +284,7 @@ class ScoringService:
             return {"updated_count": 0}
 
         from app.services.game.game_data_service import GameDataService
-        game_data = GameDataService()
+        game_data = GameDataService(db)
 
         # 计算同场最大值
         max_values = {
