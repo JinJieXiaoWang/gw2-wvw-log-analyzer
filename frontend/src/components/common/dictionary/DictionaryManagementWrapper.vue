@@ -3,12 +3,9 @@
     class="dictionary-wrapper"
     :class="{ 'embedded': isEmbedded }"
   >
-    <template v-if="!isEmbedded && viewMode === 'overview'">
+    <template v-if="viewMode === 'overview'">
       <DictOverviewView
-        :dict-types="dictTypes"
-        :type-stats="typeStats"
-        :data-stats="dataStats"
-        :cache-status="cacheStatus"
+        v-bind="overviewProps"
         @enter-management="viewMode = 'management'"
         @quick-reload="handleQuickReload"
       />
@@ -18,7 +15,7 @@
         :is-admin="isAdmin"
         :is-collapsed="isCollapsed"
         :refreshing="refreshing"
-        :show-back="!isEmbedded"
+        :show-back="true"
         @back="viewMode = 'overview'"
         @toggle-sidebar="toggleSidebar"
         @reload-cache="handleReloadCache"
@@ -52,12 +49,12 @@
 <script setup lang="ts">
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 import { useDictionaryWrapper } from '@/composables/common/useDictionaryWrapper'
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import DictionaryManagementCore from './DictionaryManagement.vue'
 import DictManagementHeader from './DictManagementHeader.vue'
 import DictOverviewView from './DictOverviewView.vue'
 
-defineProps<{
+const props = defineProps<{
   isEmbedded?: boolean
 }>()
 
@@ -66,6 +63,14 @@ const {
   cacheStatus, showInitDialog, isCollapsed, isAdmin, typeStats, dataStats,
   toggleSidebar, loadOverviewData, handleQuickReload, handleReloadCache, handleInitData
 } = useDictionaryWrapper()
+
+/** 概览视图 props（用 computed 包裹避免 Volar 类型推断问题） */
+const overviewProps = computed(() => ({
+  dictTypes: dictTypes.value,
+  typeStats: typeStats.value,
+  dataStats: dataStats.value,
+  cacheStatus: cacheStatus.value,
+}))
 
 onMounted(() => { loadOverviewData() })
 </script>

@@ -25,7 +25,22 @@
     "vue/no-reserved-component-names": "off",
     "@typescript-eslint/no-explicit-any": "warn",
     "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
-    "vue/no-unused-vars": "warn"
+    "vue/no-unused-vars": "warn",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "ConditionalExpression[consequent.value='启用'][alternate.value='禁用']",
+        "message": "禁止使用 status === 0 ? '启用' : '禁用' 硬编码，请使用 <DictTag dict-type='sys_normal_disable'> 或 useDictStatus"
+      },
+      {
+        "selector": "BinaryExpression[operator='==='] > Literal[value='completed'], BinaryExpression[operator='==='] > Literal[value='pending'], BinaryExpression[operator='==='] > Literal[value='parsing'], BinaryExpression[operator='==='] > Literal[value='failed']",
+        "message": "禁止直接比较 parse_status 字符串，请使用 ParseStatus 常量"
+      },
+      {
+        "selector": "BinaryExpression[operator='==='] > Literal[value='dps'], BinaryExpression[operator='==='] > Literal[value='support'], BinaryExpression[operator='==='] > Literal[value='tank']",
+        "message": "禁止直接比较 role 字符串，请使用 RoleType 常量"
+      }
+    ]
   },
   "ignorePatterns": ["node_modules", "dist", "*.min.js"]
 }

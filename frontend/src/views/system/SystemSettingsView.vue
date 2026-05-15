@@ -61,7 +61,7 @@
             :key="'dictionary'"
             class="dictionary-embedded-container"
           >
-            <DictOverviewView :is-embedded="true" />
+            <DictionaryManagementWrapper :is-embedded="true" />
           </div>
           <SystemParamsSettings
             v-else-if="activeSection === 'system-params'"
@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import DictOverviewView from '@/components/common/dictionary/DictOverviewView.vue'
+import DictionaryManagementWrapper from '@/components/common/dictionary/DictionaryManagementWrapper.vue'
 import SettingTabs from '@/components/settings/SettingTabs.vue'
 import AccountSettings from '@/components/settings/account/AccountSettings.vue'
 import ExportSettings from '@/components/settings/account/ExportSettings.vue'

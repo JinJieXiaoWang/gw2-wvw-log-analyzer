@@ -376,11 +376,49 @@ _SYS_DICT_TYPE_SEED = [
         "remark": "\u6570\u636e\u5c55\u793a\u6570\u5b57\u683c\u5f0f\u9009\u9879",
         "is_system": 1,
     },
+    {
+        "dict_type": "sys_normal_disable",
+        "dict_name": "\u901a\u7528\u72b6\u6001",
+        "status": 0,
+        "sort_order": 20,
+        "remark": "\u901a\u7528\u542f\u7528\u7981\u7528\u72b6\u6001",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "sys_yes_no",
+        "dict_name": "\u662f\u5426",
+        "status": 0,
+        "sort_order": 21,
+        "remark": "\u901a\u7528\u662f\u5426\u9009\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "scoring_rule_status",
+        "dict_name": "\u8bc4\u5206\u89c4\u5219\u7248\u672c\u72b6\u6001",
+        "status": 0,
+        "sort_order": 22,
+        "remark": "\u8bc4\u5206\u89c4\u5219\u7248\u672c\u5904\u7406\u72b6\u6001",
+        "is_system": 1,
+    },
 ]
 
 # 字典数据种子：格式 (value, label, color, remark)
 # remark 字段存储扩展属性（如描述、分类标记等）
 _SYS_DICT_DATA_SEED = {
+    "sys_normal_disable": [
+        ("0", "\u542f\u7528", "#22c55e", "\u6b63\u5e38\u4f7f\u7528"),
+        ("1", "\u7981\u7528", "#ef4444", "\u5df2\u505c\u7528"),
+    ],
+    "sys_yes_no": [
+        ("Y", "\u662f", "#22c55e", "\u80af\u5b9a\u9009\u9879"),
+        ("N", "\u5426", "#6b7280", "\u5426\u5b9a\u9009\u9879"),
+    ],
+    "scoring_rule_status": [
+        ("pending", "\u5f85\u5904\u7406", "#6b7280", "\u7b49\u5f85\u5f00\u59cb"),
+        ("processing", "\u5904\u7406\u4e2d", "#3b82f6", "\u6b63\u5728\u6267\u884c"),
+        ("completed", "\u5df2\u5b8c\u6210", "#22c55e", "\u5904\u7406\u5b8c\u6210"),
+        ("failed", "\u5931\u8d25", "#ef4444", "\u5904\u7406\u5931\u8d25"),
+    ],
     "role": [
         ("dps", "\u8f93\u51fa", "#FF6B35", "\u4ee5\u4f24\u5bb3\u8f93\u51fa\u4e3a\u4e3b\u8981\u804c\u8d23"),
         ("support", "\u8f85\u52a9", "#35B0FF", "\u4ee5\u6cbb\u7597\u548c\u589e\u76ca\u4e3a\u4e3b\u8981\u804c\u8d23"),
