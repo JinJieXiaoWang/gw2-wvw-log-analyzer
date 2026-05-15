@@ -83,7 +83,7 @@
                 :step="0.01"
                 :max-fraction-digits="2"
                 size="small"
-                class="w-16"
+                class="w-20"
                 :disabled="!canWrite"
                 @update:model-value="$emit('markChanged')"
               />

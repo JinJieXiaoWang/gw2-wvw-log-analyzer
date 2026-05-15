@@ -121,6 +121,11 @@
   @apply text-neutral-text transition-all duration-300;
 }
 
+/* InputNumber 内部 input 必须占满父容器宽度，防止超出 */
+.p-inputnumber .p-inputtext {
+  width: 100%;
+}
+
 .p-inputtext:enabled:hover {
   border-color: var(--color-border-light);
 }
