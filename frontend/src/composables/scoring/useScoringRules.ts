@@ -86,9 +86,9 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
 
   const recalcStatusSeverity = computed(() => {
     const s = recalcTask.value?.status
-    if (s === 'completed') return 'success'
-    if (s === 'processing') return 'warning'
-    if (s === 'failed') return 'danger'
+    if (s === ScoringRuleStatus.COMPLETED) return 'success'
+    if (s === ScoringRuleStatus.PROCESSING) return 'warning'
+    if (s === ScoringRuleStatus.FAILED) return 'danger'
     return 'info'
   })
 

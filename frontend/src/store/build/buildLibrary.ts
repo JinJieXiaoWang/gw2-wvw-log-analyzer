@@ -3,6 +3,7 @@ import { buildsService } from '@/services/build/buildsService'
 import { dictionaryService, type DictOption } from '@/services/system/dictionaryService'
 import type { BuildCreateDto, BuildEntry, BuildFilterState } from '@/types/buildLibrary'
 import { PROFESSION_COLORS } from '@/types/buildLibrary'
+import { RoleType } from '@/constants/dictValues'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
@@ -147,7 +148,7 @@ export const useBuildLibraryStore = defineStore('buildLibrary', () => {
       profession: raw.profession ?? '',
       professionColor: raw.profession_color || PROFESSION_COLORS[raw.profession] || '#888888',
       eliteSpec: raw.elite_spec ?? null,
-      role: raw.role === 'dps' || raw.role === 'support' ? raw.role : 'dps',
+      role: raw.role === RoleType.DPS || raw.role === RoleType.SUPPORT ? raw.role : RoleType.DPS,
       subRoles: (raw.sub_roles || []).filter((r: string) => ['boon', 'heal', 'tank', 'cc'].includes(r)),
       armorType: raw.armor_type ?? '',
       weapons: (raw.weapons || []).map((w: any) => ({

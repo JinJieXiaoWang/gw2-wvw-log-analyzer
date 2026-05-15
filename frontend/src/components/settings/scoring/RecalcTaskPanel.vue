@@ -6,15 +6,15 @@
     <div class="flex items-center justify-between mb-3">
       <div class="flex items-center gap-2">
         <i
-          v-if="task.status === 'processing'"
+          v-if="task.status === ScoringRuleStatus.PROCESSING"
           class="pi pi-spinner pi-spin text-ai"
         />
         <i
-          v-else-if="task.status === 'completed'"
+          v-else-if="task.status === ScoringRuleStatus.COMPLETED"
           class="pi pi-check-circle text-green-500"
         />
         <i
-          v-else-if="task.status === 'failed'"
+          v-else-if="task.status === ScoringRuleStatus.FAILED"
           class="pi pi-times-circle text-red-500"
         />
         <i
@@ -29,7 +29,7 @@
         />
       </div>
       <BaseButton
-        v-if="task.status === 'completed' || task.status === 'failed'"
+        v-if="task.status === ScoringRuleStatus.COMPLETED || task.status === ScoringRuleStatus.FAILED"
         icon="pi pi-times"
         text
         rounded
@@ -40,7 +40,7 @@
     <div class="relative h-2 bg-surface-200 dark:bg-surface-700 rounded-full overflow-hidden mb-2">
       <div
         class="h-full rounded-full transition-all duration-300"
-        :class="task.status === 'completed' ? 'bg-green-500' : task.status === 'failed' ? 'bg-red-500' : 'bg-primary-500'"
+        :class="task.status === ScoringRuleStatus.COMPLETED ? 'bg-green-500' : task.status === ScoringRuleStatus.FAILED ? 'bg-red-500' : 'bg-primary-500'"
         :style="{ width: task.progress_percent + '%' }"
       />
     </div>
@@ -52,6 +52,7 @@
 </template>
 
 <script setup lang="ts">
+import { ScoringRuleStatus } from '@/constants/dictValues'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import Tag from 'primevue/tag'
 
