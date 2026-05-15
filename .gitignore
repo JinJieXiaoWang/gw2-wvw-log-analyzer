@@ -41,3 +41,4 @@ dist/
 # 前端构建产物
 frontend/dist.zip
 
+backend.zip

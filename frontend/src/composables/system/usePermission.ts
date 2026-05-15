@@ -12,6 +12,7 @@ import { GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from
 import { apiFactory } from '@/services/core/apiService'
 import { authService } from '@/services/auth/authService'
 import { saveAccessToken, clearToken } from '@/utils/auth/tokenManager'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 const STORAGE_KEY = 'gw2_wvw_auth'
 
@@ -126,7 +127,7 @@ class AuthStore {
     }
 
     try {
-      const result = await apiFactory.post<any>('/api/v1/auth/login', { username, password }) as {
+      const result = await apiFactory.post<any>(API_ENDPOINTS.AUTH.LOGIN, { username, password }) as {
         success: boolean
         message?: string
         error_code?: string
@@ -238,7 +239,7 @@ class AuthStore {
    */
   public async getStatus(): Promise<{ is_logged_in: boolean; user: User | null; permissions: Permission[]; menus: MenuItem[] }> {
     try {
-      const result = await apiFactory.get<any>('/api/v1/auth/status')
+      const result = await apiFactory.get<any>(API_ENDPOINTS.AUTH.STATUS)
 
       if (result.success && result.data) {
         const { is_logged_in, user, permissions, menus } = result.data
@@ -301,7 +302,7 @@ class AuthStore {
    */
   public async loadPublicMenus(): Promise<void> {
     try {
-      const result = await apiFactory.get<any>('/api/v1/menus/public')
+      const result = await apiFactory.get<any>(API_ENDPOINTS.MENUS.PUBLIC)
       if (result.success && result.data) {
         this.state.menus = result.data
         this.saveToStorage()

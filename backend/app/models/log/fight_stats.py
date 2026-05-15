@@ -1,11 +1,21 @@
 
 # -*- coding: utf-8 -*-
 # 模块功能：战斗统计数据模型（精简版，每条记录对应一个玩家的一场战斗）
-# 作者：系统
+# 作者：帅妹妹丶.8297
 # 创建日期：2026-04-27
 # 更新说明：v2.0 扩展字段，支持DPS、Buff 覆盖率等 WvW 核心指标
 
-from sqlalchemy import BigInteger, Column, ForeignKey, Float, Index, Integer, JSON, Numeric, String
+from sqlalchemy import (
+    JSON,
+    BigInteger,
+    Column,
+    Float,
+    ForeignKey,
+    Index,
+    Integer,
+    Numeric,
+    String,
+)
 from sqlalchemy.orm import relationship
 
 from app.config.database import Base
@@ -64,8 +74,8 @@ class FightStats(Base):
     boon_strips_ally = Column(Integer, default=0, comment="移除队友增益次数")
 
     # === 关键 Buff 覆盖率（标量，直接查询排序）===
-    might_uptime = Column(Float, default=0, comment="力量覆盖(百分比)")
-    fury_uptime = Column(Float, default=0, comment="狂怒覆盖(百分比)")
+    might_uptime = Column(Float, default=0, comment="威能覆盖(百分比)")
+    fury_uptime = Column(Float, default=0, comment="激怒覆盖(百分比)")
     quickness_uptime = Column(Float, default=0, comment="急速覆盖(百分比)")
     alacrity_uptime = Column(Float, default=0, comment="敏捷覆盖(百分比)")
     protection_uptime = Column(Float, default=0, comment="保护覆盖(百分比)")

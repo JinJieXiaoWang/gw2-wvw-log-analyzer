@@ -1,15 +1,16 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：账号角色映射模型
 # 作者：系统
-# 创建日期?2026-05-03
+# 创建日期：2026-05-03
 # 依赖说明：SQLAlchemy
 # 说明：支持同一account对应多个角色的映射关系
 
 from datetime import date
 
-from app.config.database import Base
 from sqlalchemy import Column, Date, ForeignKey, Index, Integer, String
 from sqlalchemy.orm import relationship
+
+from app.config.database import Base
 
 """账号角色映射模型"""
 class AccountCharacter(Base):

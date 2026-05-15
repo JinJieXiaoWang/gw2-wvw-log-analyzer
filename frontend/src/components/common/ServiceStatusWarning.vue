@@ -20,7 +20,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import axios from 'axios'
+import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 const showWarning = ref(false)
 const warningMessage = ref('后端服务未响应，请检查服务是否正常启动')
@@ -28,8 +29,8 @@ let checkInterval: number | null = null
 
 const checkServiceStatus = async () => {
   try {
-    const response = await axios.get('/api/v1/health', { timeout: 3000 })
-    if (response.status >= 200 && response.status < 300) {
+    const result = await apiFactory.get(API_ENDPOINTS.HEALTH, { timeout: 3000 })
+    if (result && result.success) {
       showWarning.value = false
       return true
     }

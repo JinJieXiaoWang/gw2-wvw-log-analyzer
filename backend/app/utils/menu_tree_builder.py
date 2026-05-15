@@ -14,6 +14,8 @@ def build_menu_tree(menus: List, parent_id: int = 0) -> List[Dict]:
 
     返回?        树形结构菜单列表，已按 order_num 排序
     """
+    # 过滤掉虚拟 ROOT 节点，防止其出现在菜单树中
+    menus = [m for m in menus if m.menu_id != 0]
     menu_dict = {menu.menu_id: menu.to_dict() for menu in menus}
     tree = []
 
@@ -56,6 +58,9 @@ def filter_accessible_menus(
     accessible = []
 
     for menu in all_menus:
+        # 跳过虚拟 ROOT 节点（menu_id=0），该节点仅用于解决外键约束，不应返回给前端
+        if menu.menu_id == 0:
+            continue
         # 只显示状态正常的菜单
         if menu.status != "0":
             continue

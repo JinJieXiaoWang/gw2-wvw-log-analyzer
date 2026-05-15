@@ -1,8 +1,7 @@
 import { apiFactory } from '../core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import type { ApiResponse } from '@/types/api'
-import axios from 'axios'
-import { getToken } from '@/utils/auth/tokenManager'
+
 
 export interface AttendanceListParams {
   page?: number
@@ -109,21 +108,8 @@ export class AttendanceService {
       url += `?${queryString}`
     }
 
-    // 直接使用axios下载文件，因为apiFactory会自动处理响应，但我们需要直接获取二进制数据
-    const token = getToken()
-    const headers: any = {}
-    if (token) {
-      headers.Authorization = `Bearer ${token.accessToken}`
-    }
-
     try {
-      const response = await axios.get(url, {
-        responseType: 'blob',
-        headers
-      })
-
-      // 创建下载链接
-      const blob = new Blob([response.data])
+      const blob = await apiFactory.download(url)
       const downloadUrl = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
       link.href = downloadUrl

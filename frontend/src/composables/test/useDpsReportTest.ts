@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import { configManager } from '@/services/core/configManager'
 
 export function useDpsReportTest() {
@@ -34,7 +35,7 @@ export function useDpsReportTest() {
     try {
       const formData = new FormData()
       formData.append('file', selectedFile.value)
-      const res = await apiFactory.post('/api/v1/test/dps-report', formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 300000 })
+      const res = await apiFactory.post(API_ENDPOINTS.TEST.DPS_REPORT, formData, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 300000 })
       if (res.success && res.data) {
         result.value = res.data as Record<string, any>
         toast.add({ severity: 'success', summary: '测试完成', detail: `总耗时 ${(res.data as Record<string, any>).total_time_ms}ms`, life: configManager.get('ui').toastLife })

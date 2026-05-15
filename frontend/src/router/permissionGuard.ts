@@ -9,6 +9,7 @@ import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
 import { authStore } from '@/composables/system/usePermission'
 import type { Permission } from '@/types/permission'
 import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 export async function permissionGuard(
   to: RouteLocationNormalized,
@@ -44,7 +45,7 @@ export async function permissionGuard(
 
 export async function checkLoginStatus(): Promise<boolean> {
   try {
-    const result = await apiFactory.get<any>('/api/v1/auth/status')
+    const result = await apiFactory.get<any>(API_ENDPOINTS.AUTH.STATUS)
     return result.success && result.data?.is_authenticated
   } catch (error) {
     console.error('Failed to check login status:', error)

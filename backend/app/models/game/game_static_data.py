@@ -14,8 +14,9 @@
 - buffs.json              → gw_buff
 """
 
-from app.config.database import Base
 from sqlalchemy import JSON, Boolean, Column, Integer, String, Text
+
+from app.config.database import Base
 
 
 class GwSkill(Base):
@@ -41,7 +42,7 @@ class GwSkill(Base):
 class GwSpecialization(Base):
     """游戏特性线表 → 对应 bdcode_specializations.json
 
-    注意：此表存 GW2 API 原始特性线数据（含普?精英），
+    注意：此表存 GW2 API 原始特性线数据（含普通特长线和精英特长线），
     与业务层 gw_elite_specialization 表不同。
     """
 

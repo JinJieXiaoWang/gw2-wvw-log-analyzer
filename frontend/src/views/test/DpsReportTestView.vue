@@ -269,6 +269,7 @@ import { ref } from 'vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import ProgressSpinner from 'primevue/progressspinner'
 import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import { useToast } from 'primevue/usetoast'
 
 const toast = useToast()
@@ -310,7 +311,7 @@ const startTest = async () => {
     const formData = new FormData()
     formData.append('file', selectedFile.value)
 
-    const res = await apiFactory.post('/api/v1/test/dps-report', formData, {
+    const res = await apiFactory.post(API_ENDPOINTS.TEST.DPS_REPORT, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       timeout: 300000, // 5分钟
     })

@@ -94,6 +94,8 @@ import ProfessionEditDialog from '@/components/profession/ProfessionEditDialog.v
 import ProfessionListPanel from '@/components/profession/ProfessionListPanel.vue'
 import RoleTypeListPanel from '@/components/profession/RoleTypeListPanel.vue'
 import { usePermission } from '@/composables/system/usePermission'
+import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import ProgressSpinner from 'primevue/progressspinner'
 import TabMenu from 'primevue/tabmenu'
@@ -127,18 +129,15 @@ const loadData = async () => {
   loading.value = true
   try {
     const [profRes, specsRes, rolesRes, statsRes] = await Promise.all([
-      fetch('/api/v1/professions?include_specs=true'),
-      fetch('/api/v1/professions/elite-specs'),
-      fetch('/api/v1/professions/role-types'),
-      fetch('/api/v1/professions/statistics'),
+      apiFactory.get(API_ENDPOINTS.PROFESSIONS.LIST, { params: { include_specs: true } }),
+      apiFactory.get(API_ENDPOINTS.PROFESSIONS.ELITE_SPECS),
+      apiFactory.get(API_ENDPOINTS.PROFESSIONS.ROLE_TYPES),
+      apiFactory.get(API_ENDPOINTS.PROFESSIONS.STATISTICS),
     ])
-    const [profData, specsData, rolesData, statsData] = await Promise.all([
-      profRes.json(), specsRes.json(), rolesRes.json(), statsRes.json(),
-    ])
-    professions.value = profData.data?.professions || []
-    eliteSpecs.value = specsData.data?.elite_specs || []
-    roleTypes.value = rolesData.data || []
-    statistics.value = statsData.data
+    professions.value = profRes.data?.professions || []
+    eliteSpecs.value = specsRes.data?.elite_specs || []
+    roleTypes.value = rolesRes.data || []
+    statistics.value = statsRes.data
   } catch (error) {
     console.error('加载数据失败:', error)
   } finally {
@@ -179,11 +178,10 @@ const saveEdit = async () => {
   saving.value = true
   try {
     const endpoint = editType.value === 'profession'
-      ? `/api/v1/professions/profession/${editForm.value.key}/role?role_key=${editForm.value.default_role}`
-      : `/api/v1/professions/elite-spec/${editForm.value.key}/role?role_key=${editForm.value.default_role}`
-    const res = await fetch(endpoint, { method: 'PUT' })
-    const data = await res.json()
-    if (data.success) {
+      ? API_ENDPOINTS.PROFESSIONS.UPDATE_PROFESSION_ROLE(editForm.value.key)
+      : API_ENDPOINTS.PROFESSIONS.UPDATE_ELITE_SPEC_ROLE(editForm.value.key)
+    const res = await apiFactory.put(endpoint, null, { params: { role_key: editForm.value.default_role } })
+    if (res.success) {
       toast.add({ severity: 'success', summary: '保存成功', life: 3000 })
       editVisible.value = false
       loadData()

@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 def _sync_table_columns(engine) -> Dict[str, Any]:
     """
-    同步表列结构：添加缺失列、检查字段一致性、同步中文描?MySQL)
+    同步表列结构：添加缺失列、检查字段一致性、同步中文描述(MySQL)
 
     Returns:
         {
@@ -82,9 +82,9 @@ def _sync_table_columns(engine) -> Dict[str, Any]:
                     with engine.begin() as conn:
                         conn.execute(text(alter_stmt))
                     result["added"].setdefault(table_name, []).append(col_name)
-                    logger.info(f"为表 {table_name} 添加? {col_name}")
+                    logger.info(f"为表 {table_name} 添加列 {col_name}")
                 except Exception as e:
-                    logger.warning(f"为表 {table_name} 添加?{col_name} 失败: {e}")
+                    logger.warning(f"为表 {table_name} 添加列 {col_name} 失败: {e}")
                 continue
 
             # === 2. 字段一致性检?===

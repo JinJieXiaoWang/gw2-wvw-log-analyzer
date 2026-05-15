@@ -13,7 +13,7 @@ from sqlalchemy import (
     ForeignKey,
     func,
 )
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import foreign, relationship, remote
 
 from app.config.database import Base
 
@@ -36,8 +36,11 @@ class SysMenu(Base):
 
     menu_name = Column(VARCHAR(50), nullable=False, comment="菜单名称")
 
+    # 注意：已移除 ForeignKey 约束，因为虚拟 ROOT 节点（menu_id=0, parent_id=0）
+    # 会形成自引用，在 MySQL 等严格外键检查的数据库中导致约束失败。
+    # 应用层通过 menu_service 的校验确保 parent_id 有效性。
     parent_id = Column(
-        INTEGER, ForeignKey("sys_menu.menu_id"), default=0, comment="父菜单ID"
+        INTEGER, default=0, comment="父菜单ID"
     )
 
     order_num = Column(INTEGER, default=0, comment="显示顺序")
@@ -83,12 +86,22 @@ class SysMenu(Base):
     remark = Column(VARCHAR(500), default="", comment="备注")
 
     # 自引用关系（父菜单）
+    # 显式指定 primaryjoin 并使用 foreign() 注解，因为已移除 ForeignKey 约束
+    # 以避免 ROOT 节点（menu_id=0, parent_id=0）自引用导致的外键约束失败
     parent = relationship(
-        "SysMenu", remote_side=[menu_id], backref="children", uselist=False
+        "SysMenu",
+        primaryjoin="foreign(SysMenu.parent_id) == remote(SysMenu.menu_id)",
+        backref="children",
+        uselist=False,
     )
 
     def to_dict(self):
-        """将模型转换为字典"""
+        """将模型转换为字典
+
+        安全说明：children 递归中过滤 menu_id=0 的虚拟 ROOT 节点，
+        防止自引用导致的无限递归（ROOT 节点的 parent_id=0 引用自身）。
+        同时 build_menu_tree() 和 filter_accessible_menus() 也在外层做了过滤保护。
+        """
         return {
             "menu_id": self.menu_id,
             "menu_name": self.menu_name,
@@ -110,5 +123,6 @@ class SysMenu(Base):
             "update_by": self.update_by,
             "update_time": self.update_time.isoformat() if self.update_time else None,
             "remark": self.remark,
-            "children": [child.to_dict() for child in (self.children or [])],
+            # 防御性过滤：排除虚拟 ROOT 节点，防止无限递归
+            "children": [child.to_dict() for child in (self.children or []) if child.menu_id != 0],
         }

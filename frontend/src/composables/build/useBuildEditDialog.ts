@@ -1,5 +1,7 @@
 import { bdCodeService } from '@/services/build/bdCodeService'
 import { configManager } from '@/services/core/configManager'
+import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import { dictionaryService } from '@/services/system/dictionaryService'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import type { BuildCreateDto, BuildEntry } from '@/types/buildLibrary'
@@ -81,11 +83,10 @@ export function useBuildEditDialog(props: { visible: boolean; editingBuild?: Bui
     loadingDicts.value = true
     try {
       const [cascadeRes, roles] = await Promise.all([
-        fetch('/api/v1/professions/cascade'),
+        apiFactory.get(API_ENDPOINTS.PROFESSIONS.CASCADE),
         dictionaryService.getOptions('role')
       ])
-      const cascade = await cascadeRes.json()
-      cachedCascadeData = cascade.data || []
+      cachedCascadeData = cascadeRes.data || []
       cachedRolesDict = roles
       isCacheLoaded = true
       

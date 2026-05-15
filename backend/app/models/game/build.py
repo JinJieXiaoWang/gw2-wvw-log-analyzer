@@ -1,9 +1,12 @@
 ﻿# -*- coding: utf-8 -*-
 # 模块功能：Build图书馆数据模型
+# 作者：帅妹妹丶.8297
+# 创建日期：2026-05-03
 # 依赖说明：SQLAlchemy
 
-from app.config.database import Base
 from sqlalchemy import JSON, Boolean, Column, DateTime, Integer, String, func
+
+from app.config.database import Base
 
 
 class Build(Base):
@@ -19,8 +22,8 @@ class Build(Base):
     profession = Column(String(50), nullable=False, index=True, comment="职业名称")
     profession_color = Column(String(20), nullable=True, comment="职业颜色(HEX)")
     elite_spec = Column(String(50), nullable=True, comment="精英特长")
-    role = Column(String(20), nullable=False, index=True, comment="主角? dps/support")
-    sub_roles = Column(JSON, default=list, comment="子角色列? boon/heal/tank/cc")
+    role = Column(String(20), nullable=False, index=True, comment="主角角色(dps/support)")
+    sub_roles = Column(JSON, default=list, comment="子角色列(JSON) boon/heal/tank/cc")
     armor_type = Column(String(100), nullable=True, comment="护甲类型")
     weapons = Column(JSON, default=list, comment="武器配置(JSON)")
     relic = Column(String(100), nullable=True, comment=" relic")

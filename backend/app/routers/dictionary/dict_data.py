@@ -122,7 +122,7 @@ async def create_dict_data(
         remark=dict_data_data.remark,
     )
 
-    logger.info(f"管理?{current_admin.username} 创建了字典项 {dict_data.dict_label}")
+    logger.info(f"管理员{current_admin.username} 创建了字典项 {dict_data.dict_label}")
 
     return ApiResponse.success_response(
         code=HTTP_200_OK,

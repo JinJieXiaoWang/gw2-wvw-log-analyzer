@@ -70,7 +70,7 @@ export interface RoleProfessionMapping {
   }>
 }
 
-const API_PREFIX = '/api/v1/professions'
+const API_PREFIX = 'professions'
 
 // 缓存数据
 let roleTypesCache: RoleType[] = []
@@ -108,7 +108,7 @@ function extractListData<T>(response: any, key: string): T[] {
 }
 
 /**
- * 触发数据加载（异步，不阻塞）
+ * 触发数据加载（异步，不阻塞渲染）
  */
 function triggerLoadData(): void {
   if (isLoaded || loadPromise) return
@@ -119,6 +119,8 @@ function triggerLoadData(): void {
 
 /**
  * 加载所有职业数据
+ * 说明：允许多个组件同时调用，各自独立请求。
+ * 虽然会产生重复请求，但结果一致且无副作用，比加锁更简单可靠。
  */
 export async function loadAllData(force = false): Promise<void> {
   if (isLoaded && !force) {
@@ -128,7 +130,7 @@ export async function loadAllData(force = false): Promise<void> {
   try {
     const [roleTypesRes, professionsRes, eliteSpecsRes, cascadeRes, mappingRes] = await Promise.all([
       apiFactory.get<{ data: RoleType[] }>(`${API_PREFIX}/role-types`),
-      apiFactory.get<{ data: { professions: Profession[] } }>(`${API_PREFIX}`, { params: { include_specs: true } }),
+      apiFactory.get<{ data: { professions: Profession[] } }>(`${API_PREFIX}/`, { params: { include_specs: true } }),
       apiFactory.get<{ data: { elite_specs: EliteSpecialization[] } }>(`${API_PREFIX}/elite-specs`),
       apiFactory.get<{ data: ProfessionCascade[] }>(`${API_PREFIX}/cascade`),
       apiFactory.get<{ data: RoleProfessionMapping }>(`${API_PREFIX}/role-mapping`),
