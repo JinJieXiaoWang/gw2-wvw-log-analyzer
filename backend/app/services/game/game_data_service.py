@@ -16,7 +16,8 @@ from typing import Any, Callable, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.data import DATA_DIR, get_data_version, load_json_file
+from app.data import DATA_DIR, get_data_version
+from app.data.seed_data import get_buffs
 from app.models.game.profession import (
     GwEliteSpecialization,
     GwProfession,
@@ -453,7 +454,7 @@ class GameDataService:
         # 功能：获取Buff数据（内部方法，带缓存）
         if self._buffs_data is None or force_reload:
             try:
-                self._buffs_data = load_json_file("buffs.json")
+                self._buffs_data = get_buffs()
                 self._last_reload = datetime.now()
                 self._build_buff_caches()
                 logger.info(
