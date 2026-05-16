@@ -50,14 +50,14 @@ async def get_profession_cascade(db: Session = Depends(get_db)):
         data=cascade_data,
     )
 
-@router.get("/role-mapping", response_model=ApiResponse, summary="获取角色定位-职业映射")
-async def get_role_profession_mapping(db: Session = Depends(get_db)):
+@router.get("/role-mapping", response_model=ApiResponse, summary="获取角色定位-精英特长映射")
+async def get_role_spec_mapping(db: Session = Depends(get_db)):
     """
-    获取角色定位到职业的映射
+    获取角色定位到精英特长的映射
     用于评分规则页面职业归类展示
     """
     service = ProfessionService(db)
-    mapping = service.get_role_profession_mapping()
+    mapping = service.get_role_spec_mapping()
     return ApiResponse.success_response(
         message="获取角色映射成功",
         data=mapping,
