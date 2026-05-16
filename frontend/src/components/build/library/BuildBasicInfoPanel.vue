@@ -22,7 +22,7 @@
       >
         <BaseSelect
           v-model="localForm.profession"
-          :options="professionOptions"
+          :options="selectOptions.professionOptions"
           option-label="label"
           option-value="value"
           class="w-full"
@@ -32,7 +32,7 @@
       <FormField label="精英特长">
         <BaseSelect
           v-model="localForm.eliteSpec"
-          :options="eliteSpecOptions"
+          :options="selectOptions.eliteSpecOptions"
           option-label="label"
           option-value="value"
           class="w-full"
@@ -46,7 +46,7 @@
       >
         <BaseSelect
           v-model="localForm.role"
-          :options="roleOptions"
+          :options="selectOptions.roleOptions"
           option-label="label"
           option-value="value"
           class="w-full"
@@ -96,11 +96,19 @@ import Panel from 'primevue/panel'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { reactive, watch } from 'vue'
 
+/** 下拉选项配置 */
+interface SelectOptions {
+  /** 职业选项列表 */
+  professionOptions: { label: string; value: string }[]
+  /** 精英特长选项列表 */
+  eliteSpecOptions: { label: string; value: string }[]
+  /** 角色类型选项列表 */
+  roleOptions: { label: string; value: string }[]
+}
+
 const props = defineProps<{
   form: BuildCreateDto
-  professionOptions: { label: string; value: string }[]
-  eliteSpecOptions: { label: string; value: string }[]
-  roleOptions: { label: string; value: string }[]
+  selectOptions: SelectOptions
   loadingDicts: boolean
 }>()
 

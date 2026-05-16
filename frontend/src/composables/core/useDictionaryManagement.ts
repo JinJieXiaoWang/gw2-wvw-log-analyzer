@@ -16,9 +16,9 @@ import { NormalDisable } from '@/constants/dictValues'
 export function useDictionaryManagement() {
   const toast = useToast()
   const confirm = useConfirm()
-  const { isAuthenticated } = usePermission()
+  const { can } = usePermission()
   const dictStore = useDictStore()
-  const isAdmin = computed(() => isAuthenticated.value)
+  const canWrite = computed(() => can('write'))
 
   // ========== ״̬ ==========
   const isCollapsed = ref(false)
@@ -253,7 +253,7 @@ export function useDictionaryManagement() {
   }
 
   return {
-    isAdmin,
+    canWrite,
     isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
     refreshing, saving, initializing,
     showDataDialog, showTypeDialog, showInitDialog,

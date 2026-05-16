@@ -19,7 +19,7 @@
     </div>
     <div class="header-right">
       <BaseButton
-        v-if="isAdmin"
+        v-if="canWrite"
         :label="isCollapsed ? '展开' : '收起'"
         :icon="isCollapsed ? 'pi pi-angle-right' : 'pi pi-angle-left'"
         severity="secondary"
@@ -28,7 +28,7 @@
         @click="$emit('toggle-sidebar')"
       />
       <BaseButton
-        v-if="isAdmin"
+        v-if="canWrite"
         label="刷新缓存"
         icon="pi pi-refresh"
         severity="info"
@@ -38,7 +38,7 @@
         @click="$emit('reload-cache')"
       />
       <BaseButton
-        v-if="isAdmin"
+        v-if="canWrite"
         label="初始化数据"
         icon="pi pi-database"
         severity="warning"
@@ -54,7 +54,7 @@
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 defineProps<{
-  isAdmin: boolean
+  canWrite: boolean
   isCollapsed: boolean
   refreshing: boolean
   showBack?: boolean

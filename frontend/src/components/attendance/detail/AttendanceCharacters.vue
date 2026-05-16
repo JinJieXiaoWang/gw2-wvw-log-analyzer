@@ -13,6 +13,7 @@
         @click="$emit('show-char', char)"
       >
         <div class="flex items-start gap-3">
+          <!-- 动态值，无法使用 Tailwind 静态类 -->
           <div
             class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-lg shrink-0"
             :style="{ background: getProfessionGradient(char.profession) }"
@@ -22,6 +23,7 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <span class="font-semibold text-neutral-text truncate">{{ char.character_name }}</span>
+              <!-- 动态值，无法使用 Tailwind 静态类 -->
               <span
                 class="text-xs px-2 py-0.5 rounded-full"
                 :style="{ backgroundColor: getProfessionColorVal(char.profession) + '30', color: getProfessionColorVal(char.profession) }"

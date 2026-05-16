@@ -183,7 +183,7 @@ const props = withDefaults(defineProps<{
   newDesc?: string
   hasChanges?: boolean
 }>(), {
-  canWrite: true,
+  canWrite: false,
 })
 
 const emit = defineEmits<{

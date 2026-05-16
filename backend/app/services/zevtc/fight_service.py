@@ -435,6 +435,26 @@ def _float(v):
     return float(v) if v is not None else 0
 
 
+def _classify_consumables(consumables_raw: Any) -> Dict[str, List[Dict[str, Any]]]:
+    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。"""
+    result: Dict[str, List[Dict[str, Any]]] = {"food": [], "utility": []}
+    if not consumables_raw or not isinstance(consumables_raw, list):
+        return result
+    for item in consumables_raw:
+        if not isinstance(item, dict):
+            continue
+        name = (item.get("name") or "").lower()
+        target = "utility"
+        if any(k in name for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
+            target = "food"
+        result[target].append({
+            "name": item.get("name", ""),
+            "icon": item.get("icon", ""),
+            "id": item.get("id", 0),
+        })
+    return result
+
+
 def get_player_rotation(
     db: Session, log_id: int, account: str
 ) -> Optional[Dict[str, Any]]:
@@ -480,5 +500,5 @@ def get_player_rotation(
         "skill_map": skill_map,
         "weapons": player.weapons_json or [],
         "death_recap": player.death_recap_json or [],
-        "consumables": player.consumables_json or {"food": [], "utility": []},
+        "consumables": _classify_consumables(player.consumables_json),
     }

@@ -20,188 +20,24 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- 核心功能卡片 -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="icon-box icon-primary">
-            <i class="pi pi-cog text-white" />
-          </div>
-          <div>
-            <h4 class="font-semibold text-color">
-              核心功能
-            </h4>
-            <span class="text-xs text-color-secondary">影响系统核心行为</span>
-          </div>
-        </div>
-        <div class="space-y-4">
-          <div class="config-row">
-            <div class="config-info">
-              <div class="icon-badge icon-blue">
-                <i class="pi pi-chart-line" />
-              </div>
-              <div>
-                <label class="text-sm font-medium text-color">评分模式</label>
-                <p class="text-xs text-color-secondary">
-                  选择评分规则的应用方式
-                </p>
-              </div>
-            </div>
-            <BaseSelect
-              v-model="localConfigs.scoring_mode"
-              :options="scoringModeOptions"
-              option-label="label"
-              option-value="value"
-              class="w-full sm:w-40 max-w-full"
-              @change="markChanged('scoring_mode')"
-            />
-          </div>
-          <div class="config-row">
-            <div class="config-info">
-              <div class="icon-badge icon-green">
-                <i class="pi pi-server" />
-              </div>
-              <div>
-                <label class="text-sm font-medium text-color">默认服务器</label>
-                <p class="text-xs text-color-secondary">
-                  新建日志时默认选中的服务器
-                </p>
-              </div>
-            </div>
-            <BaseInput
-              v-model="localConfigs.default_server"
-              class="w-full sm:w-40 max-w-full"
-              @input="markChanged('default_server')"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 解析参数卡片 -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="icon-box icon-amber">
-            <i class="pi pi-bolt text-white" />
-          </div>
-          <div>
-            <h4 class="font-semibold text-color">
-              解析参数
-            </h4>
-            <span class="text-xs text-color-secondary">日志解析相关配置</span>
-          </div>
-        </div>
-        <div class="space-y-4">
-          <div class="config-row">
-            <div class="config-info">
-              <div class="icon-badge icon-purple">
-                <i class="pi pi-spinner" />
-              </div>
-              <div>
-                <label class="text-sm font-medium text-color">解析并行数</label>
-                <p class="text-xs text-color-secondary">
-                  批量解析时的并行任务数
-                </p>
-              </div>
-            </div>
-            <BaseInputNumber
-              v-model="localConfigs.parse_parallel"
-              :min="1"
-              :max="8"
-              class="w-full sm:w-24 max-w-full"
-              @blur="markChanged('parse_parallel')"
-            />
-          </div>
-          <div class="config-row">
-            <div class="config-info">
-              <div class="icon-badge icon-teal">
-                <i class="pi pi-calendar" />
-              </div>
-              <div>
-                <label class="text-sm font-medium text-color">数据保留天数</label>
-                <p class="text-xs text-color-secondary">
-                  超过此天数的日志将被清理
-                </p>
-              </div>
-            </div>
-            <BaseInputNumber
-              v-model="localConfigs.retention_days"
-              :min="30"
-              :max="3650"
-              suffix=" 天"
-              class="w-full sm:w-32 max-w-full"
-              @blur="markChanged('retention_days')"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 导出格式卡片 -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="icon-box icon-cyan">
-            <i class="pi pi-file-export text-white" />
-          </div>
-          <div>
-            <h4 class="font-semibold text-color">
-              导出格式
-            </h4>
-            <span class="text-xs text-color-secondary">数据导出的默认格式</span>
-          </div>
-        </div>
-        <div class="config-row">
-          <div class="config-info">
-            <div class="icon-badge icon-cyan">
-              <i class="pi pi-file" />
-            </div>
-            <div>
-              <label class="text-sm font-medium text-color">默认导出格式</label>
-              <p class="text-xs text-color-secondary">
-                选择默认的数据导出格式
-              </p>
-            </div>
-          </div>
-          <BaseSelect
-            v-model="localConfigs.export_format"
-            :options="exportFormatOptions"
-            option-label="label"
-            option-value="value"
-            class="w-full sm:w-32 max-w-full"
-            @change="markChanged('export_format')"
-          />
-        </div>
-      </div>
-
-      <!-- 系统维护卡片 -->
-      <div class="config-card">
-        <div class="card-header">
-          <div class="icon-box icon-red">
-            <i class="pi pi-database text-white" />
-          </div>
-          <div>
-            <h4 class="font-semibold text-color">
-              系统维护
-            </h4>
-            <span class="text-xs text-color-secondary">数据备份与维护设置</span>
-          </div>
-        </div>
-        <div class="config-row">
-          <div class="config-info">
-            <div class="icon-badge icon-red">
-              <i class="pi pi-history" />
-            </div>
-            <div>
-              <label class="text-sm font-medium text-color">自动备份</label>
-              <p class="text-xs text-color-secondary">
-                是否启用自动数据库备份
-              </p>
-            </div>
-          </div>
-          <BaseToggleSwitch
-            v-model="localConfigs.auto_backup"
-            @change="markChanged('auto_backup')"
-          />
-        </div>
-      </div>
-
+      <SystemParamsCoreFeatures
+        :configs="localConfigs"
+        :scoring-mode-options="scoringModeOptions"
+        @mark-changed="markChanged"
+      />
+      <SystemParamsParseSettings
+        :configs="localConfigs"
+        @mark-changed="markChanged"
+      />
+      <SystemParamsExportSettings
+        :configs="localConfigs"
+        :export-format-options="exportFormatOptions"
+        @mark-changed="markChanged"
+      />
+      <SystemParamsMaintenance
+        :configs="localConfigs"
+        @mark-changed="markChanged"
+      />
       <UploadParseParamsPanel
         :configs="localConfigs"
         @mark-changed="markChanged"
@@ -225,17 +61,13 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
-import BaseInput from '@/components/common/ui/input/BaseInput.vue'
-import BaseInputNumber from '@/components/common/ui/input/BaseInputNumber.vue'
-import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
-import BaseToggleSwitch from '@/components/common/ui/input/BaseToggleSwitch.vue'
 import { usePermission } from '@/composables/system/usePermission'
 import {
-    BOOLEAN_CONFIG_KEYS,
-    EXPORT_FORMAT_SELECT_OPTIONS,
-    NUMERIC_CONFIG_KEYS,
-    SCORING_MODE_OPTIONS,
-    SYSTEM_CONFIG_DEFAULTS
+  BOOLEAN_CONFIG_KEYS,
+  EXPORT_FORMAT_SELECT_OPTIONS,
+  NUMERIC_CONFIG_KEYS,
+  SCORING_MODE_OPTIONS,
+  SYSTEM_CONFIG_DEFAULTS
 } from '@/config/settings'
 import { useDictOptions } from '@/composables/system/useDictOptions'
 import { settingsService } from '@/services'
@@ -244,6 +76,10 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import UploadParseParamsPanel from '../upload/UploadParseParamsPanel.vue'
 import CacheCleanupParamsPanel from './CacheCleanupParamsPanel.vue'
 import SystemConfigTable from './SystemConfigTable.vue'
+import SystemParamsCoreFeatures from './SystemParamsCoreFeatures.vue'
+import SystemParamsParseSettings from './SystemParamsParseSettings.vue'
+import SystemParamsExportSettings from './SystemParamsExportSettings.vue'
+import SystemParamsMaintenance from './SystemParamsMaintenance.vue'
 
 const toast = useToast()
 const { can } = usePermission()
@@ -328,75 +164,3 @@ onMounted(() => {
   loadExportFormats()
 })
 </script>
-
-<style scoped>
-.config-card {
-  @apply bg-neutral-card border border-neutral-border rounded-2xl p-5 shadow-sm;
-}
-
-.card-header {
-  @apply flex items-center gap-3 mb-4;
-}
-
-.config-row {
-  @apply flex items-center gap-3 p-3 bg-neutral-bg-secondary rounded-lg flex-wrap sm:flex-nowrap;
-}
-
-.config-info {
-  @apply flex items-center gap-3 flex-1 min-w-0;
-}
-
-.icon-box {
-  @apply w-10 h-10 rounded-lg flex items-center justify-center;
-}
-
-.icon-primary {
-  @apply bg-gradient-to-br from-primary to-secondary;
-}
-
-.icon-amber {
-  @apply bg-gradient-to-br from-amber-500 to-orange-600;
-}
-
-.icon-cyan {
-  @apply bg-gradient-to-br from-cyan-500 to-blue-600;
-}
-
-.icon-red {
-  @apply bg-gradient-to-br from-red-500 to-pink-600;
-}
-
-.icon-badge {
-  @apply w-8 h-8 rounded flex items-center justify-center;
-}
-
-.icon-blue {
-  background-color: var(--color-primary-alpha-10);
-  color: var(--color-primary);
-}
-
-.icon-green {
-  background-color: var(--color-success-alpha-10);
-  color: var(--color-success);
-}
-
-.icon-purple {
-  background-color: var(--color-secondary-alpha-10);
-  color: var(--color-secondary);
-}
-
-.icon-teal {
-  background-color: var(--color-ai-alpha-10);
-  color: var(--color-ai);
-}
-
-.icon-cyan {
-  background-color: var(--color-ai-alpha-10);
-  color: var(--color-ai);
-}
-
-.icon-red {
-  background-color: var(--color-error-alpha-10);
-  color: var(--color-error);
-}
-</style>

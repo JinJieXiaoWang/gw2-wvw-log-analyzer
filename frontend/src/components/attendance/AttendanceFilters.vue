@@ -1,4 +1,5 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
     style="animation-delay: 0.5s"
@@ -17,7 +18,7 @@
       </div>
       <div class="flex-1">
         <label class="block text-sm text-neutral-text-secondary mb-2">搜索账号或角色</label>
-        <InputText
+        <BaseInput
           v-model="searchQuery"
           placeholder="输入账号或角色名..."
           class="w-full"
@@ -25,7 +26,7 @@
       </div>
       <div class="w-full lg:w-40">
         <label class="block text-sm text-neutral-text-secondary mb-2">地图</label>
-        <Dropdown
+        <BaseSelect
           v-model="filterMap"
           :options="maps"
           placeholder="全部地图"
@@ -35,7 +36,7 @@
       </div>
       <div class="w-full lg:w-40">
         <label class="block text-sm text-neutral-text-secondary mb-2">职业</label>
-        <Dropdown
+        <BaseSelect
           v-model="filterProfession"
           :options="professions"
           placeholder="全部职业"
@@ -71,9 +72,9 @@
 
 import { ref, watch } from 'vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import BaseInput from '@/components/common/ui/input/BaseInput.vue'
 import Calendar from 'primevue/calendar'
-import Dropdown from 'primevue/dropdown'
-import InputText from 'primevue/inputtext'
 
 export interface FilterOptions {
   maps: string[]

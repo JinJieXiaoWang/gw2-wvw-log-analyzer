@@ -5,10 +5,10 @@
         <i class="pi pi-book header-icon" />
         <div class="header-text">
           <h2 class="header-title">
-            字典管理
+            {{ HEADER_TITLE }}
           </h2>
           <p class="header-subtitle">
-            系统枚举数据配置和管理中心
+            {{ HEADER_SUBTITLE }}
           </p>
         </div>
       </div>
@@ -26,7 +26,7 @@
           <i class="pi pi-folder" />
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ typeStats.total }}</span><span class="stat-label">字典分类</span>
+          <span class="stat-value">{{ typeStats.total }}</span><span class="stat-label">{{ STAT_LABEL_TOTAL }}</span>
         </div>
       </div>
       <div class="stat-card">
@@ -34,7 +34,7 @@
           <i class="pi pi-check-circle" />
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ typeStats.enabled }}</span><span class="stat-label">启用分类</span>
+          <span class="stat-value">{{ typeStats.enabled }}</span><span class="stat-label">{{ STAT_LABEL_ENABLED }}</span>
         </div>
       </div>
       <div class="stat-card">
@@ -42,7 +42,7 @@
           <i class="pi pi-list" />
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ dataStats.total }}</span><span class="stat-label">字典项总数</span>
+          <span class="stat-value">{{ dataStats.total }}</span><span class="stat-label">{{ STAT_LABEL_DATA_TOTAL }}</span>
         </div>
       </div>
       <div class="stat-card">
@@ -50,14 +50,14 @@
           <i class="pi pi-database" />
         </div>
         <div class="stat-content">
-          <span class="stat-value">{{ cacheStatus ? '正常' : '需要刷新' }}</span><span class="stat-label">缓存状态</span>
+          <span class="stat-value">{{ cacheStatus ? CACHE_STATUS_NORMAL : CACHE_STATUS_NEED_REFRESH }}</span><span class="stat-label">{{ STAT_LABEL_CACHE_STATUS }}</span>
         </div>
       </div>
     </div>
 
     <div class="quick-actions">
       <h3 class="section-title">
-        常用操作
+        {{ SECTION_TITLE_ACTIONS }}
       </h3>
       <div class="action-grid">
         <div
@@ -65,9 +65,9 @@
           @click="$emit('enter-management')"
         >
           <i class="pi pi-cog action-icon" />
-          <span class="action-label">分类管理</span>
+          <span class="action-label">{{ ACTION_LABEL_MANAGE }}</span>
           <p class="action-desc">
-            管理字典分类和属性配置
+            {{ ACTION_DESC_MANAGE }}
           </p>
         </div>
         <div
@@ -75,9 +75,9 @@
           @click="$emit('quick-reload')"
         >
           <i class="pi pi-refresh action-icon" />
-          <span class="action-label">刷新缓存</span>
+          <span class="action-label">{{ ACTION_LABEL_RELOAD }}</span>
           <p class="action-desc">
-            立即刷新系统字典缓存
+            {{ ACTION_DESC_RELOAD }}
           </p>
         </div>
       </div>
@@ -89,7 +89,7 @@
     >
       <div class="preview-header">
         <h3 class="section-title">
-          分类预览
+          {{ SECTION_TITLE_PREVIEW }}
         </h3>
         <BaseButton
           label="查看全部"
@@ -100,7 +100,7 @@
       </div>
       <div class="types-list">
         <div
-          v-for="type in dictTypes.slice(0, 6)"
+          v-for="type in dictTypes.slice(0, PREVIEW_MAX_ITEMS)"
           :key="type.dict_id"
           class="type-item"
         >
@@ -123,6 +123,29 @@
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 import type { DictType } from '@/services/system/dictionaryService'
+
+// ============ 常量定义 ============
+const HEADER_TITLE = '字典管理'
+const HEADER_SUBTITLE = '系统枚举数据配置和管理中心'
+
+const STAT_LABEL_TOTAL = '字典分类'
+const STAT_LABEL_ENABLED = '启用分类'
+const STAT_LABEL_DATA_TOTAL = '字典项总数'
+const STAT_LABEL_CACHE_STATUS = '缓存状态'
+
+const CACHE_STATUS_NORMAL = '正常'
+const CACHE_STATUS_NEED_REFRESH = '需要刷新'
+
+const SECTION_TITLE_ACTIONS = '常用操作'
+const SECTION_TITLE_PREVIEW = '分类预览'
+
+const ACTION_LABEL_MANAGE = '分类管理'
+const ACTION_DESC_MANAGE = '管理字典分类和属性配置'
+const ACTION_LABEL_RELOAD = '刷新缓存'
+const ACTION_DESC_RELOAD = '立即刷新系统字典缓存'
+
+const PREVIEW_MAX_ITEMS = 6
+// =================================
 
 defineProps<{
   dictTypes: DictType[]
@@ -243,7 +266,7 @@ defineEmits<{
 }
 
 .action-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 12px var(--color-shadow);
   transform: translateY(-2px);
 }
 

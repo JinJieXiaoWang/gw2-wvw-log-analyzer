@@ -11,6 +11,7 @@
         <h3 class="text-xl font-bold text-white mb-2">{{ title }}</h3>
         <p class="text-neutral-text-secondary mb-6">{{ message }}</p>
         <div class="w-full bg-neutral-card-active rounded-full h-2 overflow-hidden">
+          <!-- 动态值，无法使用 Tailwind 静态类 -->
           <div class="bg-gradient-to-r from-ai via-primary to-purple-500 h-2 rounded-full transition-all duration-500" :style="{ width: progress + '%' }" />
         </div>
         <p class="text-xs text-neutral-text-tertiary mt-2">{{ progress.toFixed(0) }}%</p>

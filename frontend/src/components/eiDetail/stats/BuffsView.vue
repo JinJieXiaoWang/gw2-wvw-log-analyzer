@@ -5,7 +5,7 @@
       <div class="section-header">
         <h3 class="section-title">
           <i class="pi pi-shield" />
-          团队增益覆盖
+          {{ SECTION_TEAM_BUFF_COVERAGE }}
         </h3>
       </div>
       <div class="buffs-grid">
@@ -22,7 +22,7 @@
       <div class="section-header">
         <h3 class="section-title">
           <i class="pi pi-list" />
-          增益详细统计
+          {{ SECTION_BUFF_DETAIL_STATS }}
         </h3>
       </div>
       <div class="table-wrapper">
@@ -30,22 +30,22 @@
           <thead>
             <tr>
               <th class="col-player">
-                玩家
+                {{ TABLE_HEADER_PLAYER }}
               </th>
               <th class="col-boon">
-                平均增益
+                {{ LABEL_AVG_BOON }}
               </th>
               <th class="col-boon-active">
-                活跃增益
+                {{ LABEL_ACTIVE_BOON }}
               </th>
               <th class="col-condi">
-                平均症状
+                {{ LABEL_AVG_CONDITION }}
               </th>
               <th class="col-condi-active">
-                活跃症状
+                {{ LABEL_ACTIVE_CONDITION }}
               </th>
               <th class="col-swap">
-                武器切换
+                {{ LABEL_WEAPON_SWAP }}
               </th>
             </tr>
           </thead>
@@ -95,6 +95,23 @@ import { computed } from 'vue'
 import type { Player, PlayerStats } from '@/types/eliteInsights'
 import { getProfessionIconUrl } from '@/utils/profession/professionUtils'
 import BoonsUptimeCard from '../charts/BoonsUptimeCard.vue'
+import {
+  SECTION_TEAM_BUFF_COVERAGE,
+  SECTION_BUFF_DETAIL_STATS,
+  TABLE_HEADER_PLAYER,
+  LABEL_AVG_BOON,
+  LABEL_ACTIVE_BOON,
+  LABEL_AVG_CONDITION,
+  LABEL_ACTIVE_CONDITION,
+  LABEL_WEAPON_SWAP,
+  LABEL_BUFF_PREFIX,
+} from '@/constants/eiLabels'
+import { BOON_COLORS } from '@/constants/colors'
+import {
+  PLAYER_BOON_DISPLAY_COUNT,
+  BUFF_UPTIME_DISPLAY_COUNT,
+  DECIMAL_PLACES_1,
+} from '@/constants/thresholds'
 
 interface Props {
   players: Player[]
@@ -118,11 +135,11 @@ const sortedPlayers = computed(() => {
 })
 
 const playerBoons = computed(() => {
-  return props.players.slice(0, 4).map(player => ({
+  return props.players.slice(0, PLAYER_BOON_DISPLAY_COUNT).map(player => ({
     name: player.name,
-    boons: (player.buffUptimes || []).slice(0, 6).map((buff, idx) => ({
+    boons: (player.buffUptimes || []).slice(0, BUFF_UPTIME_DISPLAY_COUNT).map((buff, idx) => ({
       id: buff.id || idx,
-      name: `Buff ${buff.id || idx}`,
+      name: `${LABEL_BUFF_PREFIX} ${buff.id || idx}`,
       uptime: Math.round(buff.uptime || 0),
       applied: buff.buffData?.[0]?.buffApplied || 0,
       wasted: buff.buffData?.[0]?.wasted || 0,
@@ -151,12 +168,11 @@ function getStats(player: Player): PlayerStats {
 }
 
 function getBoonColor(index: number): string {
-  const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
-  return colors[index % colors.length]
+  return BOON_COLORS[index % BOON_COLORS.length]
 }
 
 function formatDecimal(value: number): string {
-  return (value || 0).toFixed(1)
+  return (value || 0).toFixed(DECIMAL_PLACES_1)
 }
 
 function getProfIcon(prof: string): string {

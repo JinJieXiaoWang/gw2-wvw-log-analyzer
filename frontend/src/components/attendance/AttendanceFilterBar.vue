@@ -1,4 +1,5 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
     style="animation-delay: 0.5s"
@@ -17,7 +18,7 @@
       </div>
       <div class="flex-1">
         <label class="block text-sm text-neutral-text-secondary mb-2">搜索角色名称</label>
-        <InputText
+        <BaseInput
           v-model="localSearch"
           placeholder="输入角色名称"
           class="w-full"
@@ -65,29 +66,47 @@
 import { computed } from 'vue'
 import Calendar from 'primevue/calendar'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
-import InputText from 'primevue/inputtext'
+import BaseInput from '@/components/common/ui/input/BaseInput.vue'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
-const props = defineProps<{
+/** 筛选条件值 */
+interface FilterValues {
+  /** 日期范围 */
   dateRange: Date[] | null
+  /** 搜索关键词 */
   searchQuery: string
+  /** 地图筛选 */
   filterMap: string | null
+  /** 职业筛选 */
   filterProfession: string | null
+}
+
+const props = defineProps<{
+  filterValues: FilterValues
   filterOptions: { maps: string[]; professions: string[] }
   loading: boolean
 }>()
 
 const emit = defineEmits<{
-  'update:dateRange': [value: Date[] | null]
-  'update:searchQuery': [value: string]
-  'update:filterMap': [value: string | null]
-  'update:filterProfession': [value: string | null]
+  'update:filterValues': [value: FilterValues]
   apply: []
   reset: []
 }>()
 
-const localDateRange = computed({ get: () => props.dateRange, set: v => emit('update:dateRange', v) })
-const localSearch = computed({ get: () => props.searchQuery, set: v => emit('update:searchQuery', v) })
-const localMap = computed({ get: () => props.filterMap, set: v => emit('update:filterMap', v) })
-const localProfession = computed({ get: () => props.filterProfession, set: v => emit('update:filterProfession', v) })
+const localDateRange = computed({
+  get: () => props.filterValues.dateRange,
+  set: v => emit('update:filterValues', { ...props.filterValues, dateRange: v })
+})
+const localSearch = computed({
+  get: () => props.filterValues.searchQuery,
+  set: v => emit('update:filterValues', { ...props.filterValues, searchQuery: v })
+})
+const localMap = computed({
+  get: () => props.filterValues.filterMap,
+  set: v => emit('update:filterValues', { ...props.filterValues, filterMap: v })
+})
+const localProfession = computed({
+  get: () => props.filterValues.filterProfession,
+  set: v => emit('update:filterValues', { ...props.filterValues, filterProfession: v })
+})
 </script>

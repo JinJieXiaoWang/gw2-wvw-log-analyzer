@@ -19,7 +19,7 @@ export function useDictionaryWrapper() {
   const showInitDialog = ref(false)
   const isCollapsed = ref(false)
 
-  const isAdmin = computed(() => isOperator.value || isSuperAdmin.value)
+  const canWrite = computed(() => isOperator.value || isSuperAdmin.value)
   const typeStats = computed(() => ({
     total: dictTypes.value.length,
     enabled: dictTypes.value.filter(t => String(t.status) === NormalDisable.ENABLED).length,
@@ -72,7 +72,7 @@ export function useDictionaryWrapper() {
 
   return {
     viewMode, dictManagementRef, dictTypes, loading, refreshing, initializing,
-    cacheStatus, showInitDialog, isCollapsed, isAdmin, typeStats, dataStats,
+    cacheStatus, showInitDialog, isCollapsed, canWrite, typeStats, dataStats,
     toggleSidebar, loadOverviewData, handleQuickReload, handleReloadCache, handleInitData
   }
 }

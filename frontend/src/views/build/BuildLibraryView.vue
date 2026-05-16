@@ -1,8 +1,8 @@
 <template>
   <div class="min-h-screen pb-6 sm:pb-10">
     <PageHeader
-      title="配置图书馆"
-      subtitle="格林特职业学院战场配置百科"
+      :title="PAGE_TITLE"
+      :subtitle="PAGE_SUBTITLE"
       icon="pi pi-book"
       icon-gradient="bg-gradient-to-br from-primary to-secondary"
     />
@@ -11,7 +11,7 @@
       v-permission="'write'"
       class="flex items-center justify-end gap-3 mt-3 sm:mt-4 mb-2"
     >
-      <Button
+      <BaseButton
         icon="pi pi-plus"
         label="新增配置"
         severity="primary"
@@ -61,7 +61,7 @@
           v-permission="'delete'"
           class="flex flex-wrap items-center gap-3 sm:gap-4 mb-3 sm:mb-4 p-3 rounded-xl bg-primary/5 border border-primary/20"
         >
-          <span class="text-sm text-surface-400">已选择 {{ selectedBuildIds.length }} 个配置</span>
+          <span class="text-sm text-surface-400">{{ SELECTION_STATUS_PREFIX }} {{ selectedBuildIds.length }} {{ SELECTION_COUNT_SUFFIX }}</span>
           <BaseButton
             icon="pi pi-trash"
             label="批量删除"
@@ -81,7 +81,7 @@
 
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-3 sm:mb-4">
           <p class="text-sm sm:text-base text-surface-400">
-            共 <span class="text-surface-0 font-bold text-sm sm:text-lg">{{ filteredBuilds.length }}</span> 个配置
+            {{ RESULT_COUNT_PREFIX }} <span class="text-surface-0 font-bold text-sm sm:text-lg">{{ filteredBuilds.length }}</span> {{ RESULT_COUNT_SUFFIX }}
           </p>
           <div
             v-if="filteredBuilds.length > 0"
@@ -91,7 +91,7 @@
               :model-value="selectAllCheckbox"
               @change="toggleSelectAll"
             />
-            <span class="text-sm text-surface-400">全选</span>
+            <span class="text-sm text-surface-400">{{ CHECKBOX_LABEL_SELECT_ALL }}</span>
           </div>
         </div>
 
@@ -126,10 +126,10 @@
         >
           <i class="pi pi-inbox text-4xl sm:text-5xl text-surface-500 mb-3 sm:mb-4" />
           <h3 class="text-base sm:text-lg font-semibold mb-2">
-            未找到匹配的配置
+            {{ EMPTY_STATE_TITLE }}
           </h3>
           <p class="text-sm sm:text-base text-surface-400 mb-3 sm:mb-4">
-            尝试调整筛选条件或搜索关键词
+            {{ EMPTY_STATE_HINT }}
           </p>
           <BaseButton
             label="清除筛选"
@@ -162,7 +162,7 @@
     <Drawer
       v-model:visible="showMobileFilter"
       position="left"
-      :pt="{ root: { style: { width: '360px' } } }"
+      :pt="{ root: { class: DRAWER_WIDTH_CLASS } }"
     >
       <BuildFilterSidebar
         :professions="professions"
@@ -196,12 +196,60 @@ import BaseCheckbox from '@/components/common/ui/input/BaseCheckbox.vue'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
 import type { BuildEntry, SubRoleFilter } from '@/types/buildLibrary'
-import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Drawer from 'primevue/drawer'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref, watch } from 'vue'
+
+// === 常量定义 ===
+const PAGE_TITLE = '配置图书馆'
+const PAGE_SUBTITLE = '格林特职业学院战场配置百科'
+const RESULT_COUNT_PREFIX = '共'
+const RESULT_COUNT_SUFFIX = '个配置'
+const SELECTION_COUNT_SUFFIX = '个配置'
+const SELECTION_STATUS_PREFIX = '已选择'
+const CHECKBOX_LABEL_SELECT_ALL = '全选'
+const EMPTY_STATE_TITLE = '未找到匹配的配置'
+const EMPTY_STATE_HINT = '尝试调整筛选条件或搜索关键词'
+const DRAWER_WIDTH_CLASS = 'w-[360px]'
+
+const CONFIRM_DIALOG = {
+  DELETE_HEADER: '确认删除',
+  BATCH_DELETE_HEADER: '确认批量删除',
+  DELETE_MESSAGE_PREFIX: '确定要删除配置「',
+  DELETE_MESSAGE_SUFFIX: '」吗？此操作不可恢复。',
+  BATCH_DELETE_MESSAGE_PREFIX: '确定要删除选中的 ',
+  BATCH_DELETE_MESSAGE_SUFFIX: ' 个配置吗？此操作不可恢复。',
+} as const
+
+const LIFE_TIME = {
+  SHORT: 2000,
+  NORMAL: 3000,
+  LONG: 5000,
+} as const
+
+const TOAST_MESSAGES = {
+  DELETE: {
+    SUCCESS_SUMMARY: '删除成功',
+    FAIL_SUMMARY: '删除失败',
+    DETAIL_PREFIX: '配置「',
+    DETAIL_SUFFIX: '」已删除',
+    FALLBACK_ERROR: '未知错误',
+  },
+  COPY: {
+    SUCCESS_SUMMARY: '复制成功',
+    SUCCESS_DETAIL: 'Build代码已复制到剪贴板',
+    FAIL_SUMMARY: '复制失败',
+    FAIL_DETAIL: '无法复制到剪贴板',
+  },
+  BATCH_DELETE: {
+    SUCCESS_SUMMARY: '批量删除成功',
+    PARTIAL_SUMMARY: '部分删除成功',
+    FAIL_SUMMARY: '批量删除失败',
+    FAIL_DETAIL: '删除操作失败',
+  },
+} as const
 
 const toast = useToast()
 const confirm = useConfirm()
@@ -263,8 +311,8 @@ const confirmDelete = () => {
   if (!selectedBuild.value) return
   const build = selectedBuild.value
   confirm.require({
-    message: `确定要删除配置「${build.title}」吗？此操作不可恢复。`,
-    header: '确认删除',
+    message: `${CONFIRM_DIALOG.DELETE_MESSAGE_PREFIX}${build.title}${CONFIRM_DIALOG.DELETE_MESSAGE_SUFFIX}`,
+    header: CONFIRM_DIALOG.DELETE_HEADER,
     icon: 'pi pi-exclamation-triangle',
     acceptLabel: '删除',
     rejectLabel: '取消',
@@ -272,11 +320,11 @@ const confirmDelete = () => {
     accept: async () => {
       const result = await store.deleteBuild(build.id)
       if (result.success) {
-        toast.add({ severity: 'success', summary: '删除成功', detail: `配置「${build.title}」已删除`, life: 3000 })
+        toast.add({ severity: 'success', summary: TOAST_MESSAGES.DELETE.SUCCESS_SUMMARY, detail: `${TOAST_MESSAGES.DELETE.DETAIL_PREFIX}${build.title}${TOAST_MESSAGES.DELETE.DETAIL_SUFFIX}`, life: LIFE_TIME.NORMAL })
         drawerVisible.value = false
         selectedBuild.value = null
       } else {
-        toast.add({ severity: 'error', summary: '删除失败', detail: result.error || '未知错误', life: 5000 })
+        toast.add({ severity: 'error', summary: TOAST_MESSAGES.DELETE.FAIL_SUMMARY, detail: result.error || TOAST_MESSAGES.DELETE.FALLBACK_ERROR, life: LIFE_TIME.LONG })
       }
     }
   })
@@ -297,9 +345,9 @@ const copyBuildCode = async (build: BuildEntry) => {
   if (!build.bdCode) return
   try {
     await navigator.clipboard.writeText(build.bdCode)
-    toast.add({ severity: 'success', summary: '复制成功', detail: 'Build代码已复制到剪贴板', life: 2000 })
+    toast.add({ severity: 'success', summary: TOAST_MESSAGES.COPY.SUCCESS_SUMMARY, detail: TOAST_MESSAGES.COPY.SUCCESS_DETAIL, life: LIFE_TIME.SHORT })
   } catch {
-    toast.add({ severity: 'error', summary: '复制失败', detail: '无法复制到剪贴板', life: 3000 })
+    toast.add({ severity: 'error', summary: TOAST_MESSAGES.COPY.FAIL_SUMMARY, detail: TOAST_MESSAGES.COPY.FAIL_DETAIL, life: LIFE_TIME.NORMAL })
   }
 }
 
@@ -338,8 +386,8 @@ const batchDelete = () => {
   if (selectedBuildIds.value.length === 0) return
   const count = selectedBuildIds.value.length
   confirm.require({
-    message: `确定要删除选中的 ${count} 个配置吗？此操作不可恢复。`,
-    header: '确认批量删除',
+    message: `${CONFIRM_DIALOG.BATCH_DELETE_MESSAGE_PREFIX}${count}${CONFIRM_DIALOG.BATCH_DELETE_MESSAGE_SUFFIX}`,
+    header: CONFIRM_DIALOG.BATCH_DELETE_HEADER,
     icon: 'pi pi-exclamation-triangle',
     acceptLabel: '删除',
     rejectLabel: '取消',
@@ -350,11 +398,11 @@ const batchDelete = () => {
       )
       const successCount = results.filter(r => r.success).length
       if (successCount === count) {
-        toast.add({ severity: 'success', summary: '批量删除成功', detail: `已删除 ${count} 个配置`, life: 3000 })
+        toast.add({ severity: 'success', summary: TOAST_MESSAGES.BATCH_DELETE.SUCCESS_SUMMARY, detail: `已删除 ${count} ${RESULT_COUNT_SUFFIX}`, life: LIFE_TIME.NORMAL })
       } else if (successCount > 0) {
-        toast.add({ severity: 'warn', summary: '部分删除成功', detail: `成功删除 ${successCount}/${count} 个配置`, life: 5000 })
+        toast.add({ severity: 'warn', summary: TOAST_MESSAGES.BATCH_DELETE.PARTIAL_SUMMARY, detail: `成功删除 ${successCount}/${count} ${RESULT_COUNT_SUFFIX}`, life: LIFE_TIME.LONG })
       } else {
-        toast.add({ severity: 'error', summary: '批量删除失败', detail: '删除操作失败', life: 5000 })
+        toast.add({ severity: 'error', summary: TOAST_MESSAGES.BATCH_DELETE.FAIL_SUMMARY, detail: TOAST_MESSAGES.BATCH_DELETE.FAIL_DETAIL, life: LIFE_TIME.LONG })
       }
       selectedBuildIds.value = []
       selectAllCheckbox.value = false

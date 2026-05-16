@@ -5,7 +5,7 @@
       class="loading-content"
     >
       <i class="pi pi-spin pi-spinner text-2xl text-primary" />
-      <span class="loading-text">正在加载循环数据...</span>
+      <span class="loading-text">{{ LABEL_LOADING_ROTATION }}</span>
     </div>
     <div
       v-else-if="error"
@@ -20,7 +20,7 @@
     >
       <h4 class="section-title">
         <i class="pi pi-repeat" />
-        技能循环序列
+        {{ SECTION_ROTATION_SEQUENCE }}
       </h4>
       <div class="rotation-timeline">
         <div
@@ -45,11 +45,11 @@
       </div>
       <div class="rotation-stats">
         <div class="rotation-stat">
-          <span class="stat-label">循环准确率</span>
+          <span class="stat-label">{{ LABEL_ROTATION_ACCURACY }}</span>
           <span class="stat-value rotation-accuracy">{{ accuracy }}%</span>
         </div>
         <div class="rotation-stat">
-          <span class="stat-label">理想循环匹配</span>
+          <span class="stat-label">{{ LABEL_IDEAL_ROTATION_MATCH }}</span>
           <span class="stat-value">{{ idealMatches }}/{{ totalActions }}</span>
         </div>
       </div>
@@ -62,6 +62,25 @@ import { ref, watch } from 'vue'
 import type { Player } from '@/types/eliteInsights'
 import { combatAnalysisService } from '@/services'
 import type { PlayerRotationResponse, PlayerQueryParams } from '@/services/combat/combatAnalysisService'
+import {
+  LABEL_LOADING_ROTATION,
+  SECTION_ROTATION_SEQUENCE,
+  LABEL_WEAPON_SKILL,
+  LABEL_ROTATION_ACCURACY,
+  LABEL_IDEAL_ROTATION_MATCH,
+  ERROR_MISSING_LOG_ID,
+  ERROR_LOAD_FAILED,
+  ERROR_MULTIPLE_SAME_NAME,
+  ERROR_NETWORK_ERROR,
+} from '@/constants/eiLabels'
+import {
+  ROTATION_IDEAL_INTERVAL,
+  ROTATION_ACCURACY_MIN,
+  ROTATION_ACCURACY_RANGE,
+  MS_PER_SECOND,
+  SECONDS_PER_MINUTE,
+} from '@/constants/thresholds'
+import { SKILL_ICON_MAP, DEFAULT_SKILL_ICON } from '@/constants/rotation'
 
 const { player, logId } = defineProps<{
   player: Player
@@ -77,7 +96,7 @@ const totalActions = ref(0)
 
 async function load() {
   if (!logId) {
-    error.value = '缺少日志ID'
+    error.value = ERROR_MISSING_LOG_ID
     return
   }
   isLoading.value = true
@@ -90,16 +109,16 @@ async function load() {
     }
     const result = await combatAnalysisService.getPlayerRotation(logId, params)
     if (!result.success || !result.data) {
-      error.value = result.message || '加载失败'
+      error.value = result.message || ERROR_LOAD_FAILED
       return
     }
     if (combatAnalysisService.isAmbiguousResponse(result.data)) {
-      error.value = result.data.message || '存在多个同名玩家'
+      error.value = result.data.message || ERROR_MULTIPLE_SAME_NAME
       return
     }
     transform(result.data as PlayerRotationResponse)
   } catch (e: any) {
-    error.value = e.response?.data?.message || '网络错误'
+    error.value = e.response?.data?.message || ERROR_NETWORK_ERROR
   } finally {
     isLoading.value = false
   }
@@ -108,29 +127,24 @@ async function load() {
 function transform(res: PlayerRotationResponse) {
   data.value = res.rotation_sequence.map((item, index) => ({
     skillName: item.skill_name,
-    type: '武器技能',
+    type: LABEL_WEAPON_SKILL,
     icon: getSkillIcon(item.skill_name),
     timestamp: fmtTime(item.timestamp_ms),
-    isIdeal: index % 3 === 0,
+    isIdeal: index % ROTATION_IDEAL_INTERVAL === 0,
   }))
-  accuracy.value = Math.floor(Math.random() * 30) + 70
+  accuracy.value = Math.floor(Math.random() * ROTATION_ACCURACY_RANGE) + ROTATION_ACCURACY_MIN
   idealMatches.value = data.value.filter((a: any) => a.isIdeal).length
   totalActions.value = data.value.length
 }
 
 function getSkillIcon(name: string): string {
-  const map: Record<string, string> = {
-    '猛击': 'pi pi-sword', '破甲击': 'pi pi-shield', '旋风斩': 'pi pi-refresh',
-    '战吼': 'pi pi-volume-up', '狂暴': 'pi pi-flame', '格挡': 'pi pi-shield',
-    '暴击': 'pi pi-star', '重击': 'pi pi-hammer',
-  }
-  return map[name] || 'pi pi-bolt'
+  return SKILL_ICON_MAP[name] || DEFAULT_SKILL_ICON
 }
 
 function fmtTime(ms: number): string {
-  const s = Math.floor(ms / 1000)
-  const m = Math.floor(s / 60)
-  return `${m}.${(s % 60).toFixed(1)}s`
+  const s = Math.floor(ms / MS_PER_SECOND)
+  const m = Math.floor(s / SECONDS_PER_MINUTE)
+  return `${m}.${(s % SECONDS_PER_MINUTE).toFixed(1)}s`
 }
 
 watch(() => player, () => {

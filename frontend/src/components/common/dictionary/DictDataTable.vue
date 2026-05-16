@@ -4,9 +4,9 @@
       v-if="selectedDictType"
       :value="filteredDictData"
       :loading="loading"
-      :paginator="filteredDictData.length > 10"
-      :rows="10"
-      :rows-per-page-options="[10, 20, 50]"
+      :paginator="filteredDictData.length > PAGINATOR_THRESHOLD"
+      :rows="ROWS_PER_PAGE"
+      :rows-per-page-options="ROWS_PER_PAGE_OPTIONS"
       striped-rows
       removable-sort
       sort-field="dict_sort"
@@ -15,9 +15,9 @@
     >
       <Column
         field="dict_sort"
-        header="排序"
+        :header="COLUMN_HEADER_SORT"
         sortable
-        style="width: 80px"
+        :style="{ width: COLUMN_WIDTH_SORT }"
       >
         <template #body="{ data }">
           <span class="sort-value">{{ data.dict_sort }}</span>
@@ -25,7 +25,7 @@
       </Column>
       <Column
         field="dict_label"
-        header="标签"
+        :header="COLUMN_HEADER_LABEL"
         sortable
       >
         <template #body="{ data }">
@@ -34,13 +34,13 @@
             <span
               v-if="data.is_default === 1"
               class="default-badge"
-            >默认</span>
+            >{{ DEFAULT_BADGE_TEXT }}</span>
           </div>
         </template>
       </Column>
       <Column
         field="dict_value"
-        header="值"
+        :header="COLUMN_HEADER_VALUE"
         sortable
       >
         <template #body="{ data }">
@@ -49,8 +49,8 @@
       </Column>
       <Column
         field="css_class"
-        header="颜色"
-        style="width: 120px"
+        :header="COLUMN_HEADER_COLOR"
+        :style="{ width: COLUMN_WIDTH_COLOR }"
       >
         <template #body="{ data }">
           <div
@@ -66,13 +66,13 @@
           <span
             v-else
             class="no-color"
-          >-</span>
+          >{{ PLACEHOLDER_DASH }}</span>
         </template>
       </Column>
       <Column
         field="list_class"
-        header="列表样式"
-        style="width: 100px"
+        :header="COLUMN_HEADER_LIST_STYLE"
+        :style="{ width: COLUMN_WIDTH_LIST_STYLE }"
       >
         <template #body="{ data }">
           <span
@@ -82,14 +82,14 @@
           <span
             v-else
             class="no-color"
-          >-</span>
+          >{{ PLACEHOLDER_DASH }}</span>
         </template>
       </Column>
       <Column
         field="status"
-        header="状态"
+        :header="COLUMN_HEADER_STATUS"
         sortable
-        style="width: 80px"
+        :style="{ width: COLUMN_WIDTH_STATUS }"
       >
         <template #body="{ data }">
           <DictTag
@@ -100,16 +100,16 @@
       </Column>
       <Column
         field="remark"
-        header="备注"
+        :header="COLUMN_HEADER_REMARK"
       >
         <template #body="{ data }">
-          <span class="remark-text">{{ data.remark || '-' }}</span>
+          <span class="remark-text">{{ data.remark || PLACEHOLDER_DASH }}</span>
         </template>
       </Column>
       <Column
-        v-if="isAdmin"
-        header="操作"
-        style="width: 150px"
+        v-if="canWrite"
+        :header="COLUMN_HEADER_ACTION"
+        :style="{ width: COLUMN_WIDTH_ACTION }"
         frozen
         align-frozen="right"
       >
@@ -137,7 +137,7 @@
       <template #empty>
         <EmptyState
           icon="pi pi-inbox"
-          title="暂无数据"
+          :title="EMPTY_TITLE"
         />
       </template>
     </DataTable>
@@ -146,8 +146,8 @@
       class="no-selection"
     >
       <i class="pi pi-book" />
-      <h3>请选择字典分类</h3>
-      <p>从左侧列表选择一个字典分类来查看和编辑数据</p>
+      <h3>{{ NO_SELECTION_TITLE }}</h3>
+      <p>{{ NO_SELECTION_DESC }}</p>
     </div>
   </div>
 </template>
@@ -160,11 +160,39 @@ import type { DictData, DictType } from '@/services/system/dictionaryService'
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 
+// ============ 常量定义 ============
+const COLUMN_HEADER_SORT = '排序'
+const COLUMN_HEADER_LABEL = '标签'
+const COLUMN_HEADER_VALUE = '值'
+const COLUMN_HEADER_COLOR = '颜色'
+const COLUMN_HEADER_LIST_STYLE = '列表样式'
+const COLUMN_HEADER_STATUS = '状态'
+const COLUMN_HEADER_REMARK = '备注'
+const COLUMN_HEADER_ACTION = '操作'
+
+const DEFAULT_BADGE_TEXT = '默认'
+const PLACEHOLDER_DASH = '-'
+
+const EMPTY_TITLE = '暂无数据'
+const NO_SELECTION_TITLE = '请选择字典分类'
+const NO_SELECTION_DESC = '从左侧列表选择一个字典分类来查看和编辑数据'
+
+const PAGINATOR_THRESHOLD = 10
+const ROWS_PER_PAGE = 10
+const ROWS_PER_PAGE_OPTIONS = [10, 20, 50]
+
+const COLUMN_WIDTH_SORT = '80px'
+const COLUMN_WIDTH_COLOR = '120px'
+const COLUMN_WIDTH_LIST_STYLE = '100px'
+const COLUMN_WIDTH_STATUS = '80px'
+const COLUMN_WIDTH_ACTION = '150px'
+// =================================
+
 defineProps<{
   selectedDictType: DictType | null
   filteredDictData: DictData[]
   loading: boolean
-  isAdmin: boolean
+  canWrite: boolean
 }>()
 
 defineEmits<{
@@ -216,7 +244,7 @@ defineEmits<{
 .default-badge {
   font-size: 10px;
   background: var(--color-primary);
-  color: #fff;
+  color: var(--color-text-inverse);
   padding: 2px 6px;
   border-radius: 4px;
 }

@@ -56,7 +56,7 @@
             class="flex items-center gap-1"
           >
             <span class="text-xs text-neutral-text-secondary">常用职业：</span>
-            <span class="px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">{{ data.most_used_profession }}</span>
+            <span class="px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">{{ getProfessionName(data.most_used_profession) }}</span>
           </div>
         </div>
       </div>
@@ -73,6 +73,7 @@
             </span>
           </div>
           <div class="w-full h-2 bg-neutral-border rounded-full overflow-hidden">
+            <!-- 动态值，无法使用 Tailwind 静态类 -->
             <div
               class="h-full rounded-full transition-all duration-500"
               :class="scoreBarClass(dim.score)"
@@ -94,6 +95,7 @@
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
 import LoadingState from '@/components/common/ui/feedback/LoadingState.vue'
+import { getProfessionName } from '@/services/professionService'
 
 const props = defineProps<{
   visible: boolean

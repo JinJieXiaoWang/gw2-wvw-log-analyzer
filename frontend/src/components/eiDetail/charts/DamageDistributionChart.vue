@@ -9,9 +9,7 @@
     <div class="card-content">
       <div class="donut-chart">
         <DonutChart
-          :size="140"
-          :stroke-width="12"
-          :radius="40"
+          :config="{ size: 140, strokeWidth: 12, radius: 40 }"
           :segments="[
             { color: powerColor, value: powerDamage },
             { color: condiColor, value: condiDamage },

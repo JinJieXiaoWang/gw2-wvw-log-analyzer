@@ -46,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { getProfessionName } from '@/services/professionService'
+import { getProfessionName, getProfessionColor } from '@/services/professionService'
 /**
  * 模板信息组件
  * 功能：显示解析后的Build模板信息
@@ -63,19 +63,5 @@ defineProps<{
   }
 }>()
 
-// 方法
-const getProfessionColor = (profession: string) => {
-  const colors: Record<string, string> = {
-    '战士': '#E85D04',
-    '守护者': '#FAA307',
-    '魂武者': '#9D4EDD',
-    '游侠': '#FF6B6B',
-    '工程师': '#7B8FA1',
-    '潜行者': '#06D6A0',
-    '唤灵师': '#8D0801',
-    '幻术师': '#4361EE',
-    '元素使': '#2EC4B6'
-  }
-  return colors[profession] || '#6C757D'
-}
+
 </script>

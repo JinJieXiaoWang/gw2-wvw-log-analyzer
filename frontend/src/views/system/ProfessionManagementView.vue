@@ -18,7 +18,7 @@
           v-if="loading"
           class="flex items-center justify-center py-16"
         >
-          <ProgressSpinner style="width: 40px; height: 40px" />
+          <ProgressSpinner class="w-[40px] h-[40px]" />
           <span class="ml-3 text-neutral-text-secondary text-sm">加载数据中...</span>
         </div>
 

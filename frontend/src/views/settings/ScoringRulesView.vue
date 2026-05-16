@@ -9,8 +9,8 @@
 
     <div class="relative z-10 max-w-[1400px] mx-auto flex flex-col gap-4 sm:gap-6">
       <PageHeader
-        title="评分规则配置"
-        subtitle="为不同角色类型定制评分维度和权重"
+        :title="PAGE_TITLE"
+        :subtitle="PAGE_SUBTITLE"
         icon="pi pi-sliders-h"
         icon-gradient="bg-gradient-to-br from-primary via-ai to-secondary"
       />
@@ -22,7 +22,7 @@
         <div class="flex items-start gap-3">
           <i class="pi pi-calculator mt-0.5 text-info-500" />
           <div class="text-sm leading-relaxed">
-            <strong>评分自动计算机制：</strong>当日志导入完成后，系统会根据当前生效的评分规则版本，结合玩家的职业和角色定位，<strong>自动计算</strong>每个玩家的 AI 评分与等级。修改规则后，可通过"应用到历史数据"按钮重新计算历史日志。
+            <strong>{{ AUTO_CALCULATION.TITLE }}</strong>{{ AUTO_CALCULATION.DESCRIPTION_PREFIX }}<strong>{{ AUTO_CALCULATION.HIGHLIGHT }}</strong>{{ AUTO_CALCULATION.DESCRIPTION_SUFFIX }}
           </div>
         </div>
       </Message>
@@ -140,6 +140,18 @@ import { useScoringRules } from '@/composables/scoring/useScoringRules'
 import { usePermission } from '@/composables/system/usePermission'
 import { professionService } from '@/services'
 
+// === 常量定义 ===
+const PAGE_TITLE = '评分规则配置'
+const PAGE_SUBTITLE = '为不同角色类型定制评分维度和权重'
+const AUTO_CALCULATION = {
+  TITLE: '评分自动计算机制：',
+  DESCRIPTION_PREFIX: '当日志导入完成后，系统会根据当前生效的评分规则版本，结合玩家的职业和角色定位，',
+  HIGHLIGHT: '自动计算',
+  DESCRIPTION_SUFFIX: '每个玩家的 AI 评分与等级。修改规则后，可通过"应用到历史数据"按钮重新计算历史日志。',
+} as const
+const ROLE_FALLBACK = 'dps'
+const LOG_LOAD_ROLE_MAPPING_FAIL = '加载职业角色映射失败:'
+
 const { can } = usePermission()
 const canWrite = can('write')
 
@@ -188,14 +200,14 @@ async function loadProfessionRoleMapping() {
     professionRoleMapping.value = professions.map(p => ({
       profession: p.profession_name,
       professionKey: p.profession_key,
-      role: p.default_role || 'dps',
-      roleLabel: p.default_role || 'dps',
+      role: p.default_role || ROLE_FALLBACK,
+      roleLabel: p.default_role || ROLE_FALLBACK,
       icon: 'pi pi-user',
       eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_name),
-      currentRole: p.default_role || 'dps'
+      currentRole: p.default_role || ROLE_FALLBACK
     }))
   } catch (error) {
-    console.error('加载职业角色映射失败:', error)
+    console.error(LOG_LOAD_ROLE_MAPPING_FAIL, error)
   } finally {
     isLoadingRoleMapping.value = false
   }
@@ -250,7 +262,7 @@ onMounted(() => {
 
 .deco-grid {
   @apply absolute inset-0;
-  background-image: linear-gradient(rgba(22,93,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(22,93,255,0.03) 1px, transparent 1px);
+  background-image: linear-gradient(color-mix(in srgb, var(--color-primary) 3%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--color-primary) 3%, transparent) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 </style>

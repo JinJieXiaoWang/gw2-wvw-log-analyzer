@@ -25,6 +25,7 @@
     />
     <BaseButton
       v-if="data.status === ParseStatus.PENDING || data.status === ParseStatus.FAILED"
+      v-permission="'write'"
       v-tooltip.top="'重新解析'"
       icon="pi pi-refresh"
       size="small"

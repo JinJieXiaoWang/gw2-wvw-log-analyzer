@@ -7,17 +7,17 @@
       viewBox="0 0 100 100"
       class="donut-svg"
       role="img"
-      :aria-label="ariaLabel"
+      :aria-label="mergedLabels.ariaLabel"
     >
       <!-- 背景轨道 -->
       <circle
-        v-if="trackColor"
+        v-if="mergedConfig.trackColor"
         cx="50"
         cy="50"
-        :r="radius"
+        :r="mergedConfig.radius"
         fill="none"
-        :stroke="trackColor"
-        :stroke-width="strokeWidth"
+        :stroke="mergedConfig.trackColor"
+        :stroke-width="mergedConfig.strokeWidth"
       />
       <!-- 数据段 -->
       <circle
@@ -25,10 +25,10 @@
         :key="index"
         cx="50"
         cy="50"
-        :r="radius"
+        :r="mergedConfig.radius"
         fill="none"
         :stroke="segment.color"
-        :stroke-width="strokeWidth"
+        :stroke-width="mergedConfig.strokeWidth"
         :stroke-dasharray="segment.dashArray"
         :stroke-dashoffset="segment.dashOffset"
         transform="rotate(-90 50 50)"
@@ -41,13 +41,13 @@
     >
       <slot>
         <span
-          v-if="centerText"
+          v-if="mergedLabels.centerText"
           class="donut-center-text"
-        >{{ centerText }}</span>
+        >{{ mergedLabels.centerText }}</span>
         <span
-          v-if="centerSubtext"
+          v-if="mergedLabels.centerSubtext"
           class="donut-center-subtext"
-        >{{ centerSubtext }}</span>
+        >{{ mergedLabels.centerSubtext }}</span>
       </slot>
     </div>
   </div>
@@ -56,36 +56,69 @@
 <script setup lang="ts">
 import { computed, useSlots } from 'vue'
 
+/** 环形图数据段 */
 export interface DonutSegment {
   color: string
   value: number
   label?: string
 }
 
+/** 环形图外观配置 */
+export interface DonutConfig {
+  /** 图表尺寸（像素） */
+  size?: number
+  /** 描边宽度 */
+  strokeWidth?: number
+  /** 圆环半径 */
+  radius?: number
+  /** 轨道背景色 */
+  trackColor?: string
+}
+
+/** 环形图中心文本配置 */
+export interface DonutLabels {
+  /** 中心主文本 */
+  centerText?: string
+  /** 中心副文本 */
+  centerSubtext?: string
+  /** 无障碍标签 */
+  ariaLabel?: string
+}
+
 const props = withDefaults(defineProps<{
   segments: DonutSegment[]
-  size?: number
-  strokeWidth?: number
-  radius?: number
-  centerText?: string
-  centerSubtext?: string
-  trackColor?: string
-  ariaLabel?: string
+  config?: DonutConfig
+  labels?: DonutLabels
 }>(), {
-  size: 120,
-  strokeWidth: 12,
-  radius: 40,
-  ariaLabel: '环形图',
+  config: () => ({}),
+  labels: () => ({}),
 })
 
 const slots = useSlots()
 
-const containerStyle = computed(() => ({
-  width: `${props.size}px`,
-  height: `${props.size}px`,
+/** 合并后的配置（含默认值） */
+const mergedConfig = computed<Required<DonutConfig>>(() => ({
+  size: 120,
+  strokeWidth: 12,
+  radius: 40,
+  trackColor: '',
+  ...props.config,
 }))
 
-const circumference = computed(() => 2 * Math.PI * props.radius)
+/** 合并后的标签配置（含默认值） */
+const mergedLabels = computed<Required<DonutLabels>>(() => ({
+  centerText: '',
+  centerSubtext: '',
+  ariaLabel: '环形图',
+  ...props.labels,
+}))
+
+const containerStyle = computed(() => ({
+  width: `${mergedConfig.value.size}px`,
+  height: `${mergedConfig.value.size}px`,
+}))
+
+const circumference = computed(() => 2 * Math.PI * mergedConfig.value.radius)
 
 const total = computed(() => props.segments.reduce((sum, s) => sum + (s.value || 0), 0))
 
@@ -106,7 +139,7 @@ const computedSegments = computed(() => {
 })
 
 const showCenter = computed(() => {
-  return props.centerText || props.centerSubtext || !!slots.default
+  return mergedLabels.value.centerText || mergedLabels.value.centerSubtext || !!slots.default
 })
 </script>
 

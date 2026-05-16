@@ -1,4 +1,5 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
     style="animation-delay: 0.6s"
@@ -10,10 +11,10 @@
         </div>
         <div>
           <h3 class="text-lg font-semibold text-neutral-text">
-            出勤账号列表
+            {{ TABLE_TITLE }}
           </h3>
           <p class="text-xs text-neutral-text-secondary">
-            共 {{ pagination.total }} 个账号 · 按自然日去重统计
+            {{ TABLE_SUBTITLE_PREFIX }}{{ pagination.total }}{{ TABLE_SUBTITLE_SUFFIX }}
           </p>
         </div>
       </div>
@@ -64,7 +65,7 @@
       >
         <template #body="{ data }">
           <span class="text-primary font-bold">{{ data.attendance_count }}</span>
-          <span class="text-xs text-neutral-text-secondary ml-1">天</span>
+          <span class="text-xs text-neutral-text-secondary ml-1">{{ ATTENDANCE_UNIT }}</span>
         </template>
       </Column>
 
@@ -126,9 +127,9 @@
         <template #body="{ data }">
           <span
             :class="{
-              'text-status-success font-bold': data.kd_ratio >= 2,
-              'text-primary font-semibold': data.kd_ratio >= 1 && data.kd_ratio < 2,
-              'text-status-error': data.kd_ratio < 1
+              'text-status-success font-bold': data.kd_ratio >= KD_RATIO_THRESHOLDS.EXCELLENT,
+              'text-primary font-semibold': data.kd_ratio >= KD_RATIO_THRESHOLDS.GOOD && data.kd_ratio < KD_RATIO_THRESHOLDS.EXCELLENT,
+              'text-status-error': data.kd_ratio < KD_RATIO_THRESHOLDS.GOOD
             }"
           >
             {{ data.kd_ratio }}
@@ -144,12 +145,12 @@
         <template #body="{ data }">
           <span
             :class="{
-              'game-badge game-badge-legendary cursor-pointer hover:scale-110 transition-transform': data.avg_score >= 90,
-              'game-badge game-badge-exotic cursor-pointer hover:scale-110 transition-transform': data.avg_score >= 80 && data.avg_score < 90,
-              'game-badge game-badge-rare cursor-pointer hover:scale-110 transition-transform': data.avg_score >= 70 && data.avg_score < 80,
-              'game-badge cursor-pointer hover:scale-110 transition-transform': data.avg_score < 70
+              'game-badge game-badge-legendary cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.LEGENDARY,
+              'game-badge game-badge-exotic cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.EXOTIC && data.avg_score < SCORE_THRESHOLDS.LEGENDARY,
+              'game-badge game-badge-rare cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.RARE && data.avg_score < SCORE_THRESHOLDS.EXOTIC,
+              'game-badge cursor-pointer hover:scale-110 transition-transform': data.avg_score < SCORE_THRESHOLDS.RARE
             }"
-            title="点击查看维度评分详情"
+            :title="SCORE_TOOLTIP"
             @click="handleScoreClick(data.account)"
           >
             {{ data.avg_score }}
@@ -164,11 +165,12 @@
       >
         <template #body="{ data }">
           <span class="text-sm text-neutral-text-secondary">
-            {{ data.last_attendance ? formatDate(data.last_attendance) : '-' }}
+            {{ data.last_attendance ? formatDate(data.last_attendance) : NO_DATE_PLACEHOLDER }}
           </span>
         </template>
       </Column>
 
+      <!-- 动态值，无法使用 Tailwind 静态类（PrimeVue Column API） -->
       <Column
         header="操作"
         style="width: 100px"
@@ -186,7 +188,7 @@
 
     <div class="flex items-center justify-between mt-4">
       <div class="text-sm text-neutral-text-secondary">
-        显示 {{ accountList.length }} 条，共 {{ pagination.total }} 条
+        {{ getPaginationText(accountList.length, pagination.total) }}
       </div>
       <Paginator
         :rows="pagination.pageSize"
@@ -213,6 +215,28 @@ import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import Paginator from 'primevue/paginator'
 import Tag from 'primevue/tag'
+
+// === 常量定义 ===
+const TABLE_TITLE = '出勤账号列表'
+const TABLE_SUBTITLE_PREFIX = '共 '
+const TABLE_SUBTITLE_SUFFIX = ' 个账号 · 按自然日去重统计'
+const ATTENDANCE_UNIT = '天'
+const SCORE_TOOLTIP = '点击查看维度评分详情'
+const NO_DATE_PLACEHOLDER = '-'
+
+const KD_RATIO_THRESHOLDS = {
+  EXCELLENT: 2,
+  GOOD: 1,
+} as const
+
+const SCORE_THRESHOLDS = {
+  LEGENDARY: 90,
+  EXOTIC: 80,
+  RARE: 70,
+} as const
+
+const getPaginationText = (current: number, total: number): string =>
+  `显示 ${current} 条，共 ${total} 条`
 
 export interface AccountItem {
   account: string

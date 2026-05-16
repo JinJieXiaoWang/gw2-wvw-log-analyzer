@@ -10,11 +10,8 @@
       <!-- 环形图 + 图例 -->
       <div class="flex flex-col sm:flex-row items-center gap-6">
         <DonutChart
-          :size="192"
-          :stroke-width="12"
-          :radius="42"
-          track-color="var(--color-border)"
-          aria-label="伤害构成环形图"
+          :config="{ size: 192, strokeWidth: 12, radius: 42, trackColor: 'var(--color-border)' }"
+          :labels="{ ariaLabel: '伤害构成环形图' }"
           :segments="[
             { color: 'var(--color-primary)', value: agg.total_power_damage },
             { color: 'var(--color-success)', value: agg.total_condi_damage },

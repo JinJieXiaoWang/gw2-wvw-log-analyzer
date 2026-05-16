@@ -1,4 +1,5 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
     style="animation-delay: 0.1s"

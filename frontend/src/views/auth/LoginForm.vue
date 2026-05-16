@@ -18,19 +18,19 @@
           id="username"
           v-model="username"
           type="text"
-          :disabled="loading"
+          :disabled="submitStatus.loading"
           class="w-full pl-12 pr-4 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          :class="{ 'border-red-500 bg-red-900/20': errors.username }"
+          :class="{ 'border-red-500 bg-red-900/20': formState.errors.username }"
           placeholder="请输入用户名"
           @blur="emit('validate-username')"
           @input="emit('clear-error', 'username'); updateForm()"
         >
       </div>
       <p
-        v-if="errors.username"
+        v-if="formState.errors.username"
         class="mt-2 text-sm text-red-400"
       >
-        {{ errors.username }}
+        {{ formState.errors.username }}
       </p>
     </div>
 
@@ -49,9 +49,9 @@
           id="password"
           v-model="password"
           :type="showPassword ? 'text' : 'password'"
-          :disabled="loading"
+          :disabled="submitStatus.loading"
           class="w-full pl-12 pr-12 py-3 bg-slate-700/50 border border-slate-600 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-          :class="{ 'border-red-500 bg-red-900/20': errors.password }"
+          :class="{ 'border-red-500 bg-red-900/20': formState.errors.password }"
           placeholder="请输入密码"
           @blur="emit('validate-password')"
           @input="emit('clear-error', 'password'); updateForm()"
@@ -65,10 +65,10 @@
         </button>
       </div>
       <p
-        v-if="errors.password"
+        v-if="formState.errors.password"
         class="mt-2 text-sm text-red-400"
       >
-        {{ errors.password }}
+        {{ formState.errors.password }}
       </p>
     </div>
 
@@ -90,21 +90,21 @@
 
     <button
       type="submit"
-      :disabled="loading || !isValid"
+      :disabled="submitStatus.loading || !submitStatus.isValid"
       class="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 disabled:from-slate-600 disabled:to-slate-700 disabled:cursor-not-allowed text-white font-medium rounded-xl shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
     >
       <i
-        v-if="loading"
+        v-if="submitStatus.loading"
         class="pi pi-spin pi-spinner"
       />
-      <span>{{ loading ? '登录中...' : '登录' }}</span>
+      <span>{{ submitStatus.loading ? '登录中...' : '登录' }}</span>
     </button>
 
     <div
-      v-if="remainingAttempts > 0"
+      v-if="submitStatus.remainingAttempts > 0"
       class="text-center text-sm text-gray-500"
     >
-      剩余登录尝试次数: {{ remainingAttempts }}
+      剩余登录尝试次数: {{ submitStatus.remainingAttempts }}
     </div>
   </form>
 </template>
@@ -112,12 +112,27 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const props = defineProps<{
+/** 表单状态（含数据和验证错误） */
+interface FormState {
+  /** 用户名和密码 */
   form: { username: string; password: string }
+  /** 字段级验证错误 */
   errors: { username?: string; password?: string }
+}
+
+/** 提交状态 */
+interface SubmitStatus {
+  /** 是否正在提交 */
   loading: boolean
+  /** 表单是否有效 */
   isValid: boolean
+  /** 剩余登录尝试次数 */
   remainingAttempts: number
+}
+
+const props = defineProps<{
+  formState: FormState
+  submitStatus: SubmitStatus
 }>()
 
 const emit = defineEmits<{
@@ -129,8 +144,8 @@ const emit = defineEmits<{
 }>()
 
 const showPassword = ref(false)
-const username = ref(props.form.username)
-const password = ref(props.form.password)
+const username = ref(props.formState.form.username)
+const password = ref(props.formState.form.password)
 
 function updateForm() {
   emit('update:form', { username: username.value, password: password.value })

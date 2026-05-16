@@ -52,6 +52,26 @@ def _parse_weapons(weapons_json: Optional[Any]) -> List[str]:
     return []
 
 
+def _classify_consumables(consumables_raw: Optional[Any]) -> Dict[str, List[Dict[str, Any]]]:
+    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。"""
+    result: Dict[str, List[Dict[str, Any]]] = {"food": [], "utility": []}
+    if not consumables_raw or not isinstance(consumables_raw, list):
+        return result
+    for item in consumables_raw:
+        if not isinstance(item, dict):
+            continue
+        name = (item.get("name") or "").lower()
+        target = "utility"
+        if any(k in name for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
+            target = "food"
+        result[target].append({
+            "name": item.get("name", ""),
+            "icon": item.get("icon", ""),
+            "id": item.get("id", 0),
+        })
+    return result
+
+
 def get_unified_ei_data(db: Session, log_id: int) -> Optional[Dict[str, Any]]:
     """
     获取统一的 EI 格式数据，自动选择最佳数据源
@@ -271,7 +291,7 @@ def _build_ei_player(p: EiPlayer, duration_ms: int) -> Dict[str, Any]:
         "cleanses": sup_data.get("condiCleanse", 0),
         "strips": sup_data.get("boonStrips", 0),
         "weapons": _parse_weapons(p.weapons_json),
-        "consumables": p.consumables_json or {"food": [], "utility": []},
+        "consumables": _classify_consumables(p.consumables_json),
         "role": "Unknown",
         "hps": sup_data.get("healing", 0),
         "critRate": stats_data.get("criticalRate", 0),

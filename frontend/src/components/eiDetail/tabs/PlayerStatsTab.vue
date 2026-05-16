@@ -8,7 +8,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ fmtNum(player.dpsAll?.[0]?.damage) }}</span>
-          <span class="stat-label">总伤害</span>
+          <span class="stat-label">{{ LABEL_TOTAL_DAMAGE }}</span>
         </div>
       </div>
       <div class="stat-card dps">
@@ -17,7 +17,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ player.dps }}</span>
-          <span class="stat-label">DPS</span>
+          <span class="stat-label">{{ LABEL_DPS }}</span>
         </div>
       </div>
       <div class="stat-card score">
@@ -26,7 +26,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ player.total_score }}</span>
-          <span class="stat-label">评分</span>
+          <span class="stat-label">{{ LABEL_SCORE }}</span>
         </div>
       </div>
       <div class="stat-card hps">
@@ -35,7 +35,7 @@
         </div>
         <div class="stat-info">
           <span class="stat-value">{{ player.hps || 0 }}</span>
-          <span class="stat-label">HPS</span>
+          <span class="stat-label">{{ LABEL_HPS }}</span>
         </div>
       </div>
     </div>
@@ -44,7 +44,7 @@
     <div class="detail-section">
       <h4 class="section-title">
         <i class="pi pi-chart-bar" />
-        战斗数据详情
+        {{ SECTION_BATTLE_DETAILS }}
       </h4>
       <div class="detail-grid">
         <div
@@ -62,7 +62,7 @@
     <div class="detail-section">
       <h4 class="section-title">
         <i class="pi pi-shield" />
-        战斗状态
+        {{ SECTION_BATTLE_STATUS }}
       </h4>
       <div class="status-grid">
         <div
@@ -84,10 +84,10 @@
     <div class="detail-section">
       <h4 class="section-title">
         <i class="pi pi-sword" />
-        武器配置
+        {{ SECTION_WEAPON_CONFIG }}
       </h4>
       <div class="weapons-box">
-        <span class="weapons-text">{{ player.weapons?.join(' / ') || '未记录' }}</span>
+        <span class="weapons-text">{{ player.weapons?.join(' / ') || LABEL_WEAPONS_NOT_RECORDED }}</span>
       </div>
     </div>
   </div>
@@ -96,6 +96,39 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Player } from '@/types/eliteInsights'
+import {
+  LABEL_TOTAL_DAMAGE,
+  LABEL_DPS,
+  LABEL_SCORE,
+  LABEL_HPS,
+  SECTION_BATTLE_DETAILS,
+  LABEL_DIRECT_DAMAGE,
+  LABEL_CONDITION_DAMAGE,
+  LABEL_CRIT_RATE,
+  LABEL_CRIT_DAMAGE,
+  LABEL_PRECISION,
+  LABEL_POWER,
+  LABEL_TOUGHNESS,
+  LABEL_VITALITY,
+  SECTION_BATTLE_STATUS,
+  LABEL_DOWNS,
+  LABEL_DEATHS,
+  LABEL_CC,
+  LABEL_CLEARS,
+  SECTION_WEAPON_CONFIG,
+  LABEL_WEAPONS_NOT_RECORDED,
+} from '@/constants/eiLabels'
+import { NUMBER_MILLION, NUMBER_THOUSAND } from '@/constants/thresholds'
+import {
+  COLOR_DAMAGE_START,
+  COLOR_DAMAGE_END,
+  COLOR_DPS_START,
+  COLOR_DPS_END,
+  COLOR_SCORE_START,
+  COLOR_SCORE_END,
+  COLOR_HEALING_START,
+  COLOR_SURVIVAL_END,
+} from '@/constants/colors'
 
 const { player } = defineProps<{
   player: Player
@@ -103,27 +136,27 @@ const { player } = defineProps<{
 
 const fmtNum = (n?: number) => {
   const num = n || 0
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(1) + 'M'
-  if (num >= 1_000) return (num / 1_000).toFixed(1) + 'K'
+  if (num >= NUMBER_MILLION) return (num / NUMBER_MILLION).toFixed(1) + 'M'
+  if (num >= NUMBER_THOUSAND) return (num / NUMBER_THOUSAND).toFixed(1) + 'K'
   return num.toString()
 }
 
 const detailItems = computed(() => [
-  { label: '直伤', value: fmtNum(player.dpsAll?.[0]?.powerDamage) },
-  { label: '症状', value: fmtNum(player.dpsAll?.[0]?.condiDamage) },
-  { label: '暴击率', value: (player.critRate || 0) + '%' },
-  { label: '暴击伤害', value: (player.critDamage || 0) + '%' },
-  { label: '精准', value: (player.precision || 0).toString() },
-  { label: '威力', value: (player.power || 0).toString() },
-  { label: '坚韧', value: (player.toughness || 0).toString() },
-  { label: '体力', value: (player.vitality || 0).toString() },
+  { label: LABEL_DIRECT_DAMAGE, value: fmtNum(player.dpsAll?.[0]?.powerDamage) },
+  { label: LABEL_CONDITION_DAMAGE, value: fmtNum(player.dpsAll?.[0]?.condiDamage) },
+  { label: LABEL_CRIT_RATE, value: (player.critRate || 0) + '%' },
+  { label: LABEL_CRIT_DAMAGE, value: (player.critDamage || 0) + '%' },
+  { label: LABEL_PRECISION, value: (player.precision || 0).toString() },
+  { label: LABEL_POWER, value: (player.power || 0).toString() },
+  { label: LABEL_TOUGHNESS, value: (player.toughness || 0).toString() },
+  { label: LABEL_VITALITY, value: (player.vitality || 0).toString() },
 ])
 
 const statusItems = computed(() => [
-  { icon: 'pi pi-skull-crossbones', value: player.downs, label: '倒地', danger: player.downs > 0 },
-  { icon: 'pi pi-heart-broken', value: player.deaths, label: '死亡', danger: player.deaths > 0 },
-  { icon: 'pi pi-shield', value: player.cc, label: 'CC', danger: false },
-  { icon: 'pi pi-wind', value: player.cleanses, label: '清除', danger: false },
+  { icon: 'pi pi-skull-crossbones', value: player.downs, label: LABEL_DOWNS, danger: player.downs > 0 },
+  { icon: 'pi pi-heart-broken', value: player.deaths, label: LABEL_DEATHS, danger: player.deaths > 0 },
+  { icon: 'pi pi-shield', value: player.cc, label: LABEL_CC, danger: false },
+  { icon: 'pi pi-wind', value: player.cleanses, label: LABEL_CLEARS, danger: false },
 ])
 </script>
 
@@ -152,16 +185,16 @@ const statusItems = computed(() => [
   border-radius: 0.625rem;
 }
 .stat-card.damage .stat-icon {
-  background: linear-gradient(135deg, #ef4444, #f97316);
+  background: linear-gradient(135deg, v-bind(COLOR_DAMAGE_START), v-bind(COLOR_DAMAGE_END));
 }
 .stat-card.dps .stat-icon {
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, v-bind(COLOR_DPS_START), v-bind(COLOR_DPS_END));
 }
 .stat-card.score .stat-icon {
-  background: linear-gradient(135deg, #f59e0b, #eab308);
+  background: linear-gradient(135deg, v-bind(COLOR_SCORE_START), v-bind(COLOR_SCORE_END));
 }
 .stat-card.hps .stat-icon {
-  background: linear-gradient(135deg, #22c55e, #10b981);
+  background: linear-gradient(135deg, v-bind(COLOR_HEALING_START), v-bind(COLOR_SURVIVAL_END));
 }
 .stat-icon i {
   font-size: 1.375rem;

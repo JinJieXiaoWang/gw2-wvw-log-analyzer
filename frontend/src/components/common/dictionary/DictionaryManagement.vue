@@ -20,7 +20,7 @@
           v-model:data-search-keyword="dataSearchKeyword"
           v-model:status-filter="statusFilter"
           :selected-dict-type="selectedDictType"
-          :is-admin="isAdmin"
+          :can-write="canWrite"
           :status-options="statusOptions"
           @add="openAddDialog"
           @edit-type="openEditTypeDialog"
@@ -29,7 +29,7 @@
           :selected-dict-type="selectedDictType"
           :filtered-dict-data="filteredDictData"
           :loading="loading"
-          :is-admin="isAdmin"
+          :can-write="canWrite"
           @edit="openEditDialog"
           @delete="confirmDelete"
         />
@@ -81,7 +81,7 @@ const props = withDefaults(defineProps<{
 })
 
 const {
-  isAdmin, isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
+  canWrite, isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
   refreshing, saving, initializing,
   showDataDialog, showTypeDialog, showInitDialog,
   editingData, editingType,

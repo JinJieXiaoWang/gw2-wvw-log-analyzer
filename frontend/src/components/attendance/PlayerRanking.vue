@@ -10,10 +10,10 @@
         </div>
         <div>
           <h3 class="text-lg font-semibold text-neutral-text">
-            个人排名
+            {{ SECTION_TITLE }}
           </h3>
           <p class="text-xs text-neutral-text-secondary">
-            谁是MVP？
+            {{ SECTION_SUBTITLE }}
           </p>
         </div>
       </div>
@@ -43,6 +43,7 @@
         >
           {{ index + 1 }}
         </div>
+        <!-- 动态值，无法使用 Tailwind 静态类 -->
         <div
           class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg"
           :style="{ backgroundColor: getSvcProfessionColor(player.profession) }"
@@ -82,6 +83,22 @@ import { getProfessionName, getProfessionColor as getSvcProfessionColor } from '
 import { ref, watch } from 'vue'
 import Dropdown from 'primevue/dropdown'
 
+// === 常量定义 ===
+const SECTION_TITLE = '个人排名'
+const SECTION_SUBTITLE = '谁是MVP？'
+
+const NUMBER_THRESHOLDS = {
+  MILLION: 1_000_000,
+  THOUSAND: 1_000,
+} as const
+
+const RANK_TYPE_LABELS: Record<string, string> = {
+  damage: '伤害',
+  healing: '治疗',
+  kills: '击杀',
+  score: '评分',
+}
+
 // Props
 const props = defineProps<{
   playerRanking: Array<{
@@ -118,10 +135,10 @@ const changeRankType = () => {
 // 方法
 const formatNumber = (num: any) => {
   if (typeof num === 'number') {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M'
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K'
+    if (num >= NUMBER_THRESHOLDS.MILLION) {
+      return (num / NUMBER_THRESHOLDS.MILLION).toFixed(1) + 'M'
+    } else if (num >= NUMBER_THRESHOLDS.THOUSAND) {
+      return (num / NUMBER_THRESHOLDS.THOUSAND).toFixed(1) + 'K'
     }
     return num.toString()
   }
@@ -129,12 +146,6 @@ const formatNumber = (num: any) => {
 }
 
 const getRankTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    damage: '伤害',
-    healing: '治疗',
-    kills: '击杀',
-    score: '评分'
-  }
-  return labels[type] || type
+  return RANK_TYPE_LABELS[type] || type
 }
 </script>

@@ -12,16 +12,17 @@
             </router-link>
             <div>
               <h1 class="text-2xl sm:text-3xl font-bold text-neutral-text tracking-tight">
-                战斗分析
+                {{ PAGE_TITLE }}
               </h1>
               <p class="text-neutral-text-secondary text-sm mt-1">
-                {{ logDetail.filename || '日志详情' }} · {{ fightSummary.map_name || '未知地图' }}
+                {{ logDetail.filename || LOG_DETAIL_FALLBACK }} · {{ fightSummary.map_name || MAP_NAME_FALLBACK }}
               </p>
             </div>
           </div>
         </div>
         <div class="flex flex-wrap gap-3">
-          <Button
+          <BaseButton
+            v-permission="'write'"
             label="重新解析"
             icon="pi pi-refresh"
             :loading="parsing"
@@ -38,12 +39,12 @@
     >
       <div class="flex flex-col items-center gap-4">
         <div class="relative">
-          <ProgressSpinner style="width: 50px; height: 50px" />
+          <ProgressSpinner class="w-[50px] h-[50px]" />
           <div class="absolute inset-0 animate-ping opacity-20">
-            <ProgressSpinner style="width: 50px; height: 50px" />
+            <ProgressSpinner class="w-[50px] h-[50px]" />
           </div>
         </div>
-        <span class="text-neutral-text-secondary font-medium">加载战斗数据中...</span>
+        <span class="text-neutral-text-secondary font-medium">{{ LOADING_TEXT }}</span>
       </div>
     </div>
     <div
@@ -56,7 +57,7 @@
         </div>
         <div>
           <p class="font-semibold text-lg">
-            加载失败
+            {{ LOAD_ERROR_TITLE }}
           </p>
           <p class="text-sm text-error/80">
             {{ error }}
@@ -97,26 +98,26 @@
               target="_blank"
               class="no-underline"
             >
-              <Tag
-                value="EI报告"
+              <BaseTag
+                :value="TAG_LABELS.EI_REPORT"
                 icon="pi pi-external-link"
                 severity="info"
                 class="text-xs cursor-pointer hover:bg-info/30 transition-all"
               />
             </a>
-            <Tag
-              :value="`击杀 ${fightSummary.kill_count || 0}`"
+            <BaseTag
+              :value="`${TAG_LABELS.KILL_PREFIX}${fightSummary.kill_count || 0}`"
               severity="success"
               class="text-xs px-2 py-1"
             />
-            <Tag
-              :value="`死亡 ${fightSummary.death_count || 0}`"
+            <BaseTag
+              :value="`${TAG_LABELS.DEATH_PREFIX}${fightSummary.death_count || 0}`"
               severity="danger"
               class="text-xs px-2 py-1"
             />
-            <Tag
+            <BaseTag
               v-if="agg.player_count"
-              :value="`平均DPS ${fmtCompact(agg.avg_dps)}`"
+              :value="`${TAG_LABELS.AVG_DPS_PREFIX}${fmtCompact(agg.avg_dps)}`"
               severity="info"
               class="text-xs px-2 py-1"
             />
@@ -127,7 +128,7 @@
       <div class="card p-0 overflow-hidden">
         <TabMenu
           v-model:active-index="activeTab"
-          :model="tabItems"
+          :model="TAB_ITEMS"
         />
         <div class="p-5">
           <CombatOverviewTab
@@ -177,16 +178,12 @@
     v-model:visible="dialogVisible"
     v-model:rotation-view-mode="rotationViewMode"
     :player="selectedPlayer"
-    :player-rotation="playerRotation"
-    :rotation-loading="rotationLoading"
-    :sorted-skill-casts="sortedSkillCasts"
     :has-player-detail-data="hasPlayerDetailData"
-    :timeline-ticks="timelineTicks"
-    :timeline-tracks="timelineTracks"
-    :heatmap-rows="heatmapRows"
-    :skill-cycles="skillCycles"
-    :hovered-skill="hoveredSkill"
-    :tooltip-position="tooltipPosition"
+    :rotation-data="{ playerRotation, rotationLoading, sortedSkillCasts }"
+    :timeline-data="{ timelineTicks, timelineTracks }"
+    :heatmap-data="{ heatmapRows }"
+    :cycle-data="{ skillCycles }"
+    :tooltip-data="{ hoveredSkill, tooltipPosition }"
     @hover-skill="handleHoverSkill"
     @leave-skill="handleLeaveSkill"
     @mousemove="handleMouseMove"
@@ -197,22 +194,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { fmtCompact } from '@/composables/combat/useCombatHelpers'
 import { useStatDetail, CATEGORY_FIELDS, type StatCategory } from '@/composables/combat/useStatDetail'
 import { usePlayerRotation } from '@/composables/combat/usePlayerRotation'
 import { useCombatLogData } from '@/composables/combat/useCombatLogData'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import TabMenu from 'primevue/tabmenu'
-import Tag from 'primevue/tag'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
 import ProgressSpinner from 'primevue/progressspinner'
-import CombatOverviewTab from '@/components/combat/detail/overview/CombatOverviewTab.vue'
-import CombatPlayerRankingTab from '@/components/combat/detail/overview/CombatPlayerRankingTab.vue'
-import DamageDetailDialog from '@/components/combat/detail/dialogs/DamageDetailDialog.vue'
-import StatDetailDialog from '@/components/combat/detail/dialogs/StatDetailDialog.vue'
-import CombatPlayerDetailDialog from '@/components/combat/detail/dialogs/CombatPlayerDetailDialog.vue'
+
+// 异步加载大型 combat detail 子组件，减少主 chunk 体积
+const CombatOverviewTab = defineAsyncComponent(() => import('@/components/combat/detail/overview/CombatOverviewTab.vue'))
+const CombatPlayerRankingTab = defineAsyncComponent(() => import('@/components/combat/detail/overview/CombatPlayerRankingTab.vue'))
+const DamageDetailDialog = defineAsyncComponent(() => import('@/components/combat/detail/dialogs/DamageDetailDialog.vue'))
+const StatDetailDialog = defineAsyncComponent(() => import('@/components/combat/detail/dialogs/StatDetailDialog.vue'))
+const CombatPlayerDetailDialog = defineAsyncComponent(() => import('@/components/combat/detail/dialogs/CombatPlayerDetailDialog.vue'))
+
+// === 常量定义 ===
+const PAGE_TITLE = '战斗分析'
+const LOG_DETAIL_FALLBACK = '日志详情'
+const MAP_NAME_FALLBACK = '未知地图'
+const LOADING_TEXT = '加载战斗数据中...'
+const LOAD_ERROR_TITLE = '加载失败'
+
+const TAB_ITEMS = [
+  { label: '战斗概览', icon: 'pi pi-chart-bar' },
+  { label: '玩家 & 小队', icon: 'pi pi-users' },
+]
+
+const TAG_LABELS = {
+  EI_REPORT: 'EI报告',
+  KILL_PREFIX: '击杀 ',
+  DEATH_PREFIX: '死亡 ',
+  AVG_DPS_PREFIX: '平均DPS ',
+} as const
+
+const TOOLTIP_DIMENSIONS = {
+  WIDTH: 220,
+  HEIGHT: 120,
+  OFFSET: 15,
+  FLIP_OFFSET: 20,
+  MIN_POSITION: 15,
+} as const
 
 const activeTab = ref(0)
 const showDamageDetailDialog = ref(false)
@@ -223,11 +249,6 @@ const tooltipPosition = ref<{ x: number; y: number } | null>(null)
 const currentStatType = ref<StatCategory>('protection')
 const currentStatCategory = ref<string[]>([])
 const statDetailTitle = ref('')
-
-const tabItems = [
-  { label: '战斗概览', icon: 'pi pi-chart-bar' },
-  { label: '玩家 & 小队', icon: 'pi pi-users' },
-]
 
 const {
   loading, parsing, error, logDetail, summary, selectedPlayer, playerRotation, rotationLoading, dialogVisible,
@@ -259,14 +280,14 @@ const handleHoverSkill = (skill: any) => { hoveredSkill.value = skill }
 const handleLeaveSkill = () => { hoveredSkill.value = null; tooltipPosition.value = null }
 
 const handleMouseMove = (event: MouseEvent) => {
-  const tooltipWidth = 220
-  const tooltipHeight = 120
-  let x = event.clientX + 15
-  let y = event.clientY + 15
-  const maxX = window.innerWidth - tooltipWidth - 15
-  const maxY = window.innerHeight - tooltipHeight - 15
-  if (x > maxX) x = event.clientX - tooltipWidth - 20
-  if (y > maxY) y = event.clientY - tooltipHeight - 20
-  tooltipPosition.value = { x: Math.max(15, Math.min(x, maxX)), y: Math.max(15, Math.min(y, maxY)) }
+  const tooltipWidth = TOOLTIP_DIMENSIONS.WIDTH
+  const tooltipHeight = TOOLTIP_DIMENSIONS.HEIGHT
+  let x = event.clientX + TOOLTIP_DIMENSIONS.OFFSET
+  let y = event.clientY + TOOLTIP_DIMENSIONS.OFFSET
+  const maxX = window.innerWidth - tooltipWidth - TOOLTIP_DIMENSIONS.OFFSET
+  const maxY = window.innerHeight - tooltipHeight - TOOLTIP_DIMENSIONS.OFFSET
+  if (x > maxX) x = event.clientX - tooltipWidth - TOOLTIP_DIMENSIONS.FLIP_OFFSET
+  if (y > maxY) y = event.clientY - tooltipHeight - TOOLTIP_DIMENSIONS.FLIP_OFFSET
+  tooltipPosition.value = { x: Math.max(TOOLTIP_DIMENSIONS.MIN_POSITION, Math.min(x, maxX)), y: Math.max(TOOLTIP_DIMENSIONS.MIN_POSITION, Math.min(y, maxY)) }
 }
 </script>

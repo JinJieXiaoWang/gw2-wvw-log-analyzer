@@ -2,26 +2,84 @@
 import Dialog from 'primevue/dialog'
 import ProgressSpinner from 'primevue/progressspinner'
 import type { EiAnalysisPlayer, PlayerRotationData } from '@/services/ei/eiAnalysisService'
-import { WEAPON_NAME_MAP } from '@/config/combatConstants'
-import { fmtCompact, getProfessionIconUrl, getProfessionName } from '@/composables/combat/useCombatHelpers'
 import RotationViewTabs from '@/components/combat/rotation/RotationViewTabs.vue'
 import RotationTimelineView from '@/components/combat/rotation/RotationTimelineView.vue'
 import RotationHeatmapView from '@/components/combat/rotation/RotationHeatmapView.vue'
 import RotationCycleView from '@/components/combat/rotation/RotationCycleView.vue'
 import type { TimelineTick, SkillTrack, HeatmapRow, SkillCycle } from '@/utils/combat/rotationTypes'
+import CombatPlayerDetailHeader from './CombatPlayerDetailHeader.vue'
+import CombatPlayerDetailRotationMeta from './CombatPlayerDetailRotationMeta.vue'
+import CombatPlayerDetailSkillCastList from './CombatPlayerDetailSkillCastList.vue'
+import CombatPlayerDetailTooltip from './CombatPlayerDetailTooltip.vue'
+
+/** 技能循环相关数据 */
+interface RotationData {
+  /** 玩家技能循环数据 */
+  playerRotation: PlayerRotationData | null
+  /** 是否正在加载技能数据 */
+  rotationLoading: boolean
+  /** 排序后的技能释放列表 */
+  sortedSkillCasts: any[]
+}
+
+/** 时间轴视图数据 */
+interface TimelineData {
+  /** 时间轴刻度 */
+  timelineTicks: TimelineTick[]
+  /** 时间轴轨道 */
+  timelineTracks: SkillTrack[]
+}
+
+/** 热力图视图数据 */
+interface HeatmapData {
+  /** 热力图行数据 */
+  heatmapRows: HeatmapRow[]
+}
+
+/** 循环视图数据 */
+interface CycleData {
+  /** 技能循环数据 */
+  skillCycles: SkillCycle[]
+}
+
+/** 悬浮提示数据 */
+interface TooltipData {
+  /** 当前悬浮的技能 */
+  hoveredSkill: any
+  /** 提示框位置 */
+  tooltipPosition: { x: number; y: number } | null
+}
+
+// === 常量定义 ===
+const DIALOG_CONFIG = {
+  WIDTH: '900px',
+  MAX_WIDTH: '95vw',
+} as const
+
+const PLAYER_DETAIL_LABELS = {
+  HEADER_FALLBACK: '玩家详情',
+} as const
+
+const EMPTY_STATE_MESSAGES = {
+  NO_DETAIL_DATA_TITLE: '暂无详细战斗数据',
+  NO_DETAIL_DATA_DESC: '当前解析器暂未提供技能循环、武器配置等详细信息',
+  NO_ROTATION_DATA_TITLE: '该日志未生成技能循环数据',
+  NO_ROTATION_DATA_DESC: '请重新解析日志以获取技能详情',
+} as const
+
+const LOADING_CONFIG = {
+  SPINNER_SIZE: '40px',
+  TEXT: '加载技能数据中...',
+} as const
 
 const props = defineProps<{
   player: EiAnalysisPlayer | null
-  playerRotation: PlayerRotationData | null
-  rotationLoading: boolean
-  sortedSkillCasts: any[]
   hasPlayerDetailData: boolean
-  timelineTicks: TimelineTick[]
-  timelineTracks: SkillTrack[]
-  heatmapRows: HeatmapRow[]
-  skillCycles: SkillCycle[]
-  hoveredSkill: any
-  tooltipPosition: { x: number; y: number } | null
+  rotationData: RotationData
+  timelineData: TimelineData
+  heatmapData: HeatmapData
+  cycleData: CycleData
+  tooltipData: TooltipData
 }>()
 
 const visible = defineModel<boolean>('visible', { default: false })
@@ -37,8 +95,8 @@ const emit = defineEmits<{
 <template>
   <Dialog
     :visible="visible"
-    :header="player ? (player.character_name || player.account) : '玩家详情'"
-    :style="{ width: '900px', maxWidth: '95vw' }"
+    :header="player ? (player.character_name || player.account) : PLAYER_DETAIL_LABELS.HEADER_FALLBACK"
+    :style="{ width: DIALOG_CONFIG.WIDTH, maxWidth: DIALOG_CONFIG.MAX_WIDTH }"
     :modal="true"
     :draggable="false"
     @update:visible="visible = $event"
@@ -47,115 +105,22 @@ const emit = defineEmits<{
       v-if="player"
       class="space-y-5"
     >
-      <!-- 玩家信息头 -->
-      <div class="flex items-center gap-4 pb-4 border-b border-neutral-border">
-        <img
-          :src="getProfessionIconUrl(player.profession)"
-          class="w-12 h-12 rounded-full"
-        >
-        <div>
-          <p class="text-lg font-bold text-neutral-text">
-            {{ player.character_name || player.account }}
-          </p>
-          <p
-            v-if="player.account && player.character_name"
-            class="text-sm text-neutral-text-secondary"
-          >
-            {{ player.account }}
-          </p>
-          <p class="text-sm text-neutral-text-secondary">
-            {{ getProfessionName(player.profession) }}
-          </p>
-        </div>
-        <div class="ml-auto flex gap-3 text-sm">
-          <div class="text-center">
-            <p class="font-bold text-primary">
-              {{ fmtCompact(player.damage) }}
-            </p><p class="text-xs text-neutral-text-secondary">
-              总伤害
-            </p>
-          </div>
-          <div class="text-center">
-            <p class="font-bold text-primary">
-              {{ fmtCompact(player.dps) }}
-            </p><p class="text-xs text-neutral-text-secondary">
-              DPS
-            </p>
-          </div>
-          <div class="text-center">
-            <p class="font-bold text-status-success">
-              {{ player.score_grade || '-' }}
-            </p><p class="text-xs text-neutral-text-secondary">
-              评分
-            </p>
-          </div>
-        </div>
-      </div>
+      <CombatPlayerDetailHeader :player="player" />
 
       <!-- 加载状态 -->
       <div
-        v-if="rotationLoading"
+        v-if="rotationData.rotationLoading"
         class="flex items-center justify-center py-8"
       >
-        <ProgressSpinner style="width: 40px; height: 40px" />
-        <span class="ml-3 text-neutral-text-secondary text-sm">加载技能数据中...</span>
+        <ProgressSpinner :style="{ width: LOADING_CONFIG.SPINNER_SIZE, height: LOADING_CONFIG.SPINNER_SIZE }" />
+        <span class="ml-3 text-neutral-text-secondary text-sm">{{ LOADING_CONFIG.TEXT }}</span>
       </div>
 
-      <template v-else-if="playerRotation">
-        <!-- 武器配置 -->
-        <div
-          v-if="playerRotation.weapons?.length"
-          class="pb-4 border-b border-neutral-border"
-        >
-          <h4 class="text-sm font-semibold text-neutral-text mb-2 flex items-center gap-2">
-            <i class="pi pi-wrench text-primary" /> 武器配置
-          </h4>
-          <div class="flex items-center gap-3 flex-wrap">
-            <div
-              v-for="(w, idx) in playerRotation.weapons.filter((x: string) => x && x !== 'Unknown').slice(0, 4)"
-              :key="idx"
-              class="px-2 py-1 rounded bg-neutral-bg text-xs text-neutral-text"
-            >
-              {{ WEAPON_NAME_MAP[w] || w }}
-            </div>
-          </div>
-        </div>
-
-        <!-- 食物/扳手 -->
-        <div
-          v-if="playerRotation.consumables?.food?.length || playerRotation.consumables?.utility?.length"
-          class="pb-4 border-b border-neutral-border"
-        >
-          <h4 class="text-sm font-semibold text-neutral-text mb-2 flex items-center gap-2">
-            <i class="pi pi-sparkles text-status-success" /> 食物 / 扳手
-          </h4>
-          <div class="flex flex-wrap gap-2">
-            <div
-              v-for="(f, idx) in playerRotation.consumables.food"
-              :key="`food-${idx}`"
-              class="flex items-center gap-2 px-2 py-1 rounded bg-status-success/10 text-xs text-neutral-text"
-            >
-              <img
-                v-if="f.icon"
-                :src="f.icon"
-                class="w-5 h-5 rounded"
-              >
-              <span>{{ f.name || '未知食物' }}</span>
-            </div>
-            <div
-              v-for="(u, idx) in playerRotation.consumables.utility"
-              :key="`util-${idx}`"
-              class="flex items-center gap-2 px-2 py-1 rounded bg-primary/10 text-xs text-neutral-text"
-            >
-              <img
-                v-if="u.icon"
-                :src="u.icon"
-                class="w-5 h-5 rounded"
-              >
-              <span>{{ u.name || '未知扳手' }}</span>
-            </div>
-          </div>
-        </div>
+      <template v-else-if="rotationData.playerRotation">
+        <CombatPlayerDetailRotationMeta
+          :weapons="rotationData.playerRotation.weapons || []"
+          :consumables="rotationData.playerRotation.consumables || { food: [], utility: [] }"
+        />
 
         <!-- 无详细数据时统一提示 -->
         <div
@@ -163,9 +128,9 @@ const emit = defineEmits<{
           class="text-neutral-text-secondary text-sm text-center py-8"
         >
           <i class="pi pi-info-circle text-2xl mb-2 block" />
-          <p>暂无详细战斗数据</p>
+          <p>{{ EMPTY_STATE_MESSAGES.NO_DETAIL_DATA_TITLE }}</p>
           <p class="text-xs mt-1">
-            当前解析器暂未提供技能循环、武器配置等详细信息
+            {{ EMPTY_STATE_MESSAGES.NO_DETAIL_DATA_DESC }}
           </p>
         </div>
 
@@ -178,39 +143,16 @@ const emit = defineEmits<{
             v-model="rotationViewMode"
           />
 
-          <!-- 技能释放次数统计 -->
-          <div v-if="rotationViewMode === 'stats'">
-            <h4 class="text-sm font-semibold text-neutral-text mb-3 flex items-center gap-2">
-              <i class="pi pi-sort-amount-down text-primary" /> 技能释放次数
-            </h4>
-            <div class="max-h-[400px] overflow-auto space-y-1">
-              <div
-                v-for="s in sortedSkillCasts"
-                :key="s.skillId"
-                class="flex items-center gap-3 p-2 rounded hover:bg-neutral-bg/50"
-              >
-                <img
-                  v-if="s.icon"
-                  :src="s.icon"
-                  class="w-8 h-8 rounded"
-                >
-                <div
-                  v-else
-                  class="w-8 h-8 rounded bg-neutral-bg flex items-center justify-center text-xs text-neutral-text-secondary"
-                >
-                  ?
-                </div>
-                <span class="text-sm text-neutral-text flex-1 truncate">{{ s.name }}</span>
-                <span class="text-sm font-bold text-primary w-10 text-right">{{ s.count }}</span>
-              </div>
-            </div>
-          </div>
+          <CombatPlayerDetailSkillCastList
+            v-if="rotationViewMode === 'stats'"
+            :sorted-skill-casts="rotationData.sortedSkillCasts"
+          />
 
           <!-- 技能循环时序图 -->
           <div v-if="rotationViewMode === 'timeline'">
             <RotationTimelineView
-              :ticks="timelineTicks"
-              :tracks="timelineTracks"
+              :ticks="timelineData.timelineTicks"
+              :tracks="timelineData.timelineTracks"
               @hover-skill="emit('hover-skill', $event)"
               @leave-skill="emit('leave-skill')"
               @mousemove="emit('mousemove', $event)"
@@ -219,45 +161,23 @@ const emit = defineEmits<{
 
           <!-- 技能循环热力图 -->
           <div v-if="rotationViewMode === 'heatmap'">
-            <RotationHeatmapView :rows="heatmapRows" />
+            <RotationHeatmapView :rows="heatmapData.heatmapRows" />
           </div>
 
           <!-- 技能循环流程视图 -->
           <div v-if="rotationViewMode === 'cycle'">
             <RotationCycleView
-              :cycles="skillCycles"
+              :cycles="cycleData.skillCycles"
               @hover-skill="emit('hover-skill', $event)"
               @leave-skill="emit('leave-skill')"
               @mousemove="emit('mousemove', $event)"
             />
           </div>
 
-          <!-- 悬浮提示 -->
-          <div
-            v-if="hoveredSkill && tooltipPosition"
-            class="fixed z-50 p-3 rounded-lg bg-neutral-card border border-neutral-border shadow-xl pointer-events-none"
-            :style="{ left: tooltipPosition.x + 'px', top: tooltipPosition.y + 'px' }"
-          >
-            <div class="flex items-center gap-2 mb-2">
-              <img
-                v-if="hoveredSkill.icon"
-                :src="hoveredSkill.icon"
-                class="w-6 h-6 rounded"
-              >
-              <span class="font-semibold text-neutral-text">{{ hoveredSkill.name }}</span>
-            </div>
-            <div class="text-xs text-neutral-text-secondary space-y-1">
-              <p v-if="hoveredSkill.count">
-                释放次数: {{ hoveredSkill.count }}
-              </p>
-              <p v-if="hoveredSkill.time !== undefined">
-                时间: {{ hoveredSkill.time.toFixed(1) }}s
-              </p>
-              <p v-if="hoveredSkill.duration">
-                持续时间: {{ hoveredSkill.duration }}ms
-              </p>
-            </div>
-          </div>
+          <CombatPlayerDetailTooltip
+            :hovered-skill="tooltipData.hoveredSkill"
+            :tooltip-position="tooltipData.tooltipPosition"
+          />
         </div>
       </template>
 
@@ -266,9 +186,9 @@ const emit = defineEmits<{
         class="text-neutral-text-secondary text-sm text-center py-8"
       >
         <i class="pi pi-info-circle text-2xl mb-2 block" />
-        <p>该日志未生成技能循环数据</p>
+        <p>{{ EMPTY_STATE_MESSAGES.NO_ROTATION_DATA_TITLE }}</p>
         <p class="text-xs mt-1">
-          请重新解析日志以获取技能详情
+          {{ EMPTY_STATE_MESSAGES.NO_ROTATION_DATA_DESC }}
         </p>
       </div>
     </div>

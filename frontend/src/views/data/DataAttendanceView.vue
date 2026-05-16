@@ -20,10 +20,7 @@
     />
 
     <AttendanceFilterBar
-      v-model:date-range="dateRange"
-      v-model:search-query="searchQuery"
-      v-model:filter-map="filterMap"
-      v-model:filter-profession="filterProfession"
+      v-model:filter-values="filterValues"
       :filter-options="filterOptions"
       :loading="loading"
       @apply="fetchAccounts"
@@ -69,6 +66,7 @@ import ScoringRulesDialog from '@/components/attendance/ScoringRulesDialog.vue'
 import { useAttendancePage } from '@/composables/attendance/useAttendancePage'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import Toast from 'primevue/toast'
+import { computed } from 'vue'
 
 const {
   currentRuleVersion,
@@ -98,4 +96,19 @@ const {
   resetFilters,
   fetchAccounts
 } = useAttendancePage()
+
+const filterValues = computed({
+  get: () => ({
+    dateRange: dateRange.value,
+    searchQuery: searchQuery.value,
+    filterMap: filterMap.value,
+    filterProfession: filterProfession.value
+  }),
+  set: (val) => {
+    dateRange.value = val.dateRange
+    searchQuery.value = val.searchQuery
+    filterMap.value = val.filterMap
+    filterProfession.value = val.filterProfession
+  }
+})
 </script>

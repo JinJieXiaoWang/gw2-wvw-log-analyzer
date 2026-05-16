@@ -72,7 +72,7 @@
 </template>
 
 <script setup lang="ts">
-import { getProfessionName } from '@/services/professionService'
+import { getProfessionName, getProfessionColor } from '@/services/professionService'
 /**
  * 已保存的Build组件
  * 功能：展示用户保存的Build列表
@@ -112,19 +112,5 @@ const loadSavedBuilds = () => {
   emit('load-saved-builds')
 }
 
-// 方法
-const getProfessionColor = (profession: string) => {
-  const colors: Record<string, string> = {
-    '战士': '#E85D04',
-    '守护者': '#FAA307',
-    '潜行者': '#9D4EDD',
-    '元素师': '#FF6B6B',
-    '工程师': '#7B8FA1',
-    '猎人': '#06D6A0',
-    '唤灵师': '#8D0801',
-    '幻术师': '#4361EE',
-    '游侠': '#2EC4B6'
-  }
-  return colors[profession] || '#6C757D'
-}
+
 </script>

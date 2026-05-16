@@ -29,14 +29,14 @@
               :value="build.role"
               class="text-sm font-semibold"
             />
-            <Tag
+            <BaseTag
               v-for="sub in build.subRoles"
               :key="sub"
               :value="subRoleLabel(sub)"
               severity="info"
               class="text-sm"
             />
-            <Tag
+            <BaseTag
               v-if="build.isMeta"
               value="META"
               severity="success"
@@ -73,7 +73,7 @@
           {{ build.bdCode }}
         </div>
         <div class="flex gap-3">
-          <Button
+          <BaseButton
             icon="pi pi-copy"
             label="复制代码"
             size="small"
@@ -83,11 +83,11 @@
             :to="{ path: '/build-parser', query: { code: build.bdCode } }"
             class="no-underline"
           >
-            <Button
+            <BaseButton
               icon="pi pi-external-link"
               label="在解析器中打开"
               size="small"
-              outlined
+              variant="outlined"
             />
           </router-link>
         </div>
@@ -110,7 +110,7 @@
           >
             <span class="text-base font-semibold min-w-[100px]">{{ line.name }}</span>
             <div class="flex gap-2">
-              <Tag
+              <BaseTag
                 v-for="(choice, cIdx) in line.choices"
                 :key="cIdx"
                 :value="String(choice)"
@@ -215,11 +215,17 @@
           outlined
           @click="$emit('edit')"
         />
+      </div>
+      <div
+        v-permission="'delete'"
+        class="flex gap-3 mt-2"
+      >
         <BaseButton
           icon="pi pi-trash"
           label="删除配置"
           severity="danger"
           outlined
+          class="w-full"
           @click="$emit('delete')"
         />
       </div>
@@ -229,10 +235,10 @@
 
 <script setup lang="ts">
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import type { BuildEntry } from '@/types/buildLibrary'
 import { formatFullDate, professionInitial, subRoleLabel } from '@/utils/build/buildUtils'
 import { getProfessionName } from '@/utils/profession/professionUtils'
-import Button from 'primevue/button'
 import Divider from 'primevue/divider'
 import Drawer from 'primevue/drawer'
 import Panel from 'primevue/panel'

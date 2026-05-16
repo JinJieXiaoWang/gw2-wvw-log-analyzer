@@ -15,6 +15,7 @@
           <div class="space-y-3">
             <div class="flex justify-between">
               <span class="text-neutral-text-secondary text-sm">职业</span>
+              <!-- 动态值，无法使用 Tailwind 静态类 -->
               <span
                 :style="{ color: getProfessionColorVal(character.profession) }"
                 class="font-medium"

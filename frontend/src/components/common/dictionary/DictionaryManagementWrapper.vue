@@ -12,7 +12,7 @@
     </template>
     <template v-else>
       <DictManagementHeader
-        :is-admin="isAdmin"
+        :can-write="canWrite"
         :is-collapsed="isCollapsed"
         :refreshing="refreshing"
         :show-back="true"
@@ -60,7 +60,7 @@ const props = defineProps<{
 
 const {
   viewMode, dictManagementRef, dictTypes, refreshing, initializing,
-  cacheStatus, showInitDialog, isCollapsed, isAdmin, typeStats, dataStats,
+  cacheStatus, showInitDialog, isCollapsed, canWrite, typeStats, dataStats,
   toggleSidebar, loadOverviewData, handleQuickReload, handleReloadCache, handleInitData
 } = useDictionaryWrapper()
 

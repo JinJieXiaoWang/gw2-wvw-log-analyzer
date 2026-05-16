@@ -1,153 +1,21 @@
 <template>
   <div class="player-summary-view">
-    <!-- 玩家选择 -->
-    <div class="player-selector card">
-      <div class="selector-header">
-        <h3 class="selector-title">
-          <i class="pi pi-user" />
-          玩家详细统计
-        </h3>
-      </div>
-      <div class="selector-list">
-        <button
-          v-for="player in players"
-          :key="player.instanceID"
-          class="player-btn"
-          :class="{ active: selectedId === player.instanceID }"
-          @click="selectPlayer(player.instanceID)"
-        >
-          <img
-            :src="getProfIcon(player.profession)"
-            class="btn-avatar"
-            alt=""
-          >
-          <div class="btn-info">
-            <span class="btn-name">{{ player.name }}</span>
-            <span class="btn-prof">{{ getProfessionName(player.profession) }}</span>
-          </div>
-          <span class="btn-dps">{{ formatDamage(player.dps) }} DPS</span>
-        </button>
-      </div>
-    </div>
+    <PlayerSummarySelector
+      :players="players"
+      :selected-id="selectedId"
+      @select-player="selectPlayer"
+    />
 
-    <!-- 选中玩家详情 -->
     <div
       v-if="selectedPlayer"
       class="player-detail card"
     >
-      <div class="detail-header">
-        <div class="detail-player-info">
-          <img
-            :src="getProfIcon(selectedPlayer.profession)"
-            class="detail-avatar"
-            alt=""
-          >
-          <div>
-            <h3 class="detail-name">
-              {{ selectedPlayer.name }}
-            </h3>
-            <span
-              class="detail-prof-badge"
-              :style="{ backgroundColor: getProfessionColor(selectedPlayer.profession) }"
-            >
-              {{ getProfessionName(selectedPlayer.profession) }}
-            </span>
-          </div>
-        </div>
-      </div>
+      <PlayerSummaryDetailHeader :player="selectedPlayer" />
 
       <div class="detail-stats">
-        <div class="stat-group">
-          <h4 class="group-title">
-            <i class="pi pi-bolt" />
-            伤害数据
-          </h4>
-          <div class="stat-items">
-            <div class="stat-item">
-              <span class="stat-label">总伤�?/span>
-                <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).damage) }}</span>
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">DPS</span>
-              <span class="stat-value">{{ formatDamage(selectedPlayer.dps) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">直伤</span>
-              <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).powerDamage) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">症状</span>
-              <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).condiDamage) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">破控伤害</span>
-              <span class="stat-value">{{ formatDamage(getDps(selectedPlayer).breakbarDamage) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-group">
-          <h4 class="group-title">
-            <i class="pi pi-shield" />
-            防御数据
-          </h4>
-          <div class="stat-items">
-            <div class="stat-item">
-              <span class="stat-label">承受伤害</span>
-              <span class="stat-value">{{ formatDamage(getDefense(selectedPlayer).damageTaken) }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">格挡</span>
-              <span class="stat-value">{{ getDefense(selectedPlayer).blockedCount }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">闪避</span>
-              <span class="stat-value">{{ getDefense(selectedPlayer).evadedCount }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">翻滚</span>
-              <span class="stat-value">{{ getDefense(selectedPlayer).dodgeCount }}</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">屏障</span>
-              <span class="stat-value">{{ formatDamage(getDefense(selectedPlayer).damageBarrier) }}</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="stat-group">
-          <h4 class="group-title">
-            <i class="pi pi-sparkles" />
-            表现数据
-          </h4>
-          <div class="stat-items">
-            <div class="stat-item">
-              <span class="stat-label">暴击�?/span>
-                <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).criticalRate) }}</span>
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">侧身�?/span>
-                <span class="stat-value">{{ formatPercent(getStats(selectedPlayer).flankingRate) }}</span>
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">技能浪�?/span>
-                <span class="stat-value">{{ getStats(selectedPlayer).wasted }}</span>
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">技能节�?/span>
-                <span class="stat-value">{{ getStats(selectedPlayer).saved }}</span>
-              </span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-label">武器切换</span>
-              <span class="stat-value">{{ getStats(selectedPlayer).swapCount }}</span>
-            </div>
-          </div>
-        </div>
+        <PlayerSummaryDamageStats :dps="getDps(selectedPlayer)" />
+        <PlayerSummaryDefenseStats :defense="getDefense(selectedPlayer)" />
+        <PlayerSummaryPerformanceStats :stats="getStats(selectedPlayer)" />
       </div>
     </div>
   </div>
@@ -155,9 +23,12 @@
 
 <script setup lang="ts">
 import type { Player, PlayerDefense, PlayerDps, PlayerStats } from '@/types/eliteInsights'
-import { formatDamage, formatPercent } from '@/types/eliteInsights'
-import { getProfessionColor, getProfessionIconUrl, getProfessionName } from '@/utils/profession/professionUtils'
 import { computed, ref } from 'vue'
+import PlayerSummaryDamageStats from './PlayerSummaryDamageStats.vue'
+import PlayerSummaryDefenseStats from './PlayerSummaryDefenseStats.vue'
+import PlayerSummaryDetailHeader from './PlayerSummaryDetailHeader.vue'
+import PlayerSummaryPerformanceStats from './PlayerSummaryPerformanceStats.vue'
+import PlayerSummarySelector from './PlayerSummarySelector.vue'
 
 interface Props {
   players: Player[]
@@ -222,10 +93,6 @@ function getStats(player: Player): PlayerStats {
     againstDownedCount: 0, againstDownedDamage: 0
   }
 }
-
-function getProfIcon(prof: string): string {
-  return getProfessionIconUrl(prof) || ''
-}
 </script>
 
 <style scoped lang="css">
@@ -233,102 +100,6 @@ function getProfIcon(prof: string): string {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-}
-
-.player-selector {
-  background-color: var(--color-card);
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-}
-
-.selector-header {
-  padding: 1rem 1.25rem;
-  background-color: var(--color-card-hover);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.selector-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.selector-title i {
-  color: var(--color-primary);
-}
-
-.selector-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 0.75rem;
-  padding: 1.25rem;
-  max-height: 280px;
-  overflow-y: auto;
-}
-
-.player-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  cursor: pointer;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.player-btn:hover {
-  border-color: var(--color-primary-alpha-30);
-  background-color: var(--color-card-hover);
-}
-
-.player-btn.active {
-  border-color: var(--color-primary);
-  background-color: var(--color-primary-alpha-10);
-  box-shadow: 0 0 10px var(--color-primary-alpha-30);
-}
-
-.btn-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-}
-
-.btn-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.125rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.btn-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.btn-prof {
-  font-size: 0.75rem;
-  color: var(--color-text-secondary);
-}
-
-.btn-dps {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-accent);
-  white-space: nowrap;
 }
 
 .player-detail {
@@ -339,90 +110,9 @@ function getProfIcon(prof: string): string {
   padding: 1.25rem;
 }
 
-.detail-header {
-  margin-bottom: 1.25rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.detail-player-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.detail-avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-}
-
-.detail-name {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-text);
-  margin: 0 0 0.5rem 0;
-}
-
-.detail-prof-badge {
-  display: inline-block;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.25rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: white;
-}
-
 .detail-stats {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
 }
-
-.stat-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.group-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text-secondary);
-  margin: 0;
-}
-
-.group-title i {
-  color: var(--color-accent);
-}
-
-.stat-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.stat-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.625rem 0.875rem;
-  background-color: var(--color-bg);
-  border-radius: 0.375rem;
-}
-
-.stat-label {
-  font-size: 0.8125rem;
-  color: var(--color-text-secondary);
-}
-
-.stat-value {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
 </style>

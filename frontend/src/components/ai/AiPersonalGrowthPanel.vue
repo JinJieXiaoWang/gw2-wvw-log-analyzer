@@ -43,6 +43,7 @@
             <div v-for="(label, key) in dimLabels" :key="key" class="flex items-center gap-3">
               <span class="text-xs text-neutral-text-secondary w-20 truncate">{{ label }}</span>
               <div class="flex-1 h-2 bg-neutral-card-active rounded-full overflow-hidden">
+                <!-- 动态值，无法使用 Tailwind 静态类 -->
                 <div class="h-full rounded-full transition-all duration-700"
                   :class="getPercentileClass(data.percentiles?.[key])"
                   :style="{ width: `${data.percentiles?.[key] || 0}%` }" />

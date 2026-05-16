@@ -32,7 +32,7 @@
         :disabled="!selectedDictType"
       />
       <BaseButton
-        v-if="isAdmin"
+        v-if="canWrite"
         label="新增"
         icon="pi pi-plus"
         severity="success"
@@ -41,7 +41,7 @@
         @click="$emit('add')"
       />
       <BaseButton
-        v-if="isAdmin && selectedDictType"
+        v-if="canWrite && selectedDictType"
         label="编辑分类"
         icon="pi pi-pencil"
         severity="warning"
@@ -64,7 +64,7 @@ import { computed } from 'vue'
 
 const props = defineProps<{
   selectedDictType: DictType | null
-  isAdmin: boolean
+  canWrite: boolean
   statusOptions: { label: string; value: number | null }[]
   dataSearchKeyword: string
   statusFilter: number | null

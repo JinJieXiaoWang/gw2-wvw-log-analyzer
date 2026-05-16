@@ -1,5 +1,6 @@
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    <!-- 动态值，无法使用 Tailwind 静态类 -->
     <div
       class="card-legendary animate-slide-in-up"
       style="animation-delay: 0.1s"
@@ -18,6 +19,7 @@
         </div>
       </div>
     </div>
+    <!-- 动态值，无法使用 Tailwind 静态类 -->
     <div
       class="card-exotic animate-slide-in-up"
       style="animation-delay: 0.2s"
@@ -36,6 +38,7 @@
         </div>
       </div>
     </div>
+    <!-- 动态值，无法使用 Tailwind 静态类 -->
     <div
       class="card-rare animate-slide-in-up"
       style="animation-delay: 0.3s"
@@ -54,6 +57,7 @@
         </div>
       </div>
     </div>
+    <!-- 动态值，无法使用 Tailwind 静态类 -->
     <div
       class="card-mythic animate-slide-in-up"
       style="animation-delay: 0.4s"

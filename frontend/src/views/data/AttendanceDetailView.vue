@@ -15,10 +15,10 @@
                 </router-link>
                 <div>
                   <h1 class="text-2xl sm:text-3xl font-bold text-neutral-text tracking-tight">
-                    出勤详情
+                    {{ PAGE_TITLE }}
                   </h1>
                   <p class="text-neutral-text-secondary text-sm mt-1">
-                    {{ account }} · {{ detailData?.summary?.server || '未知服务器' }}
+                    {{ account }} · {{ detailData?.summary?.server || SERVER_FALLBACK }}
                   </p>
                 </div>
               </div>
@@ -53,12 +53,12 @@
         >
           <div class="flex flex-col items-center gap-4">
             <div class="relative">
-              <ProgressSpinner style="width: 50px; height: 50px" />
+              <ProgressSpinner class="w-[50px] h-[50px]" />
               <div class="absolute inset-0 animate-ping opacity-20">
-                <ProgressSpinner style="width: 50px; height: 50px" />
+                <ProgressSpinner class="w-[50px] h-[50px]" />
               </div>
             </div>
-            <span class="text-neutral-text-secondary font-medium">加载出勤详情中...</span>
+            <span class="text-neutral-text-secondary font-medium">{{ LOADING_TEXT }}</span>
           </div>
         </div>
 
@@ -68,7 +68,7 @@
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div class="flex items-center gap-4">
                 <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/20 border-2 border-primary/30">
-                  <span class="text-2xl font-bold text-white">{{ account?.charAt(0) || '?' }}</span>
+                  <span class="text-2xl font-bold text-white">{{ account?.charAt(0) || DEFAULT_AVATAR_CHAR }}</span>
                 </div>
                 <div>
                   <h2 class="text-xl font-bold text-white">
@@ -77,7 +77,7 @@
                   <p class="text-neutral-text-secondary text-sm mt-1">
                     <span class="flex items-center gap-2">
                       <i class="pi pi-server text-primary" />
-                      <span>{{ detailData?.summary?.server || '未知服务器' }}</span>
+                      <span>{{ detailData?.summary?.server || SERVER_FALLBACK }}</span>
                     </span>
                   </p>
                 </div>
@@ -89,7 +89,7 @@
                   </div>
                   <div>
                     <p class="text-xs text-neutral-text-secondary">
-                      出勤天数
+                      {{ LABELS.ATTENDANCE_DAYS }}
                     </p>
                     <p class="text-sm font-semibold text-neutral-text">
                       {{ summary.attendance_count || 0 }}
@@ -102,7 +102,7 @@
                   </div>
                   <div>
                     <p class="text-xs text-neutral-text-secondary">
-                      总时长
+                      {{ LABELS.TOTAL_DURATION }}
                     </p>
                     <p class="text-sm font-semibold text-neutral-text">
                       {{ formatDuration(summary.total_duration_sec || 0) }}
@@ -115,7 +115,7 @@
                   </div>
                   <div>
                     <p class="text-xs text-neutral-text-secondary">
-                      总伤害
+                      {{ LABELS.TOTAL_DAMAGE }}
                     </p>
                     <p class="text-sm font-semibold text-neutral-text">
                       {{ formatNumber(summary.total_damage || 0) }}
@@ -128,7 +128,7 @@
                   </div>
                   <div>
                     <p class="text-xs text-neutral-text-secondary">
-                      平均评分
+                      {{ LABELS.AVG_SCORE }}
                     </p>
                     <p class="text-sm font-semibold text-neutral-text">
                       {{ summary.avg_score || 0 }}
@@ -144,19 +144,19 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
               <StatCard
                 icon="pi pi-calendar-check"
-                label="出勤天数"
+                :label="LABELS.ATTENDANCE_DAYS"
                 :value="summary.attendance_count || 0"
                 v-bind="getCardStyle('primary')"
               />
               <StatCard
                 icon="pi pi-clock"
-                label="总参战时长"
+                :label="LABELS.TOTAL_DURATION"
                 :value="formatDuration(summary.total_duration_sec)"
                 v-bind="getCardStyle('secondary')"
               />
               <StatCard
                 icon="pi pi-bolt"
-                label="总伤害"
+                :label="LABELS.TOTAL_DAMAGE"
                 :value="formatNumber(summary.total_damage)"
                 v-bind="getCardStyle('error')"
               />
@@ -168,7 +168,7 @@
               />
               <StatCard
                 icon="pi pi-trophy"
-                label="平均评分"
+                :label="LABELS.AVG_SCORE"
                 :value="summary.avg_score || 0"
                 v-bind="scoreCardStyle"
               />
@@ -230,6 +230,50 @@ import { attendanceService } from '@/services'
 import { scoringRulesService } from '@/services/core/scoringRulesService'
 import { formatNumber, formatDuration, formatDateParam } from '@/utils/common/attendanceFormatters'
 
+// === 常量定义 ===
+const PAGE_TITLE = '出勤详情'
+const SERVER_FALLBACK = '未知服务器'
+const LOADING_TEXT = '加载出勤详情中...'
+const DEFAULT_AVATAR_CHAR = '?'
+
+const LABELS = {
+  ATTENDANCE_DAYS: '出勤天数',
+  TOTAL_DURATION: '总时长',
+  TOTAL_DAMAGE: '总伤害',
+  AVG_SCORE: '平均评分',
+} as const
+
+const TOAST_MESSAGES = {
+  SCORING_RULES_ERROR: '获取评分规则失败',
+  TIME_RANGE_UPDATED: '时间范围已更新',
+  TIME_RANGE_DETAIL_PREFIX: '已切换到',
+  EXPORT_ERROR: '导出失败',
+  FETCH_DETAIL_ERROR: '获取详情失败',
+  ACCOUNT_NOT_FOUND: '未找到账号数据',
+  ERROR_SUMMARY: '错误',
+  WARN_SUMMARY: '提示',
+} as const
+
+const LIFE_TIME = {
+  NORMAL: 3000,
+  LONG: 5000,
+} as const
+
+const SCORE_THRESHOLDS = {
+  EXCELLENT: 85,
+  GOOD: 70,
+  PASS: 50,
+} as const
+
+const KD_THRESHOLDS = {
+  EXCELLENT: 2,
+  GOOD: 1,
+} as const
+
+const SLICE_LIMITS = {
+  CHARACTER_FIGHTS: 5,
+} as const
+
 const route = useRoute()
 const toast = useToast()
 const account = computed(() => route.params.account as string)
@@ -250,33 +294,33 @@ const { summary, characters, recentFights } = useAttendanceDetail(() => detailDa
 const characterFights = computed(() => {
   if (!selectedCharacter.value) return []
   const name = selectedCharacter.value.character_name
-  return recentFights.value.filter((f: any) => f.character_name === name).slice(0, 5)
+  return recentFights.value.filter((f: any) => f.character_name === name).slice(0, SLICE_LIMITS.CHARACTER_FIGHTS)
 })
 
 // 卡片样式辅助
 function getCardStyle(color: string) {
   const map: Record<string, any> = {
-    primary: { gradient: 'from-primary/20 to-primary/5', border: 'border-primary/30', iconBg: 'from-primary/40 to-primary/20', textColor: 'text-primary' },
-    secondary: { gradient: 'from-secondary/20 to-secondary/5', border: 'border-secondary/30', iconBg: 'from-secondary/40 to-secondary/20', textColor: 'text-secondary' },
-    error: { gradient: 'from-status-error/20 to-status-error/5', border: 'border-status-error/30', iconBg: 'from-status-error/40 to-status-error/20', textColor: 'text-status-error' },
-    success: { gradient: 'from-status-success/20 to-status-success/5', border: 'border-status-success/30', iconBg: 'from-status-success/40 to-status-success/20', textColor: 'text-status-success' },
-    warning: { gradient: 'from-status-warning/20 to-status-warning/5', border: 'border-status-warning/30', iconBg: 'from-status-warning/40 to-status-warning/20', textColor: 'text-status-warning' },
+    primary: { theme: { gradient: 'from-primary/20 to-primary/5', border: 'border-primary/30', iconBg: 'from-primary/40 to-primary/20', textColor: 'text-primary' } },
+    secondary: { theme: { gradient: 'from-secondary/20 to-secondary/5', border: 'border-secondary/30', iconBg: 'from-secondary/40 to-secondary/20', textColor: 'text-secondary' } },
+    error: { theme: { gradient: 'from-status-error/20 to-status-error/5', border: 'border-status-error/30', iconBg: 'from-status-error/40 to-status-error/20', textColor: 'text-status-error' } },
+    success: { theme: { gradient: 'from-status-success/20 to-status-success/5', border: 'border-status-success/30', iconBg: 'from-status-success/40 to-status-success/20', textColor: 'text-status-success' } },
+    warning: { theme: { gradient: 'from-status-warning/20 to-status-warning/5', border: 'border-status-warning/30', iconBg: 'from-status-warning/40 to-status-warning/20', textColor: 'text-status-warning' } },
   }
   return map[color]
 }
 
 const kdCardStyle = computed(() => {
   const r = summary.value.kd_ratio
-  if (r >= 2) return getCardStyle('success')
-  if (r >= 1) return getCardStyle('primary')
+  if (r >= KD_THRESHOLDS.EXCELLENT) return getCardStyle('success')
+  if (r >= KD_THRESHOLDS.GOOD) return getCardStyle('primary')
   return getCardStyle('error')
 })
 
 const scoreCardStyle = computed(() => {
   const s = summary.value.avg_score
-  if (s >= 85) return getCardStyle('success')
-  if (s >= 70) return getCardStyle('primary')
-  if (s >= 50) return getCardStyle('warning')
+  if (s >= SCORE_THRESHOLDS.EXCELLENT) return getCardStyle('success')
+  if (s >= SCORE_THRESHOLDS.GOOD) return getCardStyle('primary')
+  if (s >= SCORE_THRESHOLDS.PASS) return getCardStyle('warning')
   return getCardStyle('error')
 })
 
@@ -298,14 +342,14 @@ async function fetchScoringRules() {
     const versions = await scoringRulesService.getVersions(0, 1)
     if (versions?.length) currentRuleVersion.value = versions[0].version
   } catch (e) {
-    toast.add({ severity: 'error', summary: '错误', detail: '获取评分规则失败', life: 5000 })
+    toast.add({ severity: 'error', summary: TOAST_MESSAGES.ERROR_SUMMARY, detail: TOAST_MESSAGES.SCORING_RULES_ERROR, life: LIFE_TIME.LONG })
   } finally {
     scoringRulesLoading.value = false
   }
 }
 
 function handleTimeRangeChange(val: string) {
-  toast.add({ severity: 'info', summary: '时间范围已更新', detail: `已切换到${val}`, life: 3000 })
+  toast.add({ severity: 'info', summary: TOAST_MESSAGES.TIME_RANGE_UPDATED, detail: `${TOAST_MESSAGES.TIME_RANGE_DETAIL_PREFIX}${val}`, life: LIFE_TIME.NORMAL })
 }
 
 async function exportExcel() {
@@ -313,7 +357,7 @@ async function exportExcel() {
   try {
     await attendanceService.exportAccountDetail(account.value, 'excel', dateRange.value?.[0] ? formatDateParam(dateRange.value[0]) : null, dateRange.value?.[1] ? formatDateParam(dateRange.value[1]) : null)
   } catch {
-    toast.add({ severity: 'error', summary: '错误', detail: '导出失败', life: 3000 })
+    toast.add({ severity: 'error', summary: TOAST_MESSAGES.ERROR_SUMMARY, detail: TOAST_MESSAGES.EXPORT_ERROR, life: LIFE_TIME.NORMAL })
   }
 }
 
@@ -322,7 +366,7 @@ async function exportCSV() {
   try {
     await attendanceService.exportAccountDetail(account.value, 'csv', dateRange.value?.[0] ? formatDateParam(dateRange.value[0]) : null, dateRange.value?.[1] ? formatDateParam(dateRange.value[1]) : null)
   } catch {
-    toast.add({ severity: 'error', summary: '错误', detail: '导出失败', life: 3000 })
+    toast.add({ severity: 'error', summary: TOAST_MESSAGES.ERROR_SUMMARY, detail: TOAST_MESSAGES.EXPORT_ERROR, life: LIFE_TIME.NORMAL })
   }
 }
 
@@ -334,12 +378,12 @@ async function fetchAccountDetail() {
     if (result?.success && result.data) {
       detailData.value = result.data
     } else if (result && !result.success) {
-      toast.add({ severity: 'error', summary: '错误', detail: result.message || '获取详情失败', life: 5000 })
+      toast.add({ severity: 'error', summary: TOAST_MESSAGES.ERROR_SUMMARY, detail: result.message || TOAST_MESSAGES.FETCH_DETAIL_ERROR, life: LIFE_TIME.LONG })
     } else if (!result) {
-      toast.add({ severity: 'warn', summary: '提示', detail: '未找到账号数据', life: 5000 })
+      toast.add({ severity: 'warn', summary: TOAST_MESSAGES.WARN_SUMMARY, detail: TOAST_MESSAGES.ACCOUNT_NOT_FOUND, life: LIFE_TIME.LONG })
     }
   } catch (e: any) {
-    toast.add({ severity: 'error', summary: '错误', detail: e?.message || '获取详情失败', life: 5000 })
+    toast.add({ severity: 'error', summary: TOAST_MESSAGES.ERROR_SUMMARY, detail: e?.message || TOAST_MESSAGES.FETCH_DETAIL_ERROR, life: LIFE_TIME.LONG })
   } finally {
     loading.value = false
   }

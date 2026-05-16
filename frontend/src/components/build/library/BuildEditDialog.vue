@@ -11,9 +11,7 @@
     <div class="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
       <BuildBasicInfoPanel
         :form="form"
-        :profession-options="professionOptions"
-        :elite-spec-options="eliteSpecOptions"
-        :role-options="roleOptions"
+        :select-options="{ professionOptions, eliteSpecOptions, roleOptions }"
         :loading-dicts="loadingDicts"
         @toggle-sub-role="toggleSubRole"
       />

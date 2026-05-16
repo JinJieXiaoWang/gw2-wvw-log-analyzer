@@ -17,6 +17,7 @@
             <span class="text-sm text-neutral-text">{{ formatDateTime(fight.fight_date) }}</span>
           </div>
           <div class="flex items-center gap-2">
+            <!-- 动态值，无法使用 Tailwind 静态类 -->
             <div
               class="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold"
               :style="{ backgroundColor: getProfessionColor(fight.profession) }"
@@ -24,6 +25,7 @@
               {{ fight.character_name?.charAt(0) }}
             </div>
             <span class="text-sm font-medium">{{ fight.character_name }}</span>
+            <!-- 动态值，无法使用 Tailwind 静态类 -->
             <span
               class="text-xs px-2 py-0.5 rounded-full"
               :style="{ backgroundColor: getProfessionColor(fight.profession) + '30', color: getProfessionColor(fight.profession) }"

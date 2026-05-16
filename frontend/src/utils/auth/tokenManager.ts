@@ -85,17 +85,16 @@ export function getToken(): TokenInfo | null {
     return null;
   }
 
-  let expiresAt: number;
-  if (expiresAtStr) {
-    expiresAt = parseInt(expiresAtStr, 10);
-    // 检查是否已过期
-    if (Date.now() >= expiresAt) {
-      clearToken();
-      return null;
-    }
-  } else {
-    // 旧系统 token，默认 2 小时有效期（从存储时间推算）
-    expiresAt = Date.now() + 2 * 60 * 60 * 1000;
+  if (!expiresAtStr) {
+    // 没有过期时间，视为无效 Token
+    return null;
+  }
+
+  const expiresAt = parseInt(expiresAtStr, 10);
+  // 检查是否已过期
+  if (Date.now() >= expiresAt) {
+    clearToken();
+    return null;
   }
 
   return {

@@ -34,6 +34,7 @@
           <span class="text-lg font-bold text-primary">{{ (rule.weight * 100).toFixed(0) }}%</span>
           <div class="w-24">
             <div class="h-2 rounded-full bg-neutral-bg overflow-hidden">
+              <!-- 动态值，无法使用 Tailwind 静态类 -->
               <div
                 class="h-full rounded-full bg-primary transition-all"
                 :style="{ width: Math.min(rule.weight * 100, 100) + '%' }"

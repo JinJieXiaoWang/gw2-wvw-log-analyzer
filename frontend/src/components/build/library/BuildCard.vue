@@ -9,6 +9,7 @@
       v-if="build.isMeta"
       class="absolute top-0 right-0 z-10"
     >
+      <!-- 动态值，无法使用 Tailwind 静态类 -->
       <div
         class="text-xs font-bold px-3 py-1 rounded-bl-xl"
         :style="{ backgroundColor: displayProfessionColor + '25', color: displayProfessionColor }"
@@ -18,6 +19,7 @@
     </div>
     <div class="p-5">
       <div class="flex items-center gap-3.5 mb-3">
+        <!-- 动态值，无法使用 Tailwind 静态类 -->
         <div
           class="w-12 h-12 rounded-xl flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-md"
           :style="{ backgroundColor: displayProfessionColor }"
@@ -98,6 +100,7 @@
           </button>
           <button
             v-if="showDelete"
+            v-permission="'delete'"
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all"
             title="删除配置"
             @click.stop="$emit('delete', build.id)"

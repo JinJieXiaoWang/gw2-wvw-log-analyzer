@@ -3,10 +3,10 @@
     <!-- 页面标题 -->
     <div>
       <h1 class="text-2xl font-bold text-neutral-text">
-        dps.report API 测试
+        {{ PAGE_TITLE }}
       </h1>
       <p class="text-neutral-text-secondary text-sm mt-1">
-        上传 zevtc 文件到 dps.report，测试 EI 解析响应速度和数据完整性
+        {{ PAGE_SUBTITLE }}
       </p>
     </div>
 
@@ -23,15 +23,15 @@
       >
         <i class="pi pi-cloud-upload text-4xl text-primary mb-3 block" />
         <p class="text-neutral-text font-medium">
-          点击或拖拽上传 zevtc 文件
+          {{ UPLOAD_PROMPT }}
         </p>
         <p class="text-neutral-text-secondary text-xs mt-1">
-          支持 .zevtc / .evtc / .evtc.zip
+          {{ FILE_TYPE_HINT }}
         </p>
         <input
           ref="fileInput"
           type="file"
-          accept=".zevtc,.evtc,.evtc.zip"
+          :accept="UPLOAD_ACCEPT_TYPES"
           class="hidden"
           @change="onFileChange"
         >
@@ -51,7 +51,7 @@
           </p>
         </div>
         <BaseButton
-          label="开始测试"
+          :label="START_TEST_LABEL"
           icon="pi pi-play"
           :loading="loading"
           @click="startTest"
@@ -65,15 +65,15 @@
       class="card p-6"
     >
       <h3 class="text-sm font-semibold text-neutral-text mb-4 flex items-center gap-2">
-        <i class="pi pi-clock text-primary" /> 耗时统计
+        <i class="pi pi-clock text-primary" /> {{ TIME_STATS_TITLE }}
       </h3>
 
       <div
         v-if="loading"
         class="flex items-center gap-3"
       >
-        <ProgressSpinner style="width: 24px; height: 24px" />
-        <span class="text-sm text-neutral-text-secondary">正在上传到 dps.report 并等待解析...</span>
+        <ProgressSpinner class="w-6 h-6" />
+        <span class="text-sm text-neutral-text-secondary">{{ UPLOADING_STATUS }}</span>
       </div>
 
       <div
@@ -85,7 +85,7 @@
             {{ result.upload_time_ms }}ms
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            上传耗时
+            {{ UPLOAD_TIME_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -93,7 +93,7 @@
             {{ result.json_fetch_time_ms }}ms
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            JSON拉取
+            {{ JSON_FETCH_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -101,7 +101,7 @@
             {{ result.total_time_ms }}ms
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            总耗时
+            {{ TOTAL_TIME_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -109,7 +109,7 @@
             {{ result.ei_version || '-' }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            EI 版本
+            {{ EI_VERSION_LABEL }}
           </p>
         </div>
       </div>
@@ -121,7 +121,7 @@
       class="card p-6"
     >
       <h3 class="text-sm font-semibold text-neutral-text mb-4 flex items-center gap-2">
-        <i class="pi pi-chart-bar text-primary" /> 数据概览
+        <i class="pi pi-chart-bar text-primary" /> {{ DATA_OVERVIEW_TITLE }}
       </h3>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
@@ -130,7 +130,7 @@
             {{ result.player_count }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            玩家数
+            {{ PLAYER_COUNT_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -138,7 +138,7 @@
             {{ result.target_count }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            目标数
+            {{ TARGET_COUNT_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -146,7 +146,7 @@
             {{ result.skill_map_count }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            技能映射
+            {{ SKILL_MAP_LABEL }}
           </p>
         </div>
         <div class="text-center p-3 rounded bg-neutral-bg">
@@ -155,10 +155,10 @@
             target="_blank"
             class="text-sm text-primary hover:underline"
           >
-            查看报告 <i class="pi pi-external-link text-xs" />
+            {{ VIEW_REPORT_LABEL }} <i class="pi pi-external-link text-xs" />
           </a>
           <p class="text-xs text-neutral-text-secondary">
-            dps.report
+            {{ DPS_REPORT_SOURCE }}
           </p>
         </div>
       </div>
@@ -176,7 +176,7 @@
             class="text-sm"
             :class="result.has_rotation ? 'text-status-success' : 'text-status-error'"
           >
-            技能循环 {{ result.has_rotation ? '✓' : '✗' }}
+            {{ SKILL_ROTATION_LABEL }} {{ result.has_rotation ? CHECK_MARK : CROSS_MARK }}
           </span>
         </div>
         <div
@@ -191,7 +191,7 @@
             class="text-sm"
             :class="result.has_weapons ? 'text-status-success' : 'text-status-error'"
           >
-            武器配置 {{ result.has_weapons ? '✓' : '✗' }}
+            {{ WEAPON_CONFIG_LABEL }} {{ result.has_weapons ? CHECK_MARK : CROSS_MARK }}
           </span>
         </div>
         <div
@@ -206,7 +206,7 @@
             class="text-sm"
             :class="result.has_death_recap ? 'text-status-success' : 'text-status-error'"
           >
-            死亡回放 {{ result.has_death_recap ? '✓' : '✗' }}
+            {{ DEATH_RECAP_LABEL }} {{ result.has_death_recap ? CHECK_MARK : CROSS_MARK }}
           </span>
         </div>
       </div>
@@ -218,13 +218,13 @@
       class="card p-6 space-y-4"
     >
       <h3 class="text-sm font-semibold text-neutral-text mb-2 flex items-center gap-2">
-        <i class="pi pi-code text-primary" /> 数据预览
+        <i class="pi pi-code text-primary" /> {{ PREVIEW_TITLE }}
       </h3>
 
       <!-- 技能循环预览 -->
       <div v-if="result.has_rotation">
         <h4 class="text-xs font-semibold text-neutral-text-secondary mb-2 uppercase tracking-wide">
-          技能循环 (前3条)
+          {{ ROTATION_PREVIEW_TITLE }}
         </h4>
         <div class="bg-neutral-bg rounded p-3 overflow-auto max-h-[200px]">
           <pre class="text-xs text-neutral-text">{{ JSON.stringify(result.raw_json.first_player_rotation_preview, null, 2) }}</pre>
@@ -234,7 +234,7 @@
       <!-- 武器配置预览 -->
       <div v-if="result.has_weapons">
         <h4 class="text-xs font-semibold text-neutral-text-secondary mb-2 uppercase tracking-wide">
-          武器配置
+          {{ WEAPONS_PREVIEW_TITLE }}
         </h4>
         <div class="bg-neutral-bg rounded p-3 overflow-auto max-h-[200px]">
           <pre class="text-xs text-neutral-text">{{ JSON.stringify(result.raw_json.first_player_weapons_preview, null, 2) }}</pre>
@@ -244,7 +244,7 @@
       <!-- 死亡回放预览 -->
       <div v-if="result.has_death_recap">
         <h4 class="text-xs font-semibold text-neutral-text-secondary mb-2 uppercase tracking-wide">
-          死亡回放
+          {{ DEATH_RECAP_PREVIEW_TITLE }}
         </h4>
         <div class="bg-neutral-bg rounded p-3 overflow-auto max-h-[200px]">
           <pre class="text-xs text-neutral-text">{{ JSON.stringify(result.raw_json.first_player_death_recap_preview, null, 2) }}</pre>
@@ -254,7 +254,7 @@
       <!-- SkillMap 预览 -->
       <div v-if="result.skill_map_count > 0">
         <h4 class="text-xs font-semibold text-neutral-text-secondary mb-2 uppercase tracking-wide">
-          SkillMap 前10个key
+          {{ SKILL_MAP_PREVIEW_TITLE }}
         </h4>
         <div class="bg-neutral-bg rounded p-3 overflow-auto max-h-[200px]">
           <pre class="text-xs text-neutral-text">{{ JSON.stringify(result.raw_json.skill_map_keys, null, 2) }}</pre>
@@ -272,6 +272,64 @@ import { apiFactory } from '@/services/core/apiService'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 import { useToast } from 'primevue/usetoast'
 
+// ========== 常量定义 ==========
+
+// 页面文案
+const PAGE_TITLE = 'dps.report API 测试'
+const PAGE_SUBTITLE = '上传 zevtc 文件到 dps.report，测试 EI 解析响应速度和数据完整性'
+
+// 上传区域文案
+const UPLOAD_PROMPT = '点击或拖拽上传 zevtc 文件'
+const UPLOAD_ACCEPT_TYPES = '.zevtc,.evtc,.evtc.zip'
+const FILE_TYPE_HINT = '支持 .zevtc / .evtc / .evtc.zip'
+const START_TEST_LABEL = '开始测试'
+
+// 耗时统计文案
+const TIME_STATS_TITLE = '耗时统计'
+const UPLOADING_STATUS = '正在上传到 dps.report 并等待解析...'
+const UPLOAD_TIME_LABEL = '上传耗时'
+const JSON_FETCH_LABEL = 'JSON拉取'
+const TOTAL_TIME_LABEL = '总耗时'
+const EI_VERSION_LABEL = 'EI 版本'
+
+// 数据概览文案
+const DATA_OVERVIEW_TITLE = '数据概览'
+const PLAYER_COUNT_LABEL = '玩家数'
+const TARGET_COUNT_LABEL = '目标数'
+const SKILL_MAP_LABEL = '技能映射'
+const VIEW_REPORT_LABEL = '查看报告'
+const DPS_REPORT_SOURCE = 'dps.report'
+const SKILL_ROTATION_LABEL = '技能循环'
+const WEAPON_CONFIG_LABEL = '武器配置'
+const DEATH_RECAP_LABEL = '死亡回放'
+const CHECK_MARK = '✓'
+const CROSS_MARK = '✗'
+
+// 数据预览文案
+const PREVIEW_TITLE = '数据预览'
+const ROTATION_PREVIEW_TITLE = '技能循环 (前3条)'
+const WEAPONS_PREVIEW_TITLE = '武器配置'
+const DEATH_RECAP_PREVIEW_TITLE = '死亡回放'
+const SKILL_MAP_PREVIEW_TITLE = 'SkillMap 前10个key'
+
+// 阈值
+const REQUEST_TIMEOUT_MS = 300000 // 5分钟
+const BYTES_PER_KB = 1024
+const BYTES_PER_MB = 1024 * 1024
+
+// Toast 配置
+const TOAST_LIFE_SHORT = 3000
+const TOAST_LIFE_LONG = 5000
+
+// Toast 消息
+const TEST_SUCCESS_SUMMARY = '测试完成'
+const TEST_FAILED_SUMMARY = '测试失败'
+const REQUEST_FAILED_SUMMARY = '请求失败'
+const UNKNOWN_ERROR_DETAIL = '未知错误'
+const NETWORK_ERROR_DETAIL = '网络错误'
+
+// ========== 逻辑 ==========
+
 const toast = useToast()
 const fileInput = ref<HTMLInputElement | null>(null)
 const isDragging = ref(false)
@@ -280,9 +338,9 @@ const loading = ref(false)
 const result = ref<Record<string, any> | null>(null)
 
 const fmtSize = (bytes: number) => {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
+  if (bytes < BYTES_PER_KB) return bytes + ' B'
+  if (bytes < BYTES_PER_MB) return (bytes / BYTES_PER_KB).toFixed(1) + ' KB'
+  return (bytes / BYTES_PER_MB).toFixed(2) + ' MB'
 }
 
 const onDrop = (e: DragEvent) => {
@@ -313,17 +371,17 @@ const startTest = async () => {
 
     const res = await apiFactory.post(API_ENDPOINTS.TEST.DPS_REPORT, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      timeout: 300000, // 5分钟
+      timeout: REQUEST_TIMEOUT_MS,
     })
 
     if (res.success && res.data) {
       result.value = res.data as Record<string, any>
-      toast.add({ severity: 'success', summary: '测试完成', detail: `总耗时 ${(res.data as Record<string, any>).total_time_ms}ms`, life: 3000 })
+      toast.add({ severity: 'success', summary: TEST_SUCCESS_SUMMARY, detail: `总耗时 ${(res.data as Record<string, any>).total_time_ms}ms`, life: TOAST_LIFE_SHORT })
     } else {
-      toast.add({ severity: 'error', summary: '测试失败', detail: res.message || '未知错误', life: 5000 })
+      toast.add({ severity: 'error', summary: TEST_FAILED_SUMMARY, detail: res.message || UNKNOWN_ERROR_DETAIL, life: TOAST_LIFE_LONG })
     }
   } catch (e: any) {
-    toast.add({ severity: 'error', summary: '请求失败', detail: e.message || '网络错误', life: 5000 })
+    toast.add({ severity: 'error', summary: REQUEST_FAILED_SUMMARY, detail: e.message || NETWORK_ERROR_DETAIL, life: TOAST_LIFE_LONG })
   } finally {
     loading.value = false
   }
