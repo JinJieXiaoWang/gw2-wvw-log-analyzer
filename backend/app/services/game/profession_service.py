@@ -35,6 +35,7 @@ class ProfessionService:
             "role_name": role.role_name,
             "color": role.color,
             "icon": role.icon,
+            "description": role.description,
             "sort_order": role.sort_order,
         }
 

@@ -18,10 +18,11 @@ class GwRoleType(Base):
     __tablename__ = "gw_role_type"
 
     id = Column(Integer, primary_key=True, autoincrement=True, comment="自增ID")
-    role_key = Column(String(20), nullable=False, unique=True, index=True, comment="角色?dps/support/tank)")
-    role_name = Column(String(50), nullable=False, comment="角色名称(输出/辅助/坦克)")
+    role_key = Column(String(20), nullable=False, unique=True, index=True, comment="角色定位键(dps/support/tank/control)")
+    role_name = Column(String(50), nullable=False, comment="角色定位名称")
     color = Column(String(20), nullable=True, comment="角色颜色(HEX)")
     icon = Column(String(100), nullable=True, comment="角色图标")
+    description = Column(String(200), nullable=True, comment="角色定位描述")
     sort_order = Column(Integer, default=0, comment="排序顺序")
 
 

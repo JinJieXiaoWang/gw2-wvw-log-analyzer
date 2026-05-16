@@ -253,14 +253,6 @@ _SYS_MENU_SEED = [
 # =============================================================================
 _SYS_DICT_TYPE_SEED = [
     {
-        "dict_type": "role",
-        "dict_name": "\u89d2\u8272\u5b9a\u4f4d",
-        "status": 0,
-        "sort_order": 1,
-        "remark": "\u6218\u6597\u89d2\u8272\u5b9a\u4f4d",
-        "is_system": 1,
-    },
-    {
         "dict_type": "scoring_dimension",
         "dict_name": "\u8bc4\u5206\u7ef4\u5ea6",
         "status": 0,
@@ -447,15 +439,7 @@ _SYS_DICT_DATA_SEED = {
         ("completed", "\u5df2\u5b8c\u6210", "#22c55e", "\u5904\u7406\u5b8c\u6210"),
         ("failed", "\u5931\u8d25", "#ef4444", "\u5904\u7406\u5931\u8d25"),
     ],
-    "role": [
-        ("dps", "\u8f93\u51fa", "#FF6B35", "\u4ee5\u4f24\u5bb3\u8f93\u51fa\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("support", "\u8f85\u52a9", "#35B0FF", "\u4ee5\u6cbb\u7597\u548c\u589e\u76ca\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("tank", "\u627f\u4f24", "#9D4EDD", "\u4ee5\u5438\u6536\u4f24\u5bb3\u548c\u63a7\u5236\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("condition", "\u75c7\u72b6", "#9A3412", "\u4ee5\u75c7\u72b6\u4f24\u5bb3\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("healing", "\u6cbb\u7597", "#166534", "\u4ee5\u7eaf\u6cbb\u7597\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("control", "\u63a7\u5236", "#1f2937", "\u4ee5\u63a7\u573a\u6253\u65ad\u4e3a\u4e3b\u8981\u804c\u8d23"),
-        ("utility", "\u529f\u80fd", "#155e75", "\u4ee5\u529f\u80fd\u8f85\u52a9\u4e3a\u4e3b\u8981\u804c\u8d23"),
-    ],
+
     "scoring_mode": [
         ("role_based", "\u89d2\u8272\u5b9a\u4f4d\u8bc4\u5206", "#165DFF", "\u6309\u89d2\u8272\u5b9a\u4f4d\u8bc4\u5206"),
         ("profession_based", "\u804c\u4e1a\u8bc4\u5206", "#00B42A", "\u6309\u804c\u4e1a\u8bc4\u5206"),
@@ -1784,10 +1768,7 @@ def init_dictionary_data(db: Session) -> Dict[str, Any]:
         "total_skipped": 0,
         "details": {
             "types": {t["dict_type"]: 1 for t in _SYS_DICT_TYPE_SEED},
-            "roles": {
-                "created": len([i for i in _SYS_DICT_DATA_SEED["role"]]),
-                "skipped": 0,
-            },
+
             "scoring_dimensions": {
                 "created": len([i for i in _SYS_DICT_DATA_SEED["scoring_dimension"]]),
                 "skipped": 0,

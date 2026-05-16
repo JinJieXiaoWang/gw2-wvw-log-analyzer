@@ -10,6 +10,7 @@
       "role_name": "输出",
       "color": "#FF4D6A",
       "icon": "pi pi-bolt",
+      "description": "以造成伤害为主要职责",
       "sort_order": 1
     },
     {
@@ -17,6 +18,7 @@
       "role_name": "辅助",
       "color": "#00D68F",
       "icon": "pi pi-heart",
+      "description": "提供增益、治疗或清症",
       "sort_order": 2
     },
     {
@@ -24,6 +26,7 @@
       "role_name": "坦克",
       "color": "#165DFF",
       "icon": "pi pi-shield",
+      "description": "承担伤害、保护队友",
       "sort_order": 3
     },
     {
@@ -31,6 +34,7 @@
       "role_name": "控制",
       "color": "#9333EA",
       "icon": "pi pi-ban",
+      "description": "破控、削增益、控制敌人",
       "sort_order": 4
     }
   ]

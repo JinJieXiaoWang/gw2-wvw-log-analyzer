@@ -9,7 +9,6 @@ from typing import Any, Dict, List, Optional
 from app.models.scoring.scoring_rule import ScoringRule, ScoringRulePreset
 from app.models.scoring.scoring_rule_version import ScoringRuleVersion
 from app.schemas.scoring.scoring_rule import ScoringRuleResponse
-from app.utils.db.dict_utils import get_dict_options
 from app.utils.logger import logger
 from sqlalchemy.orm import Session
 
@@ -75,9 +74,11 @@ class ScoringRuleService:
         return self.get_rules_by_role(role_type, None, active_only)
 
     def _get_enabled_role_types(self) -> List[str]:
-        """从字典表获取启用的角色类型列表（status=0）"""
-        options = get_dict_options("role")
-        return [opt["value"] for opt in options]
+        """从 gw_role_type 表获取启用的角色类型列表"""
+        from app.services.game.profession_service import ProfessionService
+        prof_service = ProfessionService(self.db)
+        role_types = prof_service.get_all_role_types()
+        return [rt["role_key"] for rt in role_types]
 
     def get_all_rules(self, active_only: bool = True) -> Dict[str, List[ScoringRule]]:
         """获取所有启用的角色类型的通用评分规则，按角色分组"""
@@ -268,12 +269,11 @@ class ScoringRuleService:
         return get_dict_label("scoring_dimension", dimension) or dimension
 
     def get_role_label(self, role_type: str) -> str:
-        """获取角色类型中文标签（优先查字典表）"""
-        options = get_dict_options("role")
-        for opt in options:
-            if opt.get("value") == role_type:
-                return opt.get("label", role_type)
-        return role_type
+        """获取角色类型中文标签（从 gw_role_type 表读取）"""
+        from app.services.game.profession_service import ProfessionService
+        prof_service = ProfessionService(self.db)
+        role = prof_service.get_role_type(role_type)
+        return role.get("role_name", role_type) if role else role_type
 
     def get_professions_with_rules(self, role_type: Optional[str] = None) -> List[str]:
         """获取已配置职业特定规则的职业列表"""
@@ -413,9 +413,8 @@ class ScoringRuleService:
             return {"initialized": False, "reason": f"数据库查询失败: {e}"}
 
     def get_role_types_data(self) -> List[Dict[str, Any]]:
-        """获取所有启用的角色类型配置（含描述、颜色等前端展示字段，从字典表读取）"""
+        """获取所有启用的角色类型配置（含描述、颜色等前端展示字段，从 gw_role_type 表读取）"""
         from app.services.game.profession_service import ProfessionService
-        from app.utils.db.dict_utils import get_dict_item_by_value
 
         prof_service = ProfessionService(self.db)
         role_types = prof_service.get_all_role_types()
@@ -423,11 +422,10 @@ class ScoringRuleService:
         roles = []
         for rt in role_types:
             role_key = rt.get("role_key", "")
-            item = get_dict_item_by_value("role", role_key)
             roles.append({
                 "type": role_key,
                 "label": rt.get("role_name", role_key),
-                "description": item.get("remark", "") if item else "",
+                "description": rt.get("description", ""),
                 "color": rt.get("color", "#6b7280"),
             })
         return roles
