@@ -162,10 +162,9 @@ import {
   NOTIFY_MSG_TEST_FAIL,
   NOTIFY_MSG_TEST_FAIL_SHORT,
   NOTIFY_MSG_NO_FIGHT_DATA,
+  NOTIFY_MSG_NO_PLAYER_DATA,
   NOTIFY_MSG_FIGHT_ANALYZE_COMPLETE,
   NOTIFY_MSG_ANALYZE_FAIL,
-  NOTIFY_MSG_PLAYER_ANALYZE_DEV,
-  NOTIFY_MSG_TEAM_ANALYZE_DEV,
   NOTIFY_MSG_PERSONAL_GROWTH_COMPLETE,
   NOTIFY_MSG_DEATH_ANALYSIS_COMPLETE,
   NOTIFY_MSG_SQUAD_SYNERGY_COMPLETE,
@@ -305,8 +304,14 @@ const handleDeleteReport = async (id: string) => { try { await deleteReport(id);
 const handleFilterChange = (filter: string) => { reportFilter.value = filter; loadReports() }
 const handleTrendTimeRangeChange = (range: string) => { trendTimeRange.value = range; loadTrend(range) }
 const handleConfigUpdated = () => { loadAiStatus(); showNotification(NOTIFY_MSG_CONFIG_UPDATED, 'success') }
-const handleQuickAnalyzePlayer = () => showNotification(NOTIFY_MSG_PLAYER_ANALYZE_DEV, 'warning', NOTIFY_TITLE_WARNING)
-const handleQuickAnalyzeTeam = () => showNotification(NOTIFY_MSG_TEAM_ANALYZE_DEV, 'warning', NOTIFY_TITLE_WARNING)
+const handleQuickAnalyzePlayer = async () => {
+  if (!recentPlayers.value.length) { showNotification(NOTIFY_MSG_NO_PLAYER_DATA, 'error'); return }
+  try { await analyzePersonalGrowth(recentPlayers.value[0].id, 30); showNotification(NOTIFY_MSG_PERSONAL_GROWTH_COMPLETE, 'success', NOTIFY_TITLE_ANALYZE_COMPLETE); loadReports() } catch { showNotification(NOTIFY_MSG_ANALYZE_FAIL, 'error') }
+}
+const handleQuickAnalyzeTeam = async () => {
+  if (!recentFights.value.length) { showNotification(NOTIFY_MSG_NO_FIGHT_DATA, 'error'); return }
+  try { await analyzeSquadSynergy(parseInt(recentFights.value[0].id)); showNotification(NOTIFY_MSG_SQUAD_SYNERGY_COMPLETE, 'success', NOTIFY_TITLE_ANALYZE_COMPLETE); loadReports() } catch { showNotification(NOTIFY_MSG_ANALYZE_FAIL, 'error') }
+}
 
 onMounted(() => { handleRefresh() })
 </script>

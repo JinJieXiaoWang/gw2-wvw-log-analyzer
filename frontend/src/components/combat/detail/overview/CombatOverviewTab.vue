@@ -4,6 +4,7 @@ import type { EiAnalysisResponse, EiAnalysisAggregate, EiAnalysisFight } from '@
 import CombatKpiCards from '@/components/combat/detail/overview/CombatKpiCards.vue'
 import CombatStatCards from '@/components/combat/detail/overview/CombatStatCards.vue'
 import CombatDetailStats from '@/components/combat/detail/overview/CombatDetailStats.vue'
+import CombatTacticalPanel from '@/components/combat/detail/overview/CombatTacticalPanel.vue'
 import { fmtCompact, getProfessionColor, getProfessionName, groupColor } from '@/composables/combat/useCombatHelpers'
 
 const props = defineProps<{
@@ -27,6 +28,15 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
 
 <template>
   <div class="space-y-5">
+    <CombatTacticalPanel
+      :players="summary?.players || []"
+      :commanders="summary?.commanders || []"
+      :buff-leaders="summary?.buff_leaders || {}"
+      :support-leaders="summary?.support_leaders || {}"
+      :defense-leaders="summary?.defense_leaders || {}"
+      :agg="agg"
+    />
+
     <CombatKpiCards :agg="agg" />
 
     <CombatStatCards

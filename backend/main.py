@@ -21,6 +21,7 @@ from app.routers.game import router as game_data_router
 from app.routers.game.bdcode import router as bdcode_router
 from app.routers.game.builds import router as builds_router
 from app.routers.game.professions import router as professions_router
+from app.routers.game.ref_data import router as ref_data_router
 from app.routers.logs import router as logs_router
 from app.routers.logs.ei_analysis import router as ei_analysis_router
 from app.routers.logs.fights import router as fights_router
@@ -170,6 +171,7 @@ app.include_router(scoring_rules_router, prefix=settings.API_PREFIX)
 app.include_router(fights_router, prefix=settings.API_PREFIX)
 app.include_router(storage_router, prefix=settings.API_PREFIX)
 app.include_router(builds_router, prefix=settings.API_PREFIX)
+app.include_router(ref_data_router, prefix=settings.API_PREFIX)
 app.include_router(skill_rotation_router, prefix=settings.API_PREFIX)
 app.include_router(test_dps_report_router, prefix=settings.API_PREFIX)
 app.include_router(memory_monitor_router)

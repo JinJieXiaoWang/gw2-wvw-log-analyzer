@@ -114,9 +114,10 @@
 
 <script setup lang="ts">
 import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
+import type { DeathAttributionData } from '@/composables/useAiAnalysis'
 
 defineProps<{
-  data: any
+  data: DeathAttributionData | null
   loading: boolean
   error?: string
 }>()

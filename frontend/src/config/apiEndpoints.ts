@@ -228,6 +228,15 @@ export const API_ENDPOINTS = {
     BUFF_CATEGORIES: `game-data/categories/buffs`
   },
 
+  // GW2参考数据（装备下拉列表）
+  REF_DATA: {
+    RUNES: `ref-data/runes`,
+    SIGILS: `ref-data/sigils`,
+    RELICS: `ref-data/relics`,
+    FOODS: `ref-data/foods`,
+    UTILITIES: `ref-data/utilities`,
+  },
+
 
 
   // 评分规则管理

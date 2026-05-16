@@ -1,60 +1,93 @@
 <template>
-  <Panel
-    header="配装"
-    toggleable
-  >
+  <Panel :header="$t('buildParser.equipment')" toggleable>
     <div class="space-y-3">
+      <!-- 古物 + 符文 -->
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-sm font-medium mb-1">Relic</label>
-          <InputText
-            v-model="localForm.relic"
+          <label class="block text-sm font-medium mb-1">{{ $t('buildParser.relic') }}</label>
+          <BaseSelect
+            v-model="selectedRelics"
+            :options="relicOptions"
+            option-label="name"
+            option-value="name"
+            :placeholder="$t('buildParser.relic')"
             class="w-full"
-            placeholder="古物名称"
+            filter
+            show-clear
+            multiple
           />
         </div>
         <div>
-          <label class="block text-sm font-medium mb-1">符文</label>
-          <InputText
+          <label class="block text-sm font-medium mb-1">{{ $t('buildParser.runes') }}</label>
+          <BaseSelect
             v-model="localForm.rune"
+            :options="runeOptions"
+            option-label="name"
+            option-value="name"
+            :placeholder="$t('buildParser.runes')"
             class="w-full"
-            placeholder="符文名称"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">食物</label>
-          <InputText
-            v-model="localForm.food"
-            class="w-full"
-            placeholder="食物名称"
-          />
-        </div>
-        <div>
-          <label class="block text-sm font-medium mb-1">扳手</label>
-          <InputText
-            v-model="localForm.wrench"
-            class="w-full"
-            placeholder="扳手/保养油"
+            filter
+            show-clear
           />
         </div>
       </div>
+      <!-- 食物 + 扳手 -->
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ $t('buildParser.food') }}</label>
+          <BaseSelect
+            v-model="localForm.food"
+            :options="foodOptions"
+            option-label="name"
+            option-value="name"
+            :placeholder="$t('buildParser.food')"
+            class="w-full"
+            filter
+            show-clear
+          />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1">{{ $t('buildParser.wrench') }}</label>
+          <BaseSelect
+            v-model="localForm.wrench"
+            :options="utilityOptions"
+            option-label="name"
+            option-value="name"
+            :placeholder="$t('buildParser.wrench')"
+            class="w-full"
+            filter
+            show-clear
+          />
+        </div>
+      </div>
+      <!-- 护甲类型 -->
       <div>
-        <label class="block text-sm font-medium mb-1">灌注</label>
-        <InputText
-          v-model="localForm.infusion"
+        <label class="block text-sm font-medium mb-1">{{ $t('buildParser.armorType') }}</label>
+        <BaseInput
+          v-model="localForm.armorType"
           class="w-full"
-          placeholder="灌注类型"
+          :placeholder="$t('buildParser.armorType')"
         />
       </div>
+      <!-- 灌注 -->
+      <div>
+        <label class="block text-sm font-medium mb-1">{{ $t('buildParser.infusion') }}</label>
+        <BaseInput
+          v-model="localForm.infusion"
+          class="w-full"
+          :placeholder="$t('buildParser.infusion')"
+        />
+      </div>
+      <!-- 武器配置 -->
       <div>
         <div class="flex items-center justify-between mb-2">
-          <label class="text-sm font-medium">武器配置</label>
+          <label class="text-sm font-medium">{{ $t('buildParser.weaponConfig') }}</label>
           <BaseButton
             icon="pi pi-plus"
-            label="添加武器"
+            :label="$t('buildParser.addWeapon')"
             size="small"
             text
-            @click="$emit('add-weapon')"
+            @click="emit('add-weapon')"
           />
         </div>
         <div
@@ -63,12 +96,12 @@
           class="flex items-start gap-2 mb-2"
         >
           <div class="flex-1 grid grid-cols-3 gap-2">
-            <InputText
+            <BaseInput
               v-model="w.name"
               placeholder="武器名称"
               class="w-full"
             />
-            <InputText
+            <BaseInput
               :model-value="w.sigils.join(',')"
               placeholder="法印（逗号分隔）"
               class="w-full col-span-2"
@@ -80,7 +113,7 @@
             severity="danger"
             text
             size="small"
-            @click="$emit('remove-weapon', idx)"
+            @click="emit('remove-weapon', idx)"
           />
         </div>
       </div>
@@ -89,11 +122,19 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/input/BaseButton.vue';
-import type { BuildCreateDto } from '@/types/buildLibrary';
-import InputText from 'primevue/inputtext';
-import Panel from 'primevue/panel';
-import { reactive, watch } from 'vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseInput from '@/components/common/ui/input/BaseInput.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import type { BuildCreateDto } from '@/types/buildLibrary'
+import { refDataService } from '@/services/game/refDataService'
+import Panel from 'primevue/panel'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+
+interface RefItem {
+  id: string
+  name: string
+  icon?: string
+}
 
 const props = defineProps<{
   form: BuildCreateDto
@@ -105,13 +146,59 @@ const emit = defineEmits<{
   'update:form': [form: BuildCreateDto]
 }>()
 
-const localForm = reactive({ ...props.form })
+const localForm = reactive<BuildCreateDto>({ ...props.form })
 
-watch(() => props.form, (val) => {
-  Object.assign(localForm, val)
-}, { deep: true })
+const relicOptions = ref<RefItem[]>([])
+const runeOptions = ref<RefItem[]>([])
+const foodOptions = ref<RefItem[]>([])
+const utilityOptions = ref<RefItem[]>([])
 
-watch(localForm, (val) => {
-  emit('update:form', { ...val })
-}, { deep: true })
+/** 古物多选：字符串 <-> 数组 转换 */
+const selectedRelics = computed<string[]>({
+  get: () => {
+    const r = localForm.relic
+    return typeof r === 'string' && r ? r.split('/').map(s => s.trim()).filter(Boolean) : []
+  },
+  set: (val) => {
+    localForm.relic = val.length ? val.join(' / ') : ''
+  },
+})
+
+watch(
+  () => props.form,
+  (val) => {
+    Object.assign(localForm, val)
+    localForm.weapons = val.weapons ? [...val.weapons] : []
+  },
+  { deep: true }
+)
+
+watch(
+  localForm,
+  (val) => {
+    emit('update:form', { ...val })
+  },
+  { deep: true }
+)
+
+async function loadRefData() {
+  try {
+    const [relicsRes, runesRes, foodsRes, utilsRes] = await Promise.all([
+      refDataService.getRelics(),
+      refDataService.getRunes(),
+      refDataService.getFoods(),
+      refDataService.getUtilities(),
+    ])
+    if (relicsRes.success && relicsRes.data) relicOptions.value = relicsRes.data.items
+    if (runesRes.success && runesRes.data) runeOptions.value = runesRes.data.items
+    if (foodsRes.success && foodsRes.data) foodOptions.value = foodsRes.data.items
+    if (utilsRes.success && utilsRes.data) utilityOptions.value = utilsRes.data.items
+  } catch (e) {
+    console.error('加载参考数据失败:', e)
+  }
+}
+
+onMounted(() => {
+  loadRefData()
+})
 </script>

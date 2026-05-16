@@ -45,7 +45,7 @@ class BuildBase(BaseModel):
     sub_roles: List[str] = Field(default_factory=list, description="子角色列")
     armor_type: Optional[str] = Field(None, description="护甲类型")
     weapons: List[BuildWeapon] = Field(default_factory=list, description="武器配置")
-    relic: Optional[str] = Field(None, description="Relic")
+    relic: Optional[str] = Field(None, description="古物（多选用/分隔）")
     rune: Optional[str] = Field(None, description="符文")
     food: Optional[str] = Field(None, description="食物")
     wrench: Optional[str] = Field(None, description="扳手")

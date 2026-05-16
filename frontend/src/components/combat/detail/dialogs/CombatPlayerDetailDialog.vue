@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Dialog from 'primevue/dialog'
-import ProgressSpinner from 'primevue/progressspinner'
+import BaseProgressSpinner from '@/components/common/ui/display/BaseProgressSpinner.vue'
 import type { EiAnalysisPlayer, PlayerRotationData } from '@/services/ei/eiAnalysisService'
 import RotationViewTabs from '@/components/combat/rotation/RotationViewTabs.vue'
 import RotationTimelineView from '@/components/combat/rotation/RotationTimelineView.vue'
@@ -20,6 +20,14 @@ interface RotationData {
   rotationLoading: boolean
   /** 排序后的技能释放列表 */
   sortedSkillCasts: any[]
+  /** Top10 技能释放 */
+  top10SkillCasts: any[]
+  /** 自动攻击占比 (%) */
+  autoAttackRatio: number
+  /** 武器切换次数 */
+  weaponSwapCount: number
+  /** 武器切换间隔统计 */
+  weaponSwapIntervals: { intervals: number[]; average: number; min: number; max: number } | null
 }
 
 /** 时间轴视图数据 */
@@ -51,10 +59,6 @@ interface TooltipData {
 }
 
 // === 常量定义 ===
-const DIALOG_CONFIG = {
-  WIDTH: '900px',
-  MAX_WIDTH: '95vw',
-} as const
 
 const PLAYER_DETAIL_LABELS = {
   HEADER_FALLBACK: '玩家详情',
@@ -67,10 +71,7 @@ const EMPTY_STATE_MESSAGES = {
   NO_ROTATION_DATA_DESC: '请重新解析日志以获取技能详情',
 } as const
 
-const LOADING_CONFIG = {
-  SPINNER_SIZE: '40px',
-  TEXT: '加载技能数据中...',
-} as const
+const LOADING_TEXT = '加载技能数据中...' as const
 
 const props = defineProps<{
   player: EiAnalysisPlayer | null
@@ -96,9 +97,9 @@ const emit = defineEmits<{
   <Dialog
     :visible="visible"
     :header="player ? (player.character_name || player.account) : PLAYER_DETAIL_LABELS.HEADER_FALLBACK"
-    :style="{ width: DIALOG_CONFIG.WIDTH, maxWidth: DIALOG_CONFIG.MAX_WIDTH }"
     :modal="true"
     :draggable="false"
+    :pt="{ root: { class: 'player-detail-dialog' } }"
     @update:visible="visible = $event"
   >
     <div
@@ -112,8 +113,8 @@ const emit = defineEmits<{
         v-if="rotationData.rotationLoading"
         class="flex items-center justify-center py-8"
       >
-        <ProgressSpinner :style="{ width: LOADING_CONFIG.SPINNER_SIZE, height: LOADING_CONFIG.SPINNER_SIZE }" />
-        <span class="ml-3 text-neutral-text-secondary text-sm">{{ LOADING_CONFIG.TEXT }}</span>
+        <BaseProgressSpinner class="w-10 h-10" />
+        <span class="ml-3 text-neutral-text-secondary text-sm">{{ LOADING_TEXT }}</span>
       </div>
 
       <template v-else-if="rotationData.playerRotation">
@@ -146,6 +147,10 @@ const emit = defineEmits<{
           <CombatPlayerDetailSkillCastList
             v-if="rotationViewMode === 'stats'"
             :sorted-skill-casts="rotationData.sortedSkillCasts"
+            :top10-skill-casts="rotationData.top10SkillCasts"
+            :auto-attack-ratio="rotationData.autoAttackRatio"
+            :weapon-swap-count="rotationData.weaponSwapCount"
+            :weapon-swap-intervals="rotationData.weaponSwapIntervals"
           />
 
           <!-- 技能循环时序图 -->
@@ -194,3 +199,10 @@ const emit = defineEmits<{
     </div>
   </Dialog>
 </template>
+
+<style scoped>
+:deep(.player-detail-dialog) {
+  width: 900px;
+  max-width: 95vw;
+}
+</style>

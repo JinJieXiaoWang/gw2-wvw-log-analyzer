@@ -705,6 +705,7 @@ def get_trend_analysis(db: Session, days: int = 30) -> dict:
             "predictions": [],
             "anomalies": [],
             "insights": ["近期无战斗数据"],
+            "time_series": [],
             "_metadata": {"analysis_mode": "rule_based", "days": days},
         }
 
@@ -720,6 +721,33 @@ def get_trend_analysis(db: Session, days: int = 30) -> dict:
     damage_per_day = total_damage / max(days, 1)
     kills_per_day = total_kills / max(days, 1)
     kd_ratio = total_kills / max(total_deaths, 1)
+
+    # 按天聚合时间序列数据
+    from collections import defaultdict
+    daily = defaultdict(lambda: {"damage": 0, "kills": 0, "deaths": 0, "duration": 0, "count": 0})
+    for f in fights:
+        day_key = f.start_time.strftime("%m-%d") if f.start_time else "unknown"
+        daily[day_key]["damage"] += f.total_damage or 0
+        daily[day_key]["duration"] += f.duration_sec or 0
+        daily[day_key]["count"] += 1
+    for s in stats:
+        # 关联到战斗日期
+        fight = next((f for f in fights if f.id == s.fight_id), None)
+        if fight and fight.start_time:
+            day_key = fight.start_time.strftime("%m-%d")
+            daily[day_key]["kills"] += s.killed or 0
+            daily[day_key]["deaths"] += s.dead_count or 0
+
+    time_series = [
+        {
+            "date": day,
+            "damage": vals["damage"],
+            "kills": vals["kills"],
+            "deaths": vals["deaths"],
+            "duration": round(vals["duration"] / max(vals["count"], 1), 1),
+        }
+        for day, vals in sorted(daily.items())
+    ]
 
     if kd_ratio > 1.5:
         trend = "上升"
@@ -756,6 +784,7 @@ def get_trend_analysis(db: Session, days: int = 30) -> dict:
         "predictions": predictions,
         "anomalies": [],
         "insights": insights,
+        "time_series": time_series,
         "_metadata": {
             "analysis_mode": "rule_based",
             "days": days,

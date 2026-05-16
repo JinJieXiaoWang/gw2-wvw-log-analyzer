@@ -53,13 +53,13 @@
               </div>
             </div>
             <div class="flex gap-2">
-              <Button
+              <BaseButton
                 :label="SAVE_BUILD_LABEL"
                 icon="pi pi-save"
                 class="btn-game"
                 @click="showSaveDialog = true"
               />
-              <Button
+              <BaseButton
                 :label="COPY_CODE_LABEL"
                 icon="pi pi-copy"
                 class="btn-ghost"
@@ -104,6 +104,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import BuildCodeInput from '@/components/build/parser/BuildCodeInput.vue'
 import ImportDialog from '@/components/build/parser/ImportDialog.vue'

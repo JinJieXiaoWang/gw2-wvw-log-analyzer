@@ -133,11 +133,12 @@ import { RadarChart } from 'echarts/charts'
 import { TooltipComponent, LegendComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
 import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
+import type { PersonalGrowthData } from '@/composables/useAiAnalysis'
 
 use([CanvasRenderer, RadarChart, TooltipComponent, LegendComponent])
 
 const props = defineProps<{
-  data: any
+  data: PersonalGrowthData | null
   loading: boolean
   error?: string
 }>()

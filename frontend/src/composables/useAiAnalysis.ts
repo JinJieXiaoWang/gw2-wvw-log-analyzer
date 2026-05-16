@@ -9,6 +9,14 @@ export interface SuggestionsData {
   high_priority?: string[]
 }
 
+export interface TrendTimePoint {
+  date: string
+  damage: number
+  kills: number
+  deaths: number
+  duration: number
+}
+
 export interface TrendData {
   data_points?: number
   total_damage?: number
@@ -16,6 +24,7 @@ export interface TrendData {
   avg_duration?: number
   trend?: string
   insights?: string[]
+  time_series?: TrendTimePoint[]
 }
 
 export interface FightOption {
@@ -44,6 +53,83 @@ export interface AiConfig {
   fallback_enabled: boolean
 }
 
+export interface PersonalGrowthData {
+  overall_score: number
+  percentiles: Record<string, number>
+  dimension_scores: Record<string, { score: number }>
+  trends: {
+    overall: string
+    dps_trend: string
+    survival_trend: string
+    confidence: number
+  }
+  suggestions: Array<{
+    category: string
+    message: string
+    actions?: string[]
+  }>
+  llm_analysis?: {
+    narrative: string
+    growth_plan?: Array<{ phase: string; focus: string }>
+  }
+}
+
+export interface DeathAttributionData {
+  survival_score: number
+  death_stats: {
+    total_fights: number
+    death_rate: number
+    total_deaths: number
+    avg_dodge_per_fight: number
+  }
+  attributions: Array<{
+    primary_reason: string
+    primary_label: string
+    start_time: string
+    confidence: number
+    all_reasons: string[]
+  }>
+  suggestions: Array<{
+    priority: string
+    message: string
+    actions?: string[]
+  }>
+  llm_analysis?: {
+    narrative: string
+  }
+}
+
+export interface SquadSynergyData {
+  squads: Array<{
+    group_id: number
+    synergy_score: number
+    member_count: number
+    role_distribution: Record<string, number>
+    suggestions: Array<{ priority: string; message: string }>
+  }>
+}
+
+export interface BuildExecutionData {
+  build_type: string
+  execution_score: number
+  execution_check?: {
+    checks: Array<{ label: string; actual: string; status: string }>
+  }
+}
+
+export interface CriticalMomentsData {
+  moments: Array<{
+    importance: string
+    label: string
+    description: string
+    evaluations?: Array<{
+      character_name: string
+      profession: string
+      performance?: { rating: string }
+    }>
+  }>
+}
+
 export function useAiAnalysis() {
   const aiEnabled = ref(true)
   const analyzing = ref(false)
@@ -61,11 +147,11 @@ export function useAiAnalysis() {
   const isRuleBasedMode = computed(() => !aiEnabled.value)
 
   // === 新增AI战术复盘与成长顾问系统状态 ===
-  const personalGrowthData = ref<any>(null)
-  const deathAttributionData = ref<any>(null)
-  const squadSynergyData = ref<any>(null)
-  const buildExecutionData = ref<any>(null)
-  const criticalMomentsData = ref<any>(null)
+  const personalGrowthData = ref<PersonalGrowthData | null>(null)
+  const deathAttributionData = ref<DeathAttributionData | null>(null)
+  const squadSynergyData = ref<SquadSynergyData | null>(null)
+  const buildExecutionData = ref<BuildExecutionData | null>(null)
+  const criticalMomentsData = ref<CriticalMomentsData | null>(null)
   const loadingPersonalGrowth = ref(false)
   const loadingDeathAttribution = ref(false)
   const loadingSquadSynergy = ref(false)

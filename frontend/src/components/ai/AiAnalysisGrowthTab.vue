@@ -34,6 +34,8 @@ import {
 } from '@/constants/aiAnalysis'
 import { getProfessionName } from '@/services/professionService'
 
+import type { PersonalGrowthData } from '@/composables/useAiAnalysis'
+
 interface PlayerOption {
   id: string
   name: string
@@ -44,7 +46,7 @@ interface Props {
   recentPlayers: PlayerOption[]
   selectedPlayerAccount: string
   growthFightCount: number
-  personalGrowthData: any
+  personalGrowthData: PersonalGrowthData | null
   loadingPersonalGrowth: boolean
 }
 

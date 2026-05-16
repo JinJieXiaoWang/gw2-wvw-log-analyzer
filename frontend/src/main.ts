@@ -13,6 +13,7 @@ import Tooltip from 'primevue/tooltip'
 import { createApp } from 'vue'
 
 import App from './App.vue'
+import i18n from './locales'
 import { authStore } from './composables/system/usePermission'
 import { GameThemePreset } from './config/themePreset'
 import DictSelect from './components/common/dict/DictSelect.vue'
@@ -46,6 +47,7 @@ app.use(ToastService)
 app.use(ConfirmationService)
 app.use(pinia)
 app.use(router)
+app.use(i18n)
 
 app.directive('permission', permissionDirective)
 app.directive('tooltip', Tooltip)

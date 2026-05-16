@@ -41,6 +41,8 @@ import {
 } from '@/constants/aiAnalysis'
 import { getProfessionName } from '@/services/professionService'
 
+import type { CriticalMomentsData } from '@/composables/useAiAnalysis'
+
 interface FightOption {
   id: string
   name: string
@@ -50,7 +52,7 @@ interface FightOption {
 interface Props {
   recentFights: FightOption[]
   selectedFightId: string
-  criticalMomentsData: any
+  criticalMomentsData: CriticalMomentsData | null
   loadingCriticalMoments: boolean
 }
 

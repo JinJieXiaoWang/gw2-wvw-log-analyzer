@@ -6,13 +6,23 @@
         <h2 class="text-xl font-bold text-white">分析报告</h2>
       </div>
       <div class="flex items-center gap-3">
-        <select v-model="localFilter" @change="$emit('filter-change', localFilter)" class="appearance-none bg-neutral-card-active text-white text-sm px-4 py-2 pr-8 rounded-lg border border-neutral-border cursor-pointer">
-          <option value="all">全部</option><option value="fight">战斗分析</option><option value="player">玩家分析</option><option value="build">Build分析</option>
-        </select>
-        <button @click="$emit('refresh')" :disabled="loading" class="flex items-center gap-2 px-4 py-2 bg-neutral-card-active/50 hover:bg-neutral-card-active rounded-lg transition-colors">
-          <SvgIcon icon="refresh-cw" :size="16" :class="{ 'animate-spin': loading }" class="text-neutral-text-tertiary" />
+        <BaseSelect
+          v-model="localFilter"
+          :options="filterOptions"
+          option-label="label"
+          option-value="value"
+          class="w-36"
+          @change="$emit('filter-change', localFilter)"
+        />
+        <BaseButton
+          icon="pi pi-refresh"
+          size="small"
+          text
+          :loading="loading"
+          @click="$emit('refresh')"
+        >
           <span class="text-sm text-neutral-text-tertiary">刷新</span>
-        </button>
+        </BaseButton>
       </div>
     </div>
     <div v-if="loading && !reports.length" class="space-y-3"><div v-for="i in 3" :key="i" class="h-20 bg-neutral-card-active/50 rounded-xl animate-pulse" /></div>
@@ -25,12 +35,25 @@
         <p class="text-sm text-neutral-text-secondary truncate mb-2">{{ report.summary || '无摘要' }}</p>
         <div class="flex items-center justify-between">
           <span class="text-xs text-neutral-text-tertiary">{{ formatDate(report.created_at) }}</span>
-          <button @click.stop="$emit('delete', String(report.id))" class="text-xs text-error hover:text-error/80">删除</button>
+          <BaseButton
+            severity="danger"
+            size="small"
+            text
+            @click.stop="$emit('delete', String(report.id))"
+          >
+            <span class="text-xs">删除</span>
+          </BaseButton>
         </div>
       </div>
-      <button v-if="hasMore" @click="$emit('load-more')" :disabled="loading" class="w-full py-3 text-center text-sm text-neutral-text-secondary hover:text-white transition-colors">
-        {{ loading ? '加载中...' : '加载更多' }}
-      </button>
+      <BaseButton
+        v-if="hasMore"
+        class="w-full"
+        text
+        :loading="loading"
+        @click="$emit('load-more')"
+      >
+        <span class="text-sm text-neutral-text-secondary">{{ loading ? '加载中...' : '加载更多' }}</span>
+      </BaseButton>
     </div>
     <div v-else class="text-center py-12"><p class="text-neutral-text-tertiary">暂无报告</p></div>
   </div>
@@ -38,6 +61,8 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
 import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
 import type { AiReport } from '@/services/ai/aiService'
 
@@ -49,10 +74,35 @@ const emit = defineEmits<{ refresh: []; 'load-more': []; view: [id: string]; del
 const localFilter = ref(props.filter)
 watch(() => props.filter, (v) => { localFilter.value = v })
 
+const filterOptions = [
+  { value: 'all', label: '全部' },
+  { value: 'fight', label: '战斗分析' },
+  { value: 'player', label: '玩家分析' },
+  { value: 'build', label: 'Build分析' },
+  { value: 'personal_growth', label: '成长档案' },
+  { value: 'death_attribution', label: '死亡归因' },
+  { value: 'squad_synergy', label: '小队协同' },
+  { value: 'build_execution', label: 'Build验证' },
+  { value: 'critical_moments', label: '关键片段' },
+]
+
 const getReportTypeName = (type: string) => {
-  const map: Record<string, string> = { fight: '战斗分析', player: '玩家分析', build: 'Build分析' }
+  const map: Record<string, string> = {
+    fight: '战斗分析',
+    player: '玩家分析',
+    build: 'Build分析',
+    personal_growth: '成长档案',
+    death_attribution: '死亡归因',
+    squad_synergy: '小队协同',
+    build_execution: 'Build验证',
+    critical_moments: '关键片段',
+  }
   return map[type] || type
 }
 const getScoreClass = (score: number) => score >= 80 ? 'text-status-success' : score >= 60 ? 'text-warning' : 'text-error'
 const formatDate = (date: string) => new Date(date).toLocaleDateString('zh-CN')
+</script>
+
+<script lang="ts">
+export default { name: 'AiReportPanel' }
 </script>

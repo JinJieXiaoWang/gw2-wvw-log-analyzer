@@ -7,6 +7,7 @@
 - 符文/食物等配置建议
 """
 
+import json
 from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
@@ -94,7 +95,10 @@ class BuildExecutionAnalyzer:
         # 5. 装备/消耗品检查
         equipment_check = self._check_equipment(latest.get("fight_id"), account)
 
-        # 6. 构建结果
+        # 6. 将装备检查转换为checks格式并合并
+        execution_check = self._merge_equipment_checks(execution_check, equipment_check, latest, build_info)
+
+        # 7. 构建结果
         result = {
             "account": account,
             "profession": latest.get("profession", ""),
@@ -311,6 +315,73 @@ class BuildExecutionAnalyzer:
             "has_utility": has_util,
             "issues": issues,
             "equipment_score": 100 - len(issues) * 20,
+        }
+
+    def _merge_equipment_checks(
+        self,
+        execution_check: Dict[str, Any],
+        equipment_check: Dict[str, Any],
+        latest: Dict,
+        build_info: Optional[Dict],
+    ) -> Dict[str, Any]:
+        """将装备/消耗品/职业匹配检查合并到execution_check"""
+        checks = list(execution_check.get("checks", []))
+
+        # 武器非空检查
+        weapons = equipment_check.get("weapons")
+        has_weapons = bool(weapons and (isinstance(weapons, list) and len(weapons) > 0))
+        checks.append({
+            "check": "weapon_presence",
+            "label": "武器配置",
+            "actual": "已装备" if has_weapons else "未获取",
+            "expected": "主副手武器齐全",
+            "status": CheckStatus.PASS.value if has_weapons else CheckStatus.WARN.value,
+        })
+
+        # 食物检查
+        has_food = equipment_check.get("has_food", False)
+        checks.append({
+            "check": "food_consumable",
+            "label": "食物增益",
+            "actual": "已使用" if has_food else "未检测",
+            "expected": "使用WvW食物",
+            "status": CheckStatus.PASS.value if has_food else CheckStatus.WARN.value,
+        })
+
+        # 增强道具检查
+        has_util = equipment_check.get("has_utility", False)
+        checks.append({
+            "check": "utility_consumable",
+            "label": "增强道具",
+            "actual": "已使用" if has_util else "未检测",
+            "expected": "使用磨刀石/油/调谐",
+            "status": CheckStatus.PASS.value if has_util else CheckStatus.WARN.value,
+        })
+
+        # 职业匹配检查
+        if build_info:
+            actual_prof = latest.get("profession", "")
+            expected_prof = build_info.get("profession", "")
+            prof_match = actual_prof.lower() == expected_prof.lower() if expected_prof else True
+            checks.append({
+                "check": "profession_match",
+                "label": "职业匹配",
+                "actual": actual_prof,
+                "expected": expected_prof or "任意",
+                "status": CheckStatus.PASS.value if prof_match else CheckStatus.FAIL.value,
+            })
+
+        # 重新计算总分
+        pass_count = sum(1 for c in checks if c["status"] == CheckStatus.PASS.value)
+        fail_count = sum(1 for c in checks if c["status"] == CheckStatus.FAIL.value)
+        total_scored = pass_count + fail_count
+        score = round((pass_count / max(total_scored, 1)) * 100) if total_scored > 0 else 50
+
+        return {
+            "checks": checks,
+            "pass_count": pass_count,
+            "fail_count": fail_count,
+            "overall_score": score,
         }
 
     async def _llm_enhance(self, rule_result: Dict, latest: Dict) -> Optional[Dict]:

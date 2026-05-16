@@ -26,6 +26,8 @@ import {
 } from '@/constants/aiAnalysis'
 import { getProfessionName } from '@/services/professionService'
 
+import type { DeathAttributionData } from '@/composables/useAiAnalysis'
+
 interface PlayerOption {
   id: string
   name: string
@@ -35,7 +37,7 @@ interface PlayerOption {
 interface Props {
   recentPlayers: PlayerOption[]
   selectedPlayerAccount: string
-  deathAttributionData: any
+  deathAttributionData: DeathAttributionData | null
   loadingDeathAttribution: boolean
 }
 

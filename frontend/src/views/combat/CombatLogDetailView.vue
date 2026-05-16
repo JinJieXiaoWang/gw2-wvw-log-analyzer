@@ -39,9 +39,9 @@
     >
       <div class="flex flex-col items-center gap-4">
         <div class="relative">
-          <ProgressSpinner class="w-[50px] h-[50px]" />
+          <BaseProgressSpinner class="w-12 h-12" />
           <div class="absolute inset-0 animate-ping opacity-20">
-            <ProgressSpinner class="w-[50px] h-[50px]" />
+            <BaseProgressSpinner class="w-12 h-12" />
           </div>
         </div>
         <span class="text-neutral-text-secondary font-medium">{{ LOADING_TEXT }}</span>
@@ -179,7 +179,7 @@
     v-model:rotation-view-mode="rotationViewMode"
     :player="selectedPlayer"
     :has-player-detail-data="hasPlayerDetailData"
-    :rotation-data="{ playerRotation, rotationLoading, sortedSkillCasts }"
+    :rotation-data="{ playerRotation, rotationLoading, sortedSkillCasts, top10SkillCasts, autoAttackRatio, weaponSwapCount, weaponSwapIntervals }"
     :timeline-data="{ timelineTicks, timelineTracks }"
     :heatmap-data="{ heatmapRows }"
     :cycle-data="{ skillCycles }"
@@ -204,7 +204,7 @@ import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import TabMenu from 'primevue/tabmenu'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
-import ProgressSpinner from 'primevue/progressspinner'
+import BaseProgressSpinner from '@/components/common/ui/display/BaseProgressSpinner.vue'
 
 // 异步加载大型 combat detail 子组件，减少主 chunk 体积
 const CombatOverviewTab = defineAsyncComponent(() => import('@/components/combat/detail/overview/CombatOverviewTab.vue'))
@@ -261,7 +261,7 @@ const donut = computed(() => summary.value?.donut || { pd: '0 264', cd: '0 264',
 const breakbarPct = computed(() => summary.value?.percentages?.breakbar || 0)
 
 const { statDetailList, statDetailAverage } = useStatDetail(players, currentStatType, currentStatCategory)
-const { sortedSkillCasts, hasPlayerDetailData, timelineTicks, timelineTracks, heatmapRows, skillCycles } = usePlayerRotation(playerRotation, fightSummary)
+const { sortedSkillCasts, top10SkillCasts, autoAttackRatio, weaponSwapCount, weaponSwapIntervals, hasPlayerDetailData, timelineTicks, timelineTracks, heatmapRows, skillCycles } = usePlayerRotation(playerRotation, fightSummary)
 
 const openStatDetailDialog = (type: string, title: string) => {
   currentStatType.value = type as StatCategory

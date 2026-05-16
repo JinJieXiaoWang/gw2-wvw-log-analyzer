@@ -1,17 +1,52 @@
 <template>
-  <div class="flex items-start gap-3">
-    <div class="p-3 bg-red-500/20 rounded-xl"><SvgIcon icon="swords" :size="24" class="text-red-400" /></div>
-    <div class="flex-1">
-      <h3 class="font-semibold text-white mb-1">分析最近战斗</h3>
-      <p class="text-sm text-neutral-text-secondary">自动选择最新战斗日志</p>
+  <div>
+    <h3 class="text-lg font-semibold text-white mb-2">快速操作</h3>
+    <p class="text-sm text-neutral-text-tertiary mb-4">快速分析最近的战斗或玩家数据</p>
+    <div class="flex flex-wrap gap-3">
+      <BaseButton
+        icon="pi pi-bolt"
+        label="分析最新战斗"
+        size="small"
+        :disabled="disabled || !recentFights.length"
+        @click="$emit('analyze-fight')"
+      />
+      <BaseButton
+        icon="pi pi-user"
+        label="分析最近玩家"
+        size="small"
+        :disabled="disabled || !recentPlayers.length"
+        @click="$emit('analyze-player')"
+      />
+      <BaseButton
+        icon="pi pi-users"
+        label="分析团队协同"
+        size="small"
+        :disabled="disabled || !recentFights.length"
+        @click="$emit('analyze-team')"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import SvgIcon from '@/components/common/ui/display/SvgIcon.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
-interface FightOption { id: string; name: string; date: string }
-defineProps<{ recentFights: FightOption[]; recentPlayers: Array<{ name: string; profession: string }>; disabled: boolean }>()
-defineEmits<{ 'analyze-fight': []; 'analyze-player': []; 'analyze-team': [] }>()
+interface Props {
+  recentFights: { id: string; name: string; date: string }[]
+  recentPlayers: { id: string; name: string; profession: string }[]
+  recentBuilds: { id: string; name: string; profession: string }[]
+  disabled: boolean
+}
+
+defineProps<Props>()
+
+defineEmits<{
+  'analyze-fight': []
+  'analyze-player': []
+  'analyze-team': []
+}>()
+</script>
+
+<script lang="ts">
+export default { name: 'AiQuickActions' }
 </script>

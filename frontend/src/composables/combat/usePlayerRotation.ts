@@ -56,6 +56,37 @@ export function usePlayerRotation(
     return events.slice(0, 100)
   })
 
+  const top10SkillCasts = computed(() => sortedSkillCasts.value.slice(0, 10))
+
+  const autoAttackRatio = computed(() => {
+    const total = rotationEvents.value.length
+    if (!total) return 0
+    const aaCount = rotationEvents.value.filter(e => e.autoAttack === true).length
+    return Math.round((aaCount / total) * 100)
+  })
+
+  const weaponSwapCount = computed(() => {
+    return rotationEvents.value.filter(e => e.isSwap === true).length
+  })
+
+  const weaponSwapIntervals = computed(() => {
+    const swapTimes = rotationEvents.value
+      .filter(e => e.isSwap === true)
+      .map(e => e.time as number)
+    if (swapTimes.length < 2) return null
+    const intervals: number[] = []
+    for (let i = 1; i < swapTimes.length; i++) {
+      intervals.push(Math.round((swapTimes[i] - swapTimes[i - 1]) * 10) / 10)
+    }
+    const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
+    return {
+      intervals,
+      average: Math.round(avg * 10) / 10,
+      min: Math.min(...intervals),
+      max: Math.max(...intervals),
+    }
+  })
+
   const hasPlayerDetailData = computed(() => {
     if (!playerRotation.value) return false
     const hasConsumables = (
@@ -90,7 +121,11 @@ export function usePlayerRotation(
 
   return {
     sortedSkillCasts,
+    top10SkillCasts,
     rotationEvents,
+    autoAttackRatio,
+    weaponSwapCount,
+    weaponSwapIntervals,
     hasPlayerDetailData,
     timelineTicks,
     timelineTracks,

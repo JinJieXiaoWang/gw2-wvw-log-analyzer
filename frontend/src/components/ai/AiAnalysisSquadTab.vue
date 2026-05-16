@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+import type { SquadSynergyData } from '@/composables/useAiAnalysis'
 import {
   BTN_ANALYZING,
   BTN_SQUAD_SYNERGY,
@@ -50,7 +51,7 @@ interface FightOption {
 interface Props {
   recentFights: FightOption[]
   selectedFightId: string
-  squadSynergyData: any
+  squadSynergyData: SquadSynergyData | null
   loadingSquadSynergy: boolean
 }
 
