@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models.sys_notice import SysNotice, SysNoticeRead
+from app.models.system.sys_notice import SysNotice, SysNoticeRead
 from app.utils.logger import logger
 
 

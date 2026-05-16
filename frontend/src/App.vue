@@ -41,6 +41,7 @@ import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import AppWatermark from '@/components/system/AppWatermark.vue'
 import { useSettingsStore } from '@/store/system/settings'
+import { authStore } from '@/composables/system/usePermission'
 
 const isLoading = ref(false)
 const settingsStore = useSettingsStore()
@@ -64,6 +65,9 @@ const handleGlobalToast = (event: Event) => {
 
 onMounted(() => {
   console.log('GW2 WVW Log Analyzer initialized')
+
+  // 初始化认证状态和加载菜单数据
+  authStore.getStatus().catch(console.error)
 
   // 从后端同步全局设置（水印等策略配置）
   settingsStore.syncFromServer()

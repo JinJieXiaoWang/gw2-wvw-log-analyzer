@@ -3,7 +3,7 @@
     v-model:visible="localVisible"
     header="初始化字典数据"
     width="450px"
-    confirm-label="ȷ认初始化"
+    confirm-label="确认初始化"
     confirm-severity="danger"
     :loading="initializing"
     @confirm="$emit('confirm')"
@@ -11,9 +11,11 @@
     <div class="init-warning">
       <i class="pi pi-exclamation-triangle" />
       <div class="warning-content">
-        <h4>ȷ认要初始化字典数据吗？</h4>
-        <p>初始化操作将重置所有字典数据到系统默认ֵ。</p>
-        <p class="warning-text">此操作不可恢复，请谨慎操作！</p>
+        <h4>确认要初始化字典数据吗？</h4>
+        <p>初始化操作将重置所有字典数据到系统默认值。</p>
+        <p class="warning-text">
+          此操作不可恢复，请谨慎操作！
+        </p>
       </div>
     </div>
   </BaseDialog>
@@ -21,7 +23,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
 
 const props = defineProps<{
   visible: boolean

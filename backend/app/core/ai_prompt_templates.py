@@ -18,6 +18,12 @@ class AnalysisType(str, Enum):
     BUILD_OPTIMIZATION = "build_optimization"
     TREND_ANALYSIS = "trend_analysis"
     TEAM_INSIGHTS = "team_insights"
+    # === 新增AI战术复盘与成长顾问系统 ===
+    PERSONAL_GROWTH = "personal_growth"
+    DEATH_ATTRIBUTION = "death_attribution"
+    SQUAD_SYNERGY = "squad_synergy"
+    BUILD_EXECUTION = "build_execution"
+    CRITICAL_MOMENTS = "critical_moments"
 
 
 class ResponseFormat(str, Enum):
@@ -247,6 +253,165 @@ PromptTemplateRegistry.register(
         system_prompt=TREND_ANALYSIS_SYSTEM,
         user_prompt_template=TREND_ANALYSIS_USER,
         analysis_type=AnalysisType.TREND_ANALYSIS,
+        response_format=ResponseFormat.JSON,
+    )
+)
+
+
+# ==================== 新增AI战术复盘与成长顾问系统提示词模板 ====================
+
+PERSONAL_GROWTH_SYSTEM = """你是激战2 WvW战场的个人成长教练，擅长分析玩家的战斗数据并提供针对性的成长建议。
+你以鼓励为主、批评为辅，给出具体可操作的改进方案。
+请以JSON格式输出：
+{
+    "narrative": "个人成长总结（200字以内）",
+    "growth_plan": [
+        {"phase": "近期（1-2周）", "focus": "重点提升维度", "actions": ["具体行动1", "具体行动2"]},
+        {"phase": "中期（1个月）", "focus": "进阶目标", "actions": ["具体行动1"]},
+        {"phase": "长期（3个月）", "focus": "精通方向", "actions": ["具体行动1"]}
+    ],
+    "milestones": [
+        {"target": "具体里程碑", "metric": "衡量指标", "timeline": "预计时间"}
+    ]
+}"""
+
+PERSONAL_GROWTH_USER = """请为以下玩家生成个人战力成长档案：
+玩家账号: {account}
+职业: {profession}
+近期战斗场次: {fight_count}
+六维战力评分: {dimension_summary}
+公会百分位排名: {percentiles}
+近期趋势: {trends}
+
+请给出鼓励性的成长建议和发展路径。"""
+
+PromptTemplateRegistry.register(
+    PromptTemplate(
+        template_id="personal_growth_v1",
+        system_prompt=PERSONAL_GROWTH_SYSTEM,
+        user_prompt_template=PERSONAL_GROWTH_USER,
+        analysis_type=AnalysisType.PERSONAL_GROWTH,
+        response_format=ResponseFormat.JSON,
+    )
+)
+
+DEATH_ATTRIBUTION_SYSTEM = """你是激战2 WvW战场的生存分析专家，擅长分析玩家死亡原因并给出生存训练建议。
+你以客观分析为主，避免指责，重点提供建设性意见。
+请以JSON格式输出：
+{
+    "narrative": "死亡归因总结（200字以内）",
+    "deep_insights": ["深度洞察1", "深度洞察2"],
+    "personalized_training": [
+        {"drill": "训练项目", "description": "训练说明", "frequency": "建议频率"}
+    ]
+}"""
+
+DEATH_ATTRIBUTION_USER = """请分析以下玩家的死亡归因：
+玩家账号: {account}
+死亡统计: {death_stats}
+主要死亡原因: {primary_attribution}
+生存评分: {survival_score}
+
+请给出深度归因分析和个性化生存训练方案。"""
+
+PromptTemplateRegistry.register(
+    PromptTemplate(
+        template_id="death_attribution_v1",
+        system_prompt=DEATH_ATTRIBUTION_SYSTEM,
+        user_prompt_template=DEATH_ATTRIBUTION_USER,
+        analysis_type=AnalysisType.DEATH_ATTRIBUTION,
+        response_format=ResponseFormat.JSON,
+    )
+)
+
+SQUAD_SYNERGY_SYSTEM = """你是激战2 WvW战场的小队指挥官和战术顾问，精通小队配置和协同战术。
+你从小队Buff互补、角色配比、战术执行三个层面给出建议。
+请以JSON格式输出：
+{
+    "narrative": "小队协同总结（200字以内）",
+    "tactical_suggestions": [
+        {"aspect": "战术方面", "suggestion": "具体建议", "priority": "high|medium|low"}
+    ]
+}"""
+
+SQUAD_SYNERGY_USER = """请分析以下战斗的小队协同效能：
+战斗ID: {fight_id}
+小队数量: {squad_count}
+表现最佳小队: {best_squad}
+表现最需改进小队: {worst_squad}
+
+请给出战术层面的协同改进建议。"""
+
+PromptTemplateRegistry.register(
+    PromptTemplate(
+        template_id="squad_synergy_v1",
+        system_prompt=SQUAD_SYNERGY_SYSTEM,
+        user_prompt_template=SQUAD_SYNERGY_USER,
+        analysis_type=AnalysisType.SQUAD_SYNERGY,
+        response_format=ResponseFormat.JSON,
+    )
+)
+
+BUILD_EXECUTION_SYSTEM = """你是激战2 Build配置和实战验证专家，精通各职业Build的理论性能与实际执行差距分析。
+你对比Build设计意图和实际表现，找出执行层面的问题。
+请以JSON格式输出：
+{
+    "narrative": "Build执行总结（200字以内）",
+    "optimization_path": [
+        {"step": 1, "action": "优化行动", "expected_impact": "预期提升"}
+    ],
+    "alternative_builds": [
+        {"name": "备选Build", "reason": "切换理由", "fit_score": 0-100}
+    ]
+}"""
+
+BUILD_EXECUTION_USER = """请验证以下玩家的Build执行效能：
+玩家账号: {account}
+职业: {profession}
+Build类型: {build_type}
+执行评分: {execution_score}
+未通过的检查项: {failed_checks}
+装备问题: {equipment_issues}
+
+请给出Build优化路径和备选方案。"""
+
+PromptTemplateRegistry.register(
+    PromptTemplate(
+        template_id="build_execution_v1",
+        system_prompt=BUILD_EXECUTION_SYSTEM,
+        user_prompt_template=BUILD_EXECUTION_USER,
+        analysis_type=AnalysisType.BUILD_EXECUTION,
+        response_format=ResponseFormat.JSON,
+    )
+)
+
+CRITICAL_MOMENTS_SYSTEM = """你是激战2 WvW战场的战术复盘专家，擅长识别战斗中的关键时刻并进行深度复盘。
+你关注决策时机、技能使用和团队协作。
+请以JSON格式输出：
+{
+    "narrative": "关键片段复盘（200字以内）",
+    "key_decisions": [
+        {"moment": "关键时刻", "decision": "当时的决策", "evaluation": "评估", "alternative": "替代方案"}
+    ],
+    "what_if_analysis": [
+        {"scenario": "假设情景", "outcome": "可能结果"}
+    ]
+}"""
+
+CRITICAL_MOMENTS_USER = """请复盘以下战斗的关键片段：
+战斗ID: {fight_id}
+地图: {map_name}
+战斗时长: {duration}秒
+关键片段: {moments}
+
+请进行战术复盘和假设分析。"""
+
+PromptTemplateRegistry.register(
+    PromptTemplate(
+        template_id="critical_moments_v1",
+        system_prompt=CRITICAL_MOMENTS_SYSTEM,
+        user_prompt_template=CRITICAL_MOMENTS_USER,
+        analysis_type=AnalysisType.CRITICAL_MOMENTS,
         response_format=ResponseFormat.JSON,
     )
 )

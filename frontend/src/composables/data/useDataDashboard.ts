@@ -1,4 +1,6 @@
-import { ref, watch, onMounted } from 'vue'
+import { TIME_RANGE_OPTIONS } from '@/constants/options'
+import { ref, watch, onMounted, type Ref } from 'vue'
+import type { ApiResponse } from '@/models'
 import { useToast } from 'primevue/usetoast'
 import { debounce } from '@/utils/core/helpers'
 import { dashboardService } from '@/services'
@@ -8,7 +10,8 @@ import { configManager } from '@/services/core/configManager'
 export function useDataDashboard() {
   const toast = useToast()
   const timeRange = ref('30d')
-  const timeRangeOptions = [{ label: '最近7天', value: '7d' }, { label: '最近30天', value: '30d' }, { label: '最近90天', value: '90d' }, { label: '全部', value: 'all' }]
+  // 时间范围选项（UI 级别仪表盘配置，如需动态配置可迁移至 dashboard_time_range 字典类型）
+  const timeRangeOptions = TIME_RANGE_OPTIONS
   const daysFromRange = (r: string) => ({ '7d': 7, '30d': 30, '90d': 90, 'all': 365 }[r] || 30)
 
   const loadings = {
@@ -23,13 +26,13 @@ export function useDataDashboard() {
   const mapItems = ref<any[]>([])
   const buffData = ref<Record<string, number> | null>(null)
   const topPlayerSort = ref('damage')
-  const topPlayerItems = ref<any[]>([])
+  const topPlayerItems = ref<Record<string, unknown>[]>([])
   const recentFights = ref<any[]>([])
 
-  const fetchData = async (fn: () => Promise<any>, loading: any, detail: string, setter?: (data: any) => void) => {
+  const fetchData = async (fn: () => Promise<ApiResponse<unknown>>, loading: Ref<boolean>, detail: string, setter?: (data: unknown) => void) => {
     loading.value = true
     try {
-      const res = await ApiResponseWrapper.wrap(fn() as any, { showErrorMessage: true })
+      const res = await ApiResponseWrapper.wrap(fn(), { showErrorMessage: true })
       if (res.success && res.data && setter) setter(res.data)
     } catch { toast.add({ severity: 'error', summary: '加载失败', detail, life: configManager.get('ui').toastErrorLife }) }
     finally { loading.value = false }
@@ -37,11 +40,11 @@ export function useDataDashboard() {
 
   const fetchOverview = () => fetchData(() => dashboardService.getOverview(daysFromRange(timeRange.value)), loadings.overview, '数据概览加载失败', d => overviewData.value = d)
   const fetchTrends = () => fetchData(() => dashboardService.getTrends(daysFromRange(timeRange.value), trendMetric.value), loadings.trends, '趋势数据加载失败', d => trendData.value = d)
-  const fetchProfessions = () => fetchData(() => dashboardService.getProfessionDistribution(daysFromRange(timeRange.value)), loadings.professions, '职业分布加载失败', d => professionItems.value = d.items || [])
-  const fetchMaps = () => fetchData(() => dashboardService.getMapStatistics(daysFromRange(timeRange.value)), loadings.maps, '地图统计加载失败', d => mapItems.value = d.items || [])
-  const fetchBuffs = () => fetchData(() => dashboardService.getBuffOverview(daysFromRange(timeRange.value)), loadings.buffs, 'Buff概览加载失败', d => buffData.value = d.buffs || null)
-  const fetchTopPlayers = () => fetchData(() => dashboardService.getTopPlayers(daysFromRange(timeRange.value), topPlayerSort.value, 20), loadings.topPlayers, '玩家排行加载失败', d => topPlayerItems.value = d.items || [])
-  const fetchRecentFights = () => fetchData(() => dashboardService.getRecentFights(10), loadings.recentFights, '最近战斗加载失败', d => recentFights.value = d || [])
+  const fetchProfessions = () => fetchData(() => dashboardService.getProfessionDistribution(daysFromRange(timeRange.value)), loadings.professions, '职业分布加载失败', d => professionItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
+  const fetchMaps = () => fetchData(() => dashboardService.getMapStatistics(daysFromRange(timeRange.value)), loadings.maps, '地图统计加载失败', d => mapItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
+  const fetchBuffs = () => fetchData(() => dashboardService.getBuffOverview(daysFromRange(timeRange.value)), loadings.buffs, 'Buff概览加载失败', d => buffData.value = (d as Record<string, unknown>).buffs as Record<string, number> | null || null)
+  const fetchTopPlayers = () => fetchData(() => dashboardService.getTopPlayers(daysFromRange(timeRange.value), topPlayerSort.value, 20), loadings.topPlayers, '玩家排行加载失败', d => topPlayerItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
+  const fetchRecentFights = () => fetchData(() => dashboardService.getRecentFights(10), loadings.recentFights, '最近战斗加载失败', d => recentFights.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
 
   const fetchAll = async () => {
     await Promise.all([fetchOverview(), fetchTrends()])

@@ -5,4 +5,4 @@
  */
 
 export { useSettingsStore } from './system/settings'
-export { useEiDataStore } from './eiData'
+export { useEiDataStore } from './ei/eiData'

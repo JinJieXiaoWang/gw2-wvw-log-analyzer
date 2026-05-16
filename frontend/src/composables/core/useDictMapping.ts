@@ -7,6 +7,7 @@
 
 import { ref, computed, watch, onMounted, type Ref } from 'vue'
 import { dictionaryService, type DictOption, type DictData, type DictType } from '@/services/system/dictionaryService'
+import { professionService } from '@/services/professionService'
 
 /**
  * 缓存条目结构
@@ -19,17 +20,17 @@ interface CacheEntry<T> {
 /**
  * 缓存有效期（毫秒）- 默认5分钟
  */
-const DEFAULT_CACHE_TTL = 5 * 60 * 1000
+export const DEFAULT_CACHE_TTL = 5 * 60 * 1000
 
 /**
  * 全局字典缓存
  */
-const globalCache = new Map<string, CacheEntry<any>>()
+export const globalCache = new Map<string, CacheEntry<any>>()
 
 /**
  * 清理过期缓存
  */
-function cleanExpiredCache(dictType?: string): void {
+export function cleanExpiredCache(dictType?: string): void {
   const now = Date.now()
   if (dictType) {
     const entry = globalCache.get(dictType)
@@ -199,23 +200,24 @@ export function useDictLabel(dictType: string, value: Ref<string> | string) {
 }
 
 // =============================================
-// useProfessions - 职业字典专用Hook
+// useProfessions - 职业数据专用Hook
+// 说明：职业数据由专用 professionService 管理，不从字典表获取
 // =============================================
 
 /**
- * 职业字典组合式函数
+ * 职业数据组合式函数
  * @param autoLoad 是否自动加载
- * @returns 职业字典数据和方法
+ * @returns 职业数据和方法
  */
 export function useProfessions(autoLoad: boolean = true) {
-  const PROFESSION_CACHE_KEY = 'profession'
+  const PROFESSION_CACHE_KEY = 'profession_api'
 
   const data = ref<DictOption[]>([]) as Ref<DictOption[]>
   const loading = ref(false)
   const error = ref<Error | null>(null)
 
   /**
-   * 加载职业字典
+   * 加载职业数据（从 professionService API，不从字典表）
    */
   async function loadProfessions(): Promise<void> {
     cleanExpiredCache(PROFESSION_CACHE_KEY)
@@ -229,12 +231,18 @@ export function useProfessions(autoLoad: boolean = true) {
     error.value = null
 
     try {
-      const result = await dictionaryService.getOptions('profession')
+      const professions = await professionService.getProfessions(false)
+      const result: DictOption[] = professions.map(p => ({
+        value: p.profession_key,
+        label: p.profession_name,
+        css_class: p.color,
+        is_default: 0
+      }))
       data.value = result
       globalCache.set(PROFESSION_CACHE_KEY, { data: result, timestamp: Date.now() })
     } catch (err) {
-      error.value = err instanceof Error ? err : new Error('加载职业字典失败')
-      console.error('[useProfessions] 加载职业字典失败', err)
+      error.value = err instanceof Error ? err : new Error('加载职业数据失败')
+      console.error('[useProfessions] 加载职业数据失败', err)
     } finally {
       loading.value = false
     }
@@ -381,21 +389,22 @@ export function useRoles(autoLoad: boolean = true) {
 }
 
 // =============================================
-// useSpecializations - 精英特长字典专用Hook
+// useSpecializations - 精英特长数据专用Hook
+// 说明：精英特长数据由专用 professionService 管理，不从字典表获取
 // =============================================
 
 /**
- * 精英特长字典组合式函数
+ * 精英特长数据组合式函数
  */
 export function useSpecializations(autoLoad: boolean = true) {
-  const SPEC_CACHE_KEY = 'specialization'
+  const SPEC_CACHE_KEY = 'specialization_api'
 
   const data = ref<DictOption[]>([]) as Ref<DictOption[]>
   const loading = ref(false)
   const error = ref<Error | null>(null)
 
   /**
-   * 加载精英特长字典
+   * 加载精英特长数据（从 professionService API，不从字典表）
    */
   async function loadSpecializations(): Promise<void> {
     cleanExpiredCache(SPEC_CACHE_KEY)
@@ -409,12 +418,18 @@ export function useSpecializations(autoLoad: boolean = true) {
     error.value = null
 
     try {
-      const result = await dictionaryService.getOptions('specialization')
+      const specs = await professionService.getEliteSpecs()
+      const result: DictOption[] = specs.map(s => ({
+        value: s.spec_key,
+        label: s.spec_name,
+        css_class: s.color,
+        is_default: 0
+      }))
       data.value = result
       globalCache.set(SPEC_CACHE_KEY, { data: result, timestamp: Date.now() })
     } catch (err) {
-      error.value = err instanceof Error ? err : new Error('加载精英特长字典失败')
-      console.error('[useSpecializations] 加载精英特长字典失败', err)
+      error.value = err instanceof Error ? err : new Error('加载精英特长数据失败')
+      console.error('[useSpecializations] 加载精英特长数据失败', err)
     } finally {
       loading.value = false
     }

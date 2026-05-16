@@ -68,9 +68,6 @@ COPY --chown=gw2:gw2 app/ ./app/
 COPY --chown=gw2:gw2 main.py .
 COPY --chown=gw2:gw2 scripts/docker/entrypoint.sh ./entrypoint.sh
 
-# 复制 GW2.txt 数据文件（Build 图书馆初始化依赖）
-COPY --chown=gw2:gw2 tests/GW2.txt ./tests/GW2.txt
-
 # 创建数据目录并设置权限
 RUN mkdir -p /app/uploads /app/logs /app/database /app/ssl && \
     chown -R gw2:gw2 /app

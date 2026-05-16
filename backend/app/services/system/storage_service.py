@@ -12,8 +12,9 @@ from sqlalchemy import and_, desc
 from sqlalchemy.orm import Session
 
 from app.config.settings import settings
-from app.models.log import Log
-from app.models.storage import StorageCleanupRecord, StorageMonitorRecord
+from app.models.log.log import Log
+from app.models.system.storage import StorageCleanupRecord, StorageMonitorRecord
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 
@@ -102,7 +103,7 @@ class FileCleanupService:
                 logs_batch = (
                     db.query(Log)
                     .filter(
-                        and_(Log.upload_time < cutoff_date, Log.parse_status == "completed")
+                        and_(Log.upload_time < cutoff_date, Log.parse_status == ParseStatus.COMPLETED)
                     )
                     .limit(batch_size)
                     .all()
@@ -183,7 +184,7 @@ class FileCleanupService:
             while total_size - space_freed > target_size:
                 logs_batch = (
                     db.query(Log)
-                    .filter(Log.parse_status == "completed")
+                    .filter(Log.parse_status == ParseStatus.COMPLETED)
                     .order_by(Log.upload_time)
                     .limit(batch_size)
                     .all()
@@ -251,7 +252,7 @@ class FileCleanupService:
                 logs_batch = (
                     db.query(Log)
                     .filter(
-                        and_(Log.parse_status == "completed", Log.file_path.isnot(None))
+                        and_(Log.parse_status == ParseStatus.COMPLETED, Log.file_path.isnot(None))
                     )
                     .limit(batch_size)
                     .all()

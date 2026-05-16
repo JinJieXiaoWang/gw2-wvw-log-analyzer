@@ -8,6 +8,7 @@
 import type { Directive, DirectiveBinding } from 'vue'
 import { authStore } from '@/composables/system/usePermission'
 import type { Permission } from '@/types/permission'
+import { SystemRole } from '@/types/permission'
 
 /**
  * v-permission 指令用法：
@@ -30,7 +31,7 @@ interface PermissionBinding {
 function checkAdminRole(): boolean {
   const user = authStore.getUser()
   const userRole = user?.role as string | undefined
-  return userRole === 'super_admin'
+  return userRole === SystemRole.SUPER_ADMIN
 }
 
 /**
@@ -39,7 +40,7 @@ function checkAdminRole(): boolean {
 function checkLoggedInRole(): boolean {
   const user = authStore.getUser()
   const userRole = user?.role as string | undefined
-  return userRole === 'super_admin' || userRole === 'operator'
+  return userRole === SystemRole.SUPER_ADMIN || userRole === SystemRole.OPERATOR
 }
 
 /**

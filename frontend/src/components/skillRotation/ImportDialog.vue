@@ -4,7 +4,7 @@
     header="导入循环对比"
     :modal="true"
     :style="{ width: '500px' }"
-    @update:visible="emit('update:visible', $event)"
+    @update:visible="handleVisibleUpdate"
   >
     <div class="py-4">
       <div class="space-y-4">
@@ -29,14 +29,14 @@
       </div>
     </div>
     <template #footer>
-      <Button
+      <BaseButton
         label="取消"
-        class="btn-ghost"
+        variant="ghost"
         @click="closeDialog"
       />
-      <Button
+      <BaseButton
         label="导入"
-        class="btn-game"
+        variant="game"
         @click="importRotation"
       />
     </template>
@@ -51,32 +51,24 @@
  * 创建日期：2026-04-27
  */
 
-import { ref } from 'vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
 import Textarea from 'primevue/textarea'
+import { ref } from 'vue'
 
-// Props
-const props = defineProps<{
-  visible: boolean
-}>()
+const visible = defineModel<boolean>('visible')
 
-// 确保props被使用
-console.log(props.visible)
+const emit = defineEmits(['import-rotation'])
 
-// Emits
-const emit = defineEmits([
-  'update:visible',
-  'import-rotation'
-])
-
-// 状态
 const idealRotationJson = ref('')
 const actualRotationJson = ref('')
 
-// 事件处理
+function handleVisibleUpdate(value: boolean) {
+  visible.value = value
+}
+
 const closeDialog = () => {
-  emit('update:visible', false)
+  visible.value = false
   idealRotationJson.value = ''
   actualRotationJson.value = ''
 }

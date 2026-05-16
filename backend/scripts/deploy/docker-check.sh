@@ -41,10 +41,10 @@ else
     check_fail ".env 文件缺失（请复制 .env.example 并填写）"
 fi
 
-if [ -f "docker-compose.yml" ]; then
+if [ -f "docker-compose.yml" ] || [ -f "../docker-compose.yml" ]; then
     check_pass "docker-compose.yml 存在"
 else
-    check_fail "docker-compose.yml 缺失"
+    check_fail "docker-compose.yml 缺失（应在 backend 目录或 scripts/docker 目录运行）"
 fi
 
 if [ -f "scripts/docker/nginx.conf" ]; then
@@ -53,7 +53,7 @@ else
     check_fail "scripts/docker/nginx.conf 缺失"
 fi
 
-if [ -f "Dockerfile" ]; then
+if [ -f "Dockerfile" ] || [ -f "scripts/docker/Dockerfile" ]; then
     check_pass "Dockerfile 存在"
 else
     check_fail "Dockerfile 缺失"
@@ -66,6 +66,8 @@ info "检查必要目录..."
 
 if [ -d "dist" ] && [ "$(ls -A dist 2>/dev/null)" ]; then
     check_pass "dist/ 目录存在且非空（前端构建文件）"
+elif [ -d "../frontend/dist" ] && [ "$(ls -A ../frontend/dist 2>/dev/null)" ]; then
+    check_pass "../frontend/dist/ 目录存在且非空（前端构建文件）"
 else
     check_warn "dist/ 目录缺失或为空（前端将无法正常访问）"
 fi

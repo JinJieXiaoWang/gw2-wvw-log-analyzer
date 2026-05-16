@@ -1,300 +1,355 @@
 /**
  * API端点配置
  * 功能：定义所有API路由路径常量，统一入口管理
- * 约束：所有路径均已包含 /api/v1 前缀（除特殊路径外）
- * 更新日期：2026-05-04
+ * 约束：所有路径均为相对路径（不含 /api/v1 前缀），前缀由 apiService.ts baseURL 控制
+ * 更新日期：2026-05-15
  */
 
-const API_V1 = '/api/v1';
 
 export const API_ENDPOINTS = {
   // 认证相关
   AUTH: {
-    LOGIN: `${API_V1}/auth/login`,
-    LOGOUT: `${API_V1}/auth/logout`,
-    REFRESH: `${API_V1}/auth/refresh`,
-    PROFILE: `${API_V1}/auth/profile`,
-    CHANGE_PASSWORD: `${API_V1}/auth/change-password`,
-    STATUS: `${API_V1}/auth/status`
+    LOGIN: `auth/login`,
+    LOGOUT: `auth/logout`,
+    REFRESH: `auth/refresh`,
+    PROFILE: `auth/profile`,
+    CHANGE_PASSWORD: `auth/change-password`,
+    STATUS: `auth/status`
   },
 
   // 日志管理
   LOGS: {
-    BASE: `${API_V1}/logs`,
-    LIST: `${API_V1}/logs`,
-    DETAIL: (id: string | number) => `${API_V1}/logs/${id}`,
-    UPLOAD: `${API_V1}/logs/upload`,
-    DELETE: (id: string | number) => `${API_V1}/logs/${id}`,
-    UPDATE: (id: string | number) => `${API_V1}/logs/${id}`,
-    PARSE: (id: string | number) => `${API_V1}/logs/${id}/parse`,
-    PARSE_PROGRESS: (id: string | number) => `${API_V1}/logs/${id}/parse/progress`,
-    PARSE_RESULT: (id: string | number) => `${API_V1}/logs/${id}/parse/result`,
-    DOWNLOAD: (id: string | number) => `${API_V1}/logs/${id}/download`,
-    BATCH_DELETE: `${API_V1}/logs/batch-delete`,
-    BATCH_PARSE: `${API_V1}/logs/batch-parse`,
-    FIGHT_INFO: (id: string | number) => `${API_V1}/logs/${id}/fight`,
-    PLAYERS_STATS: (id: string | number) => `${API_V1}/logs/${id}/players`,
-    PLAYER_STATS: (logId: string | number, accountName: string) => `${API_V1}/logs/${logId}/players/${accountName}/stats`,
-    PLAYER_BUFFS: (logId: string | number, accountName: string) => `${API_V1}/logs/${logId}/players/${accountName}/buffs`,
-    PLAYER_ROTATION: (logId: string | number, accountName: string) => `${API_V1}/logs/${logId}/players/${accountName}/rotation`,
-    RAW_DATA: (id: string | number) => `${API_V1}/logs/${id}/raw`,
-    VALIDATE: (id: string | number) => `${API_V1}/logs/${id}/validate`
+    BASE: `logs`,
+    LIST: `logs`,
+    DETAIL: (id: string | number) => `logs/${id}`,
+    UPLOAD: `logs/upload`,
+    DELETE: (id: string | number) => `logs/${id}`,
+    UPDATE: (id: string | number) => `logs/${id}`,
+    PARSE: (id: string | number) => `logs/${id}/parse`,
+    PARSE_PROGRESS: (id: string | number) => `logs/${id}/parse/progress`,
+    PARSE_RESULT: (id: string | number) => `logs/${id}/parse/result`,
+    DOWNLOAD: (id: string | number) => `logs/${id}/download`,
+    BATCH_DELETE: `logs/batch-delete`,
+    BATCH_PARSE: `logs/batch-parse`,
+    CHECK_SHA256: `logs/check-sha256`,
+    FIGHT_INFO: (id: string | number) => `logs/${id}/fight`,
+    PLAYERS_STATS: (id: string | number) => `logs/${id}/players`,
+    PLAYER_STATS: (logId: string | number, accountName: string) => `logs/${logId}/players/${accountName}/stats`,
+    PLAYER_BUFFS: (logId: string | number, accountName: string) => `logs/${logId}/players/${accountName}/buffs`,
+    PLAYER_ROTATION: (logId: string | number, accountName: string) => `logs/${logId}/players/${accountName}/rotation`,
+    RAW_DATA: (id: string | number) => `logs/${id}/raw`,
+    VALIDATE: (id: string | number) => `logs/${id}/validate`
   },
 
   // 出勤统计
   ATTENDANCE: {
-    BASE: `${API_V1}/attendance`,
-    LIST: `${API_V1}/attendance`,
-    DETAIL: (id: string | number) => `${API_V1}/attendance/${id}`,
-    EXPORT: `${API_V1}/attendance/export`,
-    STATS: `${API_V1}/attendance/stats`,
+    BASE: `attendance`,
+    LIST: `attendance`,
+    DETAIL: (id: string | number) => `attendance/${id}`,
+    EXPORT: `attendance/export`,
+    STATS: `attendance/stats`,
     // v2.0 新接口：账号维度出勤管理
-    ACCOUNTS: `${API_V1}/attendance/accounts`,
-    ACCOUNT_DETAIL: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}`,
-    ACCOUNT_SCORE_BREAKDOWN: (account: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/score-breakdown`,
-    CHARACTER_DETAIL: (account: string, character: string) => `${API_V1}/attendance/accounts/${encodeURIComponent(account)}/characters/${encodeURIComponent(character)}`,
-    FILTERS: `${API_V1}/attendance/filters`
+    ACCOUNTS: `attendance/accounts`,
+    ACCOUNT_DETAIL: (account: string) => `attendance/accounts/${encodeURIComponent(account)}`,
+    ACCOUNT_SCORE_BREAKDOWN: (account: string) => `attendance/accounts/${encodeURIComponent(account)}/score-breakdown`,
+    ACCOUNT_EXPORT: (account: string) => `attendance/accounts/${encodeURIComponent(account)}/export`,
+    CHARACTER_DETAIL: (account: string, character: string) => `attendance/accounts/${encodeURIComponent(account)}/characters/${encodeURIComponent(character)}`,
+    FILTERS: `attendance/filters`
   },
 
   // 技能循环
   SKILL_ROTATION: {
-    BASE: `${API_V1}/skill-rotation`,
-    HEALTH: `${API_V1}/skill-rotation/health`,
-    ANALYZE: `${API_V1}/skill-rotation/analyze`,
-    COMPARE: `${API_V1}/skill-rotation/compare`,
-    COMPARE_PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/compare/${memberAccount}`,
-    HISTORY: `${API_V1}/skill-rotation/history`,
-    PLAYER: (memberAccount: string) => `${API_V1}/skill-rotation/player/${memberAccount}`,
-    ERRORS: `${API_V1}/skill-rotation/errors`
+    BASE: `skill-rotation`,
+    HEALTH: `skill-rotation/health`,
+    ANALYZE: `skill-rotation/analyze`,
+    COMPARE: `skill-rotation/compare`,
+    COMPARE_PLAYER: (memberAccount: string) => `skill-rotation/compare/${memberAccount}`,
+    HISTORY: `skill-rotation/history`,
+    PLAYER: (memberAccount: string) => `skill-rotation/player/${memberAccount}`,
+    ERRORS: `skill-rotation/errors`,
+    EXPORT_REPORT: `skill-rotation/export-report`,
+    IDEAL_ROTATIONS: `skill-rotation/ideal-rotations`
   },
 
   // Build解析（保留 /api/bdcode 特殊前缀）
   BUILD: {
     // bdcode 特殊前缀
-    BDCODE_BASE: '/api/bdcode',
-    PARSE: '/api/bdcode/parse',
-    PARSE_BY_URL: (code: string) => `/api/bdcode/parse/${code}`,
-    VALIDATE: '/api/bdcode/validate',
-    BATCH: '/api/bdcode/batch',
-    STATS: '/api/bdcode/stats',
-    HEALTH: '/api/bdcode/health',
-    // builds ǰ׺
-    BASE: `${API_V1}/builds`,
-    LIST: `${API_V1}/builds`,
-    SAVE: `${API_V1}/builds/save`,
-    DETAIL: (id: string | number) => `${API_V1}/builds/${id}`,
-    DELETE: (id: string | number) => `${API_V1}/builds/${id}`,
-    COMPARE: `${API_V1}/builds/compare`,
-    EXPORT: (id: string | number) => `${API_V1}/builds/${id}/export`
+    BDCODE_BASE: `bdcode`,
+    PARSE: `bdcode/parse`,
+    PARSE_BY_URL: (code: string) => `bdcode/parse/${code}`,
+    VALIDATE: `bdcode/validate`,
+    BATCH: `bdcode/batch`,
+    STATS: `bdcode/stats`,
+    HEALTH: `bdcode/health`,  
+    // builds 主接口
+    BASE: `builds`,
+    LIST: `builds`,
+    SAVE: `builds/save`,
+    DETAIL: (id: string | number) => `builds/${id}`,
+    DELETE: (id: string | number) => `builds/${id}`,
+    COMPARE: `builds/compare`,
+    EXPORT: (id: string | number) => `builds/${id}/export`
   },
 
   // 数据看板
   DASHBOARD: {
-    BASE: `${API_V1}/dashboard`,
-    OVERVIEW: `${API_V1}/dashboard/overview`,
-    RECENT: `${API_V1}/dashboard/recent`,
-    STATS: `${API_V1}/dashboard/stats`,
-    TRENDS: `${API_V1}/dashboard/trends`,
-    MAPS: `${API_V1}/dashboard/map-stats`,
-    PROFESSION_DISTRIBUTION: `${API_V1}/dashboard/profession-distribution`
+    BASE: `dashboard`,
+    OVERVIEW: `dashboard/overview`,
+    RECENT: `dashboard/recent`,
+    STATS: `dashboard/stats`,
+    TRENDS: `dashboard/trends`,
+    MAPS: `dashboard/map-stats`,
+    PROFESSION_DISTRIBUTION: `dashboard/profession-distribution`,
+    TOP_PLAYERS: `dashboard/top-players`,
+    RECENT_FIGHTS: `dashboard/recent-fights`,
+    PARSE_STATUS: `dashboard/parse-status`,
+    AI_SCORE_DISTRIBUTION: `dashboard/ai-score-distribution`,
+    BUFF_OVERVIEW: `dashboard/buff-overview`
   },
 
   // 用户管理
   USERS: {
-    BASE: `${API_V1}/users`,
-    LIST: `${API_V1}/users`,
-    DETAIL: (id: string | number) => `${API_V1}/users/${id}`,
-    CREATE: `${API_V1}/users`,
-    UPDATE: (id: string | number) => `${API_V1}/users/${id}`,
-    DELETE: (id: string | number) => `${API_V1}/users/${id}`,
-    PROFILE: `${API_V1}/users/profile`,
-    CHANGE_PASSWORD: `${API_V1}/users/change-password`,
-    RESET_PASSWORD: (id: string | number) => `${API_V1}/users/${id}/reset-password`,
-    TOGGLE_ACTIVE: (id: string | number) => `${API_V1}/users/${id}/toggle-active`,
-    ROLES_LIST: `${API_V1}/users/roles/list`
+    BASE: `users`,
+    LIST: `users`,
+    DETAIL: (id: string | number) => `users/${id}`,
+    CREATE: `users`,
+    UPDATE: (id: string | number) => `users/${id}`,
+    DELETE: (id: string | number) => `users/${id}`,
+    PROFILE: `users/profile`,
+    CHANGE_PASSWORD: `users/change-password`,
+    RESET_PASSWORD: (id: string | number) => `users/${id}/reset-password`,
+    TOGGLE_ACTIVE: (id: string | number) => `users/${id}/toggle-active`,
+    ROLES_LIST: `users/roles/list`
   },
 
   // 系统设置
   SETTINGS: {
-    BASE: `${API_V1}/settings`,
-    GET: `${API_V1}/settings`,
-    UPDATE: `${API_V1}/settings`,
-    RESET: `${API_V1}/settings/reset`
+    BASE: `settings`,
+    GET: `settings`,
+    UPDATE: `settings`,
+    RESET: `settings/reset`
   },
 
   // 技能分析
   SKILLS: {
-    BASE: `${API_V1}/skills`,
-    LIST: `${API_V1}/skills`,
-    DETAIL: (id: string | number) => `${API_V1}/skills/${id}`,
-    FIGHT_EVENTS: (fightId: string | number) => `${API_V1}/skills/${fightId}/events`,
-    MEMBER_ROTATION: (memberId: string | number) => `${API_V1}/skills/${memberId}/rotation`
+    BASE: `skills`,
+    LIST: `skills`,
+    DETAIL: (id: string | number) => `skills/${id}`,
+    FIGHT_EVENTS: (fightId: string | number) => `skills/${fightId}/events`,
+    MEMBER_ROTATION: (memberId: string | number) => `skills/${memberId}/rotation`
   },
 
   // AI分析
   AI: {
-    BASE: `${API_V1}/ai`,
-    REPORTS: `${API_V1}/ai/reports`,
-    REPORT_DETAIL: (id: string | number) => `${API_V1}/ai/reports/${id}`,
-    ANALYZE_FIGHT: (fightId: string | number) => `${API_V1}/ai/analyze/fight/${fightId}`,
-    ANALYZE_MEMBER: (memberId: string | number) => `${API_V1}/ai/analyze/member/${memberId}`,
-    ANALYZE_BUILD: (buildId: string | number) => `${API_V1}/ai/analyze/build/${buildId}`,
-    TREND: `${API_V1}/ai/trend`,
-    SUGGESTIONS: `${API_V1}/ai/suggestions`
+    BASE: `ai`,
+    REPORTS: `ai/reports`,
+    REPORT_DETAIL: (id: string | number) => `ai/reports/${id}`,
+    ANALYZE_FIGHT: (fightId: string | number) => `ai/analyze/fight/${fightId}`,
+    ANALYZE_MEMBER: (memberId: string | number) => `ai/analyze/member/${memberId}`,
+    ANALYZE_BUILD: (buildId: string | number) => `ai/analyze/build/${buildId}`,
+    TREND: `ai/trend`,
+    SUGGESTIONS: `ai/suggestions`,
+    STATUS: `ai/status`,
+    TEST: `ai/test`,
+    CLEAR_CACHE: `ai/cache/clear`,
+    ANALYZE_PERSONAL_GROWTH: `ai/analyze/personal-growth`,
+    ANALYZE_DEATH_ATTRIBUTION: `ai/analyze/death-attribution`,
+    ANALYZE_SQUAD_SYNERGY: `ai/analyze/squad-synergy`,
+    ANALYZE_BUILD_EXECUTION: `ai/analyze/build-execution`,
+    ANALYZE_CRITICAL_MOMENTS: `ai/analyze/critical-moments`,
   },
 
   // 战斗数据
   FIGHTS: {
-    BASE: `${API_V1}/fights`,
-    LIST: `${API_V1}/fights`,
-    DETAIL: (id: string | number) => `${API_V1}/fights/${id}`,
-    STATS: (id: string | number) => `${API_V1}/fights/${id}/stats`
+    BASE: `fights`,
+    LIST: `fights`,
+    DETAIL: (id: string | number) => `fights/${id}`,
+    STATS: (id: string | number) => `fights/${id}/stats`
   },
 
   // 字典管理
   DICTIONARY: {
-    OPTIONS: (dictType: string) => `${API_V1}/dictionary/options/${dictType}`,
-    DATA: `${API_V1}/dictionary/data`,
-    DATA_DETAIL: (dictCode: string | number) => `${API_V1}/dictionary/data/${dictCode}`,
-    TYPES: `${API_V1}/dictionary/types`,
-    TYPE_DETAIL: (dictId: string | number) => `${API_V1}/dictionary/types/${dictId}`,
-    TYPES_ALL: `${API_V1}/dictionary/types/all`,
-    RELOAD_CACHE: `${API_V1}/dictionary/reload-cache`,
-    INIT: `${API_V1}/dictionary/init`,
-    PROFESSION_SPECS_CASCADE: `${API_V1}/dictionary/cascade/profession-specs`,
+    OPTIONS: (dictType: string) => `dictionary/options/${dictType}`,
+    DATA: `dictionary/data`,
+    DATA_DETAIL: (dictCode: string | number) => `dictionary/data/${dictCode}`,
+    TYPES: `dictionary/types`,
+    TYPE_DETAIL: (dictId: string | number) => `dictionary/types/${dictId}`,
+    TYPES_ALL: `dictionary/types/all`,
+    RELOAD_CACHE: `dictionary/reload-cache`,
+    INIT: `dictionary/init`,
+    PROFESSION_SPECS_CASCADE: `dictionary/cascade/profession-specs`,
   },
 
   // 成员管理
   MEMBERS: {
-    LIST: `${API_V1}/members`,
-    RANKING: `${API_V1}/members/ranking`,
-    PROFESSIONS: `${API_V1}/members/professions`,
-    DETAIL: (id: string | number) => `${API_V1}/members/${id}`,
-    STATS: (id: string | number) => `${API_V1}/members/${id}/stats`
+    LIST: `members`,
+    RANKING: `members/ranking`,
+    PROFESSIONS: `members/professions`,
+    DETAIL: (id: string | number) => `members/${id}`,
+    STATS: (id: string | number) => `members/${id}/stats`
   },
 
   // 监控
   MONITORING: {
-    PERFORMANCE: `${API_V1}/monitoring/performance`,
-    PERFORMANCE_SUMMARY: `${API_V1}/monitoring/performance/summary`,
-    PERFORMANCE_RESET: `${API_V1}/monitoring/performance/reset`,
-    BENCHMARK: `${API_V1}/monitoring/benchmark`,
-    BENCHMARK_COMPARE: `${API_V1}/monitoring/benchmark/compare`
+    PERFORMANCE: `monitoring/performance`,
+    PERFORMANCE_SUMMARY: `monitoring/performance/summary`,
+    PERFORMANCE_RESET: `monitoring/performance/reset`,
+    BENCHMARK: `monitoring/benchmark`,
+    BENCHMARK_COMPARE: `monitoring/benchmark/compare`
+  },
+
+  // 职业数据（professions 路由，与 game-data 区分）
+  PROFESSIONS: {
+    LIST: `professions`,
+    DETAIL: (name: string) => `professions/${name}`,
+    ELITE_SPECS: `professions/elite-specs`,
+    ROLE_TYPES: `professions/role-types`,
+    CASCADE: `professions/cascade`,
+    STATISTICS: `professions/statistics`,
+    ROLE_MAPPING: `professions/role-mapping`,
+    UPDATE_PROFESSION_ROLE: (key: string) => `professions/profession/${key}/role`,
+    UPDATE_ELITE_SPEC_ROLE: (key: string) => `professions/elite-spec/${key}/role`,
   },
 
   // 游戏数据
   GAME_DATA: {
-    INFO: `${API_V1}/game-data/info`,
-    RELOAD: `${API_V1}/game-data/reload`,
-    PROFESSIONS: `${API_V1}/game-data/professions`,
-    PROFESSION_DETAIL: (name: string) => `${API_V1}/game-data/professions/${name}`,
-    PROFESSION_NAME_CN: (name: string) => `${API_V1}/game-data/professions/${name}/name-cn`,
-    PROFESSION_DEFAULT_ROLE: (name: string) => `${API_V1}/game-data/professions/${name}/default-role`,
-    PROFESSION_SCORING_CONFIG: (name: string) => `${API_V1}/game-data/professions/${name}/scoring-config`,
-    ELITE_SPECS: `${API_V1}/game-data/elite-specs`,
-    ELITE_SPEC_DETAIL: (name: string) => `${API_V1}/game-data/elite-specs/${name}`,
-    BUFFS: `${API_V1}/game-data/buffs`,
-    BUFF_DETAIL: (id: string | number) => `${API_V1}/game-data/buffs/${id}`,
-    BUFF_NAME_CN: (id: string | number) => `${API_V1}/game-data/buffs/${id}/name-cn`,
-    BUFF_CATEGORIES: `${API_V1}/game-data/categories/buffs`
+    INFO: `game-data/info`,
+    RELOAD: `game-data/reload`,
+    PROFESSIONS: `game-data/professions`,
+    PROFESSION_DETAIL: (name: string) => `game-data/professions/${name}`,
+    PROFESSION_NAME_CN: (name: string) => `game-data/professions/${name}/name-cn`,
+    PROFESSION_DEFAULT_ROLE: (name: string) => `game-data/professions/${name}/default-role`,
+    PROFESSION_SCORING_CONFIG: (name: string) => `game-data/professions/${name}/scoring-config`,
+    ELITE_SPECS: `game-data/elite-specs`,
+    ELITE_SPEC_DETAIL: (name: string) => `game-data/elite-specs/${name}`,
+    BUFFS: `game-data/buffs`,
+    BUFF_DETAIL: (id: string | number) => `game-data/buffs/${id}`,
+    BUFF_NAME_CN: (id: string | number) => `game-data/buffs/${id}/name-cn`,
+    BUFF_CATEGORIES: `game-data/categories/buffs`
+  },
+
+  // GW2参考数据（装备下拉列表）
+  REF_DATA: {
+    RUNES: `ref-data/runes`,
+    SIGILS: `ref-data/sigils`,
+    RELICS: `ref-data/relics`,
+    FOODS: `ref-data/foods`,
+    UTILITIES: `ref-data/utilities`,
   },
 
 
 
   // 评分规则管理
   SCORING_RULES: {
-    BASE: `${API_V1}/scoring-rules`,
-    ROLES: `${API_V1}/scoring-rules/roles`,
-    RULES: `${API_V1}/scoring-rules/rules`,
-    RULE_DETAIL: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
-    RULE_UPDATE: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
-    RULE_DELETE: (id: string | number) => `${API_V1}/scoring-rules/rules/${id}`,
-    BATCH: `${API_V1}/scoring-rules/rules/batch`,
-    RESET: `${API_V1}/scoring-rules/rules/reset`,
-    DIMENSIONS: `${API_V1}/scoring-rules/dimensions`,
+    BASE: `scoring-rules`,
+    ROLES: `scoring-rules/roles`,
+    RULES: `scoring-rules/rules`,
+    RULE_DETAIL: (id: string | number) => `scoring-rules/rules/${id}`,
+    RULE_UPDATE: (id: string | number) => `scoring-rules/rules/${id}`,
+    RULE_DELETE: (id: string | number) => `scoring-rules/rules/${id}`,
+    BATCH: `scoring-rules/rules/batch`,
+    RESET: `scoring-rules/rules/reset`,
+    DIMENSIONS: `scoring-rules/dimensions`,
     // v3.0 新增：职业特定规则
-    PROFESSION_RULES: (profession: string) => `${API_V1}/scoring-rules/rules/profession/${encodeURIComponent(profession)}`,
-    PROFESSIONS: `${API_V1}/scoring-rules/professions`,
+    PROFESSION_RULES: (profession: string) => `scoring-rules/rules/profession/${encodeURIComponent(profession)}`,
+    PROFESSIONS: `scoring-rules/professions`,
     // v3.0 新增：版本管理
-    VERSIONS: `${API_V1}/scoring-rules/versions`,
-    VERSION_DETAIL: (id: string | number) => `${API_V1}/scoring-rules/versions/${id}`,
-    VERSION_BUMP: `${API_V1}/scoring-rules/versions/bump`,
+    VERSIONS: `scoring-rules/versions`,
+    VERSION_DETAIL: (id: string | number) => `scoring-rules/versions/${id}`,
+    VERSION_BUMP: `scoring-rules/versions/bump`,
   },
 
   // 评分系统（实时计算 + 重算任务）
   SCORING: {
-    RULES: `${API_V1}/scoring/rules`,
-    FIGHT: (id: string | number) => `${API_V1}/scoring/fight/${id}`,
-    RECALCULATE: `${API_V1}/scoring/recalculate`,
-    RECALCULATE_STATUS: (versionId: string | number) => `${API_V1}/scoring/recalculate/${versionId}`,
+    RULES: `scoring/rules`,
+    FIGHT: (id: string | number) => `scoring/fight/${id}`,
+    RECALCULATE: `scoring/recalculate`,
+    RECALCULATE_STATUS: (versionId: string | number) => `scoring/recalculate/${versionId}`,
   },
 
   // 角色管理
   ROLES: {
-    RULES: `${API_V1}/roles/rules`,
-    RULES_BY_PROFESSION: (professionId: string) => `${API_V1}/roles/rules/profession/${professionId}`,
-    RULE_DETAIL: (ruleId: string | number) => `${API_V1}/roles/rules/${ruleId}`,
-    RULE_UPDATE: (ruleId: string | number) => `${API_V1}/roles/rules/${ruleId}`,
-    RULE_DELETE: (ruleId: string | number) => `${API_V1}/roles/rules/${ruleId}`,
-    TEMPLATES: `${API_V1}/roles/templates`,
-    TEMPLATE_CREATE: `${API_V1}/roles/templates`,
-    TEMPLATE_DETAIL: (templateId: string | number) => `${API_V1}/roles/templates/${templateId}`,
-    TEMPLATE_UPDATE: (templateId: string | number) => `${API_V1}/roles/templates/${templateId}`,
-    TEMPLATE_DELETE: (templateId: string | number) => `${API_V1}/roles/templates/${templateId}`,
-    TEMPLATE_BY_NAME: (templateName: string) => `${API_V1}/roles/templates/name/${templateName}`,
-    TEMPLATE_APPLY: (templateId: string | number) => `${API_V1}/roles/templates/${templateId}/apply`,
-    TEMPLATE_INIT_PRESETS: `${API_V1}/roles/templates/init-presets`,
-    EXPORT: `${API_V1}/roles/export`,
-    IMPORT: `${API_V1}/roles/import`,
-    EXPRESSIONS: `${API_V1}/roles/expressions`,
-    EXPRESSION_CREATE: `${API_V1}/roles/expressions`,
-    ASSIGN: `${API_V1}/roles/assign`,
-    QUERY: `${API_V1}/roles/query`
+    RULES: `roles/rules`,
+    RULES_BY_PROFESSION: (professionId: string) => `roles/rules/profession/${professionId}`,
+    RULE_DETAIL: (ruleId: string | number) => `roles/rules/${ruleId}`,
+    RULE_UPDATE: (ruleId: string | number) => `roles/rules/${ruleId}`,
+    RULE_DELETE: (ruleId: string | number) => `roles/rules/${ruleId}`,
+    TEMPLATES: `roles/templates`,
+    TEMPLATE_CREATE: `roles/templates`,
+    TEMPLATE_DETAIL: (templateId: string | number) => `roles/templates/${templateId}`,
+    TEMPLATE_UPDATE: (templateId: string | number) => `roles/templates/${templateId}`,
+    TEMPLATE_DELETE: (templateId: string | number) => `roles/templates/${templateId}`,
+    TEMPLATE_BY_NAME: (templateName: string) => `roles/templates/name/${templateName}`,
+    TEMPLATE_APPLY: (templateId: string | number) => `roles/templates/${templateId}/apply`,
+    TEMPLATE_INIT_PRESETS: `roles/templates/init-presets`,
+    EXPORT: `roles/export`,
+    IMPORT: `roles/import`,
+    EXPRESSIONS: `roles/expressions`,
+    EXPRESSION_CREATE: `roles/expressions`,
+    ASSIGN: `roles/assign`,
+    QUERY: `roles/query`
   },
 
   // EI 分析
   EI: {
-    ANALYSIS_SUMMARY: (logId: string | number) => `${API_V1}/ei-analysis/${logId}`,
-    ANALYSIS_PLAYER_DETAIL: (logId: string | number, account: string) => `${API_V1}/ei-analysis/${logId}/player/${account}`,
-    ANALYSIS_PLAYER_ROTATION: (logId: string | number, account: string) => `${API_V1}/ei-analysis/${logId}/player/${account}/rotation`,
-    UNIFIED: (logId: string | number) => `${API_V1}/ei-report/logs/${logId}/unified`
+    ANALYSIS_SUMMARY: (logId: string | number) => `ei-analysis/${logId}`,
+    ANALYSIS_PLAYER_DETAIL: (logId: string | number, account: string) => `ei-analysis/${logId}/player/${account}`,
+    ANALYSIS_PLAYER_ROTATION: (logId: string | number, account: string) => `ei-analysis/${logId}/player/${account}/rotation`,
+    UNIFIED: (logId: string | number) => `ei-report/logs/${logId}/unified`
   },
 
   // WvW 战斗报告
   WVW_REPORT: {
-    LOGS: `${API_V1}/wvw-report/logs`,
-    SUMMARY: (logId: string | number) => `${API_V1}/wvw-report/${logId}/summary`,
-    PLAYERS: (logId: string | number) => `${API_V1}/wvw-report/${logId}/players`,
-    PLAYER_DETAIL: (logId: string | number, playerId: string | number) => `${API_V1}/wvw-report/${logId}/players/${playerId}`,
-    TARGETS: (logId: string | number) => `${API_V1}/wvw-report/${logId}/targets`,
-    PHASES: (logId: string | number) => `${API_V1}/wvw-report/${logId}/phases`,
-    TIMELINE: (logId: string | number) => `${API_V1}/wvw-report/${logId}/timeline`,
-    SKILL_MAP: (logId: string | number) => `${API_V1}/wvw-report/${logId}/skill-map`,
+    LOGS: `wvw-report/logs`,
+    SUMMARY: (logId: string | number) => `wvw-report/${logId}/summary`,
+    PLAYERS: (logId: string | number) => `wvw-report/${logId}/players`,
+    PLAYER_DETAIL: (logId: string | number, playerId: string | number) => `wvw-report/${logId}/players/${playerId}`,
+    TARGETS: (logId: string | number) => `wvw-report/${logId}/targets`,
+    PHASES: (logId: string | number) => `wvw-report/${logId}/phases`,
+    TIMELINE: (logId: string | number) => `wvw-report/${logId}/timeline`,
+    SKILL_MAP: (logId: string | number) => `wvw-report/${logId}/skill-map`,
   },
 
   // 通知中心
   NOTICES: {
-    UNREAD_COUNT: `${API_V1}/notices/unread-count`,
-    LIST: `${API_V1}/notices`,
-    MARK_READ: (id: string | number) => `${API_V1}/notices/${id}/read`,
-    MARK_ALL_READ: `${API_V1}/notices/read-all`,
+    UNREAD_COUNT: `notices/unread-count`,
+    LIST: `notices`,
+    MARK_READ: (id: string | number) => `notices/${id}/read`,
+    MARK_ALL_READ: `notices/read-all`,
+  },
+
+  // 健康检查
+  HEALTH: `health`,
+
+  // 测试接口
+  TEST: {
+    DPS_REPORT: `test/dps-report`
+  },
+
+  // 菜单管理
+  MENUS: {
+    PUBLIC: `menus/public`,
+    LIST: `menus`,
+    DETAIL: (id: string | number) => `menus/${id}`,
+    TREE: `menus/tree`,
+    ROLE: (roleId: string | number) => `menus/role/${roleId}`
   },
 
   // 战斗分析
   COMBAT_ANALYSIS: {
-    FIGHT_BASIC: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/fight`,
-    PLAYERS_LIST: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/players`,
-    PLAYER_STATS: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/players/stats`,
-    PLAYER_BUFFS: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/players/buffs`,
-    PLAYER_ROTATION: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/players/rotation`,
-    RAW_DATA: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/raw`,
-    PLAYER_DETAIL_LEGACY: (logId: string | number, accountName: string) => `${API_V1}/combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}`,
-    PLAYER_BUFFS_LEGACY: (logId: string | number, accountName: string) => `${API_V1}/combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}/buffs`,
-    PLAYER_ROTATION_LEGACY: (logId: string | number, accountName: string) => `${API_V1}/combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}/rotation`,
-    LEADERBOARD: (logId: string | number) => `${API_V1}/combat-analysis/leaderboard/${logId}`,
-    TEAM_BUFFS: (logId: string | number) => `${API_V1}/combat-analysis/team-buffs/${logId}`,
-    FIGHT_DETAILS: (logId: string | number) => `${API_V1}/combat-analysis/logs/${logId}/fight/details`,
-    FIGHT_METRICS: (logId: string | number) => `${API_V1}/combat-analysis/fight-metrics/${logId}`
+    FIGHT_BASIC: (logId: string | number) => `combat-analysis/logs/${logId}/fight`,
+    PLAYERS_LIST: (logId: string | number) => `combat-analysis/logs/${logId}/players`,
+    PLAYER_STATS: (logId: string | number) => `combat-analysis/logs/${logId}/players/stats`,
+    PLAYER_BUFFS: (logId: string | number) => `combat-analysis/logs/${logId}/players/buffs`,
+    PLAYER_ROTATION: (logId: string | number) => `combat-analysis/logs/${logId}/players/rotation`,
+    RAW_DATA: (logId: string | number) => `combat-analysis/logs/${logId}/raw`,
+    PLAYER_DETAIL_LEGACY: (logId: string | number, accountName: string) => `combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}`,
+    PLAYER_BUFFS_LEGACY: (logId: string | number, accountName: string) => `combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}/buffs`,
+    PLAYER_ROTATION_LEGACY: (logId: string | number, accountName: string) => `combat-analysis/logs/${logId}/players/${encodeURIComponent(accountName)}/rotation`,
+    LEADERBOARD: (logId: string | number) => `combat-analysis/leaderboard/${logId}`,
+    TEAM_BUFFS: (logId: string | number) => `combat-analysis/team-buffs/${logId}`,
+    FIGHT_DETAILS: (logId: string | number) => `combat-analysis/logs/${logId}/fight/details`,
+    FIGHT_METRICS: (logId: string | number) => `combat-analysis/fight-metrics/${logId}`
   }
 } as const;
 

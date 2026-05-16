@@ -18,12 +18,12 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <Button
+        <BaseButton
           v-for="m in metricOptions"
           :key="m.value"
           :label="m.label"
           size="small"
-          :class="metric === m.value ? 'btn-game' : 'btn-ghost'"
+          :variant="metric === m.value ? 'game' : 'ghost'"
           @click="switchMetric(m.value)"
         />
       </div>
@@ -56,12 +56,14 @@
  * 更新：2026-05-04 - 集成 ECharts + 真实 API
  */
 
-import { computed } from 'vue'
-import Button from 'primevue/button'
+import { DASHBOARD_METRIC_OPTIONS } from '@/constants/dictValues'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { BarChart, LineChart } from 'echarts/charts'
+import { DataZoomComponent, GridComponent, LegendComponent, TooltipComponent } from 'echarts/components'
 import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
-import { LineChart, BarChart } from 'echarts/charts'
-import { GridComponent, TooltipComponent, LegendComponent, DataZoomComponent } from 'echarts/components'
+import { useEChartsTheme } from '@/composables/common/useEChartsTheme'
+import { computed } from 'vue'
 import VChart from 'vue-echarts'
 
 use([CanvasRenderer, LineChart, BarChart, GridComponent, TooltipComponent, LegendComponent, DataZoomComponent])
@@ -76,23 +78,17 @@ const emit = defineEmits<{
   'update:metric': [value: string]
 }>()
 
-const metricOptions = [
-  { label: '伤害', value: 'damage' },
-  { label: '治疗', value: 'healing' },
-  { label: '场次', value: 'fights' },
-  { label: '活跃', value: 'active_accounts' },
-]
+const metricOptions = DASHBOARD_METRIC_OPTIONS.map(m => ({ label: m.label, value: m.value }))
 
-const metricColors: Record<string, string> = {
-  damage: '#ef4444',
-  healing: '#22c55e',
-  fights: '#3b82f6',
-  active_accounts: '#a855f7',
-}
+const metricColors: Record<string, string> = Object.fromEntries(
+  DASHBOARD_METRIC_OPTIONS.map(m => [m.value, m.color])
+)
+
+const { tooltip, grid, axisLine, axisLabel, splitLine } = useEChartsTheme()
 
 const metricLabels: Record<string, string> = {
   damage: '总伤害',
-  healing: '总治疗',
+  downed: '击倒人数',
   fights: '战斗场次',
   active_accounts: '活跃账号',
 }
@@ -110,30 +106,27 @@ const chartOption = computed(() => {
 
   return {
     tooltip: {
+      ...tooltip,
       trigger: 'axis',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-      borderColor: 'rgba(148, 163, 184, 0.2)',
-      textStyle: { color: '#e2e8f0' },
       formatter: (params: any) => {
         const p = params[0]
         const val = formatNumber(p.value)
         return `<div style="font-weight:600">${p.name}</div><div style="color:${color}">${label}: ${val}</div>`
       }
     },
-    grid: { left: 60, right: 20, top: 20, bottom: 40 },
+    grid,
     xAxis: {
       type: 'category',
       data: data.dates,
-      axisLine: { lineStyle: { color: 'rgba(148,163,184,0.2)' } },
-      axisLabel: { color: '#94a3b8', fontSize: 11, rotate: 30, interval: 'auto' }
+      axisLine,
+      axisLabel: { ...axisLabel, rotate: 30, interval: 'auto' }
     },
     yAxis: {
       type: 'value',
       axisLine: { show: false },
-      splitLine: { lineStyle: { color: 'rgba(148,163,184,0.1)' } },
+      splitLine,
       axisLabel: {
-        color: '#94a3b8',
-        fontSize: 11,
+        ...axisLabel,
         formatter: (v: number) => {
           if (v >= 1000000) return (v / 1000000).toFixed(0) + 'M'
           if (v >= 1000) return (v / 1000).toFixed(0) + 'K'

@@ -1,6 +1,4 @@
 /* === 按钮系统 === */
-@import '../variablesUnified.css';
-
 @layer components {
   .btn {
     @apply relative inline-flex items-center justify-center gap-2 font-medium rounded-lg;
@@ -47,7 +45,7 @@
   }
 
   .btn-secondary:hover {
-    @apply bg-secondary-light;
+    background-color: var(--color-secondary-light);
     box-shadow: 0 0 30px var(--color-secondary-alpha-30), inset 0 1px 0 rgba(255,255,255,0.15);
     transform: translateY(-2px);
   }
@@ -101,27 +99,54 @@
 
   /* === 操作列按钮 === */
   .action-btn {
-    @apply relative inline-flex items-center justify-center;
-    @apply w-8 h-8 rounded-lg;
-    @apply transition-all duration-200 ease-out;
-    flex-shrink: 0;
-    border: 1px solid var(--color-border);
-    background: rgba(26, 26, 31, 0.6);
-  }
-
-  /* 确保只有图标的按钮也能正常显示 */
-  .action-btn.p-button.p-button-text {
-    @apply w-8 h-8;
-    padding: 0;
+    width: 2rem;
+    height: 2rem;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    border-radius: 0.5rem;
     border: 1px solid var(--color-border);
     background: rgba(26, 26, 31, 0.6);
+    color: var(--color-neutral-text-secondary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.2s ease-out;
   }
 
-  .action-btn.p-button.p-button-text .p-button-icon {
-    font-size: 1rem;
+  .action-btn:hover {
+    background: rgba(46, 46, 56, 0.8);
+    border-color: var(--color-border-hover);
+    color: var(--color-neutral-text);
+  }
+
+  /* 确保只有图标的按钮也能正常显示 - 深度选择器穿透 */
+  .action-btn :deep(.p-button),
+  .action-btn :deep(.p-button-text) {
+    width: 2rem !important;
+    height: 2rem !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: 1px solid var(--color-border) !important;
+    background: rgba(26, 26, 31, 0.6) !important;
+    color: var(--color-neutral-text-secondary) !important;
+    border-radius: 0.5rem !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    cursor: pointer !important;
+  }
+
+  .action-btn :deep(.p-button-icon),
+  .action-btn :deep(.p-button-label) {
+    font-size: 1rem !important;
+    margin: 0 !important;
+  }
+
+  .action-btn :deep(.p-button):hover {
+    background: rgba(46, 46, 56, 0.8) !important;
+    border-color: var(--color-border-hover) !important;
+    color: var(--color-neutral-text) !important;
   }
 
   .action-btn-view {
@@ -175,7 +200,8 @@
   }
 
   .action-btn:disabled {
-    @apply opacity-40 cursor-not-allowed hover:bg-transparent hover:text-neutral-text-secondary;
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   /* 小型按钮 */

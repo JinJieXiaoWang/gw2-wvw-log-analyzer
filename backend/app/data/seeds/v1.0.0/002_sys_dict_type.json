@@ -1,0 +1,185 @@
+{
+  "_meta": {
+    "version": "1.0.0",
+    "target_table": "sys_dict_type",
+    "min_app_version": "1.0.0"
+  },
+  "data": [
+    {
+      "dict_type": "role",
+      "dict_name": "角色定位",
+      "status": 0,
+      "sort_order": 1,
+      "remark": "战斗角色定位",
+      "is_system": 1
+    },
+    {
+      "dict_type": "scoring_dimension",
+      "dict_name": "评分维度",
+      "status": 0,
+      "sort_order": 2,
+      "remark": "评分指标维度",
+      "is_system": 1
+    },
+    {
+      "dict_type": "game_mode",
+      "dict_name": "游戏模式",
+      "status": 0,
+      "sort_order": 3,
+      "remark": "游戏模式",
+      "is_system": 1
+    },
+    {
+      "dict_type": "parse_status",
+      "dict_name": "解析状态",
+      "status": 0,
+      "sort_order": 4,
+      "remark": "日志解析生命周期状态",
+      "is_system": 1
+    },
+    {
+      "dict_type": "buff",
+      "dict_name": "增益效果",
+      "status": 0,
+      "sort_order": 5,
+      "remark": "战斗增益效果名称映射",
+      "is_system": 1
+    },
+    {
+      "dict_type": "dashboard_time_range",
+      "dict_name": "仪表盘时间范围",
+      "status": 0,
+      "sort_order": 6,
+      "remark": "数据看板时间筛选选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "skill_state",
+      "dict_name": "技能状态",
+      "status": 0,
+      "sort_order": 7,
+      "remark": "技能循环时间轴状态标签",
+      "is_system": 1
+    },
+    {
+      "dict_type": "permission",
+      "dict_name": "权限标识",
+      "status": 0,
+      "sort_order": 8,
+      "remark": "系统权限标识列表",
+      "is_system": 1
+    },
+    {
+      "dict_type": "scoring_mode",
+      "dict_name": "评分模式",
+      "status": 0,
+      "sort_order": 9,
+      "remark": "评分规则应用方式",
+      "is_system": 1
+    },
+    {
+      "dict_type": "grade_level",
+      "dict_name": "评分等级",
+      "status": 0,
+      "sort_order": 10,
+      "remark": "评分等级划分",
+      "is_system": 1
+    },
+    {
+      "dict_type": "session_timeout",
+      "dict_name": "会话超时",
+      "status": 0,
+      "sort_order": 11,
+      "remark": "会话超时时间选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "setting_tab",
+      "dict_name": "设置选项卡",
+      "status": 0,
+      "sort_order": 12,
+      "remark": "系统设置页面内选项卡",
+      "is_system": 1
+    },
+    {
+      "dict_type": "chart_mode",
+      "dict_name": "图表模式",
+      "status": 0,
+      "sort_order": 13,
+      "remark": "数据图表展示模式",
+      "is_system": 1
+    },
+    {
+      "dict_type": "sort_field",
+      "dict_name": "排序字段",
+      "status": 0,
+      "sort_order": 14,
+      "remark": "数据排序字段选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "time_range",
+      "dict_name": "时间范围",
+      "status": 0,
+      "sort_order": 15,
+      "remark": "时间筛选范围选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "metric_type",
+      "dict_name": "指标类型",
+      "status": 0,
+      "sort_order": 16,
+      "remark": "数据分析指标类型",
+      "is_system": 1
+    },
+    {
+      "dict_type": "export_format",
+      "dict_name": "导出格式",
+      "status": 0,
+      "sort_order": 17,
+      "remark": "数据导出格式选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "theme_color",
+      "dict_name": "主题颜色",
+      "status": 0,
+      "sort_order": 18,
+      "remark": "界面主题颜色选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "number_format",
+      "dict_name": "数字格式",
+      "status": 0,
+      "sort_order": 19,
+      "remark": "数据展示数字格式选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "sys_normal_disable",
+      "dict_name": "通用状态",
+      "status": 0,
+      "sort_order": 20,
+      "remark": "通用启用禁用状态",
+      "is_system": 1
+    },
+    {
+      "dict_type": "sys_yes_no",
+      "dict_name": "是否",
+      "status": 0,
+      "sort_order": 21,
+      "remark": "通用是否选项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "scoring_rule_status",
+      "dict_name": "评分规则版本状态",
+      "status": 0,
+      "sort_order": 22,
+      "remark": "评分规则版本处理状态",
+      "is_system": 1
+    }
+  ]
+}

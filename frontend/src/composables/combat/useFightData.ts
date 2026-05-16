@@ -1,7 +1,7 @@
 import { ref, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
-import { fightsApi } from '@/api'
-import type { Fight, FightStats, FightQueryParams } from '@/api/combat/fights'
+import { fightsService } from '@/services'
+import type { Fight, FightStats, FightQueryParams } from '@/services/combat/fightsService'
 import { configManager } from '@/services/core/configManager'
 
 export function useFightData() {
@@ -19,13 +19,13 @@ export function useFightData() {
   const loadFights = async () => {
     loading.value = true
     try {
-      const response = await fightsApi.getFights({ ...filters.value, page: 1, pageSize: pageSize.value })
+      const response = await fightsService.getFights({ ...filters.value, page: 1, pageSize: pageSize.value })
       if (response.success && response.data) {
-        fights.value = response.data
-        hasMore.value = response.data.length === pageSize.value
+        fights.value = response.data as Fight[]
+        hasMore.value = (response.data as Fight[]).length === pageSize.value
         page.value = 1
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '战斗列表加载失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
@@ -37,12 +37,12 @@ export function useFightData() {
     page.value++
     loading.value = true
     try {
-      const response = await fightsApi.getFights({ ...filters.value, page: page.value, pageSize: pageSize.value })
+      const response = await fightsService.getFights({ ...filters.value, page: page.value, pageSize: pageSize.value })
       if (response.success && response.data) {
-        fights.value = [...fights.value, ...response.data]
-        hasMore.value = response.data.length === pageSize.value
+        fights.value = [...fights.value, ...(response.data as Fight[])]
+        hasMore.value = (response.data as Fight[]).length === pageSize.value
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.add({ severity: 'error', summary: '加载失败', detail: '加载更多战斗失败，请刷新重试', life: configManager.get('ui').toastErrorLife })
     } finally {
       loading.value = false
@@ -51,9 +51,9 @@ export function useFightData() {
 
   const viewFightDetail = async (fightId: string) => {
     try {
-      const response = await fightsApi.getFightDetail(fightId)
+      const response = await fightsService.getFight(fightId)
       if (response.success && response.data) {
-        selectedFight.value = response.data
+        selectedFight.value = response.data as Fight
         selectedFightStats.value = null
       }
     } catch (error) { console.error('加载战斗详情失败:', error) }
@@ -61,12 +61,12 @@ export function useFightData() {
 
   const viewFightStats = async (fightId: string) => {
     try {
-      const response = await fightsApi.getFightStats(fightId)
+      const response = await fightsService.getFightStats(fightId)
       if (response.success && response.data) {
-        selectedFightStats.value = response.data
+        selectedFightStats.value = response.data as FightStats
         if (!selectedFight.value) {
-          const fr = await fightsApi.getFightDetail(fightId)
-          if (fr.success && fr.data) selectedFight.value = fr.data
+          const fr = await fightsService.getFight(fightId)
+          if (fr.success && fr.data) selectedFight.value = fr.data as Fight
         }
       }
     } catch (error) { console.error('加载战斗统计失败:', error) }

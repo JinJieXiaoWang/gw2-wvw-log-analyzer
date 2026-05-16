@@ -1,6 +1,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
+import { usePagination } from '@/composables/common/usePagination'
 import { logsService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { formatDate } from '@/utils/core/helpers'
@@ -30,9 +31,13 @@ export function useCombatLogList() {
   const showDeleteDialog = ref(false)
   const showParseDetailDialog = ref(false)
   const logToDelete = ref<LogFile | null>(null)
-  const currentPage = ref(1)
-  const pageSize = ref(10)
-  const totalRecords = ref(0)
+  const {
+    page: currentPage,
+    pageSize,
+    total: totalRecords,
+    onPageChange: _handlePageChange,
+    resetPage: _resetPage
+  } = usePagination({ defaultPageSize: 10 })
   let isFetchingLogs = false
 
   const batchTaskId = ref<number | null>(null)
@@ -48,7 +53,7 @@ export function useCombatLogList() {
   const parseProgressList = computed(() => Array.from(parseProgressMap.value.values()))
 
   const filters = ref({ search: '', status: null as string | null })
-  watch(filters, () => { currentPage.value = 1; fetchLogs() }, { deep: true })
+  watch(filters, () => { _resetPage(); fetchLogs() }, { deep: true })
 
   const logs = ref<LogFile[]>([])
 
@@ -62,22 +67,26 @@ export function useCombatLogList() {
         { showErrorMessage: false, errorHandler: (err) => console.error('获取日志列表失败:', err) }
       )
       if (result.success && result.data) {
-        const responseData = result.data as any
-        const dataWrapper = responseData.data || responseData
-        logs.value = (dataWrapper.items || []).map((log: any) => ({
-          id: String(log.id), fileName: log.filename,
-          uploadTime: formatDate(log.upload_time, 'YYYY-MM-DD HH:mm'),
-          status: log.parse_status, statusText: STATUS_TEXT_MAP[log.parse_status] || log.parse_status,
-          fileSize: log.file_size_raw || log.file_size || 0,
-          compressedSize: log.file_size_compressed || 0,
-          fileSha256: log.file_sha256 || '', logUuid: log.log_uuid || '',
-          parseTime: log.parse_time_ms ? (log.parse_time_ms / 1000).toFixed(2) + 's' : '-',
-          parsedAt: log.parsed_at ? formatDate(log.parsed_at, 'YYYY-MM-DD HH:mm') : '-',
-          errorMessage: log.error_message || null,
-          dpsReportPermalink: log.dps_report_permalink || null,
-          uploadIp: log.upload_ip || '-'
+        const responseData = result.data as Record<string, unknown>
+        const dataWrapper = (responseData.data || responseData) as Record<string, unknown>
+        logs.value = ((dataWrapper.items as Record<string, unknown>[]) || []).map((log) => ({
+          id: String(log.id), fileName: log.filename as string,
+          uploadTime: formatDate(log.upload_time as string, 'YYYY-MM-DD HH:mm'),
+          mapName: (log.map_name as string) || '',
+          serverName: (log.server_name as string) || '',
+          playerCount: (log.player_count as number) || 0,
+          duration: (log.duration as number) || 0,
+          status: (log.parse_status as 'pending' | 'parsing' | 'completed' | 'failed'), statusText: STATUS_TEXT_MAP[log.parse_status as string] || (log.parse_status as string),
+          fileSize: (log.file_size_raw as number) || (log.file_size as number) || 0,
+          compressedSize: (log.file_size_compressed as number) || 0,
+          fileSha256: (log.file_sha256 as string) || '', logUuid: (log.log_uuid as string) || '',
+          parseTime: log.parse_time_ms ? ((log.parse_time_ms as number) / 1000).toFixed(2) + 's' : '-',
+          parsedAt: log.parsed_at ? formatDate(log.parsed_at as string, 'YYYY-MM-DD HH:mm') : '-',
+          errorMessage: (log.error_message as string) || null,
+          dpsReportPermalink: (log.dps_report_permalink as string) || null,
+          uploadIp: (log.upload_ip as string) || '-'
         }))
-        totalRecords.value = dataWrapper.total || 0
+        totalRecords.value = (dataWrapper.total as number) || 0
       }
     } catch (error) {
       console.error('获取日志列表异常:', error)
@@ -89,8 +98,7 @@ export function useCombatLogList() {
   }
 
   function handlePageChange(event: { page: number; rows: number }) {
-    currentPage.value = event.page + 1
-    pageSize.value = event.rows
+    _handlePageChange(event)
     fetchLogs()
   }
 
@@ -143,10 +151,10 @@ export function useCombatLogList() {
         batchParseTotal.value = 0; parseProgressMap.value.clear(); fetchLogs()
         toast.add({ severity: 'error', summary: '批量解析失败', detail: result.error?.message || '批量解析失败，请重试', life: configManager.get('ui').toastErrorLife })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       selectedLogs.value.forEach(log => { const entry = parseProgressMap.value.get(Number(log.id)); if (entry) entry.status = 'failed' })
       batchParseTotal.value = 0; parseProgressMap.value.clear(); fetchLogs()
-      toast.add({ severity: 'error', summary: '批量解析异常', detail: e?.message || '网络异常，请检查网络后重试', life: configManager.get('ui').toastErrorLife })
+      toast.add({ severity: 'error', summary: '批量解析异常', detail: e instanceof Error ? e.message : '网络异常，请检查网络后重试', life: configManager.get('ui').toastErrorLife })
     }
   }
 
@@ -167,9 +175,9 @@ export function useCombatLogList() {
         parseProgressMap.value.delete(logId)
         toast.add({ severity: 'error', summary: '解析失败', detail: result.error?.message || '解析失败，请重试', life: configManager.get('ui').toastErrorLife })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       parseProgressMap.value.delete(logId)
-      toast.add({ severity: 'error', summary: '解析异常', detail: e?.message || '网络异常，请检查网络后重试', life: configManager.get('ui').toastErrorLife })
+      toast.add({ severity: 'error', summary: '解析异常', detail: e instanceof Error ? e.message : '网络异常，请检查网络后重试', life: configManager.get('ui').toastErrorLife })
     }
   }
 

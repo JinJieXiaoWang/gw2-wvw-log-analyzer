@@ -1,10 +1,22 @@
 <template>
   <div class="table-actions flex items-center gap-2">
-    <a v-if="data.dpsReportPermalink" :href="data.dpsReportPermalink" target="_blank" class="no-underline">
-      <BaseButton v-tooltip.top="'查看 EI 报告'" icon="pi pi-external-link" size="small" text class="action-btn" />
+    <a
+      v-if="data.dpsReportPermalink"
+      :href="data.dpsReportPermalink"
+      target="_blank"
+      class="no-underline"
+    >
+      <BaseButton
+        v-tooltip.top="'查看 EI 报告'"
+        icon="pi pi-external-link"
+        size="small"
+        text
+        class="action-btn"
+      />
     </a>
     <BaseButton
-      v-tooltip.top="'查看详情'"
+      v-tooltip.top="isParsed ? '查看详情' : '日志未解析，请先解析后再查看详情'"
+      :disabled="!isParsed"
       icon="pi pi-eye"
       size="small"
       text
@@ -12,7 +24,8 @@
       @click="$emit('view', data)"
     />
     <BaseButton
-      v-if="data.status === 'pending' || data.status === 'failed'"
+      v-if="data.status === ParseStatus.PENDING || data.status === ParseStatus.FAILED"
+      v-permission="'write'"
       v-tooltip.top="'重新解析'"
       icon="pi pi-refresh"
       size="small"
@@ -22,6 +35,7 @@
       @click="$emit('parse', data)"
     />
     <BaseButton
+      v-permission="'delete'"
       v-tooltip.top="'删除日志'"
       icon="pi pi-trash"
       size="small"
@@ -34,16 +48,30 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/BaseButton.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { computed } from 'vue'
+import { ParseStatus } from '@/constants/dictValues'
 
-defineProps<{
-  data: any
+// 定义日志数据的接口结构
+interface LogData {
+  id?: string | number;
+  status: string
+  dpsReportPermalink?: string;
+  [key: string]: any; // 如果还有其他动态字段，可保留索引签名，或尽量明确列出
+}
+
+const props = defineProps<{
+  data: LogData
   parsing: boolean
 }>()
 
+const isParsed = computed(() => {
+  return props.data.status === 'success' || props.data.status === ParseStatus.COMPLETED
+})
+
 defineEmits<{
-  (e: 'view', data: any): void
-  (e: 'parse', data: any): void
-  (e: 'delete', data: any): void
+  (e: 'view', data: LogData): void
+  (e: 'parse', data: LogData): void
+  (e: 'delete', data: LogData): void
 }>()
 </script>

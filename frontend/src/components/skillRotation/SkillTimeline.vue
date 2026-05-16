@@ -18,16 +18,16 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <Button
+        <BaseButton
           label="简化视图"
           size="small"
-          :class="timelineView === 'simple' ? 'btn-game' : 'btn-ghost'"
+          :variant="timelineView === 'simple' ? 'game' : 'ghost'"
           @click="updateTimelineView('simple')"
         />
-        <Button
+        <BaseButton
           label="详细视图"
           size="small"
-          :class="timelineView === 'detail' ? 'btn-game' : 'btn-ghost'"
+          :variant="timelineView === 'detail' ? 'game' : 'ghost'"
           @click="updateTimelineView('detail')"
         />
       </div>
@@ -51,7 +51,7 @@
  * 创建日期：2026-04-27
  */
 
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 // Props
 const props = defineProps<{

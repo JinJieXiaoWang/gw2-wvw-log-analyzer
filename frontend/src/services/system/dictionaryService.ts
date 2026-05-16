@@ -6,7 +6,7 @@
  */
 
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 /**
  * 认证错误类型
@@ -85,7 +85,7 @@ export interface SpecCascadeItem {
   value: string
   label: string
   color: string
-  default_role: string
+  role_type: string
 }
 
 /**
@@ -95,7 +95,7 @@ export interface ProfessionCascade {
   value: string
   label: string
   color: string
-  default_role: string
+  role_type: string
   elite_specs: SpecCascadeItem[]
 }
 

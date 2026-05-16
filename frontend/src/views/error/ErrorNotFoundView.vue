@@ -10,14 +10,14 @@
       抱歉，您访问的页面不存在或已被移除
     </p>
     <div class="flex gap-3">
-      <Button
+      <BaseButton
         label="返回首页"
         icon="pi pi-home"
         @click="goHome"
       />
-      <Button
+      <BaseButton
         label="返回上一页"
-        severity="secondary"
+        variant="secondary"
         icon="pi pi-arrow-left"
         @click="goBack"
       />
@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 const router = useRouter()
 

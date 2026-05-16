@@ -78,11 +78,11 @@
           </template>
         </Column>
         <Column
-          field="total_healing"
-          header="总治疗"
+          field="total_downed"
+          header="击倒人数"
         >
           <template #body="{ data }">
-            <span class="text-status-success font-semibold">{{ formatNumber(data.total_healing) }}</span>
+            <span class="text-status-success font-semibold">{{ data.total_downed }}</span>
           </template>
         </Column>
         <Column
@@ -120,7 +120,7 @@ defineProps<{
     duration_sec: number
     player_count: number
     total_damage: number
-    total_healing: number
+    total_downed: number
     kill_count: number
     death_count: number
   }>

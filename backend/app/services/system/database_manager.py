@@ -6,8 +6,7 @@
 
 import os
 import sys
-from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -19,7 +18,7 @@ from app.config.database import (
     switch_database,
     test_connection,
 )
-from app.config.database_settings import DatabaseType, db_settings
+from app.config.database.database_settings import DatabaseType, db_settings
 from app.utils.logger import logger
 
 
@@ -29,33 +28,33 @@ class DatabaseManager:
     @staticmethod
     def init_database(force_recreate: bool = False) -> bool:
         """初始化数据库"""
-        print("=" * 80)
-        print("初始化数据库")
-        print("=" * 80)
+        logger.info("=" * 80)
+        logger.info("初始化数据库")
+        logger.info("=" * 80)
 
         try:
             # 验证配置
             if not db_settings.validate_config():
-                print("✗ 数据库配置验证失败")
+                logger.error("✗ 数据库配置验证失败")
                 return False
 
             # 显示配置
             info = get_current_db_info()
-            print(f"数据库类型: {info['type']}")
-            print(f"状态: {'连接正常' if test_connection() else '连接失败'}")
+            logger.info(f"数据库类型: {info['type']}")
+            logger.error(f"状态: {'连接正常' if test_connection() else '连接失败'}")
 
             # 初始化
             success = init_db(force_recreate=force_recreate)
 
             if success:
-                print("\n✓ 数据库初始化成功")
+                logger.info("\n✓ 数据库初始化成功")
             else:
-                print("\n✗ 数据库初始化失败")
+                logger.error("\n✗ 数据库初始化失败")
                 return False
 
             # 检查并创建表
             if success:
-                print("\n✓ 表结构创建完成")
+                logger.info("\n✓ 表结构创建完成")
 
             return True
 
@@ -66,9 +65,9 @@ class DatabaseManager:
     @staticmethod
     def check_tables() -> Dict[str, Any]:
         """检查表结构"""
-        print("\n" + "=" * 80)
-        print("检查表结构")
-        print("=" * 80)
+        logger.info("\n" + "=" * 80)
+        logger.info("检查表结构")
+        logger.info("=" * 80)
 
         db = SessionLocal()
 
@@ -77,7 +76,7 @@ class DatabaseManager:
             metadata = Base.metadata
             tables = metadata.tables.keys()
 
-            print(f"已定义的模型: {len(tables)}")
+            logger.info(f"已定义的模型: {len(tables)}")
 
             # 检查每个表
             from sqlalchemy import inspect
@@ -102,21 +101,21 @@ class DatabaseManager:
                     results["extra"].append(table_name)
 
             # 显示结果
-            print(f"表结构检查:")
-            print(f"  已定义: {len(results['defined'])}")
-            print(f"  已存在: {len(results['existing'])}")
+            logger.info("表结构检查:")
+            logger.info(f"  已定义: {len(results['defined'])}")
+            logger.info(f"  已存在: {len(results['existing'])}")
             if results["missing"]:
-                print(f"  ⚠️ 缺失: {results['missing']}")
+                logger.warning(f"  ⚠️ 缺失: {results['missing']}")
             if results["extra"]:
-                print(f"  ⚠️ 多余: {results['extra']}")
+                logger.warning(f"  ⚠️ 多余: {results['extra']}")
 
             # 统计数据
             if not results["missing"]:
                 results["status"] = "complete"
-                print(f"\n✓ 所有表结构完整")
+                logger.info("\n✓ 所有表结构完整")
             else:
                 results["status"] = "incomplete"
-                print(f"\n⚠️ 表结构不完整")
+                logger.warning("\n⚠️ 表结构不完整")
 
             return results
 
@@ -128,9 +127,9 @@ class DatabaseManager:
         host: str, port: int, user: str, password: str, database: str
     ) -> Dict[str, Any]:
         """测试MySQL连接"""
-        print("\n" + "=" * 80)
-        print("测试MySQL连接")
-        print("=" * 80)
+        logger.info("\n" + "=" * 80)
+        logger.info("测试MySQL连接")
+        logger.info("=" * 80)
 
         try:
             # 临时切换配置测试
@@ -148,10 +147,10 @@ class DatabaseManager:
 
                 success = test_connection()
                 if success:
-                    print("✓ MySQL连接测试成功")
+                    logger.info("✓ MySQL连接测试成功")
                     return {"success": True, "message": "连接成功"}
                 else:
-                    print("✗ MySQL连接测试失败")
+                    logger.error("✗ MySQL连接测试失败")
                     return {"success": False, "message": "连接失败"}
 
             finally:
@@ -169,7 +168,7 @@ class DatabaseManager:
 # 注意：这是一个模板，真实的迁移需要使用Alembic等工具
 
 from app.config.database import SessionLocal
-from app.config.database_settings import db_settings
+from app.config.database.database_settings import db_settings
 from app.utils.logger import logger
 
 def run_migration():

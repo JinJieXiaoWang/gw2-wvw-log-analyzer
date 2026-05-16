@@ -1,6 +1,6 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
 
 export interface RoleRuleCreate {
   profession_id: string
@@ -36,8 +36,8 @@ export interface TemplateApplyRequest {
 }
 
 export interface ImportDataRequest {
-  rules?: any[]
-  templates?: any[]
+  rules?: unknown[]
+  templates?: unknown[]
 }
 
 export interface ConditionExpressionCreate {
@@ -53,56 +53,56 @@ export interface RoleAssignmentRequest {
 }
 
 export class RolesService {
-  async getAllRules(includeInactive: boolean = false): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.RULES, {
+  async getAllRules(includeInactive: boolean = false): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.RULES, {
       params: { include_inactive: includeInactive }
     })
   }
 
-  async createRule(data: RoleRuleCreate): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.ROLES.RULES, data)
+  async createRule(data: RoleRuleCreate): Promise<ApiResponse<unknown>> {
+    return apiFactory.post<unknown>(API_ENDPOINTS.ROLES.RULES, data)
   }
 
-  async getProfessionRules(professionId: string): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.RULES_BY_PROFESSION(professionId))
+  async getProfessionRules(professionId: string): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.RULES_BY_PROFESSION(professionId))
   }
 
-  async getRule(ruleId: number): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.RULE_DETAIL(ruleId))
+  async getRule(ruleId: number): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.RULE_DETAIL(ruleId))
   }
 
-  async updateRule(ruleId: number, data: RoleRuleUpdate): Promise<ApiResponse<any>> {
-    return apiFactory.put<any>(API_ENDPOINTS.ROLES.RULE_UPDATE(ruleId), data)
+  async updateRule(ruleId: number, data: RoleRuleUpdate): Promise<ApiResponse<unknown>> {
+    return apiFactory.put<unknown>(API_ENDPOINTS.ROLES.RULE_UPDATE(ruleId), data)
   }
 
   async deleteRule(ruleId: number): Promise<ApiResponse<void>> {
     return apiFactory.delete<void>(API_ENDPOINTS.ROLES.RULE_DELETE(ruleId))
   }
 
-  async getAllTemplates(includeInactive: boolean = false): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.TEMPLATES, {
+  async getAllTemplates(includeInactive: boolean = false): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.TEMPLATES, {
       params: { include_inactive: includeInactive }
     })
   }
 
-  async createTemplate(data: RoleTemplateCreate): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.ROLES.TEMPLATES, data)
+  async createTemplate(data: RoleTemplateCreate): Promise<ApiResponse<unknown>> {
+    return apiFactory.post<unknown>(API_ENDPOINTS.ROLES.TEMPLATES, data)
   }
 
-  async getTemplate(templateId: number): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.TEMPLATE_DETAIL(templateId))
+  async getTemplate(templateId: number): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.TEMPLATE_DETAIL(templateId))
   }
 
-  async updateTemplate(templateId: number, data: RoleTemplateUpdate): Promise<ApiResponse<any>> {
-    return apiFactory.put<any>(API_ENDPOINTS.ROLES.TEMPLATE_UPDATE(templateId), data)
+  async updateTemplate(templateId: number, data: RoleTemplateUpdate): Promise<ApiResponse<unknown>> {
+    return apiFactory.put<unknown>(API_ENDPOINTS.ROLES.TEMPLATE_UPDATE(templateId), data)
   }
 
   async deleteTemplate(templateId: number): Promise<ApiResponse<void>> {
     return apiFactory.delete<void>(API_ENDPOINTS.ROLES.TEMPLATE_DELETE(templateId))
   }
 
-  async getTemplateByName(templateName: string): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.TEMPLATE_BY_NAME(templateName))
+  async getTemplateByName(templateName: string): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.TEMPLATE_BY_NAME(templateName))
   }
 
   async applyTemplate(templateId: number, data: TemplateApplyRequest): Promise<ApiResponse<void>> {
@@ -113,20 +113,20 @@ export class RolesService {
     return apiFactory.post<void>(API_ENDPOINTS.ROLES.TEMPLATE_INIT_PRESETS)
   }
 
-  async exportData(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.EXPORT)
+  async exportData(): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.EXPORT)
   }
 
-  async importData(data: ImportDataRequest): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.ROLES.IMPORT, data)
+  async importData(data: ImportDataRequest): Promise<ApiResponse<unknown>> {
+    return apiFactory.post<unknown>(API_ENDPOINTS.ROLES.IMPORT, data)
   }
 
-  async getAllExpressions(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.EXPRESSIONS)
+  async getAllExpressions(): Promise<ApiResponse<unknown>> {
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.EXPRESSIONS)
   }
 
-  async createExpression(data: ConditionExpressionCreate): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.ROLES.EXPRESSIONS, data)
+  async createExpression(data: ConditionExpressionCreate): Promise<ApiResponse<unknown>> {
+    return apiFactory.post<unknown>(API_ENDPOINTS.ROLES.EXPRESSIONS, data)
   }
 
   async assignRole(data: RoleAssignmentRequest): Promise<ApiResponse<void>> {
@@ -134,10 +134,10 @@ export class RolesService {
   }
 
   async queryRoles(professionId?: string | null, roleTag?: string | null, includeInactive: boolean = false): Promise<ApiResponse<any>> {
-    const params: any = { include_inactive: includeInactive }
+    const params: Record<string, unknown> = { include_inactive: includeInactive }
     if (professionId) params.profession_id = professionId
     if (roleTag) params.role_tag = roleTag
-    return apiFactory.get<any>(API_ENDPOINTS.ROLES.QUERY, { params })
+    return apiFactory.get<unknown>(API_ENDPOINTS.ROLES.QUERY, { params })
   }
 }
 

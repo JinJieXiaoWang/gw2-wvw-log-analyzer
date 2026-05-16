@@ -7,54 +7,67 @@
     :loading="saving"
     @confirm="$emit('save')"
   >
-    <div class="dialog-form">
-      <div class="form-row">
-        <label class="form-label">显示标签 *</label>
-        <InputText v-model="localForm.dict_label" placeholder="请输入显示标签" class="w-full" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">存储值 *</label>
-        <InputText v-model="localForm.dict_value" placeholder="请输入存储值" class="w-full" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">排序</label>
-        <InputNumber v-model="localForm.dict_sort" :min="0" class="w-full" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">CSS类</label>
-        <ColorPickerInput v-model="localForm.css_class" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">列表类</label>
-        <InputText v-model="localForm.list_class" placeholder="如: primary, secondary" class="w-full" />
-      </div>
-      <div class="form-row">
-        <label class="form-label">状态</label>
-        <BaseSelect
-          v-model="localForm.status"
-          :options="statusOptions"
-          option-label="label"
-          option-value="value"
+    <div class="space-y-4">
+      <FormField label="显示标签 *">
+        <InputText
+          v-model="localForm.dict_label"
+          placeholder="请输入显示标签"
           class="w-full"
         />
-      </div>
-      <div class="form-row">
-        <label class="form-label">备注</label>
-        <Textarea v-model="localForm.remark" placeholder="请输入备注说明" rows="3" class="w-full" />
-      </div>
+      </FormField>
+      <FormField label="存储值 *">
+        <InputText
+          v-model="localForm.dict_value"
+          placeholder="请输入存储值"
+          class="w-full"
+        />
+      </FormField>
+      <FormField label="排序">
+        <InputNumber
+          v-model="localForm.dict_sort"
+          :min="0"
+          class="w-full"
+        />
+      </FormField>
+      <FormField label="CSS类">
+        <ColorPickerInput v-model="localForm.css_class" />
+      </FormField>
+      <FormField label="列表类">
+        <InputText
+          v-model="localForm.list_class"
+          placeholder="如: primary, secondary"
+          class="w-full"
+        />
+      </FormField>
+      <FormField label="状态">
+        <DictSelect
+          v-model="localForm.status"
+          dict-type="sys_normal_disable"
+          class="w-full"
+        />
+      </FormField>
+      <FormField label="备注">
+        <Textarea
+          v-model="localForm.remark"
+          placeholder="请输入备注说明"
+          rows="3"
+          class="w-full"
+        />
+      </FormField>
     </div>
   </BaseDialog>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
-import InputText from 'primevue/inputtext'
-import InputNumber from 'primevue/inputnumber'
-import Textarea from 'primevue/textarea'
-import BaseDialog from '@/components/common/ui/BaseDialog.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
-import ColorPickerInput from '@/components/common/ui/ColorPickerInput.vue'
+import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
+
+import ColorPickerInput from '@/components/common/ui/input/ColorPickerInput.vue'
+import FormField from '@/components/common/ui/input/FormField.vue'
 import type { DictData } from '@/services/system/dictionaryService'
+import InputNumber from 'primevue/inputnumber'
+import InputText from 'primevue/inputtext'
+import Textarea from 'primevue/textarea'
+import { computed, ref, watch } from 'vue'
 
 interface DataForm {
   dict_label: string
@@ -66,32 +79,27 @@ interface DataForm {
   remark: string
 }
 
+const visible = defineModel<boolean>('visible', { default: false })
+const form = defineModel<DataForm>('form', {
+  default: () => ({ dict_label: '', dict_value: '', dict_sort: 0, css_class: '', list_class: '', status: 0, remark: '' })
+})
+
 const props = defineProps<{
-  visible: boolean
   editingData: DictData | null
   saving: boolean
-  form: DataForm
-  statusOptions: { label: string; value: number | null }[]
+
 }>()
 
 const emit = defineEmits<{
-  'update:visible': [value: boolean]
-  'update:form': [value: DataForm]
   save: []
 }>()
 
 const localVisible = computed({
-  get: () => props.visible,
-  set: v => emit('update:visible', v)
+  get: () => visible.value,
+  set: v => visible.value = v
 })
 
-const localForm = ref<DataForm>({ ...props.form })
-watch(() => props.form, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
-watch(localForm, (v) => { emit('update:form', { ...v }) }, { deep: true })
+const localForm = ref<DataForm>({ ...form.value })
+watch(() => form.value, (v) => { localForm.value = { ...v } }, { deep: true, immediate: true })
+watch(localForm, (v) => { form.value = { ...v } }, { deep: true })
 </script>
-
-<style scoped>
-.dialog-form { display: flex; flex-direction: column; gap: 16px; }
-.form-row { display: flex; flex-direction: column; gap: 6px; }
-.form-label { font-size: 14px; font-weight: 500; color: #e5e5e5; }
-</style>

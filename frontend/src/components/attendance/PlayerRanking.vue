@@ -10,10 +10,10 @@
         </div>
         <div>
           <h3 class="text-lg font-semibold text-neutral-text">
-            个人排名
+            {{ SECTION_TITLE }}
           </h3>
           <p class="text-xs text-neutral-text-secondary">
-            谁是MVP？
+            {{ SECTION_SUBTITLE }}
           </p>
         </div>
       </div>
@@ -43,9 +43,10 @@
         >
           {{ index + 1 }}
         </div>
+        <!-- 动态值，无法使用 Tailwind 静态类 -->
         <div
           class="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg flex-shrink-0 shadow-lg"
-          :style="{ backgroundColor: getProfessionColor(player.profession) }"
+          :style="{ backgroundColor: getSvcProfessionColor(player.profession) }"
         >
           {{ player.name.charAt(0) }}
         </div>
@@ -54,7 +55,7 @@
             {{ player.name }}
           </p>
           <p class="text-xs text-neutral-text-secondary">
-            {{ player.profession }}
+            {{ getProfessionName(player.profession) }}
           </p>
         </div>
         <div class="text-right">
@@ -71,6 +72,7 @@
 </template>
 
 <script setup lang="ts">
+import { getProfessionName, getProfessionColor as getSvcProfessionColor } from '@/services/professionService'
 /**
  * 个人排名组件
  * 功能：显示个人排名信息
@@ -80,6 +82,22 @@
 
 import { ref, watch } from 'vue'
 import Dropdown from 'primevue/dropdown'
+
+// === 常量定义 ===
+const SECTION_TITLE = '个人排名'
+const SECTION_SUBTITLE = '谁是MVP？'
+
+const NUMBER_THRESHOLDS = {
+  MILLION: 1_000_000,
+  THOUSAND: 1_000,
+} as const
+
+const RANK_TYPE_LABELS: Record<string, string> = {
+  damage: '伤害',
+  healing: '治疗',
+  kills: '击杀',
+  score: '评分',
+}
 
 // Props
 const props = defineProps<{
@@ -117,38 +135,17 @@ const changeRankType = () => {
 // 方法
 const formatNumber = (num: any) => {
   if (typeof num === 'number') {
-    if (num >= 1000000) {
-      return (num / 1000000).toFixed(1) + 'M'
-    } else if (num >= 1000) {
-      return (num / 1000).toFixed(1) + 'K'
+    if (num >= NUMBER_THRESHOLDS.MILLION) {
+      return (num / NUMBER_THRESHOLDS.MILLION).toFixed(1) + 'M'
+    } else if (num >= NUMBER_THRESHOLDS.THOUSAND) {
+      return (num / NUMBER_THRESHOLDS.THOUSAND).toFixed(1) + 'K'
     }
     return num.toString()
   }
   return num
 }
 
-const getProfessionColor = (profession: string) => {
-  const colors: Record<string, string> = {
-    '战士': '#E85D04',
-    '守护者': '#FAA307',
-    '潜行者': '#9D4EDD',
-    '元素使': '#FF6B6B',
-    '工程师': '#7B8FA1',
-    '猎人': '#06D6A0',
-    '唤灵师': '#8D0801',
-    '镜像师': '#4361EE',
-    '游侠': '#2EC4B6'
-  }
-  return colors[profession] || '#6C757D'
-}
-
 const getRankTypeLabel = (type: string) => {
-  const labels: Record<string, string> = {
-    damage: '伤害',
-    healing: '治疗',
-    kills: '击杀',
-    score: '评分'
-  }
-  return labels[type] || type
+  return RANK_TYPE_LABELS[type] || type
 }
 </script>

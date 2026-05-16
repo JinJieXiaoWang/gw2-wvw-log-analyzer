@@ -1,6 +1,6 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
 
 export class DashboardService {
   async getOverview(days: number = 30): Promise<ApiResponse<any>> {
@@ -38,29 +38,29 @@ export class DashboardService {
     sortBy: string = 'damage',
     limit: number = 20
   ): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(`${API_ENDPOINTS.DASHBOARD.BASE}/top-players`, {
+    return apiFactory.get<any>(API_ENDPOINTS.DASHBOARD.TOP_PLAYERS, {
       params: { days, sort_by: sortBy, limit }
     })
   }
 
   async getRecentFights(limit: number = 10): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(`${API_ENDPOINTS.DASHBOARD.BASE}/recent-fights`, {
+    return apiFactory.get<any>(API_ENDPOINTS.DASHBOARD.RECENT_FIGHTS, {
       params: { limit }
     })
   }
 
   async getParseStatus(): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(`${API_ENDPOINTS.DASHBOARD.BASE}/parse-status`)
+    return apiFactory.get<any>(API_ENDPOINTS.DASHBOARD.PARSE_STATUS)
   }
 
   async getAiScoreDistribution(days: number = 30): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(`${API_ENDPOINTS.DASHBOARD.BASE}/ai-score-distribution`, {
+    return apiFactory.get<any>(API_ENDPOINTS.DASHBOARD.AI_SCORE_DISTRIBUTION, {
       params: { days }
     })
   }
 
   async getBuffOverview(days: number = 30): Promise<ApiResponse<any>> {
-    return apiFactory.get<any>(`${API_ENDPOINTS.DASHBOARD.BASE}/buff-overview`, {
+    return apiFactory.get<any>(API_ENDPOINTS.DASHBOARD.BUFF_OVERVIEW, {
       params: { days }
     })
   }

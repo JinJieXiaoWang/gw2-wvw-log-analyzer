@@ -25,7 +25,6 @@ const CombatLogListView = () => import('@/views/combat/CombatLogListView.vue')
 const CombatLogDetailView = () => import('@/views/combat/CombatLogDetailView.vue')
 const CombatFightDataView = () => import('@/views/combat/CombatFightDataView.vue')
 
-
 // build: Build配置模块
 const BuildLibraryView = () => import('@/views/build/BuildLibraryView.vue')
 const BuildParserView = () => import('@/views/build/BuildParserView.vue')
@@ -33,11 +32,13 @@ const BuildSkillRotationView = () => import('@/views/build/BuildSkillRotationVie
 
 // data: 数据统计分析模块
 const DataAttendanceView = () => import('@/views/data/DataAttendanceView.vue')
+const AttendanceDetailView = () => import('@/views/data/AttendanceDetailView.vue')
 const DataAiAnalysisView = () => import('@/views/data/DataAiAnalysisView.vue')
 
 // system: 系统管理模块
 const SystemSettingsView = () => import('@/views/system/SystemSettingsView.vue')
 const SystemDictionaryView = () => import('@/views/system/SystemDictionaryView.vue')
+const ProfessionManagementView = () => import('@/views/system/ProfessionManagementView.vue')
 
 // settings: 设置模块
 const ScoringRulesView = () => import('@/views/settings/ScoringRulesView.vue')
@@ -58,12 +59,14 @@ const routes: RouteRecordRaw[] = [
     children: [
       {
         path: '',
+        name: 'login-page',
         component: LoginView
       }
     ],
     meta: {
       requiresAuth: false,
-      public: true
+      public: true,
+      hidden: true
     }
   },
   {
@@ -77,7 +80,18 @@ const routes: RouteRecordRaw[] = [
         component: DataDashboardView,
         meta: {
           requiresAuth: false,
-          title: '数据看板'
+          title: '数据看板',
+          icon: 'home'
+        }
+      },
+      {
+        path: 'dashboard',
+        name: 'dashboard',
+        component: DataDashboardView,
+        meta: {
+          requiresAuth: false,
+          title: '数据看板',
+          icon: 'home'
         }
       },
       {
@@ -86,7 +100,8 @@ const routes: RouteRecordRaw[] = [
         component: CombatLogListView,
         meta: {
           requiresAuth: false,
-          title: '日志管理'
+          title: '日志管理',
+          icon: 'log'
         }
       },
       {
@@ -95,7 +110,9 @@ const routes: RouteRecordRaw[] = [
         component: CombatLogDetailView,
         meta: {
           requiresAuth: false,
-          title: '日志详情'
+          title: '日志详情',
+          hidden: true,
+          activeMenu: '/logs'
         }
       },
       {
@@ -104,16 +121,30 @@ const routes: RouteRecordRaw[] = [
         component: DpsReportTestView,
         meta: {
           requiresAuth: false,
-          title: 'dps.report API测试'
+          title: 'dps.report API测试',
+          hidden: true
         }
       },
+      
       {
         path: 'attendance',
         name: 'attendance',
         component: DataAttendanceView,
         meta: {
           requiresAuth: false,
-          title: '出勤统计'
+          title: '出勤统计',
+          icon: 'users'
+        }
+      },
+      {
+        path: 'attendance/:account',
+        name: 'attendance-detail',
+        component: AttendanceDetailView,
+        meta: {
+          requiresAuth: false,
+          title: '出勤详情',
+          hidden: true,
+          activeMenu: '/attendance'
         }
       },
       {
@@ -122,7 +153,9 @@ const routes: RouteRecordRaw[] = [
         component: BuildSkillRotationView,
         meta: {
           requiresAuth: false,
-          title: '技能循环分析'
+          title: '技能循环分析',
+          icon: 'refresh',
+          iconCategory: 'ui'
         }
       },
       {
@@ -131,7 +164,9 @@ const routes: RouteRecordRaw[] = [
         component: BuildLibraryView,
         meta: {
           requiresAuth: false,
-          title: '配置图书馆'
+          title: '配置图书馆',
+          icon: 'bookmark',
+          iconCategory: 'ui'
         }
       },
       {
@@ -140,10 +175,11 @@ const routes: RouteRecordRaw[] = [
         component: BuildParserView,
         meta: {
           requiresAuth: false,
-          title: 'Build解析'
+          title: 'Build解析',
+          icon: 'code',
+          iconCategory: 'ui'
         }
       },
-
       {
         path: 'settings',
         name: 'settings',
@@ -151,7 +187,10 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '设置',
-          permissions: ['write']
+          icon: 'settings',
+          iconCategory: 'ui',
+          permissions: ['write'],
+          hidden: true
         }
       },
       {
@@ -161,7 +200,10 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '评分规则',
-          permissions: ['read']
+          icon: 'star',
+          iconCategory: 'ui',
+          permissions: ['read'],
+          hidden: true
         }
       },
       {
@@ -170,7 +212,10 @@ const routes: RouteRecordRaw[] = [
         component: DataAiAnalysisView,
         meta: {
           requiresAuth: false,
-          title: 'AI分析'
+          title: 'AI分析',
+          icon: 'sparkles',
+          iconCategory: 'ui',
+          hidden: false
         }
       },
       {
@@ -179,7 +224,8 @@ const routes: RouteRecordRaw[] = [
         component: CombatFightDataView,
         meta: {
           requiresAuth: false,
-          title: '战斗数据'
+          title: '战斗数据',
+          hidden: true
         }
       },
       {
@@ -189,7 +235,23 @@ const routes: RouteRecordRaw[] = [
         meta: {
           requiresAuth: true,
           title: '字典管理',
-          permissions: ['write']
+          icon: 'file',
+          iconCategory: 'ui',
+          permissions: ['write'],
+          hidden: true
+        }
+      },
+      {
+        path: 'professions',
+        name: 'Professions',
+        component: ProfessionManagementView,
+        meta: {
+          requiresAuth: true,
+          title: '职业管理',
+          icon: 'users',
+          iconCategory: 'ui',
+          permissions: ['write'],
+          hidden: true
         }
       }
     ]
@@ -201,7 +263,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: false,
       public: true,
-      title: '无权限访问'
+      title: '无权限访问',
+      hidden: true
     }
   },
   {
@@ -211,7 +274,8 @@ const routes: RouteRecordRaw[] = [
     meta: {
       requiresAuth: false,
       public: true,
-      title: '页面未找到'
+      title: '页面未找到',
+      hidden: true
     }
   }
 ]

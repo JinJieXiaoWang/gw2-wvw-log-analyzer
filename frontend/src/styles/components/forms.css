@@ -1,6 +1,4 @@
 /* === 输入框系统 === */
-@import '../variablesUnified.css';
-
 @layer components {
   .input {
     @apply w-full bg-neutral-bg border border-neutral-border rounded-lg px-4 py-2.5;

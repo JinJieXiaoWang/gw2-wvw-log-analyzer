@@ -31,9 +31,19 @@ export default defineConfig({
     minify: 'terser',
     rollupOptions: {
       output: {
-        manualChunks: {
-          'primevue': ['primevue'],
-          'vendor': ['vue', 'vue-router']
+        manualChunks(id) {
+          // 第三方库分离
+          if (id.includes('node_modules/primevue')) return 'primevue'
+          if (id.includes('node_modules/vue') || id.includes('node_modules/vue-router')) return 'vendor'
+          if (id.includes('node_modules/echarts') || id.includes('node_modules/vue-echarts')) return 'echarts'
+          if (id.includes('node_modules/gsap')) return 'gsap'
+          if (id.includes('node_modules/html2canvas')) return 'html2canvas'
+          if (id.includes('node_modules/pinia')) return 'pinia'
+          if (id.includes('node_modules/axios')) return 'axios'
+          // 业务组件分离：combat detail 相关组件单独打包
+          if (id.includes('/components/combat/detail/')) return 'combat-detail'
+          if (id.includes('/components/eiDetail/')) return 'ei-detail'
+          if (id.includes('/components/ai/')) return 'ai-analysis'
         }
       }
     }

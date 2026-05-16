@@ -9,6 +9,7 @@
  *
  * 作者：帅妹妹丶.8297
  * 创建日期：2026-05-04
+ * 更新：2026-05-11 - 修复游客模式触发token过期回调的问题
  */
 
 const TOKEN_KEY = 'gw2_admin_access_token';
@@ -84,17 +85,16 @@ export function getToken(): TokenInfo | null {
     return null;
   }
 
-  let expiresAt: number;
-  if (expiresAtStr) {
-    expiresAt = parseInt(expiresAtStr, 10);
-    // 检查是否已过期
-    if (Date.now() >= expiresAt) {
-      clearToken();
-      return null;
-    }
-  } else {
-    // 旧系统 token，默认 2 小时有效期（从存储时间推算）
-    expiresAt = Date.now() + 2 * 60 * 60 * 1000;
+  if (!expiresAtStr) {
+    // 没有过期时间，视为无效 Token
+    return null;
+  }
+
+  const expiresAt = parseInt(expiresAtStr, 10);
+  // 检查是否已过期
+  if (Date.now() >= expiresAt) {
+    clearToken();
+    return null;
   }
 
   return {
@@ -166,9 +166,13 @@ export function getAuthHeader(): string {
 // =============================================================================
 
 let _tokenMonitorInterval: ReturnType<typeof setInterval> | null = null;
+let _hadValidToken = false; // 标记是否曾经持有有效Token
 
 /**
  * 启动 Token 过期后台监控
+ * 注意：只在用户曾经登录过（有Token记录）的情况下才触发回调
+ * 纯游客用户（从未登录）不会触发跳转
+ * 
  * @param onExpired Token 过期时的回调函数
  * @param intervalMs 检测间隔（毫秒），默认 60 秒
  */
@@ -180,15 +184,33 @@ export function startTokenMonitor(
     clearInterval(_tokenMonitorInterval);
   }
 
-  // 立即执行一次检测
-  if (!getToken()) {
+  // 检查当前是否有有效Token
+  const hasToken = getToken() !== null;
+  
+  // 如果有Token，标记为曾经登录过
+  if (hasToken) {
+    _hadValidToken = true;
+  }
+  
+  // 只在曾经持有过Token的情况下才触发过期检测
+  // 纯游客用户（从未登录）不应该被强制跳转
+  if (!hasToken && _hadValidToken) {
+    // 曾经登录过但现在Token失效，触发回调
     onExpired();
   }
 
   _tokenMonitorInterval = setInterval(() => {
-    if (!getToken()) {
+    const currentlyHasToken = getToken() !== null;
+    
+    if (currentlyHasToken) {
+      // 持有有效Token，更新标记
+      _hadValidToken = true;
+    } else if (_hadValidToken) {
+      // 曾经登录过但现在Token失效，触发回调
       onExpired();
+      _hadValidToken = false; // 重置标记，避免重复触发
     }
+    // 纯游客用户（从未登录）不触发任何操作
   }, intervalMs);
 }
 
@@ -200,4 +222,12 @@ export function stopTokenMonitor(): void {
     clearInterval(_tokenMonitorInterval);
     _tokenMonitorInterval = null;
   }
+}
+
+/**
+ * 重置Token监控状态（用于测试或重新初始化）
+ */
+export function resetTokenMonitor(): void {
+  stopTokenMonitor();
+  _hadValidToken = false;
 }

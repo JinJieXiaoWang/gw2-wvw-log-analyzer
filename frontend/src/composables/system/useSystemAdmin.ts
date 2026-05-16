@@ -1,3 +1,4 @@
+import { SESSION_TIMEOUT_OPTIONS } from '@/constants/options'
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { authStore } from '@/composables/system/usePermission'
@@ -16,12 +17,7 @@ export function useSystemAdmin() {
     { id: 'system', label: '系统信息', icon: 'pi pi-info-circle' }
   ]
 
-  const sessionTimeoutOptions = [
-    { label: '30分钟', value: 30 },
-    { label: '1Сʱ', value: 60 },
-    { label: '6Сʱ', value: 360 },
-    { label: '24Сʱ', value: 1440 }
-  ]
+  const sessionTimeoutOptions = SESSION_TIMEOUT_OPTIONS
 
   const sessionTimeout = ref(60)
 
@@ -58,8 +54,8 @@ export function useSystemAdmin() {
         const result = authStore.setAdminConfig(accountForm.username, accountForm.newPassword)
         if (!result.success) { accountErrors.value = result.message; return }
       } else {
-        const currentConfig = authStore.getAdminConfig()
-        localStorage.setItem(STORAGE_KEYS.ADMIN_CONFIG, JSON.stringify({ username: accountForm.username, password: currentConfig.password }))
+        // 安全修复：不再在 localStorage 中存储密码
+        localStorage.setItem(STORAGE_KEYS.ADMIN_CONFIG, JSON.stringify({ username: accountForm.username }))
       }
       toast.add({ severity: 'success', summary: '保存成功', detail: '管理员账号配置已更新', life: configManager.get('ui').toastLife })
       accountForm.newPassword = ''; accountForm.confirmPassword = ''

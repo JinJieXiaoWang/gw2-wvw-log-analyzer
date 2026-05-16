@@ -12,13 +12,13 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import distinct, func
 from sqlalchemy.orm import Session
 
-from app.models.account_character import AccountCharacter
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.log import Log
-from app.models.member import Member
+from app.models.auth.account_character import AccountCharacter
+from app.models.auth.member import Member
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
+from app.constants.dict_values import GRADE_THRESHOLDS, ParseStatus
 from app.utils.logger import logger
-
 
 # =====================================================================
 # 辅助函数
@@ -61,18 +61,19 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     participation_query = _apply_time_filter(participation_query, start_date, end_date)
     total_participations = participation_query.count()
 
-    # 总伤害 / 总治疗
-    damage_healing = (
+    # 总击杀 / 总击倒（统一从 fight_stats 表统计，确保统计口径一致）
+    kills_downs = (
         db.query(
-            func.sum(Fight.total_damage).label("total_damage"),
-            func.sum(Fight.total_healing).label("total_healing"),
+            func.sum(FightStats.killed).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downs"),
         )
         .select_from(Fight)
+        .outerjoin(FightStats, FightStats.fight_id == Fight.id)
     )
-    damage_healing = _apply_time_filter(damage_healing, start_date, end_date)
-    dh = damage_healing.first()
-    total_damage = int(dh.total_damage or 0) if dh else 0
-    total_healing = int(dh.total_healing or 0) if dh else 0
+    kills_downs = _apply_time_filter(kills_downs, start_date, end_date)
+    kd = kills_downs.first()
+    total_kills = int(kd.total_kills or 0) if kd else 0
+    total_downs = int(kd.total_downs or 0) if kd else 0
 
     # 活跃账号数（有 fight_stats 记录的不同 account）
     active_accounts_query = (
@@ -88,7 +89,7 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     # 解析日志数
     parsed_logs = (
         db.query(func.count(Log.id))
-        .filter(Log.parse_status == "completed")
+        .filter(Log.parse_status == ParseStatus.COMPLETED)
     )
     if start_date:
         parsed_logs = parsed_logs.filter(Log.upload_time >= start_date)
@@ -108,18 +109,18 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
     prev_end = end_date - timedelta(days=days)
 
     prev_fights = _apply_time_filter(db.query(Fight), prev_start, prev_end).count()
-    prev_damage = (
-        _apply_time_filter(
-            db.query(func.sum(Fight.total_damage)).select_from(Fight),
-            prev_start, prev_end
-        ).scalar() or 0
+    prev_kills_downs = (
+        db.query(
+            func.sum(FightStats.killed).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downs"),
+        )
+        .select_from(Fight)
+        .outerjoin(FightStats, FightStats.fight_id == Fight.id)
     )
-    prev_healing = (
-        _apply_time_filter(
-            db.query(func.sum(Fight.total_healing)).select_from(Fight),
-            prev_start, prev_end
-        ).scalar() or 0
-    )
+    prev_kills_downs = _apply_time_filter(prev_kills_downs, prev_start, prev_end)
+    prev_kd = prev_kills_downs.first()
+    prev_kills = int(prev_kd.total_kills or 0) if prev_kd else 0
+    prev_downs = int(prev_kd.total_downs or 0) if prev_kd else 0
     prev_accounts = (
         _apply_time_filter(
             db.query(distinct(FightStats.account)).join(Fight, FightStats.fight_id == Fight.id),
@@ -136,16 +137,16 @@ def get_overview(db: Session, days: int = 30) -> Dict[str, Any]:
         "period_days": days,
         "total_fights": total_fights,
         "total_participations": total_participations,
-        "total_damage": total_damage,
-        "total_healing": total_healing,
+        "total_kills": total_kills,
+        "total_downs": total_downs,
         "active_accounts": active_accounts,
         "total_characters": int(total_characters),
         "parsed_logs": int(parsed_logs),
         "avg_ai_score": round(float(avg_ai_score), 2) if avg_ai_score else 0,
         "change": {
             "fights": _pct_change(total_fights, prev_fights),
-            "damage": _pct_change(total_damage, prev_damage),
-            "healing": _pct_change(total_healing, prev_healing),
+            "kills": _pct_change(total_kills, prev_kills),
+            "downs": _pct_change(total_downs, prev_downs),
             "accounts": _pct_change(active_accounts, prev_accounts),
         },
     }
@@ -368,6 +369,7 @@ def get_top_players(
             func.avg(FightStats.dps).label("avg_dps"),
             func.sum(FightStats.healing).label("total_healing"),
             func.sum(FightStats.killed).label("total_kills"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.sum(FightStats.dead_count).label("total_deaths"),
             func.avg(FightStats.ai_score).label("avg_ai_score"),
             func.sum(FightStats.damage_taken).label("total_damage_taken"),
@@ -400,6 +402,7 @@ def get_top_players(
     for r in query.all():
         kills = int(r.total_kills or 0)
         deaths = int(r.total_deaths or 0)
+        downed = int(r.total_downed or 0)
         items.append({
             "account": r.account,
             "fight_count": int(r.fight_count or 0),
@@ -407,6 +410,7 @@ def get_top_players(
             "avg_dps": round(float(r.avg_dps or 0)),
             "total_healing": int(r.total_healing or 0),
             "total_kills": kills,
+            "total_downed": downed,
             "total_deaths": deaths,
             "kd_ratio": round(kills / max(deaths, 1), 2),
             "avg_ai_score": round(float(r.avg_ai_score or 0), 2),
@@ -431,15 +435,26 @@ def get_top_players(
 
 def get_recent_fights(db: Session, limit: int = 10) -> List[Dict[str, Any]]:
     """获取最近战斗记录"""
+    # 子查询：每场战斗的总击倒数
+    downed_subq = (
+        db.query(
+            FightStats.fight_id,
+            func.sum(FightStats.downed).label("total_downed")
+        )
+        .group_by(FightStats.fight_id)
+        .subquery()
+    )
+
     fights = (
-        db.query(Fight)
+        db.query(Fight, downed_subq.c.total_downed)
+        .outerjoin(downed_subq, Fight.id == downed_subq.c.fight_id)
         .order_by(Fight.start_time.desc())
         .limit(limit)
         .all()
     )
 
     items = []
-    for f in fights:
+    for f, total_downed in fights:
         items.append({
             "fight_id": f.id,
             "log_id": f.log_id,
@@ -449,7 +464,7 @@ def get_recent_fights(db: Session, limit: int = 10) -> List[Dict[str, Any]]:
             "duration_sec": f.duration_sec or 0,
             "player_count": f.player_count or 0,
             "total_damage": int(f.total_damage or 0),
-            "total_healing": int(f.total_healing or 0),
+            "total_downed": int(total_downed or 0),
             "kill_count": f.kill_count or 0,
             "death_count": f.death_count or 0,
         })
@@ -495,14 +510,10 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     """获取 AI 评分分布"""
     start_date, end_date = _get_date_range(days)
 
-    # 按分数段统计
-    ranges = [
-        (0, 60, "D"),
-        (60, 70, "C"),
-        (70, 80, "B"),
-        (80, 90, "A"),
-        (90, 100, "S"),
-    ]
+    # 按分数段统计（使用 GRADE_THRESHOLDS 常量，与 get_grade() 逻辑一致）
+    # GRADE_THRESHOLDS: [(90, S), (80, A), (70, B), (60, C), (40, D)]
+    # 分段: F: <40, D: 40-59, C: 60-69, B: 70-79, A: 80-89, S: 90-99, S+: 100+
+    from app.constants.dict_values import GRADE_THRESHOLDS
 
     query = (
         db.query(FightStats.ai_score)
@@ -515,18 +526,22 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
     total = len(scores)
 
     items = []
-    for low, high, grade in ranges:
-        count = sum(1 for s in scores if low <= s < high)
-        items.append({
-            "grade": grade,
-            "range": f"{low}-{high}",
+    # 从最低等级开始构建分段（GRADE_THRESHOLDS 是从高到低排序的，需要反向）
+    prev_threshold = 0
+    for threshold, grade in reversed(GRADE_THRESHOLDS):
+        count = sum(1 for s in scores if prev_threshold <= s < threshold)
+        items.insert(0, {
+            "grade": grade.value.upper(),
+            "range": f"{prev_threshold}-{threshold - 1}" if prev_threshold > 0 else f"<{threshold}",
             "count": count,
             "percentage": round((count / max(total, 1)) * 100, 2),
         })
+        prev_threshold = threshold
 
-    # 处理 >= 100 的特殊情况
+    # 处理 >= 100 的 S+ 情况
     count_s_plus = sum(1 for s in scores if s >= 100)
     if count_s_plus > 0:
+        items[-1]["range"] = "90+"
         items[-1]["count"] += count_s_plus
         items[-1]["percentage"] = round((items[-1]["count"] / max(total, 1)) * 100, 2)
 

@@ -6,7 +6,7 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 // EI 统一数据响应结构
 export interface EiUnifiedPlayer {

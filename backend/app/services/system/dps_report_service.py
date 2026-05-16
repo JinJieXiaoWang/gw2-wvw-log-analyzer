@@ -15,12 +15,14 @@ dps.report API 服务模块
 """
 
 import os
+import threading
 import time
 from typing import Any, Dict, Optional
 
 import orjson
 import requests
 
+from app.services.system.dps_report_queue import dps_report_queue
 from app.services.zevtc.rate_limiter import dps_report_limiter
 from app.utils.logger import logger
 
@@ -93,27 +95,8 @@ def _get_user_token() -> Optional[str]:
     return None
 
 
-def upload_and_parse(file_path: str) -> Dict[str, Any]:
-    """
-    上传 zevtc 文件到 dps.report 并获取完整 EI JSON
-
-    Args:
-        file_path: 本地 zevtc 文件路径
-
-    Returns:
-        dict: {
-            "permalink": str,
-            "ei_json": dict,
-            "duration": float (seconds)
-        }
-
-    Raises:
-        DpsReportTimeoutError: 请求超时
-        DpsReportRateLimitError: API 限流 (HTTP 429)
-        DpsReportHttpError: HTTP 错误响应
-        DpsReportParseError: dps.report 解析失败
-        DpsReportError: 其他异常
-    """
+def _upload_and_parse_core(file_path: str) -> Dict[str, Any]:
+    """upload_and_parse 的核心逻辑（不包含队列包装）。"""
     if not os.path.exists(file_path):
         raise DpsReportError(f"文件不存在: {file_path}")
 
@@ -136,20 +119,14 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
 
     try:
         # 1. 上传文件到 dps.report（附带 token）
-        # 使用文件对象而不是 f.read()，实现流式上传，避免大文件全量读入内存
         with open(file_path, "rb") as f:
             files = {"file": (filename, f, "application/octet-stream")}
-            # 【优化】去掉 detailedwvw=true：
-            # dps.report 官方文档明确说明 detailedwvw 会产生 extended per-target reports，
-            # 导致 JSON 体积暴增 50-80%，且超过 50MB 的日志会因此解析失败。
-            # 我们的代码只使用 dpsAll[0] 等汇总数据，完全不需要 detailed wvw 数据。
             upload_url = (
                 f"{DPS_REPORT_UPLOAD_URL}?json=1&generator=ei{token_param}"
             )
             upload_resp = requests.post(upload_url, files=files, timeout=300, proxies=REQUESTS_PROXIES)
 
         if upload_resp.status_code == 429:
-            # 被限流：记录拒绝，让上层重试
             retry_after = None
             try:
                 err_data = upload_resp.json()
@@ -190,10 +167,26 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
                 json_resp.status_code,
             )
 
-        # 【优化】使用 orjson 替代标准库 json 解析：
-        # orjson (Rust 原生) 比 Python json 快 10-50 倍，内存占用更低。
-        # 对于几十到上百 MB 的 EI JSON，这是关键优化。
         ei_json = orjson.loads(json_resp.content)
+
+        # 3. 验证 permalink 可访问性（HEAD 请求，轻量）
+        try:
+            head_resp = requests.head(
+                permalink,
+                timeout=10,
+                proxies=REQUESTS_PROXIES,
+                allow_redirects=True,
+            )
+            if head_resp.status_code != 200:
+                logger.warning(
+                    f"[dps.report] permalink HEAD 验证失败: {permalink}, "
+                    f"HTTP {head_resp.status_code}"
+                )
+            else:
+                logger.debug(f"[dps.report] permalink 验证通过: {permalink}")
+        except Exception as head_err:
+            logger.warning(f"[dps.report] permalink HEAD 验证异常（非致命）: {head_err}")
+
         total_time = time.time() - total_start
         logger.info(f"[dps.report] 完整流程完成: {total_time:.2f}s")
 
@@ -207,3 +200,34 @@ def upload_and_parse(file_path: str) -> Dict[str, Any]:
     except Exception as e:
         logger.warning(f"[dps.report] 异常: {e}", exc_info=True)
         raise DpsReportError(f"dps.report 异常: {e}") from e
+
+
+def upload_and_parse(file_path: str) -> Dict[str, Any]:
+    """
+    上传 zevtc 文件到 dps.report 并获取完整 EI JSON。
+    本函数自动通过 DpsReportRequestQueue 排队，保证全局严格单并发。
+
+    Args:
+        file_path: 本地 zevtc 文件路径
+
+    Returns:
+        dict: {
+            "permalink": str,
+            "ei_json": dict,
+            "duration": float (seconds)
+        }
+
+    Raises:
+        DpsReportTimeoutError: 请求超时
+        DpsReportRateLimitError: API 限流 (HTTP 429)
+        DpsReportHttpError: HTTP 错误响应
+        DpsReportParseError: dps.report 解析失败
+        DpsReportError: 其他异常
+    """
+    # 如果当前线程就是队列 worker 线程，直接执行避免死锁
+    # （子进程中队列是新实例，_worker_thread 为 None，也会直接执行）
+    if dps_report_queue._worker_thread is not None and threading.current_thread() is dps_report_queue._worker_thread:
+        return _upload_and_parse_core(file_path)
+
+    # 普通调用：通过队列提交，全局串行
+    return dps_report_queue.submit(_upload_and_parse_core, file_path)

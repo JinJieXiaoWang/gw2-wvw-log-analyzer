@@ -1,34 +1,79 @@
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-    <div v-for="(card, i) in cards" :key="card.label" class="card animate-slide-in-up" :style="{ animationDelay: `${(i + 1) * 0.1}s` }">
-      <div class="flex items-center justify-between">
-        <div>
-          <p class="text-neutral-text-secondary text-sm mb-1">{{ card.label }}</p>
-          <p class="text-3xl font-bold" :class="card.valueClass">{{ card.formatter(card.value) }}</p>
-        </div>
-        <div class="w-12 h-12 rounded-xl flex items-center justify-center" :class="card.iconBg">
-          <i :class="card.icon" class="text-xl" :class="card.iconColor" />
-        </div>
-      </div>
-    </div>
+    <MetricCard
+      v-for="(card, index) in statCards"
+      :key="index"
+      v-bind="card"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+/**
+ * 出勤统计卡片组件（详细版）
+ * 功能：显示出勤账号、总出勤时长、总伤害、击倒人数
+ * 更新：2026-05-14 - 重构为使用 MetricCard 配置数组方式
+ */
+
 import { computed } from 'vue'
-import { formatNumber, formatDuration } from '@/utils/attendance/attendanceFormatters'
+import MetricCard from '@/components/common/feedback/MetricCard.vue'
+import { formatDuration, formatNumber } from '@/utils/common/attendanceFormatters'
 
 const props = defineProps<{
   totalAccounts: number
   totalDuration: number
   totalDamage: number
-  totalHealing: number
+  totalDowned: number
 }>()
 
-const cards = computed(() => [
-  { label: '出勤账号', value: props.totalAccounts, formatter: (v: number) => String(v), valueClass: 'game-number-legendary', icon: 'pi pi-users', iconBg: 'bg-gradient-to-br from-primary/30 to-secondary/30', iconColor: 'text-primary' },
-  { label: '总出勤时长', value: props.totalDuration, formatter: formatDuration, valueClass: 'game-number-exotic', icon: 'pi pi-clock', iconBg: 'bg-gradient-to-br from-secondary/30 to-status-success/30', iconColor: 'text-secondary' },
-  { label: '总伤害', value: props.totalDamage, formatter: formatNumber, valueClass: 'game-number-rare', icon: 'pi pi-bolt', iconBg: 'bg-gradient-to-br from-status-error/30 to-status-warning/30', iconColor: 'text-status-error' },
-  { label: '总治疗', value: props.totalHealing, formatter: formatNumber, valueClass: 'game-number-mythic', icon: 'pi pi-heart', iconBg: 'bg-gradient-to-br from-status-success/30 to-primary/30', iconColor: 'text-status-success' }
+const statCards = computed(() => [
+  {
+    label: '出勤账号',
+    value: props.totalAccounts,
+    icon: 'pi pi-users',
+    iconColor: 'text-primary',
+    cardClass: 'card-legendary min-w-0',
+    valueClass: 'game-number-legendary',
+    iconBgClass: 'bg-gradient-to-br from-primary/40 to-primary/10',
+    iconSizeClass: 'w-14 h-14',
+    iconTextClass: 'text-2xl',
+    animationDelay: 0.1
+  },
+  {
+    label: '总出勤时长',
+    value: formatDuration(props.totalDuration),
+    icon: 'pi pi-clock',
+    iconColor: 'text-secondary',
+    cardClass: 'card-exotic min-w-0',
+    valueClass: 'game-number-exotic',
+    iconBgClass: 'bg-gradient-to-br from-secondary/40 to-secondary/10',
+    iconSizeClass: 'w-14 h-14',
+    iconTextClass: 'text-2xl',
+    animationDelay: 0.2
+  },
+  {
+    label: '总伤害',
+    value: formatNumber(props.totalDamage),
+    icon: 'pi pi-bolt',
+    iconColor: 'text-status-error',
+    cardClass: 'card-rare min-w-0',
+    valueClass: 'game-number-rare',
+    iconBgClass: 'bg-gradient-to-br from-status-error/40 to-status-error/10',
+    iconSizeClass: 'w-14 h-14',
+    iconTextClass: 'text-2xl',
+    animationDelay: 0.3
+  },
+  {
+    label: '击倒人数',
+    value: props.totalDowned,
+    icon: 'pi pi-target',
+    iconColor: 'text-warning',
+    cardClass: 'card-mythic min-w-0',
+    valueClass: 'game-number-mythic',
+    iconBgClass: 'bg-gradient-to-br from-warning/40 to-warning/10',
+    iconSizeClass: 'w-14 h-14',
+    iconTextClass: 'text-2xl',
+    animationDelay: 0.4
+  }
 ])
 </script>

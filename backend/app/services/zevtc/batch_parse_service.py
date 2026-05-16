@@ -24,8 +24,9 @@ from sqlalchemy.orm import Session
 
 from app.config.database import SessionLocal
 from app.core.zevtc.parser import ZevtcParseError
-from app.models.batch_parse import BatchParseTask, BatchParseTaskItem
-from app.models.log import Log
+from app.models.log.batch_parse import BatchParseTask, BatchParseTaskItem
+from app.models.log.log import Log
+from app.constants.dict_values import BatchTaskStatus, ParseStatus
 from app.services.zevtc import log_service
 from app.utils.logger import logger
 
@@ -43,6 +44,7 @@ POLL_INTERVAL_SECONDS = 2  # 轮询数据库间隔
 TASK_DELAY_SECONDS = 1.0  # 任务完成后延迟（增加 GC 时间）
 active_workers_lock = threading.Lock()
 active_workers: set = set()
+_task_available_event = threading.Event()
 
 # =====================================================================
 # 内存管理配置（针对 2G2核 低内存服务器优化）
@@ -160,7 +162,7 @@ class BatchParseService:
             log = log_service.get_log_by_id(db, log_id)
             if not log:
                 continue
-            if log.parse_status == "parsing":
+            if log.parse_status == ParseStatus.PARSING:
                 skipped_count += 1
                 continue
             valid_log_ids.append(log_id)
@@ -183,7 +185,7 @@ class BatchParseService:
 
         # 立即将所有有效日志标记为解析中，让用户在列表中立即看到"解析中"状态
         for log_id in valid_log_ids:
-            log_service.update_parse_status(db, log_id, "parsing")
+            log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
 
         db.commit()
         db.refresh(task)
@@ -194,6 +196,8 @@ class BatchParseService:
             )
         else:
             logger.info(f"创建批量解析任务成功，任务ID: {task.id}，包含 {len(valid_log_ids)} 个日志")
+        # 通知 worker 有新任务可用，减少轮询等待
+        _task_available_event.set()
         return task
 
     @staticmethod
@@ -228,7 +232,7 @@ class BatchParseService:
         task.status = status
         if error_message:
             task.error_message = error_message
-        if status == "processing" and not task.started_at:
+        if status == BatchTaskStatus.PROCESSING.value and not task.started_at:
             task.started_at = datetime.now(timezone.utc)
         if status in ["completed", "failed", "partial"] and not task.completed_at:
             task.completed_at = datetime.now(timezone.utc)
@@ -257,7 +261,7 @@ class BatchParseService:
         if error_code:
             item.error_code = error_code
 
-        if status == "processing" and not item.started_at:
+        if status == BatchTaskStatus.PROCESSING.value and not item.started_at:
             item.started_at = datetime.now(timezone.utc)
         if status in ["completed", "failed"] and not item.completed_at:
             item.completed_at = datetime.now(timezone.utc)
@@ -265,10 +269,10 @@ class BatchParseService:
         # 更新任务统计
         task = db.query(BatchParseTask).filter(BatchParseTask.id == task_id).first()
         if task:
-            if status == "completed":
+            if status == BatchTaskStatus.COMPLETED.value:
                 task.processed_count += 1
                 task.success_count += 1
-            elif status == "failed":
+            elif status == BatchTaskStatus.FAILED.value:
                 task.processed_count += 1
                 task.failed_count += 1
 
@@ -314,7 +318,7 @@ class BatchParseService:
                 task.processed_count += 1
                 task.failed_count += 1
                 if task.processed_count == task.total_count:
-                    task.status = "failed" if task.success_count == 0 else "partial"
+                    task.status = BatchTaskStatus.FAILED.value if task.success_count == 0 else BatchTaskStatus.PARTIAL.value
                     task.completed_at = datetime.now(timezone.utc)
             db.commit()
             return False
@@ -409,7 +413,7 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
         if not log:
             raise ValueError(f"日志不存在: {log_id}")
 
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
 
         importer = LogImportService(db)
         result = importer.import_log(log_id, log.file_path)
@@ -418,6 +422,22 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
             raise Exception(result.get("error", "日志导入失败"))
 
         logger.info(f"[batch] log_id={log_id} 导入成功")
+
+        # 解析成功后自动执行入库评分
+        try:
+            from app.services.wvw.scoring_service import ScoringService
+            fight_id = result.get("fight_id")
+            if fight_id:
+                scoring_result = ScoringService.recalculate_fight_scores(fight_id, db)
+                logger.info(
+                    f"[batch] 日志 {log_id} 战斗 {fight_id} 评分完成: "
+                    f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                )
+        except Exception as score_err:
+            logger.error(
+                f"[batch] 日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+            )
+
         BatchParseService.update_task_item_status(db, task_id, log_id, "completed")
         db.commit()
 
@@ -427,6 +447,12 @@ def _do_parse_single_log(task_id: int, log_id: int) -> None:
     finally:
         db.expunge_all()
         db.close()
+
+
+def _parse_worker(queue, log_id: int, file_path: str) -> None:
+    """子进程工作函数（必须在模块级别定义，否则无法被 pickle）"""
+    result = _import_log_subprocess(log_id, file_path)
+    queue.put(result)
 
 
 def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -> None:
@@ -443,7 +469,7 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     try:
         logger.info(f"[batch] 子进程解析开始，任务ID: {task_id}，日志ID: {log_id}")
         BatchParseService.update_task_item_status(db, task_id, log_id, "processing")
-        log_service.update_parse_status(db, log_id, "parsing")
+        log_service.update_parse_status(db, log_id, ParseStatus.PARSING)
         db.commit()
     finally:
         db.close()
@@ -452,11 +478,7 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
     ctx = multiprocessing.get_context("spawn")
     queue = ctx.Queue()
 
-    def _worker(q, lid, fpath):
-        result = _import_log_subprocess(lid, fpath)
-        q.put(result)
-
-    proc = ctx.Process(target=_worker, args=(queue, log_id, file_path))
+    proc = ctx.Process(target=_parse_worker, args=(queue, log_id, file_path))
     proc.start()
     proc.join(timeout=SUBPROCESS_TIMEOUT)
 
@@ -489,6 +511,25 @@ def _do_parse_single_log_subprocess(task_id: int, log_id: int, file_path: str) -
         raise Exception(result.get("error", "日志导入失败"))
 
     logger.info(f"[batch] log_id={log_id} 子进程导入成功")
+
+    # 解析成功后自动执行入库评分
+    try:
+        from app.services.wvw.scoring_service import ScoringService
+        fight_id = result.get("fight_id")
+        if fight_id:
+            db = SessionLocal()
+            try:
+                scoring_result = ScoringService.recalculate_fight_scores(fight_id, db)
+                logger.info(
+                    f"[batch] 日志 {log_id} 战斗 {fight_id} 评分完成: "
+                    f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                )
+            finally:
+                db.close()
+    except Exception as score_err:
+        logger.error(
+            f"[batch] 日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+        )
 
     # 更新状态
     db = SessionLocal()
@@ -571,7 +612,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
             error_code = "invalid_state"
 
         if error_code in ("parse_error", "invalid_state"):
-            log_service.update_parse_status(db, log_id, "failed", error_str)
+            log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
             BatchParseService.update_task_item_status(
                 db, task_id, log_id, "failed", error_str, error_code
             )
@@ -581,7 +622,7 @@ def _handle_parse_error(task_id: int, log_id: int, error_str: str, default_error
                 db, task_id, log_id, error_str, error_code, retry_after
             )
             if not should_retry:
-                log_service.update_parse_status(db, log_id, "failed", error_str)
+                log_service.update_parse_status(db, log_id, ParseStatus.FAILED, error_str)
                 db.commit()
     except Exception as inner_e:
         logger.error(f"[batch] 更新失败状态也失败了: {inner_e}")
@@ -605,7 +646,7 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
     # 先查 pending
     item = (
         db.query(BatchParseTaskItem)
-        .filter(BatchParseTaskItem.status == "pending")
+        .filter(BatchParseTaskItem.status == BatchTaskStatus.PENDING.value)
         .order_by(BatchParseTaskItem.id.asc())
         .first()
     )
@@ -616,7 +657,7 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
     item = (
         db.query(BatchParseTaskItem)
         .filter(
-            BatchParseTaskItem.status == "retrying",
+            BatchParseTaskItem.status == BatchTaskStatus.RETRYING.value,
             BatchParseTaskItem.next_retry_at <= now,
         )
         .order_by(BatchParseTaskItem.next_retry_at.asc())
@@ -626,12 +667,18 @@ def _fetch_next_pending_item(db: Session) -> Optional[BatchParseTaskItem]:
 
 
 def worker():
-    """工作线程：轮询数据库 → 内存检查 → 限流检查 → 执行任务 → 深度 GC"""
+    """工作线程：事件通知/轮询数据库 → 内存检查 → 限流检查 → 执行任务 → 深度 GC"""
+    idle_poll_interval = max(POLL_INTERVAL_SECONDS, 5)  # 空闲时延长轮询间隔
     while is_running:
         try:
+            # 等待任务通知或超时（减少空转轮询）
+            if not _task_available_event.is_set():
+                _task_available_event.wait(timeout=idle_poll_interval)
+            # 无论是否超时，都检查一次；处理完后清除事件标志
+            _task_available_event.clear()
+
             # 轮询前内存检查
             if not _check_memory_and_wait("poll"):
-                time.sleep(POLL_INTERVAL_SECONDS)
                 continue
 
             db = SessionLocal()
@@ -639,7 +686,6 @@ def worker():
                 item = _fetch_next_pending_item(db)
                 if not item:
                     db.close()
-                    time.sleep(POLL_INTERVAL_SECONDS)
                     continue
 
                 # 在 session 关闭前提取原始数据，避免 commit() 后对象 expired 导致 DetachedInstanceError
@@ -656,8 +702,8 @@ def worker():
 
                 # 更新父任务状态（内部会 commit，导致 ORM 对象 expired）
                 task = BatchParseService.get_task_by_id(db, task_id)
-                if task and task.status == "pending":
-                    BatchParseService.update_task_status(db, task_id, "processing")
+                if task and task.status == BatchTaskStatus.PENDING.value:
+                    BatchParseService.update_task_status(db, task_id, BatchTaskStatus.PROCESSING.value)
 
             finally:
                 db.close()
@@ -701,7 +747,7 @@ def _reset_stuck_processing_items():
         try:
             stuck_items = (
                 db.query(BatchParseTaskItem)
-                .filter(BatchParseTaskItem.status == "processing")
+                .filter(BatchParseTaskItem.status == BatchTaskStatus.PROCESSING.value)
                 .all()
             )
             if stuck_items:
@@ -742,8 +788,8 @@ def submit_batch_task(task_id: int, db_url: str, overwrite: bool = True):
         task = BatchParseService.get_task_by_id(db, task_id)
         if not task:
             raise ValueError(f"任务不存在: {task_id}")
-        if task.status == "pending":
-            BatchParseService.update_task_status(db, task_id, "processing")
+        if task.status == BatchTaskStatus.PENDING.value:
+            BatchParseService.update_task_status(db, task_id, BatchTaskStatus.PROCESSING.value)
         logger.info(f"[batch] 任务 {task_id} 已提交，调度器将自动轮询执行")
     except Exception as e:
         logger.error(f"[batch] 提交任务失败: {e}")

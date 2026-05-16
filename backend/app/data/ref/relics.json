@@ -1,0 +1,2707 @@
+{
+  "99965": {
+    "name": "群聚古物",
+    "icon": "https://render.guildwars2.com/file/2F7AE267BA29B35DEC7F2C0FCE5C30D806E31E0D/3122350.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，治疗你自己和附近的盟友。过量的治疗将转换为屏障。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "99997": {
+    "name": "伊斯加然古物",
+    "icon": "https://render.guildwars2.com/file/5FB808F04E427650A84031E46B632DC292A3583F/3122354.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "闪避敌人攻击后，放置伊斯加然之眼在其身上，持续一段时间。对于有伊斯加然之眼的敌人造成，提升你造成的打击伤害和症状持续时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100031": {
+    "name": "僧侣古物",
+    "icon": "https://render.guildwars2.com/file/6C340014C525FEF8089AC6DAD03662637A5B07CA/3122361.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "在向盟友施加增益后，增加对盟友的治疗效果。",
+    "type": "Relic",
+    "flags": [
+      "HideSuffix",
+      "SoulBindOnUse"
+    ]
+  },
+  "100048": {
+    "name": "寒冰古物",
+    "icon": "https://render.guildwars2.com/file/5E0E012F921D3D5D364BFEFC04D7BEF1DC5B52F7/3122353.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，向附近敌人发射冰柱，施加冰冻效果。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100063": {
+    "name": "激荡古物",
+    "icon": "https://render.guildwars2.com/file/755D9F3BA1C2C42CDAEBF59BBF4564B77ADC105D/3592840.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，获得电击光环，持续4秒。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100074": {
+    "name": "塞鲁斯古物",
+    "icon": "https://render.guildwars2.com/file/656FCA9408A0FFDB35A3CE20311E0F66423F026B/3122337.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能时，召唤塞鲁斯之眼释放旋转线性攻击，造成伤害并转化增益为症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100090": {
+    "name": "猎龙者古物",
+    "icon": "https://render.guildwars2.com/file/F61EEC535059F1FA027049AB4DEFCD5465405DB7/3122344.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "被你的陷阱技能命中的敌人会变成你的猎物，增加你对他们造成的打击伤害和症状持续时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100115": {
+    "name": "玛邦古物",
+    "icon": "https://render.guildwars2.com/file/49481C31650D384B68A1BFB53DC1A39F2AE4AD56/3122358.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "在战斗中施加威能时，获得玛邦的力量。达到10层时，提升你的威能层数效果，持续一段时间，之后你将失去所有的威能和玛邦的力量。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100144": {
+    "name": "战士古物",
+    "icon": "https://render.guildwars2.com/file/1D3CF82C05450A605921F6EB9D0AC23421C9CFA5/3122375.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "减少武器切换冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100148": {
+    "name": "速度古物",
+    "icon": "https://render.guildwars2.com/file/15B07C1813B63DFD27A6A8A5E36CF1BC50DB0562/3122369.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "拥有迅捷效果时，增加移动速度。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100153": {
+    "name": "碎层古物",
+    "icon": "https://render.guildwars2.com/file/B2D409644147BF18935A95A52505ABCB9EECE142/3122351.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你对拥有至少6层流血的敌人施加流血时，还会施加燃烧和折磨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100158": {
+    "name": "幻象术士古物",
+    "icon": "https://render.guildwars2.com/file/5FCA620E77D3D5022ADC70C1191F0B154AB13827/3122360.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "成功闪避一次攻击后施加折磨。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100165": {
+    "name": "唤灵师古物",
+    "icon": "https://render.guildwars2.com/file/B20C589B0915915F5AB55BDA6EC52670B29706F2/3122362.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "你施加的恐惧使敌人的移动速度降低。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100177": {
+    "name": "佩萨古物",
+    "icon": "https://render.guildwars2.com/file/949A6A4179F514FCDEF3AC3D9C292B38D5E0047D/3122365.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用暗影疾步或者诡计技能后，等待一小段时间，对一个附近的敌人发射一道利刃，施加折磨，提升你下次对这个目标的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100194": {
+    "name": "编织者古物",
+    "icon": "https://render.guildwars2.com/file/12997110B0509463DD9F1364A92493B2C4309BE1/3122377.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用<c=@abilitytype>姿态</c>技能时，提升打击伤害，持续一段时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100219": {
+    "name": "预告者古物",
+    "icon": "https://render.guildwars2.com/file/DE62250A48F802DD09A1FAFF0D2BA804EA29A3B9/3122352.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "向盟友施加增益后，获得增益效果。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100230": {
+    "name": "蛇妖古物",
+    "icon": "https://render.guildwars2.com/file/645EFCBFFBB7B1C6630CBB7C0FB268CA27B703AC/3122355.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，释放腐化波，施加伤害症状。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100238": {
+    "name": "巫妖古物",
+    "icon": "https://render.guildwars2.com/file/045D16259918EFA90A76B4D1B1400AA8D9CC0D4B/3592837.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "战斗时召唤一个锯齿骸骨。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100248": {
+    "name": "黑烟壁垒古物",
+    "icon": "https://render.guildwars2.com/file/B21C5A6DFCDB0A729358A22CA76547150E7C541E/3122339.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，对技能目标或最近敌人发动火炮打击，施加眩晕。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100262": {
+    "name": "烟花古物",
+    "icon": "https://render.guildwars2.com/file/2999CCF7C94267B2EE3DDA7459050864622927C9/3122349.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用冷却时间为20秒或更长的武器技能造成打击伤害时，提升打击伤害，持续一段时间。叠加层数时刷新持续时间。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100299": {
+    "name": "战士古物",
+    "icon": "https://render.guildwars2.com/file/1D3CF82C05450A605921F6EB9D0AC23421C9CFA5/3122375.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "减少武器切换冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100311": {
+    "name": "食人魔古物",
+    "icon": "https://render.guildwars2.com/file/633231B05DC3D1D44003DAA891400C4624180D17/3592838.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "战斗时召唤一头岩犬。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100345": {
+    "name": "独行侠古物",
+    "icon": "https://render.guildwars2.com/file/29FE690460A037C7FAC3C71903BA1EBECB204012/3122341.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "在战斗中翻滚闪避或闪避一次攻击后，你的下一次攻击必定暴击。<c=@reminder>（冷却时间：1秒）</c>",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100368": {
+    "name": "灾厄师古物",
+    "icon": "https://render.guildwars2.com/file/0802B36898A6EB0C77D20FD4F3DFD0A2270A3ECD/3122368.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "对盟友施加屏障时，提升症状持续时间。<c=@reminder>当这个能力触发时，所有叠层的持续时间将会刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100385": {
+    "name": "半人马古物",
+    "icon": "https://render.guildwars2.com/file/59551CFA6F4AB3D678370651ABF20D5F69B949D5/3122336.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能时获得稳固。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100388": {
+    "name": "星界圣盾古物",
+    "icon": "https://render.guildwars2.com/file/57A961A8ADFE279BC4F124A40CC4B5646BC8035F/3161446.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用纹章技能后，获得星界圣盾纹章。在该纹章激活的情况下使用纹章技能来消耗它，移除附近盟友症状并向他们施加抗性。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100390": {
+    "name": "解毒古物",
+    "icon": "https://render.guildwars2.com/file/61C74AAFED48CF9AD4BBCAD89F902654EA02B2AE/3122331.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "造成症状净化能移除1个额外症状。<c=@reminder>该效果每隔一段时间只能影响单个盟友一次。</c>",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100400": {
+    "name": "阴鬼古物",
+    "icon": "https://render.guildwars2.com/file/CEF1E6DA2DBF143661DF26E668034A621812B61A/3122370.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能时，向目标敌人召唤一个水池，施加中毒和残废。水池持续时间取决于精英技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100403": {
+    "name": "魔像师古物",
+    "icon": "https://render.guildwars2.com/file/13412697BB6AD89F2E6ED97A750873C0BB35AA9A/3592835.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "战斗时召唤一个魔像。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100411": {
+    "name": "骁骑兵古物",
+    "icon": "https://render.guildwars2.com/file/500CB9B12FED6948EB74FAF299726007002BDFBA/3122372.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用<c=@abilitytype>战吼</c>技能后，移除受影响盟友1个症状。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100429": {
+    "name": "怜悯古物",
+    "icon": "https://render.guildwars2.com/file/1AA33B5654D3E7F91B9065BA6D0F1EB6AA755AFF/3122359.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "复活盟友的速度加快，提供更多生命值。仅适用于世界之战的玩家。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100432": {
+    "name": "阿奇姆古物",
+    "icon": "https://render.guildwars2.com/file/594C437E9606A167F4F372BCEB0C2B7C7828037B/3122330.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你控制住拥有至少5层困惑或折磨的敌人时，对该目标附近的敌人施加困惑和折磨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100435": {
+    "name": "大地古物",
+    "icon": "https://render.guildwars2.com/file/EBB3060FF2E9A10CECC3F1B2CAC0213AE9D93337/3592833.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，给盟友施加保护和磁力光环。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100442": {
+    "name": "德薇娜古物",
+    "icon": "https://render.guildwars2.com/file/CBBD4FAFCC3568ACA04F9901162FE7C0747C1E9B/3122346.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "提升你施加的再生效果。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100448": {
+    "name": "黑烟壁垒古物",
+    "icon": "https://render.guildwars2.com/file/B21C5A6DFCDB0A729358A22CA76547150E7C541E/3122339.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，对技能目标或最近敌人发动火炮打击，施加眩晕。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100450": {
+    "name": "时空术士古物",
+    "icon": "https://render.guildwars2.com/file/C209ABF01D7429EC09354E2E0BBF9DB14EBDD613/3122338.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用<c=@abilitytype>法池</c>技能时，获得急速。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100453": {
+    "name": "燃火者古物",
+    "icon": "https://render.guildwars2.com/file/4E4F4AA81DB63D9D9BB4BF3757D0750E935701F7/3122348.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用咒语技能的最终充能时，提升增益持续时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100455": {
+    "name": "耐久古物",
+    "icon": "https://render.guildwars2.com/file/A8F61493030863CAB537780398D64D80554D959D/3122345.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，获得保护，再生和决心。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100461": {
+    "name": "莱尔古物",
+    "icon": "https://render.guildwars2.com/file/FE580A90C9E4513D062A148045F933C7F3C557E3/3122357.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "治疗1名盟友时，为最多4名盟友提供护盾，将他们受到的任何打击伤害的转移一部分给自己。盟友同时只能被一个护盾保护。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100479": {
+    "name": "私掠者古物",
+    "icon": "https://render.guildwars2.com/file/9CE01CF33B943BCC3FABD8491073DE0AD63F340C/3592839.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "战斗时召唤一只鹦鹉。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100527": {
+    "name": "争斗者古物",
+    "icon": "https://render.guildwars2.com/file/2B5297A932F55DA3BDDD0A39C9CB0D9CF70244A1/3122334.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你给自己施加保护和决心时，获得额外的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100531": {
+    "name": "流水古物",
+    "icon": "https://render.guildwars2.com/file/A202CF0CF4314C049B16A89A595CCC9534B0A90E/3122376.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，净化你和附近盟友的症状。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100542": {
+    "name": "骑兵古物",
+    "icon": "https://render.guildwars2.com/file/C3AFC50F654E2749ADD9033CE007033F6F9B0D7A/3122335.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用你坐骑的 <c=@abilitytype>战斗</c>技能击中敌人时，给予你圣盾，急速，迅捷，抗性，和威能。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100557": {
+    "name": "巫师塔古物",
+    "icon": "https://render.guildwars2.com/file/0C0EE407B9DAA44438ED6C2DCDA4EEB30953DF1B/3122378.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，用反射投射物的屏障保护自己，同时召唤波纹将敌人拉向自己。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100561": {
+    "name": "冒险者古物",
+    "icon": "https://render.guildwars2.com/file/9A76D8C27FCAB8F66D0DC531906808B134D80EAD/3122328.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后获得耐力。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100562": {
+    "name": "耐久古物",
+    "icon": "https://render.guildwars2.com/file/A8F61493030863CAB537780398D64D80554D959D/3122345.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，获得保护，再生和决心。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100579": {
+    "name": "噩梦古物",
+    "icon": "https://render.guildwars2.com/file/74940C36779745CBA9DDD56CDF6CBAC1CEA8179F/3122363.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，施放一道噩梦冲击波，对附近的敌人施加恐惧和中毒。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100580": {
+    "name": "唤灵师古物",
+    "icon": "https://render.guildwars2.com/file/B20C589B0915915F5AB55BDA6EC52670B29706F2/3122362.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "你施加的恐惧使敌人的移动速度降低。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100614": {
+    "name": "闪避古物",
+    "icon": "https://render.guildwars2.com/file/19296379D120EF9FF10EE0B0CDD7711DA5E7A9AF/3122347.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "闪避一次攻击后获得活力。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100625": {
+    "name": "领导古物",
+    "icon": "https://render.guildwars2.com/file/077C30D957D30B0D282BB21199A193A2D74971DF/3122356.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，将附近盟友身上的症状转化为增益。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100633": {
+    "name": "群聚古物",
+    "icon": "https://render.guildwars2.com/file/2F7AE267BA29B35DEC7F2C0FCE5C30D806E31E0D/3122350.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，治疗你自己和附近的盟友。过量的治疗将转换为屏障。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100659": {
+    "name": "流水古物",
+    "icon": "https://render.guildwars2.com/file/A202CF0CF4314C049B16A89A595CCC9534B0A90E/3122376.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，净化你和附近盟友的症状。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100676": {
+    "name": "吸血古物",
+    "icon": "https://render.guildwars2.com/file/349D3B9098A1EB445E00C45E70B892E8CFE3762C/3592842.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能时，虹吸附近敌人的生命值。击杀一个敌人时，恢复一部分最大生命值。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100693": {
+    "name": "苦痛古物",
+    "icon": "https://render.guildwars2.com/file/3B1DA625E3DF0591087E62F12E5301C1D8D6EDC0/3122329.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "敌人被击败后，在其位置制造一个死亡新星，施加中毒和流血。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100694": {
+    "name": "无形入侵古物",
+    "icon": "https://render.guildwars2.com/file/0CAF5ACE9D4ABEFF3EF2DE0DB47D57A8AB3CABB3/3122373.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你进入或退出潜行时，给自己和附近盟友施加奔驰疾速。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100739": {
+    "name": "夺魂者古物",
+    "icon": "https://render.guildwars2.com/file/AFDAA23D3C61F202225DDFA7C17F420C5368BBB8/3122366.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用<c=@abilitytype>战吼</c>技能后，冰冻附近敌人。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100752": {
+    "name": "兽群古物",
+    "icon": "https://render.guildwars2.com/file/26503D1FF7BA354058789E371992A7500B3AA89B/3122364.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，向附近的盟友施加奔驰疾速，威能和激怒。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100775": {
+    "name": "瓦思古物",
+    "icon": "https://render.guildwars2.com/file/21D7FDF1DD4EAD33DBC01F11D80E48AD3370FDE6/3122374.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗或试剂技能后，你接下来的几次武器攻击会施加中毒。<c=@reminder>治疗技能每隔一段时间只能触发一次该效果。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100794": {
+    "name": "抗性古物",
+    "icon": "https://render.guildwars2.com/file/C3A39C916063067E190EE5D42D6CAC2018385F44/3122367.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，获得抗性。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100849": {
+    "name": "望族古物",
+    "icon": "https://render.guildwars2.com/file/BCC01F0B6616FE26ED4BE159532A6A6FBD0EA2D8/3122332.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "向一个敌人施加虚弱或易伤时，获得额外的症状持续时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100886": {
+    "name": "闪避古物",
+    "icon": "https://render.guildwars2.com/file/19296379D120EF9FF10EE0B0CDD7711DA5E7A9AF/3122347.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "闪避一次攻击后获得活力。",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "100893": {
+    "name": "风裔古物",
+    "icon": "https://render.guildwars2.com/file/070E32046C250E32DA76F2CBDFC504D6C0AB0344/3122379.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，召唤向盟友施加保护和决心的水晶。水晶持续时间取决于已使用技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100908": {
+    "name": "全息师古物",
+    "icon": "https://render.guildwars2.com/file/0976F60805023D2F14DA6CC72F55F3D64407C7AF/3592836.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，创造一个激光碟片。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100916": {
+    "name": "潜行者古物",
+    "icon": "https://render.guildwars2.com/file/3523AC08EB04347CF371E9A91F4B985D12FB4ED3/3122371.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用有冷却时间或资源消耗的武器技能攻击敌人时，提升打击伤害。<c=@reminder>当这个能力触发时，所有叠层的持续时间将会刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100924": {
+    "name": "神枪手古物",
+    "icon": "https://render.guildwars2.com/file/060151B961CE56CB9546E7B6AF33B0A318426372/3122342.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用<c=@abilitytype>咒术</c>技能时，获得额外的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100934": {
+    "name": "防御者古物",
+    "icon": "https://render.guildwars2.com/file/E854AFDE03F40ED335C0A30DE90BD9973612BD75/3122343.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "格挡一次攻击后恢复一部分最大生命值。如果你在5秒内再次格挡，治疗量逐步减少，最低为1%。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100942": {
+    "name": "德格达古物",
+    "icon": "https://render.guildwars2.com/file/CA28F7BFEA1B695DD19204E455BA270D334EE307/3122340.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，向目标或者最近的敌人发射一个投射物，造成伤害并施加症状。伤害取决于精英技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "100947": {
+    "name": "烟花古物",
+    "icon": "https://render.guildwars2.com/file/2999CCF7C94267B2EE3DDA7459050864622927C9/3122349.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用冷却时间为20秒或更长的武器技能造成打击伤害时，提升打击伤害，持续一段时间。叠加层数时刷新持续时间。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "100976": {
+    "name": "潜行者古物",
+    "icon": "https://render.guildwars2.com/file/3523AC08EB04347CF371E9A91F4B985D12FB4ED3/3122371.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用有冷却时间或资源消耗的武器技能攻击敌人时，提升打击伤害。<c=@reminder>当这个能力触发时，所有叠层的持续时间将会刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "NoMysticForge",
+      "NoSalvage",
+      "NoSell",
+      "SoulbindOnAcquire",
+      "SoulBindOnUse"
+    ]
+  },
+  "101116": {
+    "name": "菲勃古物",
+    "icon": "https://render.guildwars2.com/file/3B063D0B0BA20A0530086595F367F0149D9679F2/3187628.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用治疗技能时，对附近盟友施加迅捷，并移除妨碍他们移动的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101139": {
+    "name": "午夜国王古物",
+    "icon": "https://render.guildwars2.com/file/C0602C3D27B10AC815D4B9F0DF0E4C3D23D12E9F/3187630.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你控制敌人时，向周围盟友施加威能和激怒。<br><c=@reminder>控制效果包括：昏迷、嘲讽、晕眩、击退、拉拽、击倒、下沉、上浮、恐惧和击飞。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101166": {
+    "name": "恶魔女王古物",
+    "icon": "https://render.guildwars2.com/file/D0C6F322473F2A0F6C65FBD3B21733777BB14015/3187627.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "你施加的中毒将减少额外的治疗。控制一个敌人将施加中毒。<br><c=@reminder>控制效果包括：昏迷、嘲讽、晕眩、击退、拉拽、击倒、下沉、上浮、恐惧和击飞。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101191": {
+    "name": "努里斯古物",
+    "icon": "https://render.guildwars2.com/file/9B47CEBB551B7C5E7A961AB45361E292074E0823/3187632.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你移除敌人的增益时，每隔一段时间你将获得努里斯的饥饿的层数。消耗10层后，你的体型将变大，造成更多的伤害，受到更少的伤害，并将一部分伤害输出转化成治疗。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101198": {
+    "name": "纳约斯古物",
+    "icon": "https://render.guildwars2.com/file/EA382BAFD541080F71D5530893CC7E069165EA0C/3187631.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "移除你自己的症状时将治疗你。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101268": {
+    "name": "卡拉科萨古物",
+    "icon": "https://render.guildwars2.com/file/DD034A0B53355503350F07CCFFE5CC06A90F41D9/3187629.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功使用爆炸终结技时，治疗其他附近盟友。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101439": {
+    "name": "怜悯古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "复活盟友的速度加快，提供更多生命值。仅适用于世界之战的玩家。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101441": {
+    "name": "闪避古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "闪避一次攻击后获得活力。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101442": {
+    "name": "速度古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "拥有迅捷效果时，增加移动速度。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101447": {
+    "name": "兽群古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，向附近盟友施加奔驰疾速。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101452": {
+    "name": "燃火者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用咒语技能的最终充能时，提升增益持续时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101453": {
+    "name": "噩梦古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，施放一道噩梦冲击波，对附近的敌人施加恐惧和中毒。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101461": {
+    "name": "领导古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，将附近盟友身上的症状转化为增益。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101465": {
+    "name": "唤灵师古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "你施加的恐惧使敌人的移动速度降低。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101466": {
+    "name": "抗性古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后，获得抗性。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101467": {
+    "name": "恶魔女王古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "你施加的中毒将减少额外的治疗。控制一个敌人将施加中毒。<br><c=@reminder>控制效果包括：昏迷、嘲讽、晕眩、击退、拉拽、击倒、下沉、上浮、恐惧和击飞。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101472": {
+    "name": "夺魂者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用<c=@abilitytype>战吼</c>技能后，冰冻附近敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101474": {
+    "name": "流水古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后，净化你和附近盟友的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101487": {
+    "name": "解毒古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "造成症状净化能移除1个额外症状。<c=@reminder>该效果每10秒只能影响盟友一次。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101489": {
+    "name": "碎层古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你对拥有至少6层流血的敌人施加流血时，还会施加燃烧和折磨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101491": {
+    "name": "德格达古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，向目标或者最近的敌人发射一个投射物，造成伤害并施加症状。伤害取决于精英技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101492": {
+    "name": "瓦思古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗或试剂技能后，你接下来的几次武器攻击会施加中毒。<c=@reminder>治疗技能每隔一段时间只能触发一次该效果。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101493": {
+    "name": "苦痛古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当敌人被击败时在其位置制造一个死亡新星，施加中毒和流血。<c=@reminder>（冷却时间：10秒）</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101500": {
+    "name": "塞鲁斯古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能时，召唤塞鲁斯之眼释放旋转线性攻击，造成伤害并转化增益为症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101503": {
+    "name": "努里斯古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你移除敌人的增益时，每隔一段时间你将获得努里斯的饥饿的层数。消耗10层后，你的体型将变大，造成更多的伤害，受到更少的伤害，并将一部分伤害输出转化成治疗。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101504": {
+    "name": "耐久古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后，获得保护和再生。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101509": {
+    "name": "预告者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "向盟友施加增益后，获得增益效果。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101511": {
+    "name": "冒险者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后，获得50%耐力。<c=@reminder>（冷却时间：20秒）</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101513": {
+    "name": "防御者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "格挡一次攻击后恢复一部分最大生命值。如果你在5秒内再次格挡，治疗量逐步减少，最低为1%。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101514": {
+    "name": "德薇娜古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "提升你施加的再生效果。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101526": {
+    "name": "编织者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用<c=@abilitytype>姿态</c>技能时，提升打击伤害，持续一段时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101527": {
+    "name": "群聚古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "在你使用治疗技能后，给你和附近盟友施加屏障。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101534": {
+    "name": "骑兵古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用你坐骑的 <c=@abilitytype>战斗</c>技能击中敌人时，给予你圣盾，急速，迅捷，抗性，和威能。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101539": {
+    "name": "望族古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当向一个敌人施加虚弱或易伤时，获得3%症状持续时间，持续8秒，最高5层。<c=@reminder>（冷却时间：1秒）</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101541": {
+    "name": "阴鬼古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能时，向目标敌人召唤一个水池，施加中毒和残废。水池持续时间取决于精英技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101545": {
+    "name": "战士古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "减少武器切换冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101546": {
+    "name": "卡拉科萨古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你成功使用爆炸终结技时，治疗其他附近盟友。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101549": {
+    "name": "时空术士古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你使用<c=@abilitytype>法池</c>技能时，获得急速。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101554": {
+    "name": "骁骑兵古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用<c=@abilitytype>战吼</c>技能后，移除受影响盟友1个症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101563": {
+    "name": "菲勃古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你使用治疗技能时，对附近盟友施加迅捷，并移除妨碍他们移动的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101564": {
+    "name": "烟花古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用冷却时间为20秒或更长的武器技能造成打击伤害时，提升打击伤害，持续一段时间。叠加层数时刷新持续时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101571": {
+    "name": "无形入侵古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你进入或退出潜行时，给自己和附近盟友施加奔驰疾速。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101573": {
+    "name": "阿奇姆古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你控制住拥有至少5层困惑或折磨的敌人时，对该目标附近的敌人施加困惑和折磨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101580": {
+    "name": "潜行者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "使用有冷却时间或资源消耗的武器技能攻击敌人时，提升打击伤害。<c=@reminder>当这个能力触发时，所有叠层的持续时间将会刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101581": {
+    "name": "幻象术士古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "成功闪避一次攻击后施加折磨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101582": {
+    "name": "传奇古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "未使用古物效果槽",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101586": {
+    "name": "巫师塔古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，用反射投射物的屏障保护自己，同时召唤波纹将敌人拉向自己。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101590": {
+    "name": "猎龙者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "被你的陷阱技能命中的敌人会变成你的猎物，增加你对他们造成的打击伤害和症状持续时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101600": {
+    "name": "争斗者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你给自己施加保护和决心时，获得额外的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101605": {
+    "name": "莱尔古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "治疗1名盟友时，为最多4名盟友提供护盾，将他们受到的任何打击伤害的转移一部分给自己。盟友同时只能被一个护盾保护。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101607": {
+    "name": "半人马古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能时获得稳固。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101608": {
+    "name": "寒冰古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，向附近敌人发射冰柱，施加冰冻效果。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101611": {
+    "name": "佩萨古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用暗影疾步或者诡计技能后，等待一小段时间，对一个附近的敌人发射一道利刃，施加折磨，提升你下次对这个目标的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101618": {
+    "name": "风裔古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，召唤向盟友施加保护和决心的水晶。水晶持续时间取决于已使用技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101619": {
+    "name": "星界圣盾古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用纹章技能后，获得星界圣盾纹章。在该纹章激活的情况下使用纹章技能来消耗它，移除附近盟友症状并向他们施加抗性。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101621": {
+    "name": "午夜国王古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你控制敌人时，向周围盟友施加威能和激怒。<br><c=@reminder>控制效果包括：昏迷、嘲讽、晕眩、击退、拉拽、击倒、下沉、上浮、恐惧和击飞。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101627": {
+    "name": "纳约斯古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "移除你自己的症状时将治疗你。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101630": {
+    "name": "僧侣古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "在向盟友施加增益后，增加对盟友的治疗效果。",
+    "type": "Relic",
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101634": {
+    "name": "灾厄师古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "对盟友施加屏障时，提升症状持续时间。<c=@reminder>当这个能力触发时，所有叠层的持续时间将会刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101637": {
+    "name": "神枪手古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你使用<c=@abilitytype>咒术</c>技能时，获得额外的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101640": {
+    "name": "蛇妖古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，释放腐化波，施加伤害症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101643": {
+    "name": "玛邦古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "在战斗中施加威能时，获得玛邦的力量。达到10层时，提升你的威能层数效果，持续一段时间，之后你将失去所有的威能和玛邦的力量。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101644": {
+    "name": "独行侠古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "在战斗中翻滚闪避或闪避一次攻击后，你的下一次攻击必定暴击。<c=@reminder>（冷却时间：1秒）</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101647": {
+    "name": "黑烟壁垒古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，对技能目标或最近敌人发动火炮打击，施加眩晕。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101649": {
+    "name": "伊斯加然古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "闪避敌人攻击后，放置伊斯加然之眼在其身上，持续一段时间。对于有伊斯加然之眼的敌人造成，提升你造成的打击伤害和症状持续时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101731": {
+    "name": "孪生将军古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你使用一个治疗技能时，获得威能并虚弱附近的敌人。每击中一个敌人，还能获得额外的威能。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101737": {
+    "name": "开国古物",
+    "icon": "https://render.guildwars2.com/file/FD9FE6B8CBBD44132D6DBCA7C2E92CF4C69D6EDC/3302016.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功使用跳跃终结技时，获得屏障。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101767": {
+    "name": "孪生将军古物",
+    "icon": "https://render.guildwars2.com/file/CCEC5A2802D7B7D6C891EA730B5733ADD912B902/3302019.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用一个治疗技能时，获得威能并虚弱附近的敌人。每击中一个敌人，还能获得额外的威能。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101776": {
+    "name": "开国古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你成功使用跳跃终结技时，获得屏障。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101801": {
+    "name": "莫辛古物",
+    "icon": "https://render.guildwars2.com/file/CAB064E2F11609D2309E356062BA93107F9F605E/3302017.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你闪避一次攻击时，移除一个非伤害性症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101860": {
+    "name": "莫辛古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你闪避一次攻击时，移除一个非伤害性症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101863": {
+    "name": "术士古物",
+    "icon": "https://render.guildwars2.com/file/AC943ADC1ABD046294600DDBEFE8636FF90C4EEF/3302018.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你施加残废，冰冻或定身时，还将施加易伤。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101908": {
+    "name": "术士古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你施加残废，冰冻或定身时，还将施加易伤。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101917": {
+    "name": "寻路者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "获得额外的移动速度，在非战斗状态下进一步提升。当你进入战斗时，获得一次速度爆发。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101943": {
+    "name": "寻路者古物",
+    "icon": "https://render.guildwars2.com/file/7D28503433AD96CEA902BBCD0411C9BE1D2505F4/3302020.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "获得额外的移动速度，在非战斗状态下进一步提升。当你进入战斗时，获得一次速度爆发。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "101944": {
+    "name": "萨奇洛斯古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你处于激怒状态时，将你的暴击伤害输出的一定比例转化为治疗。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "101955": {
+    "name": "萨奇洛斯古物",
+    "icon": "https://render.guildwars2.com/file/5A5B5D3A4D9DD01F0A115030270A0A6EA353CC65/3302021.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你处于激怒状态时，将你的暴击伤害输出的一定比例转化为治疗。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "102199": {
+    "name": "瘟疫使者古物",
+    "icon": "https://render.guildwars2.com/file/286C60AC6FA239B0070293039091A44476A35E90/3375219.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你对一个敌人施加中毒时，获得格里尔的恶意的层数。达到最大层数后，你下一次施加中毒时还会对附近的敌人施加额外的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "102245": {
+    "name": "残暴古物",
+    "icon": "https://render.guildwars2.com/file/F1F3033EA7780C093A651253ACB92E415C0525F6/3375218.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "你的吸血伤害和治疗获得提升。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "102442": {
+    "name": "河流古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "在你的翻滚闪避最后，获得敏捷和再生。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "102595": {
+    "name": "风暴咏者古物",
+    "icon": "https://render.guildwars2.com/file/53B8A123D07CC679364EF4CF4BD7537624320919/3375223.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用一个移动技能后，你的下一次攻击生成一道弧形闪电链，打击附近的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "102787": {
+    "name": "残暴古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "你的吸血伤害和治疗获得提升。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "102877": {
+    "name": "克达之爪古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你控制一个敌人后，在一段时间内造成更高的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "102896": {
+    "name": "瘟疫使者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你对一个敌人施加中毒时，获得格里尔的恶意的层数。达到最大层数后，你下一次施加中毒时还会对附近的敌人施加额外的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103015": {
+    "name": "河流古物",
+    "icon": "https://render.guildwars2.com/file/4C054AF70F0CE14E46B159686F1AA70A320A1E07/3375221.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "在你的翻滚闪避最后，获得敏捷和再生。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103262": {
+    "name": "风暴咏者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用一个移动技能后，你的下一次攻击生成一道弧形闪电链，打击附近的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103424": {
+    "name": "悲伤古物",
+    "icon": "https://render.guildwars2.com/file/F943C04CD27C463AB167FDF49F9CCC3E27F0AD18/3375222.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用一个精英技能后，生成一片区域保护盟友，并摧毁敌人的投射物。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103507": {
+    "name": "悲伤古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用一个精英技能后，生成一片区域保护盟友，并摧毁敌人的投射物。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103574": {
+    "name": "克达之爪古物",
+    "icon": "https://render.guildwars2.com/file/19B5DB56E495C70754A8BE3621CADC0FD7402845/3375220.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你控制一个敌人后，在一段时间内造成更高的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103763": {
+    "name": "喷泉古物",
+    "icon": "https://render.guildwars2.com/file/CEDCA7097F41AD0715322E440ABDCE1E6FF49178/3441971.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你给予盟友活力时，同样恢复他们的耐力。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103811": {
+    "name": "蒸汽尖啸者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你成功在水流组合区域里使用爆炸或跳跃终结技时，燃烧附近的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103829": {
+    "name": "喷泉古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你给予盟友活力时，同样恢复他们的耐力。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103872": {
+    "name": "巴里尔山古物",
+    "icon": "https://render.guildwars2.com/file/49A8520BDB6C5A7BA90832DB9406677473A6932F/3441973.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，在你脚下制造一片区域。站在该区域内能够增加你输出的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103901": {
+    "name": "雾潮古物",
+    "icon": "https://render.guildwars2.com/file/2ADA1A4509057D7B3854EEE9149A0F45CCD0EAA2/3441972.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功使用跳跃或爆炸终结技时，净化一个自身的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103923": {
+    "name": "蜂巢古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，释放信息素，使得蜜蜂包围被击中的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103924": {
+    "name": "重聚古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后获得冰霜光环和明亮光环。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103941": {
+    "name": "雾潮古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你成功使用跳跃或爆炸终结技时，净化一个自身的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "103977": {
+    "name": "蜂巢古物",
+    "icon": "https://render.guildwars2.com/file/0D45B8A4A1D8D7FF4BAE196091C76A961D3F9621/3441970.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，释放信息素，使得蜜蜂包围被击中的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "103984": {
+    "name": "重聚古物",
+    "icon": "https://render.guildwars2.com/file/DDC5C072A8E0566CFFF1200404E529DADCD27CF3/3441974.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后获得冰霜光环和明亮光环。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104022": {
+    "name": "蒸汽尖啸者古物",
+    "icon": "https://render.guildwars2.com/file/23B0F0A5BF05E05C9F527BF7EB4962C9F49C6F42/3441975.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功在水流组合区域里使用爆炸或跳跃终结技时，燃烧附近的敌人。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104035": {
+    "name": "巴里尔山古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，在你脚下制造一片区域。站在该区域内能够增加你输出的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104241": {
+    "name": "雄鹰古物",
+    "icon": "https://render.guildwars2.com/file/DFF4EB43AD0803F60D105658052321A0BE1AF02C/3592832.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "对低生命值敌人造成更大的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "104249": {
+    "name": "吸血古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能时，虹吸附近敌人的生命值。击杀一个敌人时，恢复一部分最大生命值。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104256": {
+    "name": "奉献古物",
+    "icon": "https://render.guildwars2.com/file/DA14C9FCAB15E43203F1FEEBE432C3B3FBAB00DD/3592831.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，给附近盟友施加威能和激怒。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "104274": {
+    "name": "激荡古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，获得电击光环，持续4秒。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104277": {
+    "name": "巫妖古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "战斗时召唤一个锯齿骸骨。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104296": {
+    "name": "荆棘古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "当你被中毒的敌人击中时，获得一层症状伤害。<c=@reminder>触发该效果时，所有层数的持续时间都被刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104308": {
+    "name": "火焰古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后获得火焰光环。火焰光环将增加你造成的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104311": {
+    "name": "私掠者古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "战斗时召唤一只鹦鹉。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104334": {
+    "name": "食人魔古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "战斗时召唤一头岩犬。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104383": {
+    "name": "大地古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，给盟友施加保护和磁力光环。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104390": {
+    "name": "全息师古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用精英技能后，创造一个激光碟片。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104413": {
+    "name": "雄鹰古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "对低生命值敌人造成更大的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104416": {
+    "name": "魔像师古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "战斗时召唤一个魔像。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104424": {
+    "name": "荆棘古物",
+    "icon": "https://render.guildwars2.com/file/B6166933459C27FE500FCC23B572A7AE2A0F4DDA/3592841.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你被中毒的敌人击中时，获得一层症状伤害。<c=@reminder>触发该效果时，所有层数的持续时间都被刷新。</c>",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "104491": {
+    "name": "奉献古物",
+    "icon": "https://render.guildwars2.com/file/08DED07BF6DF37E69A08D1C49D9C45D81BD8A5CA/3255567.png",
+    "rarity": "Legendary",
+    "level": 80,
+    "description": "使用治疗技能后，给附近盟友施加威能和激怒。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "NoSalvage",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "104501": {
+    "name": "火焰古物",
+    "icon": "https://render.guildwars2.com/file/00E5051DCC0EDD58395DF9CEA3456466EA4FD347/3592834.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后获得火焰光环。火焰光环将增加你造成的打击伤害。",
+    "type": "Relic",
+    "flags": [
+      "SoulBindOnUse"
+    ]
+  },
+  "104733": {
+    "name": "俊杰古物",
+    "icon": "https://render.guildwars2.com/file/AD0AE5035A197220507642E1169ED55E0C58A29D/3629400.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用<c=@abilitytype>咒术</c>或<c=@abilitytype>冥想</c>技能后，获得保护。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104800": {
+    "name": "血石古物",
+    "icon": "https://render.guildwars2.com/file/A7327A7EDB4705EA05261110526D72AFEAF7DAB4/3629397.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功使用爆炸终结技时，获得血石波动。爆炸终结技的层数超过阈值后触发爆炸，造成更大伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104848": {
+    "name": "巴瓦·尼索斯古物",
+    "icon": "https://render.guildwars2.com/file/213C437140552326BD633D1AFF150B48DF2EB544/3629396.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用<c=@abilitytype>姿态</c>技能时，净化你自己的症状。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104849": {
+    "name": "痛苦古物",
+    "icon": "https://render.guildwars2.com/file/7060CF69EFEB7A99150F2F1A7E0E1F1D2D9ED0D2/3629395.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "给你打断的敌人施加合唱苦痛。<br><c=@reminder>该特性每次间隔只能对用蔑视条的敌人生效一次。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104928": {
+    "name": "活体城市古物",
+    "icon": "https://render.guildwars2.com/file/6CAF0358FBD9DDD84AB3302E2D67329A3AA83DEC/3629398.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "每次触发获得一层泰坦潜力：\n· 使用治疗技能\n· 使用精英技能\n· 使用组合终结技\n· 让敌人无法移动\n· 闪避一次攻击\n叠加5层厚，获得泰坦之魂，所有增益提供的属性增加，持续时间变长。",
+    "type": "Relic",
+    "flags": [
+      "NoSalvage",
+      "NoSell",
+      "SoulBindOnUse"
+    ]
+  },
+  "104938": {
+    "name": "活体城市古物",
+    "icon": "https://render.guildwars2.com/file/6CAF0358FBD9DDD84AB3302E2D67329A3AA83DEC/3629398.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "每次触发获得一层泰坦潜力：\n· 使用治疗技能\n· 使用精英技能\n· 使用组合终结技\n· 让敌人无法移动\n· 闪避一次攻击\n叠加5层厚，获得泰坦之魂，所有增益提供的属性增加，持续时间变长。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "104994": {
+    "name": "雾灼古物",
+    "icon": "https://render.guildwars2.com/file/FFCB62CF19806066D21C0EA1BA43986C0DA2B6F3/3629399.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你给自己施加威能时，获得更多威能。如果威能大于等于阈值，提升暴击率。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "105585": {
+    "name": "原初魂武者古物",
+    "icon": "https://render.guildwars2.com/file/7DA30BCFB0E0A04A5D3DFE3D25DAF142D90E1596/3709380.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你拥有抗性时，获得的症状伤害减少。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "105652": {
+    "name": "卡斯特拉古物",
+    "icon": "https://render.guildwars2.com/file/349EA123E7D870C4199AB268250973FAEC0ADC94/3709379.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当盟友的生命值低于阈值时，对他们的治疗量增加。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106206": {
+    "name": "迷雾异客古物",
+    "icon": "https://render.guildwars2.com/file/2DA75566B948AADFAB0CCF2198F205AF9AE82031/3709381.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你命中敌人时虹吸生命值。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106221": {
+    "name": "海盗女王古物",
+    "icon": "https://render.guildwars2.com/file/6C7D53936BFC0DFD52BACDD9A2C7F0909E424F0D/3709382.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你控制敌人时获得急速。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106355": {
+    "name": "恶棍古物",
+    "icon": "https://render.guildwars2.com/file/0B58A2B6F00D9657EE141001A8AA240DDBDE300D/3709383.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "在施加目盲或虚弱后，暴击率提升，持续一段时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106364": {
+    "name": "生物能量技师古物",
+    "icon": "https://render.guildwars2.com/file/5CF5F504B24F210BE209053D2134B89072FC4F29/3709378.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你对敌人施加流血或中毒时治疗自己。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106916": {
+    "name": "桎梏古物",
+    "icon": "https://render.guildwars2.com/file/7946A50DBDC2E45E004AAA801904015C50CC22B3/3745069.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用定身效果命中敌人时，将自身与目标束缚。束缚持续时间结束时，若敌人仍处于束缚范围内，则对其造成伤害。<c=@reminder>每个敌人在每次技能冷却间隔内，仅能被施加一次束缚。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "106920": {
+    "name": "海兽古物",
+    "icon": "https://render.guildwars2.com/file/0EE97FA7FB5DC098447AAF6401DF5A09C47B33AD/3745068.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你成功利用跳跃终结技与流水区域完成组合技时，将生成一道潮汐巨浪，对敌人造成伤害并为盟友恢复生命值。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "107030": {
+    "name": "雾气古物",
+    "icon": "https://render.guildwars2.com/file/F31809ABA515534B10E7D8B90DDC513DD311A5D6/3745066.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "战斗中进行闪避翻滚后，接下来受到的首次攻击必定偏斜。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "107061": {
+    "name": "珊瑚之心古物",
+    "icon": "https://render.guildwars2.com/file/5DD9D2052B2C3EF921EBE6E243580CE3A1011B2F/3745065.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用治疗技能后，自身被攻击时将对附近敌人造成短时伤害。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "107124": {
+    "name": "林居古物",
+    "icon": "https://render.guildwars2.com/file/DC19DA3EC27F49593B93F9042264F5DD36FED4ED/3745067.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用精英技能后，向附近敌人释放水泡。被水泡命中的敌人将陷入禁锢状态，并浮空一小段时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "107192": {
+    "name": "联盟古物",
+    "icon": "https://render.guildwars2.com/file/406F52FEEF9CC64AF45CA27C4A240A6E0E5443A2/3745064.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "使用一个纹章技能，即可减少所有纹章技能的冷却时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109264": {
+    "name": "加尔达古物",
+    "icon": "https://render.guildwars2.com/file/CE07976D4420779EC0082AFE06B73F3AA6AE2348/3770713.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用精英技能时，发射投射物，对附近敌人施加燃烧。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109267": {
+    "name": "圣地古物",
+    "icon": "https://render.guildwars2.com/file/A3C6C20BE0A1299F05EB5C713558A86D9AA7C176/3770714.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用<c=@abilitytype>法池</c>或者<c=@abilitytype>奉献</c>技能时，获得保护。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109351": {
+    "name": "主管古物",
+    "icon": "https://render.guildwars2.com/file/6FD76BA11105EC67451D9E7E1DE938C91DB3AD68/3770711.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你使用治疗技能时对附近敌人施加易伤。你对易伤的敌人造成更大伤害，持续一小段时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109522": {
+    "name": "长老古物",
+    "icon": "https://render.guildwars2.com/file/EF797D16D0D211064031129135C864311856CDB1/3770712.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你拥有决心时，受到的打击伤害减少。<c=@reminder>同样的效果无法叠加。</c>",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109664": {
+    "name": "残酷监察者古物",
+    "icon": "https://render.guildwars2.com/file/AECE9B16DE04F756C501743BA863B00A377CE70B/3770710.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "当你施加伤害性症状时获得一层库达的残酷。达到最大层数后，将输出的症状伤害转化为治疗，持续一小段时间。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  },
+  "109709": {
+    "name": "守望古物",
+    "icon": "https://render.guildwars2.com/file/33D70B101ECFFD0C42205877E5BFE20EC461C19C/3770715.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "你施加的定身持续时间变长。当你定身敌人时施加虚弱。",
+    "type": "Relic",
+    "flags": [
+      "AccountBound",
+      "SoulBindOnUse"
+    ]
+  }
+}

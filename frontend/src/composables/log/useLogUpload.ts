@@ -1,9 +1,20 @@
+import { ParseStatus } from '@/constants/dictValues'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { logsService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { formatBytes } from '@/utils/core/helpers'
 import { configManager } from '@/services/core/configManager'
+
+/**
+ * 使用 Web Crypto API 计算文件的 SHA-256 哈希
+ */
+async function computeFileSha256(file: File): Promise<string> {
+  const buffer = await file.arrayBuffer()
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+}
 
 type UploadPhase = 'idle' | 'uploading' | 'processing' | 'completed'
 type FileUploadPhase = 'pending' | 'uploading' | 'processing' | 'success' | 'error' | 'cancelled'
@@ -104,16 +115,36 @@ export function useLogUpload(options: UseLogUploadOptions = {}) {
   const uploadSingleFile = async (
     file: File,
     onProgress?: (percent: number) => void
-  ): Promise<{ success: boolean; message?: string }> => {
+  ): Promise<{ success: boolean; message?: string; skipped?: boolean }> => {
     try {
+      // SHA256 预检：计算哈希并查询后端缓存
+      const sha256 = await computeFileSha256(file)
+      const checkResult = await ApiResponseWrapper.wrap(
+        logsService.checkSha256(sha256),
+        { showErrorMessage: false }
+      )
+
+      if (checkResult.success && checkResult.data?.exists) {
+        const { parse_status, has_ei_json_cache } = checkResult.data
+        // 如果已有缓存的 EI JSON 且解析已完成，跳过上传
+        if (has_ei_json_cache && parse_status === ParseStatus.COMPLETED) {
+          return {
+            success: true,
+            message: '文件已存在且已解析（缓存命中），跳过上传',
+            skipped: true
+          }
+        }
+        // 文件存在但解析未完成，继续上传以触发解析
+      }
+
       const wrappedResult = await ApiResponseWrapper.wrap(
         logsService.uploadLog(file, { auto_parse: true }, onProgress),
         { showErrorMessage: false }
       )
       if (wrappedResult.success) return { success: true }
       return { success: false, message: wrappedResult.error?.message || '上传失败' }
-    } catch (error: any) {
-      return { success: false, message: error.message || '上传失败' }
+    } catch (error: unknown) {
+      return { success: false, message: error instanceof Error ? error.message : '上传失败' }
     }
   }
 
@@ -141,6 +172,9 @@ export function useLogUpload(options: UseLogUploadOptions = {}) {
       if (result.success) {
         uploadItems.value[i].phase = 'success'
         uploadItems.value[i].overallPercent = 100
+        if (result.skipped) {
+          uploadItems.value[i].errorMsg = result.message
+        }
       } else {
         uploadItems.value[i].phase = 'error'
         uploadItems.value[i].errorMsg = result.message

@@ -6,20 +6,24 @@
  * 更新：2026-05-07 - 集成权限控制系统（Token监控、智能跳转）
  */
 
-import { createApp } from 'vue'
 import PrimeVue from 'primevue/config'
-import ToastService from 'primevue/toastservice'
 import ConfirmationService from 'primevue/confirmationservice'
+import ToastService from 'primevue/toastservice'
+import Tooltip from 'primevue/tooltip'
+import { createApp } from 'vue'
 
 import App from './App.vue'
-import router from './router'
-import pinia from './store'
-import { permissionDirective } from './directive/permission'
-import { ThemeService } from './services/system/themeService'
-import { GameThemePreset } from './config/themePreset'
+import i18n from './locales'
 import { authStore } from './composables/system/usePermission'
-import { startTokenMonitor, clearToken } from './utils/auth/tokenManager'
+import { GameThemePreset } from './config/themePreset'
+import DictSelect from './components/common/dict/DictSelect.vue'
+import DictTag from './components/common/dict/DictTag.vue'
+import { permissionDirective } from './directive/permission'
+import router from './router'
+import { ThemeService } from './services/system/themeService'
+import pinia from './store'
 import './styles/index.css'
+import { clearToken, startTokenMonitor } from './utils/auth/tokenManager'
 
 // 在创建应用前初始化主题系统
 ThemeService.initialize()
@@ -43,8 +47,16 @@ app.use(ToastService)
 app.use(ConfirmationService)
 app.use(pinia)
 app.use(router)
+app.use(i18n)
 
 app.directive('permission', permissionDirective)
+app.directive('tooltip', Tooltip)
+
+// =============================================================================
+// 全局字典组件注册
+// =============================================================================
+app.component('DictTag', DictTag)
+app.component('DictSelect', DictSelect)
 
 // =============================================================================
 // 认证事件处理

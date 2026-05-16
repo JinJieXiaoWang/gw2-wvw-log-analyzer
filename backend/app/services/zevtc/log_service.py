@@ -4,21 +4,22 @@
 # 创建日期：2026-04-27
 # 依赖说明：SQLAlchemy
 
-from datetime import datetime
-from typing import List, Optional, Tuple
 import os
+from datetime import datetime, timezone
+from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session
 
-from app.models.log import Log
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.ei_report import EiReport
-from app.models.ai_report import AIReport
-from app.models.zevtc_data import EiPlayer, EiTarget, EiSkillMap, EiPhase
-from app.models.batch_parse import BatchParseTaskItem
-from app.schemas.log import LogCreate, LogUpdate
 from app.config.settings import settings
+from app.constants.dict_values import ParseStatus
+from app.models.log.batch_parse import BatchParseTaskItem
+from app.models.log.ei_report import EiReport
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
+from app.models.log.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget
+from app.models.system.ai_report import AIReport
+from app.schemas.log import LogCreate, LogUpdate
 from app.utils.logger import logger
 
 
@@ -89,7 +90,7 @@ def update_log(db: Session, log_id: int, log_update: LogUpdate) -> Optional[Log]
         return None
 
     update_data = log_update.model_dump(exclude_unset=True)
-    if "parse_status" in update_data and update_data["parse_status"] == "completed":
+    if "parse_status" in update_data and update_data["parse_status"] == ParseStatus.COMPLETED:
         log.parsed_at = datetime.now()
 
     for field, value in update_data.items():
@@ -205,7 +206,130 @@ def update_parse_status(
     # 功能：更新解析状态
     # 参数：db - 数据库会话；log_id - 日志ID；status - 状态；error_message - 错误消息
     # 返回：更新的日志对象或None
-    log_update = LogUpdate(parse_status=status)
-    if error_message:
-        log_update.error_message = error_message
-    return update_log(db, log_id, log_update)
+    log = get_log_by_id(db, log_id)
+    if not log:
+        return None
+    log.parse_status = status
+    if error_message is not None:
+        log.error_message = error_message
+    if status == ParseStatus.PARSING:
+        log.parse_started_at = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(log)
+    return log
+
+
+def handle_upload_duplicate(
+    db: Session, file_sha256: str, filename: str, file_path: str
+) -> Optional[Log]:
+    # 功能：处理重复上传
+    # 参数：db - 数据库会话；file_sha256 - 文件SHA256哈希；filename - 文件名；file_path - 文件路径
+    # 返回：已存在的日志对象或None
+    # 检查是否已存在相同SHA256的日志
+    existing_log = db.query(Log).filter(Log.file_sha256 == file_sha256).first()
+    
+    if existing_log:
+        logger.info(f"检测到重复上传：{filename} (SHA256: {file_sha256})")
+        return existing_log
+    
+    return None
+
+
+def delete_log_entry(db: Session, log_id: int) -> bool:
+    # 功能：删除日志记录（仅删除数据库记录，不删除文件）
+    # 参数：db - 数据库会话；log_id - 日志ID
+    # 返回：删除是否成功
+    log = get_log_by_id(db, log_id)
+    if not log:
+        logger.warning(f"删除失败：日志ID {log_id} 不存在")
+        return False
+    
+    db.delete(log)
+    db.commit()
+    logger.info(f"删除日志记录: {log.filename}")
+    return True
+
+
+async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True):
+    # 功能：后台解析日志文件
+    # 参数：log_id - 日志ID；db_url - 数据库连接URL；save_to_db - 是否保存到数据库
+    # 返回：无
+    from sqlalchemy import create_engine
+    from sqlalchemy.orm import sessionmaker
+
+    from app.services.zevtc.log_import_service import LogImportService
+    
+    try:
+        # 创建新的数据库连接（后台任务不能共享请求的连接）
+        engine = create_engine(db_url)
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        db = SessionLocal()
+        
+        try:
+            log = get_log_by_id(db, log_id)
+            if not log:
+                logger.error(f"解析失败：日志ID {log_id} 不存在")
+                return
+            
+            logger.info(f"开始后台解析日志: {log.filename}")
+            
+            if save_to_db:
+                import_service = LogImportService(db)
+                result = import_service.import_log(log_id, log.file_path)
+                
+                if result.get("success", False):
+                    update_parse_status(db, log_id, ParseStatus.COMPLETED)
+                    logger.info(f"后台解析完成: {log.filename}")
+                    
+                    # 解析成功后自动执行入库评分
+                    try:
+                        from app.services.wvw.scoring_service import ScoringService
+                        fights = db.query(Fight).filter(Fight.log_id == log_id).all()
+                        for fight in fights:
+                            scoring_result = ScoringService.recalculate_fight_scores(
+                                fight.id, db
+                            )
+                            logger.info(
+                                f"日志 {log_id} 战斗 {fight.id} 评分完成: "
+                                f"更新 {scoring_result.get('updated_count', 0)} 条记录"
+                            )
+                    except Exception as score_err:
+                        logger.error(
+                            f"日志 {log_id} 自动评分失败: {score_err}", exc_info=True
+                        )
+                else:
+                    error_msg = result.get("error", "未知错误")
+                    update_parse_status(db, log_id, ParseStatus.FAILED, error_msg)
+                    logger.error(f"后台解析失败: {log.filename}, 错误: {error_msg}")
+            else:
+                logger.info(f"跳过数据库保存: {log.filename}")
+                
+        finally:
+            db.close()
+            
+    except Exception as e:
+        logger.error(f"后台解析异常: {str(e)}", exc_info=True)
+
+
+def batch_delete_logs(db: Session, log_ids: list[int], user_id: Optional[int] = None) -> Dict[str, Any]:
+    # 功能：批量删除日志
+    # 参数：db - 数据库会话；log_ids - 日志ID列表；user_id - 用户ID
+    # 返回：删除结果字典
+    deleted_count = 0
+    failed_ids = []
+    
+    for log_id in log_ids:
+        try:
+            if delete_log(db, log_id):
+                deleted_count += 1
+            else:
+                failed_ids.append(log_id)
+        except Exception as e:
+            logger.error(f"批量删除日志ID {log_id} 失败: {str(e)}")
+            failed_ids.append(log_id)
+    
+    logger.info(f"批量删除完成: 删除 {deleted_count} 个，失败 {len(failed_ids)} 个")
+    return {
+        "deleted_count": deleted_count,
+        "failed_ids": failed_ids,
+    }

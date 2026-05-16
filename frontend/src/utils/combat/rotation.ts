@@ -5,7 +5,7 @@
 
 import type { RotationEvent, CycleEvent, HeatmapRow } from './rotationTypes'
 
-/** 状态标签常量 */
+/** 状态标签常量（UI 级别，非业务常量） */
 export const STATE_LABELS: Record<string, string> = {
   full: '完整施放',
   interrupted: '被打断',
@@ -14,14 +14,14 @@ export const STATE_LABELS: Record<string, string> = {
   trait: '特性触发',
 }
 
-/** 视图模式标签常量 */
+/** 视图模式标签常量（UI 级别，非业务常量） */
 export const VIEW_LABELS = {
   cycle: '循环视图',
   timeline: '时间轴',
   heatmap: '热力图',
 }
 
-/** 过滤选项标签常量 */
+/** 过滤选项标签常量（UI 级别，非业务常量） */
 export const FILTER_LABELS = {
   showAuto: '普攻',
   showInstant: '瞬发',
@@ -45,6 +45,113 @@ export function getEventState(evt: RotationEvent): CycleEvent['state'] {
   if (evt.isInstant || evt.duration === 0) return 'instant'
   if (evt.timeGained < -30 || evt.duration < 150) return 'interrupted'
   return 'full'
+}
+
+/** 获取时间轴视图事件状态（与原有 timeline composable 保持一致） */
+export function getEventStateForTimeline(evt: RotationEvent): import('./rotationTypes').FlatEvent['state'] {
+  if (evt.isSwap) return 'full'
+  if (evt.isInstant || evt.duration === 0) return 'instant'
+  if (evt.timeGained < -30 || evt.duration < 150) return 'interrupted'
+  if (evt.duration > 0) return 'full'
+  return 'unknown'
+}
+
+/** 计算平铺事件（时间轴视图） */
+export function computeFlatEvents(events: RotationEvent[]): import('./rotationTypes').FlatEvent[] {
+  return [...events]
+    .sort((a, b) => a.castTime - b.castTime)
+    .map(evt => ({ ...evt, state: getEventStateForTimeline(evt) }))
+}
+
+/** 计算简单循环（时间轴 simple 视图） */
+export function computeSimpleCycles(
+  events: RotationEvent[],
+  filters: { showAutoAttacks: boolean; showInstantCast: boolean }
+): import('./rotationTypes').SimpleCycle[] {
+  const flatEvents = computeFlatEvents(events)
+  if (flatEvents.length === 0) return []
+
+  const cycles: import('./rotationTypes').SimpleCycle[] = []
+  let current: import('./rotationTypes').FlatEvent[] = []
+
+  for (const evt of flatEvents) {
+    if (evt.isSwap && current.length > 0) {
+      current.push(evt)
+      cycles.push({
+        events: [...current],
+        duration: current[current.length - 1].castTime - current[0].castTime,
+      })
+      current = []
+    } else {
+      current.push(evt)
+    }
+  }
+
+  if (current.length > 0) {
+    cycles.push({
+      events: current,
+      duration: current[current.length - 1].castTime - current[0].castTime,
+    })
+  }
+
+  return cycles
+    .map(cycle => ({
+      ...cycle,
+      events: cycle.events.filter(evt => {
+        if (!filters.showAutoAttacks && evt.autoAttack) return false
+        if (!filters.showInstantCast && evt.state === 'instant' && !evt.isSwap) return false
+        return true
+      }),
+    }))
+    .filter(cycle => cycle.events.length > 0)
+}
+
+/** 计算高级技能行（时间轴 advanced 视图） */
+export function computeAdvancedSkillRows(
+  events: RotationEvent[],
+  fightDuration: number
+): import('./rotationTypes').AdvancedSkillRow[] {
+  const flatEvents = computeFlatEvents(events)
+  if (flatEvents.length === 0) return []
+
+  const durationMs = (fightDuration || 1) * 1000
+  if (durationMs <= 0) return []
+
+  const skillMap = new Map<string, import('./rotationTypes').AdvancedSkillRow>()
+
+  for (const evt of flatEvents) {
+    const sid = String(evt.skillId)
+    if (!skillMap.has(sid)) {
+      skillMap.set(sid, { skillId: evt.skillId, name: evt.name, icon: evt.icon, casts: [] })
+    }
+    const row = skillMap.get(sid)!
+    const left = (evt.castTime / durationMs) * 100
+    const width = Math.max((evt.duration / durationMs) * 100, 0.3)
+    row.casts.push({
+      castTime: evt.castTime,
+      duration: evt.duration,
+      state: evt.state,
+      left,
+      width: Math.min(width, 100 - left),
+    })
+  }
+
+  return Array.from(skillMap.values()).sort((a, b) => b.casts.length - a.casts.length)
+}
+
+/** 计算高级时间轴刻度（时间轴 advanced 视图） */
+export function computeAdvancedTimeTicks(fightDuration: number): import('./rotationTypes').TimeTick[] {
+  const duration = fightDuration || 0
+  if (duration <= 0) return []
+  let interval = 5
+  if (duration > 300) interval = 30
+  else if (duration > 120) interval = 15
+  else if (duration > 60) interval = 10
+  const ticks: import('./rotationTypes').TimeTick[] = []
+  for (let t = 0; t <= duration; t += interval) {
+    ticks.push({ time: t, position: (t / duration) * 100 })
+  }
+  return ticks
 }
 
 /** 获取热力图颜色 */

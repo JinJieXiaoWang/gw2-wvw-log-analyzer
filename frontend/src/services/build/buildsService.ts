@@ -1,6 +1,6 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
 
 export interface BuildsListParams {
   page?: number
@@ -60,6 +60,60 @@ export interface BuildLibraryCreateRequest {
 
 export type BuildLibraryUpdateRequest = Partial<BuildLibraryCreateRequest>
 
+export interface BuildParseResponse {
+  bd_code: string
+  profession_id: number
+  profession: string
+  profession_cn: string
+  specializations: Array<{
+    id: number
+    name: string
+    name_cn: string
+    icon: string
+    is_elite: boolean
+    selected_traits: [number, number, number]
+    traits: Array<{
+      id: number
+      name: string
+      icon: string
+      description: string
+      is_selected: boolean
+    }>
+  }>
+  skills: {
+    heal: {
+      id: number
+      palette_id: number
+      name: string
+      name_cn: string
+      icon: string
+      description: string
+      slot: string
+      recharge: number
+    }
+    utility: Array<{
+      id: number
+      palette_id: number
+      name: string
+      name_cn: string
+      icon: string
+      description: string
+      slot: string
+      recharge: number
+    }>
+    elite: {
+      id: number
+      palette_id: number
+      name: string
+      name_cn: string
+      icon: string
+      description: string
+      slot: string
+      recharge: number
+    }
+  }
+}
+
 export class BuildsService {
   async getBuilds(params: BuildsListParams): Promise<ApiResponse<any>> {
     return apiFactory.get<any>(API_ENDPOINTS.BUILD.LIST, { params })
@@ -70,9 +124,7 @@ export class BuildsService {
   }
 
   async parseBuild(buildCode: string): Promise<ApiResponse<any>> {
-    return apiFactory.post<any>(API_ENDPOINTS.BUILD.SAVE, null, {
-      params: { build_code: buildCode }
-    })
+    return apiFactory.post<any>(API_ENDPOINTS.BUILD.PARSE, { bd_code: buildCode })
   }
 
   async compareBuilds(buildId1: number, buildId2: number): Promise<ApiResponse<any>> {

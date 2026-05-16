@@ -43,13 +43,24 @@ fi
 
 cd "${REPO_DIR}"
 
-echo "[INFO] 运行安装脚本..."
-bash backend/scripts/deploy/install-lightweight.sh
+echo "[INFO] 运行安装脚本（强制重新部署模式）..."
+bash backend/scripts/deploy/install-lightweight.sh --force
+
+# 恢复数据库（如果备份存在）
+LATEST_DB=$(ls -td /root/gw2-backup/app.db.* 2>/dev/null | head -1)
+if [ -n "${LATEST_DB}" ]; then
+    echo "[INFO] 恢复数据库..."
+    mkdir -p "${BACKEND_DIR}/database"
+    cp "${LATEST_DB}" "${BACKEND_DIR}/database/app.db"
+    chown -R gw2:gw2 "${BACKEND_DIR}/database"
+    echo "[OK] 数据库已恢复"
+fi
 
 # 恢复上传文件（如果备份存在）
 LATEST_UPLOADS=$(ls -td /root/gw2-backup/uploads.* 2>/dev/null | head -1)
 if [ -n "${LATEST_UPLOADS}" ]; then
     echo "[INFO] 恢复上传文件..."
+    mkdir -p "${BACKEND_DIR}/uploads"
     cp -r "${LATEST_UPLOADS}"/* "${BACKEND_DIR}/uploads/" 2>/dev/null || true
     chown -R gw2:gw2 "${BACKEND_DIR}/uploads"
 fi

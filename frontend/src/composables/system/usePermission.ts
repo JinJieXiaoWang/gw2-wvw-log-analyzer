@@ -3,14 +3,16 @@
  * 功能：集中管理用户认证状态和权限
  * 作者：System
  * 创建日期：2024-01-15
+ * 更新：2026-05-11 - 优化字典预加载逻辑，不阻塞登录流程
  */
 
 import { reactive, computed } from 'vue'
-import type { User, Permission, Role, LoginCredentials, AuthState } from '@/types/permission'
-import { GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from '@/types/permission'
+import type { User, Permission, Role, LoginCredentials, AuthState, MenuItem } from '@/types/permission'
+import { SystemRole, GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from '@/types/permission'
 import { apiFactory } from '@/services/core/apiService'
 import { authService } from '@/services/auth/authService'
 import { saveAccessToken, clearToken } from '@/utils/auth/tokenManager'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 const STORAGE_KEY = 'gw2_wvw_auth'
 
@@ -23,7 +25,8 @@ class AuthStore {
       isAuthenticated: false,
       user: null,
       permissions: GUEST_PERMISSIONS,
-      token: null
+      token: null,
+      menus: []
     })
     this.loginAttempts = new Map()
     this.loadFromStorage()
@@ -74,9 +77,9 @@ class AuthStore {
    */
   private getPermissionsByRole(role: Role): Permission[] {
     switch (role) {
-      case 'super_admin':
+      case SystemRole.SUPER_ADMIN:
         return SUPER_ADMIN_PERMISSIONS
-      case 'operator':
+      case SystemRole.OPERATOR:
         return OPERATOR_PERMISSIONS
       default:
         return GUEST_PERMISSIONS
@@ -93,6 +96,7 @@ class AuthStore {
 
   /**
    * 用户登录
+   * 优化：字典预加载延迟到后台执行，不阻塞登录流程
    */
   public async login(credentials: LoginCredentials): Promise<{ success: boolean; message: string; error_code?: string }> {
     const { username, password } = credentials
@@ -123,19 +127,20 @@ class AuthStore {
     }
 
     try {
-      const result = await apiFactory.post<any>('/api/v1/auth/login', { username, password }) as {
+      const result = await apiFactory.post<any>(API_ENDPOINTS.AUTH.LOGIN, { username, password }) as {
         success: boolean
         message?: string
         error_code?: string
         data?: {
           access_token: string
-          user: any
+          user: Record<string, unknown>
           permissions: string[]
+          menus: MenuItem[]
         }
       }
 
       if (result.success && result.data) {
-        const { access_token, user, permissions } = result.data
+        const { access_token, user, permissions, menus } = result.data
         
         // 重置登录尝试记录
         this.loginAttempts.delete(username)
@@ -143,32 +148,35 @@ class AuthStore {
         // 更新状态
         this.state.isAuthenticated = true
         this.state.user = {
-          id: user.id.toString(),
-          username: user.username,
-          role: (user.role as Role) || 'operator',
+          id: String((user as Record<string, unknown>).id),
+          username: (user as Record<string, unknown>).username as string,
+          role: ((user as Record<string, unknown>).role as Role) || SystemRole.OPERATOR,
           loginTime: new Date().toISOString(),
           lastActiveTime: new Date().toISOString()
         }
         this.state.permissions = permissions.length > 0 
           ? this.parsePermissions(permissions) 
-          : this.getPermissionsByRole((user.role as Role) || 'operator')
+          : this.getPermissionsByRole((user.role as Role) || SystemRole.OPERATOR)
         this.state.token = access_token
+        this.state.menus = menus || []
         
         // 保存token到统一 token 管理器，确保API请求能正确携带token
         saveAccessToken(access_token)
         
         this.saveToStorage()
 
-        // 登录成功后预加载常用字典到 Pinia Store（异步，不阻塞登录流程）
-        try {
-          const { useDictStore } = await import('@/store/system/dict')
-          const dictStore = useDictStore()
-          dictStore.preloadCommonDicts().catch((e: any) => {
-            console.warn('[AuthStore] 预加载字典失败:', e)
-          })
-        } catch (e) {
-          console.warn('[AuthStore] 字典 Store 加载失败:', e)
-        }
+        // 优化：延迟到后台预加载字典，完全不阻塞登录流程
+        // 使用 setTimeout 确保在下一个事件循环中执行
+        setTimeout(() => {
+          import('@/store/system/dict')
+            .then(({ useDictStore }) => {
+              const dictStore = useDictStore()
+              return dictStore.preloadCommonDicts()
+            })
+            .catch((e) => {
+              console.warn('[AuthStore] 预加载字典失败:', e)
+            })
+        }, 100)
 
         return {
           success: true,
@@ -229,47 +237,147 @@ class AuthStore {
   /**
    * 获取登录状态
    */
-  public async getStatus(): Promise<{ is_logged_in: boolean; user: User | null; permissions: Permission[] }> {
+  public async getStatus(): Promise<{ is_logged_in: boolean; user: User | null; permissions: Permission[]; menus: MenuItem[] }> {
     try {
-      const result = await apiFactory.get<any>('/api/v1/auth/status')
+      const result = await apiFactory.get<any>(API_ENDPOINTS.AUTH.STATUS)
 
       if (result.success && result.data) {
-        const { is_logged_in, user, permissions } = result.data
+        const { is_logged_in, user, permissions, menus } = result.data
         
         if (is_logged_in && user) {
           this.state.isAuthenticated = true
           this.state.user = {
             id: user.id.toString(),
             username: user.username,
-            role: (user.role as Role) || 'operator',
+            role: (user.role as Role) || SystemRole.OPERATOR,
             loginTime: user.last_login,
             lastActiveTime: new Date().toISOString()
           }
           this.state.permissions = permissions.length > 0 
             ? this.parsePermissions(permissions) 
-            : this.getPermissionsByRole((user.role as Role) || 'operator')
+            : this.getPermissionsByRole((user.role as Role) || SystemRole.OPERATOR)
+          this.state.menus = menus || []
+          
           this.saveToStorage()
-        } else {
-          this.state.isAuthenticated = false
-          this.state.user = null
-          this.state.permissions = GUEST_PERMISSIONS
+          
+          return {
+            is_logged_in: true,
+            user: this.state.user,
+            permissions: this.state.permissions,
+            menus: this.state.menus
+          }
         }
-
-        return {
-          is_logged_in,
-          user: is_logged_in ? this.state.user : null,
-          permissions: this.state.permissions
-        }
+      }
+      
+      // 如果未登录，获取公开菜单
+      await this.loadPublicMenus()
+      
+      return {
+        is_logged_in: false,
+        user: null,
+        permissions: GUEST_PERMISSIONS,
+        menus: this.state.menus
       }
     } catch (error) {
       console.error('Get status error:', error)
+      
+      // 出错时也尝试获取公开菜单
+      try {
+        await this.loadPublicMenus()
+      } catch (e) {
+        console.error('Load public menus error:', e)
+      }
+      
+      return {
+        is_logged_in: false,
+        user: null,
+        permissions: GUEST_PERMISSIONS,
+        menus: this.state.menus
+      }
     }
+  }
 
-    return {
-      is_logged_in: false,
-      user: null,
-      permissions: GUEST_PERMISSIONS
+  /**
+   * 加载公开菜单
+   */
+  public async loadPublicMenus(): Promise<void> {
+    try {
+      const result = await apiFactory.get<any>(API_ENDPOINTS.MENUS.PUBLIC)
+      if (result.success && result.data) {
+        this.state.menus = result.data
+        this.saveToStorage()
+      }
+    } catch (error) {
+      console.error('Failed to load public menus:', error)
+      // 如果无法获取公开菜单，使用默认菜单
+      this.state.menus = this.getDefaultMenus()
     }
+  }
+
+  /**
+   * 获取默认菜单
+   */
+  private getDefaultMenus(): MenuItem[] {
+    return [
+      {
+        menu_name: '数据看板',
+        path: '/',
+        icon: 'pi pi-chart-line',
+        menu_type: 'C'
+      },
+      {
+        menu_name: '日志管理',
+        path: '',
+        icon: 'pi pi-file',
+        menu_type: 'M',
+        children: [
+          {
+            menu_name: '日志列表',
+            path: '/logs',
+            icon: 'pi pi-file',
+            menu_type: 'C'
+          }
+        ]
+      },
+      {
+        menu_name: '出勤统计',
+        path: '/attendance',
+        icon: 'pi pi-users',
+        menu_type: 'C'
+      },
+      {
+        menu_name: '技能循环',
+        path: '/skill-analysis',
+        icon: 'pi pi-sync',
+        menu_type: 'C'
+      },
+      {
+        menu_name: 'AI分析',
+        path: '/ai-analysis',
+        icon: 'pi pi-sparkles',
+        menu_type: 'C'
+      },
+      {
+        menu_name: 'Build管理',
+        path: '',
+        icon: 'pi pi-code',
+        menu_type: 'M',
+        children: [
+          {
+            menu_name: '配置图书馆',
+            path: '/builds',
+            icon: 'pi pi-book',
+            menu_type: 'C'
+          },
+          {
+            menu_name: 'Build解析',
+            path: '/build-parser',
+            icon: 'pi pi-code',
+            menu_type: 'C'
+          }
+        ]
+      }
+    ]
   }
 
   /**
@@ -280,179 +388,126 @@ class AuthStore {
     this.state.user = null
     this.state.permissions = GUEST_PERMISSIONS
     this.state.token = null
+    // 清除菜单时保留公开菜单
+    this.loadPublicMenus()
     localStorage.removeItem(STORAGE_KEY)
-    // 同时清除统一 token 管理器中的token
     clearToken()
   }
 
   /**
-   * 更新最后活跃时间
+   * 获取用户菜单
    */
-  public updateLastActiveTime(): void {
-    if (this.state.user) {
-      this.state.user.lastActiveTime = new Date().toISOString()
-      this.saveToStorage()
-    }
+  public get menus(): MenuItem[] {
+    return this.state.menus
   }
 
   /**
-   * 检查是否具有指定权限
+   * 检查是否有指定权限
    */
   public hasPermission(permission: Permission): boolean {
     return this.state.permissions.includes(permission)
   }
 
   /**
-   * 检查是否具有所有指定权限
-   */
-  public hasAllPermissions(permissions: Permission[]): boolean {
-    return permissions.every(p => this.state.permissions.includes(p))
-  }
-
-  /**
-   * 检查是否具有任一指定权限
+   * 检查是否有任一权限
    */
   public hasAnyPermission(permissions: Permission[]): boolean {
     return permissions.some(p => this.state.permissions.includes(p))
   }
 
   /**
-   * 获取认证状态
+   * 检查是否有所有权限
    */
-  public getState(): Readonly<AuthState> {
-    return this.state
+  public hasAllPermissions(permissions: Permission[]): boolean {
+    return permissions.every(p => this.state.permissions.includes(p))
   }
 
-  /**
-   * 获取当前用户（兼容方法）
-   */
-  public getUser(): User | null {
-    return this.state.user
-  }
-
-  /**
-   * 检查是否已认证
-   */
-  public get isAuthenticated(): boolean {
+  // Getters
+  get isAuthenticated() {
     return this.state.isAuthenticated
   }
 
-  /**
-   * 获取当前用户
-   */
-  public get currentUser(): User | null {
+  get user() {
     return this.state.user
   }
 
-  /**
-   * 获取当前用户角色
-   */
-  public get currentRole(): Role {
-    return this.state.user?.role || 'guest'
-  }
-
-  /**
-   * 获取权限列表
-   */
-  public get permissions(): Permission[] {
+  get permissions() {
     return this.state.permissions
   }
 
-  /**
-   * 检查是否具有指定角色
-   */
-  public hasRole(role: Role): boolean {
-    return this.currentRole === role
+  get token() {
+    return this.state.token
   }
 
-  /**
-   * 验证密码强度
-   */
-  public validatePassword(password: string): { valid: boolean; errors: string[] } {
+  get currentRole(): Role | null {
+    return this.state.user?.role || null
+  }
+
+  get currentUser(): User | null {
+    return this.state.user
+  }
+
+  getUser(): User | null {
+    return this.state.user
+  }
+
+  validatePassword(password: string): { valid: boolean; errors: string[] } {
     const errors: string[] = []
+    if (password.length < 8) errors.push('密码长度至少8位')
+    if (!/[A-Z]/.test(password)) errors.push('需包含大写字母')
+    if (!/[a-z]/.test(password)) errors.push('需包含小写字母')
+    if (!/[0-9]/.test(password)) errors.push('需包含数字')
+    if (!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password)) errors.push('需包含特殊字符')
+    return { valid: errors.length === 0, errors }
+  }
 
-    if (!password || password.length < 8) {
-      errors.push('密码长度至少8个字符')
-    }
-    if (!/[A-Z]/.test(password)) {
-      errors.push('密码必须包含大写字母')
-    }
-    if (!/[a-z]/.test(password)) {
-      errors.push('密码必须包含小写字母')
-    }
-    if (!/[0-9]/.test(password)) {
-      errors.push('密码必须包含数字')
-    }
-
-    return {
-      valid: errors.length === 0,
-      errors
+  setAdminConfig(username: string, _password: string): { success: boolean; message: string } {
+    try {
+      // 安全修复：不再在 localStorage 中存储密码
+      localStorage.setItem('gw2_admin_config', JSON.stringify({ username }))
+      return { success: true, message: '保存成功' }
+    } catch {
+      return { success: false, message: '保存失败' }
     }
   }
 
-  /**
-   * 设置管理员配置
-   */
-  public setAdminConfig(username: string, password?: string): { success: boolean; message: string } {
+  getAdminConfig(): { username: string; password: string } {
     try {
-      const config: any = { username }
-      if (password) {
-        config.password = password
-      }
-      localStorage.setItem('gw2_wvw_admin_config', JSON.stringify(config))
-      return { success: true, message: '配置保存成功' }
-    } catch (error) {
-      return { success: false, message: '配置保存失败' }
-    }
-  }
-
-  /**
-   * 获取管理员配置
-   */
-  public getAdminConfig(): { username: string; password?: string } {
-    try {
-      const stored = localStorage.getItem('gw2_wvw_admin_config')
+      const stored = localStorage.getItem('gw2_admin_config')
       if (stored) {
-        return JSON.parse(stored)
+        const parsed = JSON.parse(stored)
+        // 安全修复：不再从 localStorage 读取密码（历史数据中可能存在的密码将被忽略）
+        return { username: parsed.username || '', password: '' }
       }
-    } catch (error) {
-      console.error('Failed to get admin config:', error)
+    } catch {
+      // ignore
     }
-    return { username: '' }
+    return { username: this.state.user?.username || '', password: '' }
   }
 }
 
+// 导出单例
 export const authStore = new AuthStore()
 
+// 导出 composable
 export function usePermission() {
-  const can = (permission: Permission): boolean => {
-    return authStore.hasPermission(permission)
-  }
-
-  const canAll = (permissions: Permission[]): boolean => {
-    return authStore.hasAllPermissions(permissions)
-  }
-
-  const canAny = (permissions: Permission[]): boolean => {
-    return authStore.hasAnyPermission(permissions)
-  }
-
-  const isGuest = computed(() => !authStore.isAuthenticated)
-  const isOperator = computed(() => authStore.currentRole === 'operator')
-  const isSuperAdmin = computed(() => authStore.currentRole === 'super_admin')
-  const isAuthenticated = computed(() => authStore.isAuthenticated)
-  const isAdmin = computed(() => authStore.isAuthenticated && authStore.currentRole !== 'guest')
-
   return {
-    can,
-    canAll,
-    canAny,
-    isGuest,
-    isOperator,
-    isSuperAdmin,
-    isAuthenticated,
-    isAdmin,
-    user: computed(() => authStore.currentUser),
-    permissions: computed(() => authStore.permissions)
+    isAuthenticated: computed(() => authStore.isAuthenticated),
+    user: computed(() => authStore.user),
+    permissions: computed(() => authStore.permissions),
+    token: computed(() => authStore.token),
+    menus: computed(() => authStore.menus),
+    isAdmin: computed(() => authStore.user?.role === SystemRole.SUPER_ADMIN),
+    isOperator: computed(() => authStore.user?.role === SystemRole.OPERATOR),
+    isSuperAdmin: computed(() => authStore.user?.role === SystemRole.SUPER_ADMIN),
+    login: authStore.login.bind(authStore),
+    logout: authStore.logout.bind(authStore),
+    getStatus: authStore.getStatus.bind(authStore),
+    loadPublicMenus: authStore.loadPublicMenus.bind(authStore),
+    clearAuth: authStore.clearAuth.bind(authStore),
+    hasPermission: authStore.hasPermission.bind(authStore),
+    hasAnyPermission: authStore.hasAnyPermission.bind(authStore),
+    hasAllPermissions: authStore.hasAllPermissions.bind(authStore),
+    can: (permission: Permission) => authStore.hasPermission(permission)
   }
 }

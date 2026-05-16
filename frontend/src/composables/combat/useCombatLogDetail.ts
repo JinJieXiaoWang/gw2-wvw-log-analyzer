@@ -4,23 +4,22 @@
  * 规范：单一职责、函数式拆分、≤50行、幂等外部调用
  */
 
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vue-router'
-import { useToast } from 'primevue/usetoast'
-import { useConfirm } from 'primevue/useconfirm'
+import { fmtDate, fmtDuration } from '@/composables/combat/useCombatHelpers'
+import { logsService } from '@/services/combat/logsService'
+import { configManager } from '@/services/core/configManager'
+import type { PlayerRotationData } from '@/services/ei/eiAnalysisService'
+import { eiAnalysisService, type EiAnalysisAggregate, type EiAnalysisFight, type EiAnalysisPlayer, type EiAnalysisResponse } from '@/services/ei/eiAnalysisService'
+import {
+  CATEGORY_FIELDS,
+  getStatValue,
+  type StatCategory
+} from '@/utils/combat/combatStats'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
 import { getSkillIconUrl } from '@/utils/profession/skillIcons'
-import { configManager } from '@/services/core/configManager'
-import { logsService } from '@/services/combat/logsService'
-import { eiAnalysisService, type EiAnalysisResponse, type EiAnalysisPlayer, type EiAnalysisFight, type EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
-import type { PlayerRotationData } from '@/services/ei/eiAnalysisService'
-import {
-  type StatCategory,
-  CATEGORY_SORT_KEY,
-  CATEGORY_FIELDS,
-  calcHitRate,
-  getStatValue,
-} from '@/utils/combat/combatStats'
+import { useConfirm } from 'primevue/useconfirm'
+import { useToast } from 'primevue/usetoast'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
 /** KPI条目类型 */
 export interface KpiItem {
@@ -152,42 +151,31 @@ export function useCombatLogDetail() {
   const commanders = computed(() => players.value.filter((p: EiAnalysisPlayer) => p.has_commander_tag))
 
   const groups = computed(() => {
-    const result: { id: number; players: EiAnalysisPlayer[] }[] = []
-    for (let i = 1; i <= 15; i++) {
-      const g = players.value.filter((p: EiAnalysisPlayer) => p.group_id === i)
-      if (g.length) result.push({ id: i, players: g })
-    }
-    return result
+    if (!summary.value) return []
+    return summary.value.groups || []
   })
 
   const ungroupedPlayers = computed(() => players.value.filter((p: EiAnalysisPlayer) => !p.group_id))
 
   const statAverages = computed(() => {
-    const list = players.value
-    if (!list.length) return { protection: 0, stability: 0, hitRate: 100, skillCastUptime: 0, stackDist: 0, distToCom: 0 }
-    const avg = (key: keyof EiAnalysisPlayer) => {
-      const filtered = list.filter(p => Number(p[key]) > 0)
-      return filtered.length ? filtered.reduce((s, p) => s + Number(p[key]), 0) / filtered.length : 0
-    }
-    const hitRate = list.length ? list.reduce((s, p) => s + calcHitRate(p), 0) / list.length : 100
+    if (!summary.value) return { protection: 0, stability: 0, hitRate: 100, skillCastUptime: 0, stackDist: 0, distToCom: 0 }
+    const avg = summary.value.stat_averages
+    if (!avg) return { protection: 0, stability: 0, hitRate: 100, skillCastUptime: 0, stackDist: 0, distToCom: 0 }
     return {
-      protection: avg('protection_uptime'),
-      stability: avg('stability_uptime'),
-      hitRate: Math.min(Math.max(hitRate, 0), 100),
-      skillCastUptime: avg('skill_cast_uptime'),
-      stackDist: avg('stack_dist'),
-      distToCom: avg('dist_to_com'),
+      protection: avg.protection,
+      stability: avg.stability,
+      hitRate: avg.hitRate,
+      skillCastUptime: avg.skillCastUptime,
+      stackDist: avg.stackDist,
+      distToCom: avg.distToCom,
     }
   })
 
   const statDetailList = computed(() => {
-    const list = [...players.value]
-    const type = currentStatType.value
-    if (type === 'hitRate') {
-      return list.sort((a, b) => calcHitRate(b) - calcHitRate(a))
-    }
-    const sortKey = CATEGORY_SORT_KEY[type] || 'damage'
-    return list.sort((a: any, b: any) => (b[sortKey] || 0) - (a[sortKey] || 0))
+    if (!summary.value) return players.value
+    const sorted = summary.value.sorted_players
+    if (sorted && sorted.length > 0) return sorted
+    return players.value
   })
 
   const statDetailAverage = computed(() => {
@@ -210,8 +198,15 @@ export function useCombatLogDetail() {
   })
 
   const sortedPlayerList = computed(() => {
-    return [...players.value].sort((a: any, b: any) => (b.damage || 0) - (a.damage || 0))
+    return [...players.value].sort((a, b) => (b.damage || 0) - (a.damage || 0))
   })
+
+  const quickInfoItems = computed(() => [
+    { label: '战斗时长', value: fmtDuration(fightSummary.value.duration_sec || 0), iconClass: 'pi pi-clock text-primary', iconBg: 'bg-primary/10 group-hover:bg-primary/20' },
+    { label: '参战人数', value: `${summary.value?.total_players || 0} 人`, iconClass: 'pi pi-users text-success', iconBg: 'bg-success/10 group-hover:bg-success/20' },
+    { label: '地图', value: fightSummary.value.map_name || '-', iconClass: 'pi pi-map text-info', iconBg: 'bg-info/10 group-hover:bg-info/20' },
+    { label: '上传时间', value: fmtDate(logDetail.value.upload_time), iconClass: 'pi pi-calendar text-secondary', iconBg: 'bg-secondary/10 group-hover:bg-secondary/20' },
+  ])
 
   const powerPct = computed(() => {
     const t = agg.value.total_damage
@@ -229,7 +224,7 @@ export function useCombatLogDetail() {
   const rotationEvents = computed(() => {
     if (!playerRotation.value?.rotation) return []
     const map = playerRotation.value.skill_map || {}
-    const events: any[] = []
+    const events: Record<string, unknown>[] = []
     for (const rot of playerRotation.value.rotation) {
       if (!rot || typeof rot !== 'object') continue
       const rawSkillId = rot.id ?? 0
@@ -286,9 +281,9 @@ export function useCombatLogDetail() {
       } else {
         toast.add({ severity: 'warn', summary: '暂无解析数据', detail: '该日志尚未解析或解析失败', life: configManager.get('ui').toastLife })
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       if (reqId !== loadDataRequestId) return
-      error.value = e.message || '获取数据失败'
+      error.value = e instanceof Error ? e.message : '获取数据失败'
       toast.add({ severity: 'error', summary: '加载失败', detail: error.value, life: configManager.get('ui').toastLife })
     } finally {
       if (reqId === loadDataRequestId) loading.value = false
@@ -312,8 +307,8 @@ export function useCombatLogDetail() {
             toast.add({ severity: 'info', summary: '重新解析', detail: '正在解析，请稍后刷新', life: configManager.get('ui').toastLife })
             startPollProgress(logId)
           } else throw new Error(res.message)
-        } catch (e: any) {
-          toast.add({ severity: 'error', summary: '解析失败', detail: e.message || '重新解析失败', life: configManager.get('ui').toastLife })
+        } catch (e: unknown) {
+          toast.add({ severity: 'error', summary: '解析失败', detail: e instanceof Error ? e.message : '重新解析失败', life: configManager.get('ui').toastLife })
         } finally {
           parsing.value = false
         }
@@ -389,16 +384,16 @@ export function useCombatLogDetail() {
       } else {
         toast.add({ severity: 'warn', summary: '暂无数据', detail: res.message || '该玩家没有技能循环数据', life: configManager.get('ui').toastLife })
       }
-    } catch (e: any) {
-      toast.add({ severity: 'error', summary: '加载失败', detail: e.message || '获取技能数据失败', life: configManager.get('ui').toastLife })
+    } catch (e: unknown) {
+      toast.add({ severity: 'error', summary: '加载失败', detail: e instanceof Error ? e.message : '获取技能数据失败', life: configManager.get('ui').toastLife })
     } finally {
       rotationLoading.value = false
     }
   }
 
   /** DataTable 行点击 */
-  const onRowClick = (event: any) => {
-    const player = event.data as EiAnalysisPlayer
+  const onRowClick = (event: { data?: EiAnalysisPlayer }) => {
+    const player = event.data
     if (player) openPlayerDialog(player)
   }
 
@@ -444,6 +439,7 @@ export function useCombatLogDetail() {
     statDetailList,
     statDetailAverage,
     sortedPlayerList,
+    quickInfoItems,
     powerPct,
     condiPct,
     breakbarPct,

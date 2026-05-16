@@ -1,7 +1,8 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
-    style="animation-delay: 0.8s"
+    style="animation-delay: 0.6s"
   >
     <div class="flex items-center justify-between mb-4">
       <div class="flex items-center gap-3">
@@ -10,193 +11,268 @@
         </div>
         <div>
           <h3 class="text-lg font-semibold text-neutral-text">
-            详细出勤记录
+            {{ TABLE_TITLE }}
           </h3>
           <p class="text-xs text-neutral-text-secondary">
-            完整战斗数据
+            {{ TABLE_SUBTITLE_PREFIX }}{{ pagination.total }}{{ TABLE_SUBTITLE_SUFFIX }}
           </p>
         </div>
       </div>
-      <Button
-        label="导出"
-        icon="pi pi-download"
-        class="btn-ghost"
-        size="small"
-        @click="exportDetail"
-      />
     </div>
+
     <DataTable
-      :value="attendanceRecords"
-      :paginator="true"
-      :rows="10"
+      :value="accountList"
+      :loading="loading"
       class="w-full game-table"
       removable-sort
-      sort-field="date"
+      sort-field="attendance_count"
       :sort-order="-1"
+      @sort="handleSort"
     >
       <Column
-        field="date"
-        header="日期"
+        field="account"
+        header="账号"
         sortable
-      />
-      <Column
-        field="playerName"
-        header="玩家"
       >
         <template #body="{ data }">
           <div class="flex items-center gap-2">
-            <div
-              class="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold shadow-md"
-              :style="{ backgroundColor: getProfessionColor(data.profession) }"
-            >
-              {{ data.playerName.charAt(0) }}
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary/40 to-secondary/40 flex items-center justify-center text-white text-xs font-bold">
+              {{ data.account.charAt(0).toUpperCase() }}
             </div>
-            <span class="font-medium">{{ data.playerName }}</span>
+            <span class="font-medium text-neutral-text">{{ data.account }}</span>
           </div>
         </template>
       </Column>
+
       <Column
-        field="profession"
-        header="职业"
-      />
-      <Column
-        field="mapName"
-        header="地图"
-      />
-      <Column
-        field="serverName"
-        header="服务器"
-      />
-      <Column
-        field="attendanceTime"
-        header="参战时长"
+        field="character_count"
+        header="角色数"
+        sortable
       >
         <template #body="{ data }">
-          {{ formatDuration(data.attendanceTime) }}
+          <Tag
+            :value="String(data.character_count)"
+            severity="info"
+            class="game-badge"
+          />
         </template>
       </Column>
+
       <Column
-        field="damage"
-        header="伤害"
+        field="attendance_count"
+        header="出勤次数"
+        sortable
       >
         <template #body="{ data }">
-          <span class="text-primary font-semibold">{{ formatNumber(data.damage) }}</span>
+          <span class="text-primary font-bold">{{ data.attendance_count }}</span>
+          <span class="text-xs text-neutral-text-secondary ml-1">{{ ATTENDANCE_UNIT }}</span>
         </template>
       </Column>
+
       <Column
-        field="healing"
-        header="治疗"
+        field="total_duration_sec"
+        header="总时长"
+        sortable
       >
         <template #body="{ data }">
-          <span class="text-status-success font-semibold">{{ formatNumber(data.healing) }}</span>
+          {{ formatDuration(data.total_duration_sec) }}
         </template>
       </Column>
+
       <Column
-        field="kills"
+        field="total_damage"
+        header="总伤害"
+        sortable
+      >
+        <template #body="{ data }">
+          <span class="text-status-error font-semibold">{{ formatNumber(data.total_damage) }}</span>
+        </template>
+      </Column>
+
+      <Column
+        field="total_downed"
+        header="击倒人数"
+        sortable
+      >
+        <template #body="{ data }">
+          <span class="text-warning font-semibold">{{ data.total_downed }}</span>
+        </template>
+      </Column>
+
+      <Column
+        field="total_kills"
         header="击杀"
+        sortable
       >
         <template #body="{ data }">
-          <span class="text-secondary font-semibold">{{ data.kills }}</span>
+          <span class="text-secondary font-semibold">{{ data.total_kills }}</span>
         </template>
       </Column>
+
       <Column
-        field="deaths"
+        field="total_deaths"
         header="死亡"
+        sortable
       >
         <template #body="{ data }">
-          <span class="text-status-error font-semibold">{{ data.deaths }}</span>
+          <span class="text-status-error font-semibold">{{ data.total_deaths }}</span>
         </template>
       </Column>
+
       <Column
-        field="score"
-        header="评分"
+        field="kd_ratio"
+        header="K/D"
+        sortable
       >
         <template #body="{ data }">
           <span
             :class="{
-              'game-badge game-badge-legendary': data.score.startsWith('A+'),
-              'game-badge game-badge-exotic': data.score.startsWith('A'),
-              'game-badge game-badge-rare': data.score.startsWith('B'),
-              'game-badge': data.score.startsWith('C') || data.score.startsWith('D')
+              'text-status-success font-bold': data.kd_ratio >= KD_RATIO_THRESHOLDS.EXCELLENT,
+              'text-primary font-semibold': data.kd_ratio >= KD_RATIO_THRESHOLDS.GOOD && data.kd_ratio < KD_RATIO_THRESHOLDS.EXCELLENT,
+              'text-status-error': data.kd_ratio < KD_RATIO_THRESHOLDS.GOOD
             }"
           >
-            {{ data.score }}
+            {{ data.kd_ratio }}
           </span>
         </template>
       </Column>
+
+      <Column
+        field="avg_score"
+        header="平均评分"
+        sortable
+      >
+        <template #body="{ data }">
+          <span
+            :class="{
+              'game-badge game-badge-legendary cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.LEGENDARY,
+              'game-badge game-badge-exotic cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.EXOTIC && data.avg_score < SCORE_THRESHOLDS.LEGENDARY,
+              'game-badge game-badge-rare cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.RARE && data.avg_score < SCORE_THRESHOLDS.EXOTIC,
+              'game-badge cursor-pointer hover:scale-110 transition-transform': data.avg_score < SCORE_THRESHOLDS.RARE
+            }"
+            :title="SCORE_TOOLTIP"
+            @click="handleScoreClick(data.account)"
+          >
+            {{ data.avg_score }}
+          </span>
+        </template>
+      </Column>
+
+      <Column
+        field="last_attendance"
+        header="最后出勤"
+        sortable
+      >
+        <template #body="{ data }">
+          <span class="text-sm text-neutral-text-secondary">
+            {{ data.last_attendance ? formatDate(data.last_attendance) : NO_DATE_PLACEHOLDER }}
+          </span>
+        </template>
+      </Column>
+
+      <!-- 动态值，无法使用 Tailwind 静态类（PrimeVue Column API） -->
+      <Column
+        header="操作"
+        style="width: 100px"
+      >
+        <template #body="{ data }">
+          <BaseButton
+            icon="pi pi-eye"
+            variant="ghost"
+            size="small"
+            @click="handleDetailClick(data.account)"
+          />
+        </template>
+      </Column>
     </DataTable>
+
+    <div class="flex items-center justify-between mt-4">
+      <div class="text-sm text-neutral-text-secondary">
+        {{ getPaginationText(accountList.length, pagination.total) }}
+      </div>
+      <Paginator
+        :rows="pagination.pageSize"
+        :total-records="pagination.total"
+        :first="(pagination.page - 1) * pagination.pageSize"
+        template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink"
+        @page="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 /**
- * 出勤记录表格组件
- * 功能：显示详细的出勤记录数据
- * 作者：帅姐姐
- * 创建日期：2026-04-27
+ * 考勤数据表格组件
+ * 功能：显示账号出勤列表，支持排序、分页、详情查看、评分查看
+ * 作者：Claude
+ * 创建日期：2026-05-11
  */
 
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { formatDate, formatDuration, formatNumber } from '@/utils/common/attendanceFormatters'
 import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
+import Paginator from 'primevue/paginator'
+import Tag from 'primevue/tag'
+
+// === 常量定义 ===
+const TABLE_TITLE = '出勤账号列表'
+const TABLE_SUBTITLE_PREFIX = '共 '
+const TABLE_SUBTITLE_SUFFIX = ' 个账号 · 按自然日去重统计'
+const ATTENDANCE_UNIT = '天'
+const SCORE_TOOLTIP = '点击查看维度评分详情'
+const NO_DATE_PLACEHOLDER = '-'
+
+const KD_RATIO_THRESHOLDS = {
+  EXCELLENT: 2,
+  GOOD: 1,
+} as const
+
+const SCORE_THRESHOLDS = {
+  LEGENDARY: 90,
+  EXOTIC: 80,
+  RARE: 70,
+} as const
+
+const getPaginationText = (current: number, total: number): string =>
+  `显示 ${current} 条，共 ${total} 条`
+
+export interface AccountItem {
+  account: string
+  character_count: number
+  attendance_count: number
+  total_duration_sec: number
+  total_damage: number
+  total_downed: number
+  total_kills: number
+  total_deaths: number
+  kd_ratio: number
+  avg_score: number
+  last_attendance: string | null
+}
+
+export interface Pagination {
+  page: number
+  pageSize: number
+  total: number
+}
 
 defineProps<{
-  attendanceRecords: Array<{
-    date: string
-    playerName: string
-    profession: string
-    mapName: string
-    serverName: string
-    attendanceTime: number
-    damage: number
-    healing: number
-    kills: number
-    deaths: number
-    score: string
-  }>
+  accountList: AccountItem[]
+  pagination: Pagination
+  loading: boolean
 }>()
 
-// Emits
 const emit = defineEmits<{
-  'export-detail': []
+  'page-change': [event: { page: number }]
+  'sort': [event: { sortField: string; sortOrder: number }]
+  'detail-click': [account: string]
+  'score-click': [account: string]
 }>()
 
-// 事件处理
-const exportDetail = () => {
-  emit('export-detail')
-}
-
-// 方法
-const formatNumber = (num: number) => {
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M'
-  } else if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K'
-  }
-  return num.toString()
-}
-
-const formatDuration = (seconds: number) => {
-  const hours = Math.floor(seconds / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  if (hours > 0) {
-    return `${hours}小时${minutes}分钟`
-  }
-  return `${minutes}分钟`
-}
-
-const getProfessionColor = (profession: string) => {
-  const colors: Record<string, string> = {
-    '战士': '#E85D04',
-    '守护者': '#FAA307',
-    '潜行者': '#9D4EDD',
-    '元素使': '#FF6B6B',
-    '工程师': '#7B8FA1',
-    '猎人': '#06D6A0',
-    '唤灵师': '#8D0801',
-    '镜像师': '#4361EE',
-    '游侠': '#2EC4B6'
-  }
-  return colors[profession] || '#6C757D'
-}
+const handlePageChange = (event: { page: number }) => emit('page-change', event)
+const handleSort = (event: any) => emit('sort', { sortField: event.sortField, sortOrder: event.sortOrder })
+const handleDetailClick = (account: string) => emit('detail-click', account)
+const handleScoreClick = (account: string) => emit('score-click', account)
 </script>

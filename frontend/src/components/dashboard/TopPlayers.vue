@@ -18,12 +18,12 @@
     </div>
 
     <div class="flex gap-2 mb-4 flex-wrap">
-      <Button
+      <BaseButton
         v-for="tab in tabs"
         :key="tab.value"
         :label="tab.label"
         size="small"
-        :class="sortBy === tab.value ? 'btn-game' : 'btn-ghost'"
+        :variant="sortBy === tab.value ? 'game' : 'ghost'"
         @click="switchSort(tab.value)"
       />
     </div>
@@ -98,12 +98,12 @@
           </template>
         </Column>
         <Column
-          field="total_healing"
-          header="总治疗"
+          field="total_downed"
+          header="击倒人数"
           sortable
         >
           <template #body="{ data }">
-            <span class="text-status-success font-semibold">{{ formatNumber(data.total_healing) }}</span>
+            <span class="text-warning font-semibold">{{ data.total_downed }}</span>
           </template>
         </Column>
         <Column
@@ -152,11 +152,11 @@
  * 更新：2026-05-04
  */
 
-import { computed } from 'vue'
-import Button from 'primevue/button'
-import DataTable from 'primevue/datatable'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import Column from 'primevue/column'
+import DataTable from 'primevue/datatable'
 import Tag from 'primevue/tag'
+import { computed } from 'vue'
 
 const props = defineProps<{
   items: Array<any>
@@ -171,7 +171,7 @@ const emit = defineEmits<{
 const tabs = [
   { label: '伤害', value: 'damage' },
   { label: 'DPS', value: 'dps' },
-  { label: '治疗', value: 'healing' },
+  { label: '击倒人数', value: 'downed' },
   { label: '击杀', value: 'killed' },
   { label: '评分', value: 'ai_score' },
 ]

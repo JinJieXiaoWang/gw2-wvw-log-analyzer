@@ -1,10 +1,11 @@
-import { ref, computed } from 'vue'
-import { defineStore } from 'pinia'
-import type { BuildEntry, BuildFilterState, BuildCreateDto } from '@/types/buildLibrary'
-import { buildsService } from '@/services/build/buildsService'
-import { PROFESSION_COLORS } from '@/types/buildLibrary'
 import type { BuildLibraryCreateRequest, BuildLibraryUpdateRequest } from '@/services/build/buildsService'
+import { buildsService } from '@/services/build/buildsService'
 import { dictionaryService, type DictOption } from '@/services/system/dictionaryService'
+import type { BuildCreateDto, BuildEntry, BuildFilterState } from '@/types/buildLibrary'
+import { PROFESSION_COLORS } from '@/types/buildLibrary'
+import { RoleType } from '@/constants/dictValues'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
 
 export const useBuildLibraryStore = defineStore('buildLibrary', () => {
   // State
@@ -147,7 +148,7 @@ export const useBuildLibraryStore = defineStore('buildLibrary', () => {
       profession: raw.profession ?? '',
       professionColor: raw.profession_color || PROFESSION_COLORS[raw.profession] || '#888888',
       eliteSpec: raw.elite_spec ?? null,
-      role: raw.role === 'dps' || raw.role === 'support' ? raw.role : 'dps',
+      role: raw.role === RoleType.DPS || raw.role === RoleType.SUPPORT ? raw.role : RoleType.DPS,
       subRoles: (raw.sub_roles || []).filter((r: string) => ['boon', 'heal', 'tank', 'cc'].includes(r)),
       armorType: raw.armor_type ?? '',
       weapons: (raw.weapons || []).map((w: any) => ({
@@ -255,7 +256,7 @@ export const useBuildLibraryStore = defineStore('buildLibrary', () => {
   }
 
   /** 将前端 camelCase BuildEntry/DTO 转为后端 snake_case 请求体 */
-  function mapBuildToBackend(build: Partial<BuildEntry> | BuildCreateDto): BuildLibraryCreateRequest {
+  function mapBuildToBackend(build: Partial<BuildEntry> | BuildCreateDto, isUpdate = false): BuildLibraryCreateRequest {
     return {
       title: build.title ?? '',
       profession: build.profession ?? '',
@@ -290,7 +291,7 @@ export const useBuildLibraryStore = defineStore('buildLibrary', () => {
         url: v.url ?? '',
         author: v.author
       })),
-      author: (build as any).author ?? '',
+      author: isUpdate ? ((build as any).author?.trim() || null) : ((build as any).author?.trim() || ''),
       is_meta: (build as any).isMeta ?? false,
     }
   }
@@ -318,7 +319,7 @@ export const useBuildLibraryStore = defineStore('buildLibrary', () => {
     loading.value = true
     error.value = null
     try {
-      const data: BuildLibraryUpdateRequest = mapBuildToBackend(build)
+      const data: BuildLibraryUpdateRequest = mapBuildToBackend(build, true)
       const response = await buildsService.updateBuildLibrary(Number(buildId), data)
       if (response.data) {
         const idx = builds.value.findIndex(b => b.id === buildId)

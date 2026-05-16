@@ -1,16 +1,16 @@
 
 # -*- coding: utf-8 -*-
-# Module: Enhanced Memory Monitor Middleware
-# Author: System
-# Date: 2026-05-06
-# Description: Auto GC, memory alerts, OOM prevention
+# 模块功能: 增强型内存监控中间件
+# 作者: 帅妹妹丶.8297
+# 日期: 2026-05-06
+# 描述: 自动回收、内存警告、OOM预防
 
 import gc
 import os
 import time
 from collections import deque
 
-from fastapi import Request, HTTPException
+from fastapi import HTTPException, Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.utils.logger import logger

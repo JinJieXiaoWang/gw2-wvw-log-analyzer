@@ -17,6 +17,7 @@ node_modules/
 .idea/
 .claude/
 .trae/
+.VSCodeCounter/
 
 # 日志
 *.log
@@ -28,7 +29,7 @@ logs/
 
 # 构建产物
 dist/
-build/
+/build/
 
 # Vite cache
 .vite/
@@ -37,6 +38,10 @@ build/
 .git.bak/
 
 
-# ��������ѹ����
+# 前端构建产物
 frontend/dist.zip
 
+backend.zip
+
+# 种子数据构建产物（自动生成）
+backend/app/data/_generated/

@@ -12,14 +12,14 @@ interface UseDataOptions<T> {
   initialData?: T
   initialLoading?: boolean
   onSuccess?: (data: T) => void
-  onError?: (error: any) => void
+  onError?: (error: unknown) => void
   defaultValue?: T
 }
 
-export function useData<T = any>(options: UseDataOptions<T> = {}) {
+export function useData<T = unknown>(options: UseDataOptions<T> = {}) {
   const data = ref<T | null>(options.initialData || null)
   const isLoading = ref(options.initialLoading || false)
-  const error = ref<any>(null)
+  const error = ref<unknown>(null)
   const isSuccess = ref(false)
   const isError = computed(() => error.value !== null)
   const errorMessage = computed(() => getErrorMessage(error.value))

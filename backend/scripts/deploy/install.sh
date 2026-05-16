@@ -3,9 +3,13 @@
 # GW2 WvW 日志系统 - Debian 12 裸机部署脚本
 # ============================================================================
 # 用法:
-#   1. 将项目代码上传到服务器 (如 /root/gw2-backend)
-#   2. chmod +x scripts/deploy/install.sh
-#   3. sudo ./scripts/deploy/install.sh
+#   sudo ./scripts/deploy/install.sh [选项]
+#
+# 选项:
+#   --resume, -r    从上次失败的步骤继续部署
+#   --force, -f     强制重新部署（清除状态记录，从头执行）
+#   --status, -s    查看当前部署状态记录
+#   --help, -h      显示帮助信息
 #
 # 前置要求:
 #   - Debian 12 (bookworm) 干净系统
@@ -23,7 +27,184 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# 打印带颜色的信息
+info() { echo -e "${BLUE}[INFO]${NC} $*"; }
+success() { echo -e "${GREEN}[OK]${NC} $*"; }
+warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
+error() { echo -e "${RED}[ERROR]${NC} $*"; }
+
+# ============================================================================
+# 部署状态管理
+# ============================================================================
+STATE_FILE="/root/.gw2_deploy_state"
+
+init_state() {
+    if [ "$FORCE_DEPLOY" = "true" ] || [ ! -f "$STATE_FILE" ]; then
+        echo "# GW2 Backend Deploy State" > "$STATE_FILE"
+        echo "START:$(date '+%Y-%m-%d %H:%M:%S')" >> "$STATE_FILE"
+        echo "SCRIPT:install.sh" >> "$STATE_FILE"
+        echo "PROJECT_DIR:${PROJECT_DIR}" >> "$STATE_FILE"
+        echo "---" >> "$STATE_FILE"
+    fi
+}
+
+mark_done() {
+    local step="$1"
+    echo "DONE:$step:$(date '+%Y-%m-%d %H:%M:%S')" >> "$STATE_FILE"
+}
+
+mark_failed() {
+    local step="$1"
+    local msg="$2"
+    echo "FAILED:$step:$(date '+%Y-%m-%d %H:%M:%S'):$msg" >> "$STATE_FILE"
+}
+
+mark_skipped() {
+    local step="$1"
+    echo "SKIPPED:$step:$(date '+%Y-%m-%d %H:%M:%S')" >> "$STATE_FILE"
+}
+
+is_step_done() {
+    local step="$1"
+    [ -f "$STATE_FILE" ] && grep -q "^DONE:$step:" "$STATE_FILE"
+}
+
+get_last_failed() {
+    [ -f "$STATE_FILE" ] && grep "^FAILED:" "$STATE_FILE" | tail -1 | cut -d: -f2 || true
+}
+
+get_done_count() {
+    [ -f "$STATE_FILE" ] && grep -c "^DONE:" "$STATE_FILE" || echo 0
+}
+
+clear_state() {
+    rm -f "$STATE_FILE"
+}
+
+show_deploy_status() {
+    if [ ! -f "$STATE_FILE" ]; then
+        info "无部署状态记录"
+        return
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "  部署状态记录"
+    echo "========================================"
+    cat "$STATE_FILE"
+    echo "========================================"
+
+    local failed
+    failed=$(get_last_failed)
+    if [ -n "$failed" ]; then
+        warn "最后失败步骤: $failed"
+        info "使用 --resume 从该步骤继续，或使用 --force 重新部署"
+    else
+        local done_count
+        done_count=$(get_done_count)
+        info "已完成步骤数: $done_count"
+    fi
+}
+
+# 步骤执行包装器：支持跳过已完成的步骤、记录状态、捕获错误
+run_step() {
+    local step="$1"
+    local desc="$2"
+    shift 2
+
+    echo ""
+    info "【步骤】$desc"
+
+    # 恢复模式：若步骤已完成则跳过
+    if [ "$RESUME_MODE" = "true" ] && is_step_done "$step"; then
+        success "  该步骤已执行完成，跳过"
+        mark_skipped "$step"
+        return 0
+    fi
+
+    # 执行步骤并捕获退出码
+    local exit_code=0
+    "$@" || exit_code=$?
+
+    if [ $exit_code -eq 0 ]; then
+        mark_done "$step"
+        success "  $desc 完成"
+        return 0
+    else
+        mark_failed "$step" "退出码 $exit_code"
+        error "  $desc 失败（退出码: $exit_code）"
+        error "  部署中断。修复问题后，使用以下命令继续:"
+        error "    sudo $0 --resume"
+        error "  或强制重新部署:"
+        error "    sudo $0 --force"
+        exit $exit_code
+    fi
+}
+
+# ============================================================================
+# 参数解析
+# ============================================================================
+RESUME_MODE=false
+FORCE_DEPLOY=false
+SHOW_STATUS=false
+
+show_help() {
+    cat << 'EOF'
+GW2 WvW 日志系统 - Debian 12 裸机部署脚本
+
+用法:
+  sudo ./scripts/deploy/install.sh [选项]
+
+选项:
+  --resume, -r    从上次失败的步骤继续部署（智能跳过已完成的步骤）
+  --force, -f     强制重新部署：清除状态记录并从头执行所有步骤
+  --status, -s    查看当前部署状态记录
+  --help, -h      显示此帮助信息
+
+示例:
+  # 首次部署
+  sudo ./scripts/deploy/install.sh
+
+  # 查看当前部署状态
+  sudo ./scripts/deploy/install.sh --status
+
+  # 上次部署失败后继续
+  sudo ./scripts/deploy/install.sh --resume
+
+  # 强制从头重新部署（保留数据和上传文件）
+  sudo ./scripts/deploy/install.sh --force
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --resume|-r)
+            RESUME_MODE=true
+            shift
+            ;;
+        --force|-f)
+            FORCE_DEPLOY=true
+            shift
+            ;;
+        --status|-s)
+            SHOW_STATUS=true
+            shift
+            ;;
+        --help|-h)
+            show_help
+            exit 0
+            ;;
+        *)
+            error "未知参数: $1"
+            show_help
+            exit 1
+            ;;
+    esac
+done
+
+# ============================================================================
 # 配置变量
+# ============================================================================
 PYTHON_VERSION="3.13.3"
 PROJECT_NAME="gw2-backend"
 PROJECT_DIR="/opt/${PROJECT_NAME}"
@@ -36,17 +217,15 @@ DB_DIR="${PROJECT_DIR}/database"
 MYSQL_ROOT_PASSWORD=""
 MYSQL_APP_PASSWORD=""
 
-# 打印带颜色的信息
-info() { echo -e "${BLUE}[INFO]${NC} $*"; }
-success() { echo -e "${GREEN}[OK]${NC} $*"; }
-warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
-error() { echo -e "${RED}[ERROR]${NC} $*"; }
+# ============================================================================
+# 各部署步骤函数
+# ============================================================================
 
 # 检查 root 权限
 check_root() {
     if [[ $EUID -ne 0 ]]; then
         error "请使用 root 权限运行此脚本: sudo $0"
-        exit 1
+        return 1
     fi
 }
 
@@ -54,11 +233,11 @@ check_root() {
 check_os() {
     if [[ ! -f /etc/debian_version ]]; then
         error "此脚本仅支持 Debian 系统"
-        exit 1
+        return 1
     fi
     local version
     version=$(cat /etc/debian_version | head -1)
-    info "检测到系统版本: Debian ${version}"
+    info "  检测到系统版本: Debian ${version}"
 }
 
 # 交互式配置
@@ -80,7 +259,7 @@ interactive_config() {
 
         if [[ -z "$MYSQL_ROOT_PASSWORD" || -z "$MYSQL_APP_PASSWORD" ]]; then
             error "MySQL 密码不能为空"
-            exit 1
+            return 1
         fi
     fi
 
@@ -105,7 +284,7 @@ interactive_config() {
 
 # 安装系统依赖
 install_system_deps() {
-    info "正在更新系统并安装依赖..."
+    info "  正在更新系统并安装依赖..."
     apt-get update
     apt-get upgrade -y
 
@@ -132,17 +311,33 @@ install_system_deps() {
         default-libmysqlclient-dev \
         libpq-dev
 
-    success "系统依赖安装完成"
+    success "  系统依赖安装完成"
 }
 
-# 从源码编译安装 Python 3.13
-install_python() {
-    info "正在编译安装 Python ${PYTHON_VERSION}..."
+# 查找可用的 Python 版本（>=3.11）
+find_python() {
+    for py in python3.13 python3.12 python3.11 python3; do
+        if command -v "$py" &> /dev/null; then
+            PY_VERSION=$($py --version 2>&1 | awk '{print $2}')
+            PY_MAJOR=$(echo "$PY_VERSION" | cut -d. -f1)
+            PY_MINOR=$(echo "$PY_VERSION" | cut -d. -f2)
+            if [[ "$PY_MAJOR" -ge 3 && "$PY_MINOR" -ge 11 ]]; then
+                PYTHON_CMD="$py"
+                info "  找到可用 Python: $py (版本 $PY_VERSION)"
+                return 0
+            fi
+        fi
+    done
+    return 1
+}
 
-    if command -v python3.13 &> /dev/null; then
-        warn "Python 3.13 已存在，跳过编译"
-        return
+# 安装 Python（优先使用系统已有 >=3.11 版本，否则编译 3.13）
+install_python() {
+    if find_python; then
+        return 0
     fi
+
+    info "  未找到系统 Python 3.11+，开始编译安装 Python ${PYTHON_VERSION}..."
 
     cd /tmp
     wget -q "https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz"
@@ -166,18 +361,38 @@ install_python() {
     cd /tmp
     rm -rf "Python-${PYTHON_VERSION}" "Python-${PYTHON_VERSION}.tgz"
 
-    success "Python ${PYTHON_VERSION} 编译安装完成"
-    python3.13 --version
+    # 编译完成后再次查找
+    if find_python; then
+        success "  Python ${PYTHON_VERSION} 编译安装完成"
+    else
+        error "  Python 编译安装后仍无法找到可用版本"
+        return 1
+    fi
+}
+
+# 安装 Node.js（用于前端构建）
+install_nodejs() {
+    if command -v node &> /dev/null && command -v npm &> /dev/null; then
+        NODE_VERSION=$(node --version 2>/dev/null || echo "unknown")
+        info "  Node.js 已存在: ${NODE_VERSION}"
+        return 0
+    fi
+
+    info "  正在安装 Node.js..."
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+    apt-get install -y nodejs
+
+    success "  Node.js 安装完成: $(node --version)"
 }
 
 # 安装并配置 MySQL
 install_mysql() {
     if [[ "$DB_TYPE" != "mysql" ]]; then
-        info "跳过 MySQL 安装 (使用 ${DB_TYPE})"
-        return
+        info "  跳过 MySQL 安装 (使用 ${DB_TYPE})"
+        return 0
     fi
 
-    info "正在安装 MySQL..."
+    info "  正在安装 MySQL..."
 
     apt-get install -y default-mysql-server
 
@@ -198,14 +413,14 @@ install_mysql() {
     mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "GRANT ALL PRIVILEGES ON gw2_log_system.* TO 'gw2'@'localhost';"
     mysql -uroot -p"${MYSQL_ROOT_PASSWORD}" -e "FLUSH PRIVILEGES;"
 
-    success "MySQL 安装并配置完成"
-    info "数据库: gw2_log_system"
-    info "用户: gw2"
+    success "  MySQL 安装并配置完成"
+    info "  数据库: gw2_log_system"
+    info "  用户: gw2"
 }
 
 # 创建项目用户和目录
 setup_project_user() {
-    info "正在创建项目用户和目录..."
+    info "  正在创建项目用户和目录..."
 
     # 创建用户 (无登录权限的系统用户)
     if ! id -u "$PROJECT_USER" &>/dev/null; then
@@ -222,35 +437,36 @@ setup_project_user() {
     chmod 755 "$UPLOAD_DIR"
     chmod 755 "$DB_DIR"
 
-    success "项目用户和目录创建完成"
+    success "  项目用户和目录创建完成"
 }
 
 # 部署项目代码
 deploy_code() {
-    info "正在部署项目代码..."
+    info "  正在部署项目代码..."
 
     if [[ ! -d "$SOURCE_DIR" ]]; then
-        error "源码目录不存在: ${SOURCE_DIR}"
-        exit 1
+        error "  源码目录不存在: ${SOURCE_DIR}"
+        return 1
     fi
 
-    # 复制代码到项目目录
+    # 复制后端代码到项目目录
     rsync -av --exclude='.git' --exclude='.venv' --exclude='__pycache__' --exclude='*.pyc' \
+        --exclude='node_modules' --exclude='dist' \
         "${SOURCE_DIR}/" "$PROJECT_DIR/"
 
     chown -R "${PROJECT_USER}:${PROJECT_GROUP}" "$PROJECT_DIR"
 
-    success "项目代码部署完成"
+    success "  后端代码部署完成"
 }
 
 # 创建虚拟环境并安装依赖
 setup_venv() {
-    info "正在创建虚拟环境并安装依赖..."
+    info "  正在创建虚拟环境并安装依赖..."
 
     cd "$PROJECT_DIR"
 
     # 创建虚拟环境
-    python3.13 -m venv "$VENV_DIR"
+    $PYTHON_CMD -m venv "$VENV_DIR"
 
     # 升级 pip
     "$VENV_DIR/bin/pip" install --upgrade pip setuptools wheel
@@ -260,12 +476,46 @@ setup_venv() {
 
     chown -R "${PROJECT_USER}:${PROJECT_GROUP}" "$VENV_DIR"
 
-    success "虚拟环境和依赖安装完成"
+    success "  虚拟环境和依赖安装完成"
+}
+
+# 构建前端
+build_frontend() {
+    info "  正在构建前端..."
+
+    # 查找前端源码（支持项目根目录或后端同级）
+    FRONTEND_SOURCE=""
+    if [[ -d "${SOURCE_DIR}/frontend" ]]; then
+        FRONTEND_SOURCE="${SOURCE_DIR}/frontend"
+    elif [[ -d "$(dirname "$SOURCE_DIR")/frontend" ]]; then
+        FRONTEND_SOURCE="$(dirname "$SOURCE_DIR")/frontend"
+    fi
+
+    if [[ -z "$FRONTEND_SOURCE" || ! -f "${FRONTEND_SOURCE}/package.json" ]]; then
+        warn "  未找到前端源码，跳过前端构建"
+        return 0
+    fi
+
+    cd "$FRONTEND_SOURCE"
+    npm install
+    npm run build
+
+    if [[ ! -d "${FRONTEND_SOURCE}/dist" ]]; then
+        error "  前端构建失败，dist 目录不存在"
+        return 1
+    fi
+
+    # 复制构建产物到 Nginx 静态文件目录
+    mkdir -p /var/www/html
+    rsync -av "${FRONTEND_SOURCE}/dist/" /var/www/html/
+    chown -R "${PROJECT_USER}:${PROJECT_GROUP}" /var/www/html
+
+    success "  前端构建并部署到 /var/www/html 完成"
 }
 
 # 配置 Systemd 服务
 setup_systemd() {
-    info "正在配置 Systemd 服务..."
+    info "  正在配置 Systemd 服务..."
 
     local service_file="/etc/systemd/system/${PROJECT_NAME}.service"
 
@@ -294,17 +544,17 @@ setup_systemd() {
     systemctl daemon-reload
     systemctl enable "$PROJECT_NAME"
 
-    success "Systemd 服务配置完成"
+    success "  Systemd 服务配置完成"
 }
 
 # 配置 Nginx
 setup_nginx() {
     if [[ "${INSTALL_NGINX,,}" != "y" ]]; then
-        info "跳过 Nginx 安装"
-        return
+        info "  跳过 Nginx 安装"
+        return 0
     fi
 
-    info "正在安装并配置 Nginx..."
+    info "  正在安装并配置 Nginx..."
 
     apt-get install -y nginx
 
@@ -323,12 +573,12 @@ setup_nginx() {
     systemctl restart nginx
     systemctl enable nginx
 
-    success "Nginx 配置完成"
+    success "  Nginx 配置完成"
 }
 
 # 配置日志轮转
 setup_logrotate() {
-    info "正在配置日志轮转..."
+    info "  正在配置日志轮转..."
 
     cat > /etc/logrotate.d/gw2-backend << 'EOF'
 /opt/gw2-backend/logs/*.log {
@@ -346,12 +596,12 @@ setup_logrotate() {
 }
 EOF
 
-    success "日志轮转配置完成"
+    success "  日志轮转配置完成"
 }
 
 # 防火墙配置
 setup_firewall() {
-    info "正在配置防火墙..."
+    info "  正在配置防火墙..."
 
     if command -v ufw &> /dev/null; then
         ufw default deny incoming
@@ -360,25 +610,25 @@ setup_firewall() {
         ufw allow http
         ufw allow https
         ufw --force enable
-        success "UFW 防火墙配置完成"
+        success "  UFW 防火墙配置完成"
     else
-        warn "未检测到 UFW，跳过防火墙配置"
+        warn "  未检测到 UFW，跳过防火墙配置"
     fi
 }
 
 # 启动服务
 start_service() {
-    info "正在启动服务..."
+    info "  正在启动服务..."
 
     systemctl start "$PROJECT_NAME"
 
     sleep 3
 
     if systemctl is-active --quiet "$PROJECT_NAME"; then
-        success "服务启动成功!"
+        success "  服务启动成功!"
     else
-        error "服务启动失败，查看日志: journalctl -u ${PROJECT_NAME} -n 50"
-        exit 1
+        error "  服务启动失败，查看日志: journalctl -u ${PROJECT_NAME} -n 50"
+        return 1
     fi
 }
 
@@ -438,23 +688,57 @@ print_summary() {
     echo "========================================"
 }
 
+# ============================================================================
 # 主流程
+# ============================================================================
 main() {
-    check_root
-    check_os
-    interactive_config
+    # 显示状态模式
+    if [ "$SHOW_STATUS" = "true" ]; then
+        show_deploy_status
+        exit 0
+    fi
 
-    install_system_deps
-    install_python
-    install_mysql
-    setup_project_user
-    deploy_code
-    setup_venv
-    setup_systemd
-    setup_nginx
-    setup_logrotate
-    setup_firewall
-    start_service
+    # 强制模式：清除状态
+    if [ "$FORCE_DEPLOY" = "true" ]; then
+        warn "强制重新部署模式：将清除状态并从头执行"
+        clear_state
+    fi
+
+    # 恢复模式：检查上次失败记录
+    if [ "$RESUME_MODE" = "true" ]; then
+        local failed
+        failed=$(get_last_failed)
+        if [ -n "$failed" ]; then
+            warn "恢复模式：从失败步骤继续部署"
+            info "上次失败步骤: $failed"
+            info "已完成的步骤将被自动跳过"
+        else
+            info "未发现失败记录，从头开始部署"
+        fi
+    fi
+
+    init_state
+
+    # 按顺序执行部署步骤
+    run_step "check_root"        "检查 root 权限"          check_root
+    run_step "check_os"          "检查操作系统"            check_os
+    run_step "interactive_config" "交互式配置"             interactive_config
+    run_step "install_system_deps" "安装系统依赖"          install_system_deps
+    run_step "install_python"    "编译安装 Python 3.13"    install_python
+    run_step "install_nodejs"    "安装 Node.js"            install_nodejs
+    run_step "install_mysql"     "安装并配置 MySQL"        install_mysql
+    run_step "setup_project_user" "创建项目用户和目录"     setup_project_user
+    run_step "deploy_code"       "部署后端代码"            deploy_code
+    run_step "setup_venv"        "创建虚拟环境"            setup_venv
+    run_step "build_frontend"    "构建前端"                build_frontend
+    run_step "setup_systemd"     "配置 Systemd 服务"       setup_systemd
+    run_step "setup_nginx"       "配置 Nginx"              setup_nginx
+    run_step "setup_logrotate"   "配置日志轮转"            setup_logrotate
+    run_step "setup_firewall"    "配置防火墙"              setup_firewall
+    run_step "start_service"     "启动服务"                start_service
+
+    # 标记整体完成
+    echo "DONE:ALL:$(date '+%Y-%m-%d %H:%M:%S')" >> "$STATE_FILE"
 
     print_summary
 }

@@ -16,10 +16,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from sqlalchemy import distinct, func, or_, select
 from sqlalchemy.orm import Session
 
-from app.models.account_character import AccountCharacter
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.member import Member
+from app.models.auth.account_character import AccountCharacter
+from app.models.auth.member import Member
+from app.models.log.fight import Fight
+from app.constants.dict_values import RoleType
+from app.models.log.fight_stats import FightStats
 
 
 def get_account_attendance_list(
@@ -60,7 +61,7 @@ def get_account_attendance_list(
         func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
         func.sum(Fight.duration_sec).label("total_duration_sec"),
         func.sum(FightStats.damage).label("total_damage"),
-        func.sum(FightStats.healing).label("total_healing"),
+        func.sum(FightStats.downed).label("total_downed"),
         func.sum(FightStats.killed).label("total_kills"),
         func.sum(FightStats.dead_count).label("total_deaths"),
         func.avg(FightStats.ai_score).label("avg_score"),
@@ -93,7 +94,7 @@ def get_account_attendance_list(
     order_map = {
         "attendance_count": func.count(distinct(func.date(Fight.start_time))),
         "total_damage": func.sum(FightStats.damage),
-        "total_healing": func.sum(FightStats.healing),
+        "total_downed": func.sum(FightStats.downed),
         "total_kills": func.sum(FightStats.killed),
         "total_deaths": func.sum(FightStats.dead_count),
         "total_duration_sec": func.sum(Fight.duration_sec),
@@ -123,7 +124,7 @@ def get_account_attendance_list(
                 "attendance_count": int(r.attendance_count or 0),
                 "total_duration_sec": int(r.total_duration_sec or 0),
                 "total_damage": int(r.total_damage or 0),
-                "total_healing": int(r.total_healing or 0),
+                "total_downed": int(r.total_downed or 0),
                 "total_kills": kills,
                 "total_deaths": deaths,
                 "kd_ratio": round(kills / max(deaths, 1), 2),
@@ -155,14 +156,6 @@ def get_account_detail(
         db.query(Member).filter(Member.account_name == account_name).first()
     )
 
-    # 该账号下所有角色（来自 account_characters）
-    characters = (
-        db.query(AccountCharacter)
-        .filter(AccountCharacter.account_name == account_name)
-        .order_by(AccountCharacter.last_seen_date.desc())
-        .all()
-    )
-
     # 每个角色的出勤统计（按角色名分组，不按 profession 拆分）
     # 角色换了职业仍然是同一个角色，profession 取最新战斗的职业
     char_stats_query = (
@@ -170,7 +163,7 @@ def get_account_detail(
             FightStats.character_name,
             func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
             func.sum(FightStats.damage).label("total_damage"),
-            func.sum(FightStats.healing).label("total_healing"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.avg(FightStats.dps).label("avg_dps"),
             func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.dead_count).label("total_deaths"),
@@ -220,7 +213,7 @@ def get_account_detail(
             func.count(distinct(func.date(Fight.start_time))).label("attendance_count"),
             func.sum(Fight.duration_sec).label("total_duration_sec"),
             func.sum(FightStats.damage).label("total_damage"),
-            func.sum(FightStats.healing).label("total_healing"),
+            func.sum(FightStats.downed).label("total_downed"),
             func.sum(FightStats.killed).label("total_kills"),
             func.sum(FightStats.dead_count).label("total_deaths"),
             func.avg(FightStats.ai_score).label("avg_score"),
@@ -253,7 +246,7 @@ def get_account_detail(
             FightStats.profession,
             FightStats.damage,
             FightStats.dps,
-            FightStats.healing,
+            FightStats.downed,
             FightStats.killed,
             FightStats.dead_count,
             FightStats.ai_score,
@@ -286,7 +279,7 @@ def get_account_detail(
                 "profession": latest_professions.get(cs.character_name, ""),
                 "attendance_count": int(cs.attendance_count or 0),
                 "total_damage": int(cs.total_damage or 0),
-                "total_healing": int(cs.total_healing or 0),
+                "total_downed": int(cs.total_downed or 0),
                 "avg_dps": round(float(cs.avg_dps), 2) if cs.avg_dps else 0,
                 "total_kills": kills,
                 "total_deaths": deaths,
@@ -312,7 +305,7 @@ def get_account_detail(
                 "profession": rf.profession,
                 "damage": rf.damage or 0,
                 "dps": rf.dps or 0,
-                "healing": rf.healing or 0,
+                "downed": rf.downed or 0,
                 "killed": rf.killed or 0,
                 "dead_count": rf.dead_count or 0,
                 "ai_score": round(float(rf.ai_score), 2) if rf.ai_score else 0,
@@ -329,6 +322,11 @@ def get_account_detail(
 
     total_kills = int(summary.total_kills or 0)
     total_deaths = int(summary.total_deaths or 0)
+    
+    # 计算综合能力评分
+    comprehensive_abilities = _calculate_comprehensive_abilities(
+        db, account_name, character_list, start_date, end_date
+    )
 
     return {
         "account": account_name,
@@ -339,7 +337,7 @@ def get_account_detail(
             "attendance_count": int(summary.attendance_count or 0),
             "total_duration_sec": int(summary.total_duration_sec or 0),
             "total_damage": int(summary.total_damage or 0),
-            "total_healing": int(summary.total_healing or 0),
+            "total_downed": int(summary.total_downed or 0),
             "total_kills": total_kills,
             "total_deaths": total_deaths,
             "kd_ratio": round(total_kills / max(total_deaths, 1), 2),
@@ -353,7 +351,199 @@ def get_account_detail(
         "characters": character_list,
         "character_count": len(character_list),
         "recent_fights": recent_records,
+        "comprehensive_abilities": comprehensive_abilities,
     }
+
+
+def _calculate_comprehensive_abilities(
+    db: Session,
+    account_name: str,
+    character_list: List[Dict[str, Any]],
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+) -> Dict[str, float]:
+    """基于评分规则计算综合能力评分
+    
+    计算6个维度的能力评分：
+    - damage: 伤害能力
+    - downed: 击倒能力
+    - survival: 生存能力
+    - support: 支援能力
+    - utility: 功能能力
+    - mobility: 机动能力
+    """
+    from app.services.wvw.scoring_service import ScoringService
+    
+    # 默认能力值
+    default_abilities = {
+        "damage": 70.0,
+        "downed": 60.0,
+        "survival": 65.0,
+        "support": 55.0,
+        "utility": 60.0,
+        "mobility": 65.0,
+    }
+    
+    if not character_list:
+        return default_abilities
+    
+    # 获取最常用的职业来确定角色定位
+    most_used_profession = None
+    max_attendance = 0
+    for char in character_list:
+        if char["attendance_count"] > max_attendance:
+            max_attendance = char["attendance_count"]
+            most_used_profession = char["profession"]
+    
+    # 获取该职业的评分规则
+    if most_used_profession:
+        try:
+            rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
+        except Exception:
+            # 如果找不到对应职业规则，使用dps规则
+            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+    else:
+        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+    
+    # 查询该账号在统计周期内的所有战斗数据
+    query = (
+        db.query(FightStats)
+        .join(Fight, FightStats.fight_id == Fight.id)
+        .filter(FightStats.account == account_name)
+    )
+    
+    if start_date:
+        query = query.filter(Fight.start_time >= start_date)
+    if end_date:
+        query = query.filter(Fight.start_time < end_date)
+    
+    stats_list = query.all()
+    
+    if not stats_list:
+        return default_abilities
+    
+    # 聚合统计数据
+    total_damage = 0.0
+    total_healing = 0.0
+    total_damage_taken = 0.0
+    total_boon_strips = 0.0
+    total_cleanses = 0.0
+    total_interrupts = 0.0
+    total_dodge_count = 0.0
+    total_dead_count = 0.0
+    total_fights = len(stats_list)
+    
+    avg_might = 0.0
+    avg_fury = 0.0
+    avg_quickness = 0.0
+    avg_alacrity = 0.0
+    avg_protection = 0.0
+    avg_stability = 0.0
+    
+    for stat in stats_list:
+        total_damage += float(stat.damage or 0)
+        total_healing += float(stat.healing or 0)
+        total_damage_taken += float(stat.damage_taken or 0)
+        total_boon_strips += float(stat.boon_strips or 0)
+        total_cleanses += float(stat.condition_cleanses or 0)
+        total_interrupts += float(stat.interrupts or 0)
+        total_dodge_count += float(stat.dodge_count or 0)
+        total_dead_count += float(stat.dead_count or 0)
+        
+        avg_might += float(stat.might_uptime or 0)
+        avg_fury += float(stat.fury_uptime or 0)
+        avg_quickness += float(stat.quickness_uptime or 0)
+        avg_alacrity += float(stat.alacrity_uptime or 0)
+        avg_protection += float(stat.protection_uptime or 0)
+        avg_stability += float(stat.stability_uptime or 0)
+    
+    # 计算平均值
+    avg_might = avg_might / total_fights if total_fights > 0 else 0
+    avg_fury = avg_fury / total_fights if total_fights > 0 else 0
+    avg_quickness = avg_quickness / total_fights if total_fights > 0 else 0
+    avg_alacrity = avg_alacrity / total_fights if total_fights > 0 else 0
+    avg_protection = avg_protection / total_fights if total_fights > 0 else 0
+    avg_stability = avg_stability / total_fights if total_fights > 0 else 0
+    
+    # 计算各维度评分
+    # 伤害能力：基于伤害值和buff覆盖
+    damage_score = min(100.0, max(30.0, (total_damage / max(total_fights * 500000, 1)) * 100))
+    damage_score = 0.7 * damage_score + 0.3 * ((avg_might + avg_fury) / 2)
+    
+    # 治疗能力：基于治疗值
+    healing_score = min(100.0, max(30.0, (total_healing / max(total_fights * 200000, 1)) * 100))
+    
+    # 生存能力：基于死亡次数、承伤、保护buff覆盖
+    survival_death_penalty = (total_dead_count / max(total_fights * 2, 1)) * 50
+    survival_score = 100 - survival_death_penalty
+    survival_score = 0.6 * survival_score + 0.4 * avg_protection
+    survival_score = min(100.0, max(30.0, survival_score))
+    
+    # 支援能力：基于增益覆盖和治疗
+    support_buffs = (avg_quickness + avg_alacrity + avg_might + avg_fury) / 4
+    support_score = 0.5 * support_buffs + 0.3 * healing_score + 0.2 * (total_boon_strips / max(total_fights * 20, 1) * 100)
+    support_score = min(100.0, max(30.0, support_score))
+    
+    # 功能能力：基于打断、净化、增益清除
+    utility_score = ((total_interrupts / max(total_fights * 5, 1)) * 33 + 
+                     (total_cleanses / max(total_fights * 20, 1)) * 33 +
+                     (total_boon_strips / max(total_fights * 20, 1)) * 34)
+    utility_score = min(100.0, max(30.0, utility_score))
+    
+    # 机动能力：基于闪避和稳定buff
+    mobility_score = (total_dodge_count / max(total_fights * 10, 1)) * 50 + avg_stability * 0.5
+    mobility_score = min(100.0, max(30.0, mobility_score))
+    
+    # 根据角色定位调整权重（从 JSON 配置加载）
+    from app.config.json_loader import load_json_config
+
+    role_type = _determine_role_type(most_used_profession, rules)
+    scoring_config = load_json_config("scoring_rules") or {}
+    adjustments = scoring_config.get("role_adjustments", {})
+    adj = adjustments.get(role_type, {})
+
+    if role_type == RoleType.SUPPORT:
+        healing_score = min(100.0, healing_score * adj.get("healing_multiplier", 1.3))
+        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.3))
+        damage_score = damage_score * adj.get("damage_multiplier", 0.8)
+    elif role_type == RoleType.TANK:
+        survival_score = min(100.0, survival_score * adj.get("survival_multiplier", 1.3))
+        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.1))
+    elif role_type == RoleType.CONDITION:
+        utility_score = min(100.0, utility_score * adj.get("utility_multiplier", 1.3))
+    
+    return {
+        "damage": round(damage_score, 1),
+        "healing": round(healing_score, 1),
+        "survival": round(survival_score, 1),
+        "support": round(support_score, 1),
+        "utility": round(utility_score, 1),
+        "mobility": round(mobility_score, 1),
+    }
+
+
+def _determine_role_type(profession: Optional[str], rules: Dict[str, Any]) -> str:
+    """根据职业和评分规则确定角色类型"""
+    if not profession:
+        return RoleType.DPS
+    
+    prof_lower = profession.lower()
+    
+    # 常见辅助职业
+    support_profs = ["firebrand", "tempest", "druid", "mechanist", "scourge", "herald"]
+    # 常见坦克职业
+    tank_profs = ["spellbreaker", "bladesworn", "guardian", "warrior"]
+    # 常见症状职业
+    condi_profs = ["scourge", "condition mirage", "soulbeast", "untamed"]
+    
+    if prof_lower in support_profs or rules.get("healing_weight", 0) > 0.15:
+        return RoleType.SUPPORT
+    elif prof_lower in tank_profs or rules.get("survival_weight", 0) > 0.15:
+        return RoleType.TANK
+    elif prof_lower in condi_profs:
+        return RoleType.CONDITION
+    else:
+        return RoleType.DPS
 
 
 def get_character_detail(
@@ -564,8 +754,8 @@ def get_account_score_breakdown(
     严格依据 scoring_rule 表中当前启用的维度配置进行展示，
     将该账号在统计周期内所有 fight_stats 的 score_breakdown 按维度求平均值。
     """
-    from app.services.scoring_rule_service import DIMENSION_LABELS
     from app.services.wvw.scoring_service import ScoringService
+    from app.utils.db.dict_utils import get_dict_label
 
     # 查询该账号的所有 FightStats（带日期筛选）
     query = (
@@ -582,8 +772,17 @@ def get_account_score_breakdown(
     if not stats_list:
         return None
 
-    # 获取当前评分规则配置（默认 dps）
-    rules = ScoringService.get_scoring_rules(db, "dps")
+    # 获取最常用职业和角色类型
+    most_used_profession = _get_most_used_profession(stats_list)
+    role_type = RoleType.DPS
+    if most_used_profession:
+        try:
+            rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
+            role_type = _determine_role_type(most_used_profession, rules)
+        except Exception:
+            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+    else:
+        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
 
     # 按维度聚合
     total_score_sum = 0.0
@@ -606,12 +805,20 @@ def get_account_score_breakdown(
         dimensions[dim] = {
             "score": avg_score,
             "weight": weight,
-            "label": DIMENSION_LABELS.get(dim, dim),
+            "label": get_dict_label("scoring_dimension", dim) or dim,
             "weighted_score": round(avg_score * weight, 2),
         }
 
     total_fights = len(stats_list)
     avg_total_score = round(total_score_sum / total_fights, 2) if total_fights > 0 else 0
+
+    # 角色类型标签映射
+    role_labels = {
+        RoleType.DPS: "伤害输出",
+        RoleType.SUPPORT: "辅助治疗",
+        RoleType.TANK: "坦克承伤",
+        RoleType.CONDITION: "症状输出",
+    }
 
     return {
         "account": account_name,
@@ -619,4 +826,21 @@ def get_account_score_breakdown(
         "avg_total_score": avg_total_score,
         "avg_grade": ScoringService.get_grade(avg_total_score),
         "dimensions": dimensions,
+        "most_used_profession": most_used_profession,
+        "role_type": role_type,
+        "role_label": role_labels.get(role_type, "伤害输出"),
     }
+
+
+def _get_most_used_profession(stats_list: List[Any]) -> Optional[str]:
+    """从战斗记录中获取最常用的职业"""
+    profession_count: Dict[str, int] = {}
+    for stat in stats_list:
+        if stat.profession:
+            profession_count[stat.profession] = profession_count.get(stat.profession, 0) + 1
+    
+    if not profession_count:
+        return None
+    
+    # 返回出现次数最多的职业
+    return max(profession_count.items(), key=lambda x: x[1])[0]

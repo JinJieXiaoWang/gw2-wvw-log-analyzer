@@ -61,6 +61,35 @@ export interface HeatmapRow {
   cells: HeatmapCell[]
 }
 
+export interface FlatEvent extends RotationEvent {
+  state: 'full' | 'interrupted' | 'instant' | 'unknown'
+}
+
+export interface SimpleCycle {
+  events: FlatEvent[]
+  duration: number
+}
+
+export interface AdvancedCast {
+  castTime: number
+  duration: number
+  state: FlatEvent['state']
+  left: number
+  width: number
+}
+
+export interface AdvancedSkillRow {
+  skillId: number | string
+  name: string
+  icon?: string
+  casts: AdvancedCast[]
+}
+
+export interface TimeTick {
+  time: number
+  position: number
+}
+
 export interface FilterOptions {
   showAuto: boolean
   showInstant: boolean

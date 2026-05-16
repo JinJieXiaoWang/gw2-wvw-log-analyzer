@@ -17,9 +17,9 @@ from typing import Any, Dict, List, Optional
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.ei_report import EiReport
-from app.models.log import Log
-from app.models.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget
+from app.models.log.ei_report import EiReport
+from app.models.log.log import Log
+from app.models.log.zevtc_data import EiPhase, EiPlayer, EiSkillMap, EiTarget
 from app.services.ei.report_service import get_full_graph_data, get_full_log_data
 from app.utils.logger import logger
 
@@ -50,6 +50,26 @@ def _parse_weapons(weapons_json: Optional[Any]) -> List[str]:
     except Exception:
         pass
     return []
+
+
+def _classify_consumables(consumables_raw: Optional[Any]) -> Dict[str, List[Dict[str, Any]]]:
+    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。"""
+    result: Dict[str, List[Dict[str, Any]]] = {"food": [], "utility": []}
+    if not consumables_raw or not isinstance(consumables_raw, list):
+        return result
+    for item in consumables_raw:
+        if not isinstance(item, dict):
+            continue
+        name = (item.get("name") or "").lower()
+        target = "utility"
+        if any(k in name for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
+            target = "food"
+        result[target].append({
+            "name": item.get("name", ""),
+            "icon": item.get("icon", ""),
+            "id": item.get("id", 0),
+        })
+    return result
 
 
 def get_unified_ei_data(db: Session, log_id: int) -> Optional[Dict[str, Any]]:
@@ -271,7 +291,7 @@ def _build_ei_player(p: EiPlayer, duration_ms: int) -> Dict[str, Any]:
         "cleanses": sup_data.get("condiCleanse", 0),
         "strips": sup_data.get("boonStrips", 0),
         "weapons": _parse_weapons(p.weapons_json),
-        "consumables": p.consumables_json or {"food": [], "utility": []},
+        "consumables": _classify_consumables(p.consumables_json),
         "role": "Unknown",
         "hps": sup_data.get("healing", 0),
         "critRate": stats_data.get("criticalRate", 0),

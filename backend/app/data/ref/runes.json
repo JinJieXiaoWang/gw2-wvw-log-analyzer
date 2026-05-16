@@ -1,0 +1,6901 @@
+{
+  "24687": {
+    "name": "超级苦痛符文",
+    "icon": "https://render.guildwars2.com/file/B952E2BB3ACDF477F4C823655DAC1294C9A12745/220692.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%中毒持续时间",
+        "+50症状伤害",
+        "+20%流血持续时间",
+        "+100症状伤害",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "苦痛"
+    },
+    "flags": []
+  },
+  "24688": {
+    "name": "超级巫妖符文",
+    "icon": "https://render.guildwars2.com/file/10324E350DEFA2276F0FD22299D4BAFD00736D18/220712.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%症状持续时间",
+        "+50体力",
+        "+10%症状持续时间",
+        "+100体力",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巫妖"
+    },
+    "flags": []
+  },
+  "24691": {
+    "name": "超级旅者符文",
+    "icon": "https://render.guildwars2.com/file/3CCCAB48D5D5FAEA14912BC6D3DB1A79DFC4C846/221050.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%增益持续时间",
+        "+12全属性",
+        "+10%增益持续时间",
+        "+16全属性",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "旅者"
+    },
+    "flags": []
+  },
+  "24696": {
+    "name": "超级群聚符文",
+    "icon": "https://render.guildwars2.com/file/F9D5AFF9E79806AF490FA1E6DD73041D15D401A7/220704.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35体力",
+        "+50治疗效果",
+        "+65体力",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "群聚"
+    },
+    "flags": []
+  },
+  "24699": {
+    "name": "超级牦牛符文",
+    "icon": "https://render.guildwars2.com/file/217571E95C4742460B033E0F5F2B3FB611C9DC4A/220698.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35体力",
+        "+50坚韧",
+        "+65体力",
+        "+100坚韧",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "牦牛"
+    },
+    "flags": []
+  },
+  "24702": {
+    "name": "超级兽群符文",
+    "icon": "https://render.guildwars2.com/file/FEF77764F24C0548271F29337268970C092DA5D3/220717.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狼群"
+    },
+    "flags": []
+  },
+  "24703": {
+    "name": "超级渗透符文",
+    "icon": "https://render.guildwars2.com/file/F9C62BCFB70106EEBCA33C4AC35352CE2A082F10/220710.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "渗透"
+    },
+    "flags": []
+  },
+  "24708": {
+    "name": "超级怜悯符文",
+    "icon": "https://render.guildwars2.com/file/6866D3A85960F806E67C616E5709F97F0D025F02/220715.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "怜悯"
+    },
+    "flags": []
+  },
+  "24711": {
+    "name": "超级吸血符文",
+    "icon": "https://render.guildwars2.com/file/F13EECC6AED473604A097A5DBB0861E3410702EF/220724.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35体力",
+        "+50威力",
+        "+65体力",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "吸血"
+    },
+    "flags": []
+  },
+  "24714": {
+    "name": "超级力量符文",
+    "icon": "https://render.guildwars2.com/file/F33F44776DFCB0D75B48005904E3C75456C4F5FA/220644.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+20%威能持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "力量"
+    },
+    "flags": []
+  },
+  "24717": {
+    "name": "超级狂怒符文",
+    "icon": "https://render.guildwars2.com/file/5F65FDA9D721B6BA5654E5ED29A42B01C04DF2DA/220719.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%激怒持续时间",
+        "+50暴击效果",
+        "+20%激怒持续时间",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狂怒"
+    },
+    "flags": []
+  },
+  "24720": {
+    "name": "超级速度符文",
+    "icon": "https://render.guildwars2.com/file/1ED9421DC70174CA9BBC33075047381C3659C837/220722.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+10%迅捷持续时间",
+        "+50体力",
+        "+20%迅捷持续时间",
+        "+100体力",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "速度"
+    },
+    "flags": []
+  },
+  "24723": {
+    "name": "超级雄鹰符文",
+    "icon": "https://render.guildwars2.com/file/2966CB3D97E85EB0E4C33AFB6D1FB63D7304EC97/220700.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35暴击效果",
+        "+50精准",
+        "+65暴击效果",
+        "+100精准",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "雄鹰"
+    },
+    "flags": []
+  },
+  "24726": {
+    "name": "超级拉塔索姆符文",
+    "icon": "https://render.guildwars2.com/file/1434C3CEC42A4F0D4861F013B899D9CBFE91E836/220720.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+10%中毒持续时间",
+        "+50精准",
+        "+20%虚弱持续时间",
+        "+100精准",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "拉塔索姆"
+    },
+    "flags": []
+  },
+  "24729": {
+    "name": "超级霍布雷克符文",
+    "icon": "https://render.guildwars2.com/file/150204B4552ED82CD15204ACC7360198F51F6C13/220708.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "-10%受到的症状持续时间",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "霍布雷克"
+    },
+    "flags": []
+  },
+  "24732": {
+    "name": "超级神佑之城符文",
+    "icon": "https://render.guildwars2.com/file/7431F5E2780106172D4A97C863D80BDAAC681FBF/220697.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+18全属性"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "神佑"
+    },
+    "flags": []
+  },
+  "24735": {
+    "name": "超级圣林之地符文",
+    "icon": "https://render.guildwars2.com/file/1A4B11313EA4B3076232AAA10D0F2F62A50A6179/220707.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+10%保护持续时间",
+        "+50治疗效果",
+        "+20%保护持续时间",
+        "+100治疗效果",
+        "+20%保护持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "林地"
+    },
+    "flags": []
+  },
+  "24738": {
+    "name": "超级拾荒符文",
+    "icon": "https://render.guildwars2.com/file/C9BEBEB9D8ADA51C1D9DEB67A3C079B5037E9833/221082.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35体力",
+        "+50症状伤害",
+        "+65体力",
+        "+100症状伤害",
+        "+20%中毒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "拾荒"
+    },
+    "flags": []
+  },
+  "24741": {
+    "name": "超级黑烟壁垒符文",
+    "icon": "https://render.guildwars2.com/file/2647384A4CFBDA013F974944C501E19D092B37A8/220696.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%激怒持续时间",
+        "+50威力",
+        "+20%激怒持续时间",
+        "+100威力",
+        "+20%激怒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "壁垒"
+    },
+    "flags": []
+  },
+  "24744": {
+    "name": "超级大地符文",
+    "icon": "https://render.guildwars2.com/file/93A53AB1F304354ED1981AB465BCDD51B2F4D857/220701.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%保护持续时间",
+        "+50坚韧",
+        "+20%保护持续时间",
+        "+100坚韧",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "大地"
+    },
+    "flags": []
+  },
+  "24747": {
+    "name": "超级火焰符文",
+    "icon": "https://render.guildwars2.com/file/6967534DA6E09150241DC411B0F4A4B415520FF7/220702.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "火焰"
+    },
+    "flags": []
+  },
+  "24750": {
+    "name": "超级空气符文",
+    "icon": "https://render.guildwars2.com/file/0A0CF1DD44A26CCC6BF9ADEE623DCED5070901BB/220693.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%迅捷持续时间",
+        "+50暴击效果",
+        "+20%迅捷持续时间",
+        "+100暴击效果",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "空气"
+    },
+    "flags": []
+  },
+  "24753": {
+    "name": "超级寒冰符文",
+    "icon": "https://render.guildwars2.com/file/B34492445E5F38655FF49B7FB9EFD4DB03A37A90/220709.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+10%冰冻持续时间",
+        "+50体力",
+        "+20%冰冻持续时间",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "寒冰"
+    },
+    "flags": []
+  },
+  "24756": {
+    "name": "超级食人魔符文",
+    "icon": "https://render.guildwars2.com/file/136590B36FFC2053D135743B063405C9A54A9E6A/220716.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "食人魔"
+    },
+    "flags": []
+  },
+  "24757": {
+    "name": "超级亡灵符文",
+    "icon": "https://render.guildwars2.com/file/D32651C75E09C23F0ECD234CE8B1C666E032296C/220723.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35坚韧",
+        "+50症状伤害",
+        "+65坚韧",
+        "+100症状伤害",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "亡灵"
+    },
+    "flags": []
+  },
+  "24762": {
+    "name": "超级蛇妖符文",
+    "icon": "https://render.guildwars2.com/file/F0932EF967413023BE0CC1EEF5E2536B2764E65A/220711.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%流血持续时间。",
+        "+50症状伤害",
+        "+20%流血持续时间",
+        "+100症状伤害",
+        "+20%流血持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "蛇妖"
+    },
+    "flags": []
+  },
+  "24765": {
+    "name": "超级巴萨泽符文",
+    "icon": "https://render.guildwars2.com/file/7CEF770BE7E6A5E507B6D98018155CD2395FAD18/220694.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%燃烧持续时间。",
+        "+50症状伤害",
+        "+20%燃烧持续时间",
+        "+100症状伤害",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巴萨泽"
+    },
+    "flags": []
+  },
+  "24768": {
+    "name": "超级德薇娜符文",
+    "icon": "https://render.guildwars2.com/file/AFB370B09F230D76014E55662924CDFB5AD947A3/220699.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+10%再生持续时间",
+        "+50治疗效果",
+        "+20%再生持续时间",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "德薇娜"
+    },
+    "flags": []
+  },
+  "24771": {
+    "name": "超级梅兰朵符文",
+    "icon": "https://render.guildwars2.com/file/66A56E6838D707BBBAD0B8D0091425502F7E3AF4/220714.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35体力",
+        "+50坚韧",
+        "-10%受到的症状持续时间",
+        "+100坚韧",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "梅兰朵"
+    },
+    "flags": []
+  },
+  "24776": {
+    "name": "超级丽莎符文",
+    "icon": "https://render.guildwars2.com/file/0A5ED9EE533DC7116A7D50EAAECD5A1FF024ACFE/220713.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+5%症状持续时间",
+        "+50精准",
+        "+10%增益持续时间",
+        "+100精准",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "丽莎"
+    },
+    "flags": []
+  },
+  "24779": {
+    "name": "超级古兰斯符文",
+    "icon": "https://render.guildwars2.com/file/5930FE034AD9067EC7DF633C683927EB4A0F509F/220706.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%冰冻持续时间",
+        "+50症状伤害",
+        "+20%冰冻持续时间",
+        "+100症状伤害",
+        "+20%冰冻持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "古兰斯"
+    },
+    "flags": []
+  },
+  "24782": {
+    "name": "超级私掠者符文",
+    "icon": "https://render.guildwars2.com/file/1C2095ADECD26F212D0F6C47BCCF5B7848B347CF/220718.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "私掠者"
+    },
+    "flags": []
+  },
+  "24785": {
+    "name": "超级魔像师符文",
+    "icon": "https://render.guildwars2.com/file/EB4F765E36EC9CF57526789A3EAB6702110D0949/220705.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+35精准",
+        "+50暴击效果",
+        "+65精准",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魔像师"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24788": {
+    "name": "超级半人马符文",
+    "icon": "https://render.guildwars2.com/file/37FB0225B2DE715BCB25B02D2914F35DBB080708/220695.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%迅捷持续时间",
+        "+50威力",
+        "+20%迅捷持续时间",
+        "+100威力",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "半人马"
+    },
+    "flags": []
+  },
+  "24791": {
+    "name": "超级地虫符文",
+    "icon": "https://render.guildwars2.com/file/D0076C2606409FD9AE49C562DD963B7B48B90136/220725.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35暴击效果",
+        "+50体力",
+        "+65暴击效果",
+        "+100体力",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "地虫"
+    },
+    "flags": []
+  },
+  "24794": {
+    "name": "超级斯瓦尼亚符文",
+    "icon": "https://render.guildwars2.com/file/65EA9C9AA55EF137657B65CA18EC98581B54DC0F/220721.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%冰冻持续时间",
+        "+50坚韧",
+        "+20%冰冻持续时间",
+        "+100坚韧",
+        "-66%受到的冰冻持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "斯瓦尼亚"
+    },
+    "flags": []
+  },
+  "24797": {
+    "name": "超级烈焰军团符文",
+    "icon": "https://render.guildwars2.com/file/776392A017E4DA16BF3DCA69292BB31ABA998010/220703.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%燃烧持续时间。",
+        "+50威力",
+        "+20%燃烧持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "烈焰军团"
+    },
+    "flags": []
+  },
+  "24800": {
+    "name": "超级元素使符文",
+    "icon": "https://render.guildwars2.com/file/F321ABCA3954145A4A17046D6170767740674866/220730.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35症状伤害",
+        "+50威力",
+        "+65症状伤害",
+        "+100威力",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "元素使"
+    },
+    "flags": []
+  },
+  "24803": {
+    "name": "超级幻术师符文",
+    "icon": "https://render.guildwars2.com/file/D4099559DA2558F9B172EFB306EE0C942193B66F/220727.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+33%晕眩持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "幻术师"
+    },
+    "flags": []
+  },
+  "24806": {
+    "name": "超级唤灵师符文",
+    "icon": "https://render.guildwars2.com/file/653A411208E7310CDCE628750C39A5C237F5F220/220726.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35体力",
+        "+50症状伤害",
+        "+65体力",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "唤灵师"
+    },
+    "flags": []
+  },
+  "24812": {
+    "name": "超级工程师符文",
+    "icon": "https://render.guildwars2.com/file/9896142965DE036D05030D04220A036062545B43/220728.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35症状伤害",
+        "+50坚韧",
+        "+65症状伤害",
+        "+100坚韧",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "工程师"
+    },
+    "flags": []
+  },
+  "24815": {
+    "name": "超级游侠符文",
+    "icon": "https://render.guildwars2.com/file/74190770191950B5CD9439B93B487816959E9D3B/220729.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35暴击效果",
+        "+50精准",
+        "+65暴击效果",
+        "+100精准",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "游侠"
+    },
+    "flags": []
+  },
+  "24818": {
+    "name": "超级潜行者符文",
+    "icon": "https://render.guildwars2.com/file/997AEFF0927F640DE515B4DA516911B3B3B6B9EA/220731.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35症状伤害",
+        "+50精准",
+        "+65症状伤害",
+        "+100精准",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "潜行者"
+    },
+    "flags": []
+  },
+  "24821": {
+    "name": "超级战士符文",
+    "icon": "https://render.guildwars2.com/file/ACA8355625070B3706CAE0B49B0549CB12123420/220732.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35威力",
+        "+50体力",
+        "+65威力",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "战士"
+    },
+    "flags": []
+  },
+  "24824": {
+    "name": "超级守护者符文",
+    "icon": "https://render.guildwars2.com/file/AE08720A7849BB97DA0E299C00440EFA5C6B1F98/220733.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "守护者"
+    },
+    "flags": []
+  },
+  "24827": {
+    "name": "超级骁骑兵符文",
+    "icon": "https://render.guildwars2.com/file/643A3C23647EF27F520860F0EFC7FEEB29766B1A/220734.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35坚韧",
+        "+50体力",
+        "+65坚韧",
+        "+100体力",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "骁骑兵"
+    },
+    "flags": []
+  },
+  "24830": {
+    "name": "超级冒险家符文",
+    "icon": "https://render.guildwars2.com/file/3C053CD2680D7DAE5E0899E8F6FF530D0E445704/221141.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125威力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "冒险"
+    },
+    "flags": []
+  },
+  "24833": {
+    "name": "超级争斗者符文",
+    "icon": "https://render.guildwars2.com/file/65A51C02312B93452A6EA9F0BF6BB5240894500D/220735.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "争斗者"
+    },
+    "flags": []
+  },
+  "24836": {
+    "name": "超级学者符文",
+    "icon": "https://render.guildwars2.com/file/4378ABC0415950DAC6A05C76920392D72E242EC2/220736.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "学者"
+    },
+    "flags": []
+  },
+  "24839": {
+    "name": "超级流水符文",
+    "icon": "https://render.guildwars2.com/file/50C5E3125234FF4525162A052335354D47B50D0F/220737.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "流水"
+    },
+    "flags": []
+  },
+  "24842": {
+    "name": "超级僧侣符文",
+    "icon": "https://render.guildwars2.com/file/E028F4BC03E9EC36A368712463D824CEC30FCCDA/220738.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "僧侣"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24845": {
+    "name": "超级望族符文",
+    "icon": "https://render.guildwars2.com/file/D8375410EAF95DB5D29CAB063051AD2AA8FAD740/221152.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%威能持续时间",
+        "+50症状伤害",
+        "+20%威能持续时间",
+        "+100症状伤害",
+        "+20%威能持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "望族"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24848": {
+    "name": "超级噩梦符文",
+    "icon": "https://render.guildwars2.com/file/2420347B95791503F2E666E948E825A652095395/220739.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%恐惧持续时间",
+        "+50症状伤害",
+        "+10%症状持续时间",
+        "+100症状伤害",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "噩梦"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24851": {
+    "name": "超级铸匠符文",
+    "icon": "https://render.guildwars2.com/file/0764987FBB1369A74103DE3F1B279C02EA503D02/220740.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%燃烧持续时间。",
+        "+50坚韧",
+        "+20%燃烧持续时间",
+        "+100坚韧",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "铸匠"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24854": {
+    "name": "超级巴火符文",
+    "icon": "https://render.guildwars2.com/file/BE044D76F2F1762634B00A5E4216E7B8C104D1FB/220741.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%燃烧持续时间。",
+        "+50威力",
+        "+10%症状持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巴火"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24857": {
+    "name": "超级庇护符文",
+    "icon": "https://render.guildwars2.com/file/7C142C0B6558D2DCDB01E580A04321302F4F5B40/220742.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%增益持续时间",
+        "+50体力",
+        "+10%增益持续时间",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "庇护"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "24860": {
+    "name": "超级欧尔符文",
+    "icon": "https://render.guildwars2.com/file/27245474E83839DC6648F22CF6B5F4B09514DF11/220743.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "欧尔"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "36044": {
+    "name": "超级疯王符文",
+    "icon": "https://render.guildwars2.com/file/0A0E6F80DA16D7764FFEA33893B66051FBE07A3F/499379.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%症状持续时间",
+        "+50威力",
+        "+20%流血持续时间",
+        "+100威力",
+        "+20%流血持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "疯王"
+    },
+    "flags": []
+  },
+  "38206": {
+    "name": "超级奉献符文",
+    "icon": "https://render.guildwars2.com/file/054CCE66F235B4DCAF1213389203BFFDE43004E7/526278.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "奉献"
+    },
+    "flags": []
+  },
+  "44951": {
+    "name": "超级茂盛符文",
+    "icon": "https://render.guildwars2.com/file/5FBA08E65429F5AF91CE4776F6AC4972FCF93E50/619710.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35治疗效果",
+        "+50体力",
+        "+65精准",
+        "+100体力",
+        "+125威力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "茂盛"
+    },
+    "flags": []
+  },
+  "44956": {
+    "name": "超级折磨符文",
+    "icon": "https://render.guildwars2.com/file/F8BC046221EA49EB3D349B5D3C50DDF33213D8B3/619715.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%折磨持续时间",
+        "+50症状伤害",
+        "+20%折磨持续时间",
+        "+100症状伤害",
+        "+20%折磨持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "折磨"
+    },
+    "flags": []
+  },
+  "44957": {
+    "name": "超级迷茫符文",
+    "icon": "https://render.guildwars2.com/file/F67A922A4624470EBAD493920DC1EE2616769E9D/619716.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%困惑持续时间",
+        "+50症状伤害",
+        "+20%困惑持续时间",
+        "+100症状伤害",
+        "+20%困惑持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "迷茫"
+    },
+    "flags": []
+  },
+  "47908": {
+    "name": "超级阴鬼符文",
+    "icon": "https://render.guildwars2.com/file/01C3E7BA21ACB2220DEF2713DCA6F5C745CD9106/638381.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "阴鬼"
+    },
+    "flags": []
+  },
+  "48907": {
+    "name": "超级解毒符文",
+    "icon": "https://render.guildwars2.com/file/0747F00D03B499F1CEE2075F9FFE9F4998C6D2B6/665777.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "解毒"
+    },
+    "flags": [
+      "NoSell"
+    ]
+  },
+  "49460": {
+    "name": "超级抗性符文",
+    "icon": "https://render.guildwars2.com/file/585BF273BFCD9D12F462087A19FBD12DF755269A/681057.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "-5%受到的症状持续时间",
+        "+50坚韧",
+        "-10%受到的症状持续时间",
+        "+100坚韧",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "抗性"
+    },
+    "flags": []
+  },
+  "67339": {
+    "name": "超级陷阱师符文",
+    "icon": "https://render.guildwars2.com/file/4A322301EDD61898193B9B94A0A6A1F1DC06BF24/866844.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+5%症状持续时间",
+        "+50症状伤害",
+        "+10%症状持续时间",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "陷阱师"
+    },
+    "flags": [
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "67342": {
+    "name": "超级光辉符文",
+    "icon": "https://render.guildwars2.com/file/BAB7FAD330A0EC183426D646C2440BCB7F74324D/866847.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%增益持续时间",
+        "+50体力",
+        "+10%增益持续时间",
+        "+100体力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "光辉"
+    },
+    "flags": [
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "67344": {
+    "name": "超级闪避符文",
+    "icon": "https://render.guildwars2.com/file/32C4042A0F1D53041C4190760B7BCA1FDADA90E1/866849.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%迅捷持续时间",
+        "+50暴击效果",
+        "+20%迅捷持续时间",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "闪避"
+    },
+    "flags": [
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "67912": {
+    "name": "超级防御者符文",
+    "icon": "https://render.guildwars2.com/file/0371967D72777E35C2E11E540E462DB2D82BA102/2028758.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "防御者"
+    },
+    "flags": [
+      "AccountBound",
+      "AccountBindOnUse"
+    ]
+  },
+  "68437": {
+    "name": "超级雪落符文",
+    "icon": "https://render.guildwars2.com/file/177542577DA8A9500706A80D1F79BB7FD5EA9DD5/924726.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "雪落"
+    },
+    "flags": [
+      "NoSell"
+    ]
+  },
+  "69370": {
+    "name": "超级魂武者符文",
+    "icon": "https://render.guildwars2.com/file/3C07D12B7B55004FA51C5D4DC20794329BE023B5/1201526.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魂武者"
+    },
+    "flags": []
+  },
+  "70450": {
+    "name": "超级德鲁伊符文",
+    "icon": "https://render.guildwars2.com/file/0FBCEEC6A67AE360C81EE314801948A5FA31E2D5/1201521.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35体力",
+        "+50治疗效果",
+        "+65体力",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "德鲁伊"
+    },
+    "flags": []
+  },
+  "70600": {
+    "name": "超级领导符文",
+    "icon": "https://render.guildwars2.com/file/0CD614069C9917057D1BEC5B060E689E18E8EE51/1201517.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%增益持续时间",
+        "+12全属性",
+        "+10%增益持续时间",
+        "+16全属性",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "领导"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse"
+    ]
+  },
+  "70829": {
+    "name": "超级夺魂者符文",
+    "icon": "https://render.guildwars2.com/file/4A990939E313EC37284DF1B1435435A7CE036930/1201525.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "夺魂者"
+    },
+    "flags": []
+  },
+  "71276": {
+    "name": "超级机械师符文",
+    "icon": "https://render.guildwars2.com/file/07FB016965EC6423035D3FEA02CF241D453203EA/1201527.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "劣斗士"
+    },
+    "flags": []
+  },
+  "71425": {
+    "name": "超级狂战士符文",
+    "icon": "https://render.guildwars2.com/file/EB082298F2B83D4E042EF9C1566F3D4E250EB204/1201518.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狂战士"
+    },
+    "flags": []
+  },
+  "72852": {
+    "name": "超级独行侠符文",
+    "icon": "https://render.guildwars2.com/file/5957E29A2B985F0FF0E50878F62A702262BC0714/1201520.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "独行侠"
+    },
+    "flags": []
+  },
+  "72912": {
+    "name": "超级荆棘符文",
+    "icon": "https://render.guildwars2.com/file/32DA0B5704E8DEC0F36B6C460734C496C603541C/1201523.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%中毒持续时间",
+        "+50症状伤害",
+        "+20%中毒持续时间",
+        "+100症状伤害",
+        "+20%中毒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "荆棘"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse"
+    ]
+  },
+  "73399": {
+    "name": "超级时空术士符文",
+    "icon": "https://render.guildwars2.com/file/80FE6B56334AB53830DD2D0F61992DF4CC44A710/1201519.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "时空术士"
+    },
+    "flags": []
+  },
+  "73653": {
+    "name": "超级耐久符文",
+    "icon": "https://render.guildwars2.com/file/585BF273BFCD9D12F462087A19FBD12DF755269A/681057.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+5%增益持续时间",
+        "+50坚韧",
+        "+10%增益持续时间",
+        "+100坚韧",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "耐久"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse"
+    ]
+  },
+  "74978": {
+    "name": "超级猎龙者符文",
+    "icon": "https://render.guildwars2.com/file/E698E699D9A75AC90CA47A3FBA0259216C29041D/1201528.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+35威力",
+        "+50暴击效果",
+        "+65威力",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "猎龙者"
+    },
+    "flags": []
+  },
+  "76100": {
+    "name": "超级预告者符文",
+    "icon": "https://render.guildwars2.com/file/041C98AABD6751C5FAF8AD74F3253CACF0E8DA74/1201522.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+5%增益持续时间",
+        "+50坚韧",
+        "+10%增益持续时间",
+        "+100坚韧",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "预告者"
+    },
+    "flags": []
+  },
+  "76166": {
+    "name": "超级暴风使符文",
+    "icon": "https://render.guildwars2.com/file/D144F10ABB48042794BA0627EE04B3311A4131DB/1201529.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%症状持续时间",
+        "+12全属性",
+        "+10%症状持续时间",
+        "+16全属性",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "暴风使"
+    },
+    "flags": []
+  },
+  "76813": {
+    "name": "超级激荡符文",
+    "icon": "https://render.guildwars2.com/file/5C75473F560F80E6A6444147EA5C66F959C46E59/1201524.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "激荡"
+    },
+    "flags": [
+      "HideSuffix",
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse"
+    ]
+  },
+  "81091": {
+    "name": "超级自然恩惠符文",
+    "icon": "https://render.guildwars2.com/file/A891700CDC179D6CC4B2FDC82F4052AC19F41801/1676536.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "-5%受到的症状持续时间",
+        "+50治疗效果",
+        "-10%受到的症状持续时间",
+        "+100治疗效果",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "自然恩惠"
+    },
+    "flags": []
+  },
+  "82633": {
+    "name": "超级全息师符文",
+    "icon": "https://render.guildwars2.com/file/3AFE1A1A79FCC768DE5A611BFC2A4D0101CBE79A/1766388.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35体力",
+        "+50威力",
+        "+65体力",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "全息师"
+    },
+    "flags": []
+  },
+  "82791": {
+    "name": "超级神枪手符文",
+    "icon": "https://render.guildwars2.com/file/17E6C846E62E51AFF8B8AF5A33FD53B391BD7E75/1766386.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "神枪手"
+    },
+    "flags": []
+  },
+  "83338": {
+    "name": "超级燃火者符文",
+    "icon": "https://render.guildwars2.com/file/5BB9C1FF1BFF6A52217F4007C2B1FFCAB9BCC6B3/1766387.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%急速持续时间",
+        "+50症状伤害",
+        "+10%增益持续时间",
+        "+100症状伤害",
+        "+20%急速持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "燃火者"
+    },
+    "flags": []
+  },
+  "83367": {
+    "name": "超级骑兵符文",
+    "icon": "https://render.guildwars2.com/file/C3B4033342280901BB155A7B124ED208DBB83923/1766384.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "骑兵"
+    },
+    "flags": []
+  },
+  "83423": {
+    "name": "超级编织者符文",
+    "icon": "https://render.guildwars2.com/file/C0D36E7D6CAAA060F2EFB0E1CAA2587002F3F451/1766394.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10%燃烧持续时间。",
+        "+12全属性",
+        "+20%冰冻持续时间",
+        "+16全属性",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "编织者"
+    },
+    "flags": []
+  },
+  "83502": {
+    "name": "超级龙魂使符文",
+    "icon": "https://render.guildwars2.com/file/6701DC14A246E241E006A54D04206F01997ED8B9/1766391.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35暴击效果",
+        "+50症状伤害",
+        "+65暴击效果",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "龙魂使"
+    },
+    "flags": []
+  },
+  "83663": {
+    "name": "超级灾厄师符文",
+    "icon": "https://render.guildwars2.com/file/53707264D8BA7E692C63769F68DC03B722223CD5/1766392.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35症状伤害",
+        "+50治疗效果",
+        "+65症状伤害",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "灾厄师"
+    },
+    "flags": []
+  },
+  "83964": {
+    "name": "超级魂兽师符文",
+    "icon": "https://render.guildwars2.com/file/5CCA6A235D02FCA92B5DC90EC82EECD8BE694222/1766385.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魂兽师"
+    },
+    "flags": []
+  },
+  "84127": {
+    "name": "超级幻象术士符文",
+    "icon": "https://render.guildwars2.com/file/F59199027BDD14A0F4EB4DE8015CAC7F49E7CCE0/1766389.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35坚韧",
+        "+50症状伤害",
+        "+65坚韧",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "幻象术士"
+    },
+    "flags": []
+  },
+  "84171": {
+    "name": "超级重生符文",
+    "icon": "https://render.guildwars2.com/file/DA4AF714D87F63978039E053D80F9F717A49D3BE/1766390.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "重生"
+    },
+    "flags": []
+  },
+  "84749": {
+    "name": "超级破法者符文",
+    "icon": "https://render.guildwars2.com/file/0F04D648CC2501FDC6B5E9929F76AD7D16D4AF0F/1766393.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "破法者"
+    },
+    "flags": []
+  },
+  "85713": {
+    "name": "超级群星符文",
+    "icon": "https://render.guildwars2.com/file/BEDDD1D249DF6FC417451E0CA25F803FA818294A/1894695.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "-30%受到的虚弱持续时间",
+        "+12全属性",
+        "-30%受到的冰冻和残废持续时间",
+        "+16全属性",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "群星"
+    },
+    "flags": []
+  },
+  "88118": {
+    "name": "超级风裔符文",
+    "icon": "https://render.guildwars2.com/file/28E50D0A627FFBC7E7112822B8C45C032E39636D/2015082.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "风裔"
+    },
+    "flags": []
+  },
+  "89999": {
+    "name": "超级烟花符文",
+    "icon": "https://render.guildwars2.com/file/CECC01C8220163A9646171B0BAA528B73DE3D527/2100803.png",
+    "rarity": "Exotic",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": ""
+    },
+    "flags": []
+  },
+  "91381": {
+    "name": "超级荆棘符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%中毒持续时间",
+        "+50症状伤害",
+        "+20%中毒持续时间",
+        "+100症状伤害",
+        "+20%中毒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "荆棘"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91387": {
+    "name": "超级幻术师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+33%晕眩持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "幻术师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91391": {
+    "name": "超级魔像师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+35精准",
+        "+50暴击效果",
+        "+65精准",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魔像师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91392": {
+    "name": "超级闪避符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%迅捷持续时间",
+        "+50暴击效果",
+        "+20%迅捷持续时间",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "闪避"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91396": {
+    "name": "超级骑兵符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "骑兵"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91397": {
+    "name": "超级狂战士符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狂战士"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91399": {
+    "name": "超级欧尔符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "欧尔"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91401": {
+    "name": "超级速度符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+10%迅捷持续时间",
+        "+50体力",
+        "+20%迅捷持续时间",
+        "+100体力",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "速度"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91404": {
+    "name": "超级防御者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "防御者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91408": {
+    "name": "超级群聚符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35体力",
+        "+50治疗效果",
+        "+65体力",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "群聚"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91410": {
+    "name": "超级噩梦符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%恐惧持续时间",
+        "+50症状伤害",
+        "+10%症状持续时间",
+        "+100症状伤害",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "噩梦"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91411": {
+    "name": "超级抗性符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "-5%受到的症状持续时间",
+        "+50坚韧",
+        "-10%受到的症状持续时间",
+        "+100坚韧",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "抗性"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91417": {
+    "name": "超级茂盛符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35治疗效果",
+        "+50体力",
+        "+65精准",
+        "+100体力",
+        "+125威力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "茂盛"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91419": {
+    "name": "超级铸匠符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%燃烧持续时间。",
+        "+50坚韧",
+        "+20%燃烧持续时间",
+        "+100坚韧",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "铸匠"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91423": {
+    "name": "超级力量符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+20%威能持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "力量"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91425": {
+    "name": "超级争斗者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "争斗者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91428": {
+    "name": "超级神佑之城符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+18全属性"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "神佑"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91430": {
+    "name": "超级德鲁伊符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35体力",
+        "+50治疗效果",
+        "+65体力",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "德鲁伊"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91432": {
+    "name": "超级猎龙者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+35威力",
+        "+50暴击效果",
+        "+65威力",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "猎龙者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91433": {
+    "name": "超级雄鹰符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35暴击效果",
+        "+50精准",
+        "+65暴击效果",
+        "+100精准",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "雄鹰"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91435": {
+    "name": "超级蛇妖符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%流血持续时间。",
+        "+50症状伤害",
+        "+20%流血持续时间",
+        "+100症状伤害",
+        "+20%流血持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "蛇妖"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91444": {
+    "name": "超级耐久符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+5%增益持续时间",
+        "+50坚韧",
+        "+10%增益持续时间",
+        "+100坚韧",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "耐久"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91445": {
+    "name": "超级亡灵符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35坚韧",
+        "+50症状伤害",
+        "+65坚韧",
+        "+100症状伤害",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "亡灵"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91447": {
+    "name": "超级魂武者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魂武者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91451": {
+    "name": "超级编织者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10%燃烧持续时间。",
+        "+12全属性",
+        "+20%冰冻持续时间",
+        "+16全属性",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "编织者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91457": {
+    "name": "超级独行侠符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "独行侠"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91459": {
+    "name": "超级牦牛符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35体力",
+        "+50坚韧",
+        "+65体力",
+        "+100坚韧",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "牦牛"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91460": {
+    "name": "超级苦痛符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%中毒持续时间",
+        "+50症状伤害",
+        "+20%流血持续时间",
+        "+100症状伤害",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "苦痛"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91464": {
+    "name": "超级灾厄师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+35症状伤害",
+        "+50治疗效果",
+        "+65症状伤害",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "灾厄师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91465": {
+    "name": "超级元素使符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35症状伤害",
+        "+50威力",
+        "+65症状伤害",
+        "+100威力",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "元素使"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91468": {
+    "name": "超级古兰斯符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%冰冻持续时间",
+        "+50症状伤害",
+        "+20%冰冻持续时间",
+        "+100症状伤害",
+        "+20%冰冻持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "古兰斯"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91471": {
+    "name": "超级丽莎符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+5%症状持续时间",
+        "+50精准",
+        "+10%增益持续时间",
+        "+100精准",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "丽莎"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91475": {
+    "name": "超级圣林之地符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+10%保护持续时间",
+        "+50治疗效果",
+        "+20%保护持续时间",
+        "+100治疗效果",
+        "+20%保护持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "林地"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91477": {
+    "name": "超级巴火符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%燃烧持续时间。",
+        "+50威力",
+        "+10%症状持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巴火"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91482": {
+    "name": "超级烟花符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": ""
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91483": {
+    "name": "超级神枪手符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "神枪手"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91485": {
+    "name": "超级旅者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%增益持续时间",
+        "+12全属性",
+        "+10%增益持续时间",
+        "+16全属性",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "旅者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91489": {
+    "name": "超级火焰符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "火焰"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91493": {
+    "name": "超级大地符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%保护持续时间",
+        "+50坚韧",
+        "+20%保护持续时间",
+        "+100坚韧",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "大地"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91494": {
+    "name": "超级斯瓦尼亚符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+10%冰冻持续时间",
+        "+50坚韧",
+        "+20%冰冻持续时间",
+        "+100坚韧",
+        "-66%受到的冰冻持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "斯瓦尼亚"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91497": {
+    "name": "超级食人魔符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "食人魔"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91501": {
+    "name": "超级僧侣符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "僧侣"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91503": {
+    "name": "超级狂怒符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%激怒持续时间",
+        "+50暴击效果",
+        "+20%激怒持续时间",
+        "+100暴击效果",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狂怒"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91507": {
+    "name": "超级烈焰军团符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%燃烧持续时间。",
+        "+50威力",
+        "+20%燃烧持续时间",
+        "+100威力",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "烈焰军团"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91508": {
+    "name": "超级陷阱师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+5%症状持续时间",
+        "+50症状伤害",
+        "+10%症状持续时间",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "陷阱师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91510": {
+    "name": "超级魂兽师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "魂兽师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91512": {
+    "name": "超级雪落符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "雪落"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91513": {
+    "name": "超级巴萨泽符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%燃烧持续时间。",
+        "+50症状伤害",
+        "+20%燃烧持续时间",
+        "+100症状伤害",
+        "+20%燃烧持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巴萨泽"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91515": {
+    "name": "超级阴鬼符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "阴鬼"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91516": {
+    "name": "超级折磨符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%折磨持续时间",
+        "+50症状伤害",
+        "+20%折磨持续时间",
+        "+100症状伤害",
+        "+20%折磨持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "折磨"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91518": {
+    "name": "超级流水符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "流水"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91522": {
+    "name": "超级工程师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35症状伤害",
+        "+50坚韧",
+        "+65症状伤害",
+        "+100坚韧",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "工程师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91523": {
+    "name": "超级战士符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35威力",
+        "+50体力",
+        "+65威力",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "战士"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91525": {
+    "name": "超级风裔符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+10全属性",
+        "+12全属性",
+        "+14全属性",
+        "+16全属性",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "风裔"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91529": {
+    "name": "超级德薇娜符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+10%再生持续时间",
+        "+50治疗效果",
+        "+20%再生持续时间",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "德薇娜"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91530": {
+    "name": "超级领导符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%增益持续时间",
+        "+12全属性",
+        "+10%增益持续时间",
+        "+16全属性",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "领导"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91533": {
+    "name": "超级巫妖符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%症状持续时间",
+        "+50体力",
+        "+10%症状持续时间",
+        "+100体力",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "巫妖"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91538": {
+    "name": "超级燃火者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%急速持续时间",
+        "+50症状伤害",
+        "+10%增益持续时间",
+        "+100症状伤害",
+        "+20%急速持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "燃火者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91541": {
+    "name": "超级游侠符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35暴击效果",
+        "+50精准",
+        "+65暴击效果",
+        "+100精准",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "游侠"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91545": {
+    "name": "超级吸血符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35体力",
+        "+50威力",
+        "+65体力",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "吸血"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91547": {
+    "name": "超级空气符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25暴击效果",
+        "+10%迅捷持续时间",
+        "+50暴击效果",
+        "+20%迅捷持续时间",
+        "+100暴击效果",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "空气"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91550": {
+    "name": "超级迷茫符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%困惑持续时间",
+        "+50症状伤害",
+        "+20%困惑持续时间",
+        "+100症状伤害",
+        "+20%困惑持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "迷茫"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91551": {
+    "name": "超级骁骑兵符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35坚韧",
+        "+50体力",
+        "+65坚韧",
+        "+100体力",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "骁骑兵"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91553": {
+    "name": "超级拾荒符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35体力",
+        "+50症状伤害",
+        "+65体力",
+        "+100症状伤害",
+        "+20%中毒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "拾荒"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91556": {
+    "name": "超级怜悯符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125治疗效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "怜悯"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91557": {
+    "name": "超级私掠者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "+20%威能持续时间",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "私掠者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91560": {
+    "name": "超级全息师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35体力",
+        "+50威力",
+        "+65体力",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "全息师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91564": {
+    "name": "超级霍布雷克符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%威能持续时间",
+        "+50威力",
+        "-10%受到的症状持续时间",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "霍布雷克"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91565": {
+    "name": "超级时空术士符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "时空术士"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91566": {
+    "name": "超级梅兰朵符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35体力",
+        "+50坚韧",
+        "-10%受到的症状持续时间",
+        "+100坚韧",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "梅兰朵"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91567": {
+    "name": "超级唤灵师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35体力",
+        "+50症状伤害",
+        "+65体力",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "唤灵师"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91568": {
+    "name": "超级幻象术士符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35坚韧",
+        "+50症状伤害",
+        "+65坚韧",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "幻象术士"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91570": {
+    "name": "超级守护者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+35治疗效果",
+        "+50坚韧",
+        "+65治疗效果",
+        "+100坚韧",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "守护者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91572": {
+    "name": "超级拉塔索姆符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+10%中毒持续时间",
+        "+50精准",
+        "+20%虚弱持续时间",
+        "+100精准",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "拉塔索姆"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91573": {
+    "name": "超级龙魂使符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35暴击效果",
+        "+50症状伤害",
+        "+65暴击效果",
+        "+100症状伤害",
+        "+125症状伤害"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "龙魂使"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91576": {
+    "name": "超级冒险家符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+35威力",
+        "+50症状伤害",
+        "+65威力",
+        "+100症状伤害",
+        "+125威力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "冒险"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91578": {
+    "name": "超级夺魂者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "夺魂者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91579": {
+    "name": "超级潜行者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25精准",
+        "+35症状伤害",
+        "+50精准",
+        "+65症状伤害",
+        "+100精准",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "潜行者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91580": {
+    "name": "超级寒冰符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+10%冰冻持续时间",
+        "+50体力",
+        "+20%冰冻持续时间",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "寒冰"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91581": {
+    "name": "超级疯王符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%症状持续时间",
+        "+50威力",
+        "+20%流血持续时间",
+        "+100威力",
+        "+20%流血持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "疯王"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91582": {
+    "name": "超级机械师符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35坚韧",
+        "+50威力",
+        "+65坚韧",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "劣斗士"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91583": {
+    "name": "超级暴风使符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "+5%症状持续时间",
+        "+12全属性",
+        "+10%症状持续时间",
+        "+16全属性",
+        "+10%症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "暴风使"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91585": {
+    "name": "超级预告者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25坚韧",
+        "+5%增益持续时间",
+        "+50坚韧",
+        "+10%增益持续时间",
+        "+100坚韧",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "预告者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91587": {
+    "name": "超级光辉符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%增益持续时间",
+        "+50体力",
+        "+10%增益持续时间",
+        "+100体力",
+        "+10%增益持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "光辉"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91588": {
+    "name": "超级黑烟壁垒符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%激怒持续时间",
+        "+50威力",
+        "+20%激怒持续时间",
+        "+100威力",
+        "+20%激怒持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "壁垒"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91590": {
+    "name": "超级破法者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "破法者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91591": {
+    "name": "超级激荡符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+25%移动速度"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "激荡"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91592": {
+    "name": "超级兽群符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+5%增益持续时间",
+        "+50威力",
+        "+10%增益持续时间",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "狼群"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91593": {
+    "name": "超级地虫符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+35暴击效果",
+        "+50体力",
+        "+65暴击效果",
+        "+100体力",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "地虫"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91595": {
+    "name": "超级学者符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35暴击效果",
+        "+50威力",
+        "+65暴击效果",
+        "+100威力",
+        "+125暴击效果"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "学者"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91599": {
+    "name": "超级半人马符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+10%迅捷持续时间",
+        "+50威力",
+        "+20%迅捷持续时间",
+        "+100威力",
+        "+20%迅捷持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "半人马"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91602": {
+    "name": "超级望族符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "+10%威能持续时间",
+        "+50症状伤害",
+        "+20%威能持续时间",
+        "+100症状伤害",
+        "+20%威能持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "望族"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91605": {
+    "name": "超级庇护符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25体力",
+        "+5%增益持续时间",
+        "+50体力",
+        "+10%增益持续时间",
+        "+100体力",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "庇护"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91608": {
+    "name": "超级渗透符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25威力",
+        "+35精准",
+        "+50威力",
+        "+65精准",
+        "+100威力",
+        "+125精准"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "渗透"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91627": {
+    "name": "超级重生符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125坚韧"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "重生"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91638": {
+    "name": "超级奉献符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>光辉<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "+5%增益持续时间",
+        "+50治疗效果",
+        "+10%增益持续时间",
+        "+100治疗效果",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "奉献"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91639": {
+    "name": "超级自然恩惠符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25治疗效果",
+        "-5%受到的症状持续时间",
+        "+50治疗效果",
+        "-10%受到的症状持续时间",
+        "+100治疗效果",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "自然恩惠"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91641": {
+    "name": "超级解毒符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+25症状伤害",
+        "-5%受到的症状持续时间",
+        "+50症状伤害",
+        "-10%受到的症状持续时间",
+        "+100症状伤害",
+        "+125体力"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "解毒"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  },
+  "91673": {
+    "name": "超级群星符文",
+    "icon": "https://render.guildwars2.com/file/3CEECEBACCC4E7D25DBC79C7A4B5B2933AB01DE3/2179567.png",
+    "rarity": "Legendary",
+    "level": 60,
+    "description": "<c=@abilitytype>元素：</c>潜能<br>双击用于一件护甲。",
+    "type": "UpgradeComponent",
+    "details": {
+      "type": "Rune",
+      "flags": [
+        "HeavyArmor",
+        "LightArmor",
+        "MediumArmor"
+      ],
+      "infusion_upgrade_flags": [],
+      "bonuses": [
+        "+8全属性",
+        "-30%受到的虚弱持续时间",
+        "+12全属性",
+        "-30%受到的冰冻和残废持续时间",
+        "+16全属性",
+        "-10%受到的症状持续时间"
+      ],
+      "attribute_adjustment": 0,
+      "infix_upgrade": {
+        "id": 112,
+        "attributes": []
+      },
+      "suffix": "群星"
+    },
+    "flags": [
+      "AccountBound",
+      "NoSell",
+      "AccountBindOnUse",
+      "DeleteWarning"
+    ]
+  }
+}

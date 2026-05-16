@@ -18,15 +18,15 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <Button
+        <BaseButton
           icon="pi pi-copy"
-          class="btn-ghost"
+          variant="ghost"
           size="small"
           @click="copyIdealRotation"
         />
-        <Button
+        <BaseButton
           icon="pi pi-pencil"
-          class="btn-ghost"
+          variant="ghost"
           size="small"
           @click="editIdealRotation"
         />
@@ -88,7 +88,7 @@
  */
 
 import { computed } from 'vue'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 // Props
 const props = defineProps<{

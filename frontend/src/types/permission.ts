@@ -9,6 +9,12 @@ export type Permission = 'read' | 'write' | 'upload' | 'delete' | 'manage_users'
 
 export type Role = 'guest' | 'operator' | 'super_admin'
 
+export const SystemRole = {
+  GUEST: 'guest' as Role,
+  OPERATOR: 'operator' as Role,
+  SUPER_ADMIN: 'super_admin' as Role
+} as const
+
 export interface User {
   id: string
   username: string
@@ -23,11 +29,25 @@ export interface LoginCredentials {
   rememberMe?: boolean
 }
 
+export interface MenuItem {
+  menu_id?: number
+  menu_name: string
+  path: string
+  icon: string
+  menu_type: 'M' | 'C'
+  children?: MenuItem[]
+  remark?: string
+  perms?: string
+  visible?: string
+  status?: string
+}
+
 export interface AuthState {
   isAuthenticated: boolean
   user: User | null
   permissions: Permission[]
   token: string | null
+  menus: MenuItem[]
 }
 
 export interface LoginAttempt {

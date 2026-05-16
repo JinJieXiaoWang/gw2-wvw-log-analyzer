@@ -2,15 +2,15 @@
   <div class="space-y-6">
     <!-- 页面头部 -->
     <PageHeader
-      title="数据看板"
-      subtitle="WvW 战斗数据总览"
+      :title="PAGE_TITLE"
+      :subtitle="PAGE_SUBTITLE"
       icon="pi pi-chart-line"
       icon-gradient="bg-gradient-to-br from-primary to-secondary"
     >
       <template #actions>
         <Select
           v-model="timeRange"
-          :options="timeRangeOptions"
+          :options="TIME_RANGE_OPTIONS"
           option-label="label"
           option-value="value"
           class="w-32"
@@ -64,8 +64,6 @@
       :is-loading="isLoadingRecentFights"
     />
   </div>
-
-  <Toast />
 </template>
 
 <script setup lang="ts">
@@ -77,7 +75,7 @@
 
 import { ref, watch, onMounted } from 'vue'
 import Select from 'primevue/select'
-import PageHeader from '@/components/common/layout/PageHeader.vue'
+import PageHeader from '@/layout/components/PageHeader.vue'
 import StatCards from '@/components/dashboard/StatCards.vue'
 import DamageTrend from '@/components/dashboard/DamageTrend.vue'
 import ProfessionDistribution from '@/components/dashboard/ProfessionDistribution.vue'
@@ -90,19 +88,42 @@ import { dashboardService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 
 // ============================================
+// 常量定义
+// ============================================
+const PAGE_TITLE = '数据看板'
+const PAGE_SUBTITLE = 'WvW 战斗数据总览'
+
+const DEFAULT_TIME_RANGE = '30d'
+
+const TIME_RANGE_DAY_MAP: Record<string, number> = {
+  '7d': 7,
+  '30d': 30,
+  '90d': 90,
+  'all': 365,
+} as const
+
+const FALLBACK_DAYS = 30
+
+const RECENT_FIGHTS_LIMIT = 10
+
+const ERROR_MESSAGES = {
+  OVERVIEW: '获取概览失败',
+  TRENDS: '获取趋势失败',
+  PROFESSIONS: '获取职业分布失败',
+  MAPS: '获取地图统计失败',
+  BUFFS: '获取Buff概览失败',
+  TOP_PLAYERS: '获取玩家排行失败',
+  RECENT_FIGHTS: '获取最近战斗失败',
+} as const
+
+// ============================================
 // 时间范围
 // ============================================
-const timeRange = ref('30d')
-const timeRangeOptions = [
-  { label: '最近7天', value: '7d' },
-  { label: '最近30天', value: '30d' },
-  { label: '最近90天', value: '90d' },
-  { label: '全部', value: 'all' }
-]
+import { TIME_RANGE_OPTIONS } from '@/constants/options'
+const timeRange = ref(DEFAULT_TIME_RANGE)
 
 const daysFromRange = (range: string): number => {
-  const map: Record<string, number> = { '7d': 7, '30d': 30, '90d': 90, 'all': 365 }
-  return map[range] || 30
+  return TIME_RANGE_DAY_MAP[range] || FALLBACK_DAYS
 }
 
 // ============================================
@@ -144,7 +165,7 @@ const fetchOverview = async () => {
       overviewData.value = result.data
     }
   } catch (e) {
-    console.error('获取概览失败', e)
+    console.error(ERROR_MESSAGES.OVERVIEW, e)
   } finally {
     isLoadingOverview.value = false
   }
@@ -161,7 +182,7 @@ const fetchTrends = async () => {
       trendData.value = result.data
     }
   } catch (e) {
-    console.error('获取趋势失败', e)
+    console.error(ERROR_MESSAGES.TRENDS, e)
   } finally {
     isLoadingTrends.value = false
   }
@@ -178,7 +199,7 @@ const fetchProfessions = async () => {
       professionItems.value = result.data.items || []
     }
   } catch (e) {
-    console.error('获取职业分布失败', e)
+    console.error(ERROR_MESSAGES.PROFESSIONS, e)
   } finally {
     isLoadingProfessions.value = false
   }
@@ -195,7 +216,7 @@ const fetchMaps = async () => {
       mapItems.value = result.data.items || []
     }
   } catch (e) {
-    console.error('获取地图统计失败', e)
+    console.error(ERROR_MESSAGES.MAPS, e)
   } finally {
     isLoadingMaps.value = false
   }
@@ -212,7 +233,7 @@ const fetchBuffs = async () => {
       buffData.value = result.data.buffs || null
     }
   } catch (e) {
-    console.error('获取Buff概览失败', e)
+    console.error(ERROR_MESSAGES.BUFFS, e)
   } finally {
     isLoadingBuffs.value = false
   }
@@ -229,7 +250,7 @@ const fetchTopPlayers = async () => {
       topPlayerItems.value = result.data.items || []
     }
   } catch (e) {
-    console.error('获取玩家排行失败', e)
+    console.error(ERROR_MESSAGES.TOP_PLAYERS, e)
   } finally {
     isLoadingTopPlayers.value = false
   }
@@ -239,14 +260,14 @@ const fetchRecentFights = async () => {
   isLoadingRecentFights.value = true
   try {
     const result = await ApiResponseWrapper.wrap(
-      dashboardService.getRecentFights(10),
+      dashboardService.getRecentFights(RECENT_FIGHTS_LIMIT),
       { showErrorMessage: false }
     )
     if (result.success && result.data) {
       recentFights.value = result.data || []
     }
   } catch (e) {
-    console.error('获取最近战斗失败', e)
+    console.error(ERROR_MESSAGES.RECENT_FIGHTS, e)
   } finally {
     isLoadingRecentFights.value = false
   }

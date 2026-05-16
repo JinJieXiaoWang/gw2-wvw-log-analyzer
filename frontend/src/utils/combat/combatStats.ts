@@ -144,30 +144,10 @@ export function getStatValueClass(type: string, p: EiAnalysisPlayer): string {
   return 'text-neutral-text'
 }
 
-/** 计算命中率 */
-export function calcHitRate(p: EiAnalysisPlayer): number {
-  const denom = (p.missed || 0) + (p.critical_rate || 0) + (p.flanking_rate || 0) + (p.glance_rate || 0) + 1
-  return Math.min(Math.max(100 - ((p.missed || 0) / denom) * 100, 0), 100)
-}
-
-/** 小队统计数据计算 */
-export function getTeamTotalDamage(g: { players: EiAnalysisPlayer[] }): number {
-  return g.players.reduce((sum, p) => sum + (p.damage || 0), 0)
-}
-
-export function getTeamAvgDps(g: { players: EiAnalysisPlayer[] }): number {
-  return g.players.length ? Math.round(g.players.reduce((sum, p) => sum + (p.dps || 0), 0) / g.players.length) : 0
-}
-
-export function getTeamAvgScore(g: { players: EiAnalysisPlayer[] }): number | undefined {
-  const scored = g.players.filter(p => p.ai_score != null)
-  return scored.length ? scored.reduce((sum, p) => sum + (p.ai_score || 0), 0) / scored.length : undefined
-}
-
-export function getTeamDownedCount(g: { players: EiAnalysisPlayer[] }): number {
-  return g.players.reduce((sum, p) => sum + (p.downed || 0), 0)
-}
-
-export function getTeamDeathCount(g: { players: EiAnalysisPlayer[] }): number {
-  return g.players.reduce((sum, p) => sum + (p.dead_count || 0), 0)
-}
+// 以下函数已废弃，数据计算已迁移至后端
+// export function calcHitRate(p: EiAnalysisPlayer): number
+// export function getTeamTotalDamage(g: { players: EiAnalysisPlayer[] }): number
+// export function getTeamAvgDps(g: { players: EiAnalysisPlayer[] }): number
+// export function getTeamAvgScore(g: { players: EiAnalysisPlayer[] }): number | undefined
+// export function getTeamDownedCount(g: { players: EiAnalysisPlayer[] }): number
+// export function getTeamDeathCount(g: { players: EiAnalysisPlayer[] }): number

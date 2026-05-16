@@ -11,13 +11,14 @@ import { usePermission } from '@/composables/system/usePermission'
 import { useDictStore } from '@/store/system/dict'
 import { configManager } from '@/services/core/configManager'
 import { STATUS_OPTIONS, EMPTY_DATA_FORM, EMPTY_TYPE_FORM } from '@/utils/core/dictConstants'
+import { NormalDisable } from '@/constants/dictValues'
 
 export function useDictionaryManagement() {
   const toast = useToast()
   const confirm = useConfirm()
-  const { isAuthenticated } = usePermission()
+  const { can } = usePermission()
   const dictStore = useDictStore()
-  const isAdmin = computed(() => isAuthenticated.value)
+  const canWrite = computed(() => can('write'))
 
   // ========== ״̬ ==========
   const isCollapsed = ref(false)
@@ -84,8 +85,8 @@ export function useDictionaryManagement() {
     return result
   })
 
-  const enabledCount = computed(() => dictData.value.filter(d => d.status === 0).length)
-  const disabledCount = computed(() => dictData.value.filter(d => d.status === 1).length)
+  const enabledCount = computed(() => dictData.value.filter(d => String(d.status) === NormalDisable.ENABLED).length)
+  const disabledCount = computed(() => dictData.value.filter(d => String(d.status) === NormalDisable.DISABLED).length)
   const loading = computed(() => dataLoading.value || typesLoading.value)
 
   // ========== 表单 ==========
@@ -252,7 +253,7 @@ export function useDictionaryManagement() {
   }
 
   return {
-    isAdmin,
+    canWrite,
     isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
     refreshing, saving, initializing,
     showDataDialog, showTypeDialog, showInitDialog,

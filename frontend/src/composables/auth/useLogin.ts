@@ -71,11 +71,12 @@ export function useLogin() {
         else if (result.message.includes('锁定')) { errorType.value = 'warning'; remainingAttempts.value = 0 }
         else { errorType.value = 'error'; remainingAttempts.value = Math.max(0, remainingAttempts.value - 1) }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { status?: number; data?: { message?: string } } }
       if (!navigator.onLine) loginError.value = '网络已断开，请检查网络连接后重试'
-      else if (error?.response?.status >= 500) loginError.value = '服务器繁忙，请稍后再试'
-      else if (error?.response?.status === 429) loginError.value = '请求过于频繁，请稍后再试'
-      else loginError.value = error?.response?.data?.message || '登录失败，请检查账号密码后重试'
+      else if ((err.response?.status || 0) >= 500) loginError.value = '服务器繁忙，请稍后再试'
+      else if (err.response?.status === 429) loginError.value = '请求过于频繁，请稍后再试'
+      else loginError.value = err.response?.data?.message || '登录失败，请检查账号密码后重试'
       errorType.value = 'error'
       console.error('Login error:', error)
     } finally {

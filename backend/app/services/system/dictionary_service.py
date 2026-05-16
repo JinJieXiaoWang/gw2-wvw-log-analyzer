@@ -8,8 +8,8 @@ from typing import Any, Dict, List, Optional
 
 from sqlalchemy.orm import Session
 
-from app.models.dictionary import SysDictData, SysDictType
-from app.utils.dict_utils import (
+from app.models.game.dictionary import SysDictData, SysDictType
+from app.utils.db.dict_utils import (
     clear_dict_cache,
     clear_dict_type_cache,
     get_dict_categories,

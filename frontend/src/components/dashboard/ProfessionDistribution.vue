@@ -77,6 +77,7 @@ import { CanvasRenderer } from 'echarts/renderers'
 import { PieChart } from 'echarts/charts'
 import { TooltipComponent, LegendComponent } from 'echarts/components'
 import VChart from 'vue-echarts'
+import { useEChartsTheme } from '@/composables/common/useEChartsTheme'
 import { getProfessionName } from '@/utils/profession/professionUtils'
 
 use([CanvasRenderer, PieChart, TooltipComponent, LegendComponent])
@@ -86,20 +87,14 @@ const props = defineProps<{
   isLoading: boolean
 }>()
 
-const chartColors = [
-  '#3b82f6', '#ef4444', '#22c55e', '#f59e0b', '#a855f7',
-  '#06b6d4', '#ec4899', '#84cc16', '#f97316', '#6366f1',
-  '#14b8a6', '#e11d48', '#8b5cf6', '#10b981', '#f43f5e'
-]
+const { tooltip, colors: chartColors } = useEChartsTheme()
 
 const chartOption = computed(() => {
   if (!props.items?.length) return {}
   return {
     tooltip: {
+      ...tooltip,
       trigger: 'item',
-      backgroundColor: 'rgba(15, 23, 42, 0.9)',
-      borderColor: 'rgba(148, 163, 184, 0.2)',
-      textStyle: { color: '#e2e8f0' },
       formatter: (params: any) => {
         return `<div style="font-weight:600">${params.name}</div>
                 <div>出场: ${params.value} 角色</div>

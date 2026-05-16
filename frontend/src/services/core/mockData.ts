@@ -6,6 +6,7 @@
  */
 
 import type { LogFile, PlayerStats, BuildCode, DashboardStats, AttendanceRecord } from '@/types'
+import { ParseStatus } from '@/constants/dictValues'
 
 export const mockLogs: LogFile[] = [
   {
@@ -257,7 +258,7 @@ export class MockDataService {
       playerCount: Math.floor(Math.random() * 50) + 20,
       duration: Math.floor(Math.random() * 3600) + 600,
       status: statuses[Math.floor(Math.random() * statuses.length)],
-      statusText: statuses[Math.floor(Math.random() * statuses.length)] === 'completed' ? '已完成' : '处理中',
+      statusText: statuses[Math.floor(Math.random() * statuses.length)] === ParseStatus.COMPLETED ? '已完成' : '处理中',
       fileSize: Math.floor(Math.random() * 50000000) + 5000000
     }))
   }

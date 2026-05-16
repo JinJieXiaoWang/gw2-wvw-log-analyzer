@@ -3,16 +3,18 @@
 # 作者：帅妹妹丶.8297
 # 创建日期：2026-04-30
 # 更新日期：2026-05-07
-# 说明：v3.0 — 支持职业特定规则、Buff覆盖率参与评分、历史数据重算
+# 说明：v3.0 — 支持职业特定规则、Buff 覆盖率参与评分、历史数据重算
 
 from typing import Any, Callable, Dict, List, Optional
 
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models.fight_stats import FightStats
-from app.models.fight import Fight
-from app.services.scoring_rule_service import ScoringRuleService
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.services.scoring.scoring_rule_service import ScoringRuleService
+from app.services.system.sys_config_service import SysConfigService
+from app.constants.dict_values import RoleType, get_grade, get_grade_label
 from app.utils.logger import logger
 
 
@@ -20,8 +22,14 @@ class ScoringService:
     """评分计算服务类（基于 FightStats）"""
 
     @staticmethod
+    def _get_scoring_mode(db: Session) -> str:
+        """从 sys_config 读取当前评分模式"""
+        config_service = SysConfigService(db)
+        return config_service.get_config("scoring_mode", "role_based")
+
+    @staticmethod
     def get_scoring_rules(
-        db: Session, role_type: str = "dps", profession: Optional[str] = None
+        db: Session, role_type: str = RoleType.DPS, profession: Optional[str] = None
     ) -> Dict[str, float]:
         """从评分规则表获取规则（按角色类型和职业）
         
@@ -30,29 +38,33 @@ class ScoringService:
             role_type: 角色类型 dps/support/tank
             profession: 精英特长/职业名称，None 表示使用通用规则
         """
+        scoring_mode = ScoringService._get_scoring_mode(db)
         service = ScoringRuleService(db)
+
+        if scoring_mode == "profession_based" and profession:
+            # profession_based 模式：查找该职业的所有规则并合并
+            prof_rules = service.get_profession_rules(profession, active_only=True)
+            rules = {}
+            for role_rules in prof_rules.values():
+                for rule in role_rules:
+                    weight_key = f"{rule.dimension}_weight"
+                    rules[weight_key] = rule.weight
+            rules.setdefault("min_score_threshold", 0.0)
+            rules.setdefault("max_score_cap", 100.0)
+            if rules and len(rules) > 2:
+                return rules
+            # 如果该职业没有规则，回退到 role_based 逻辑
+
         rules = service.get_rules_for_scoring(role_type, profession)
 
-        # 如果表为空，使用默认规则并提示
-        if not rules or len(rules) <= 2:  # 只有 min/max 阈值
-            logger.warning(f"评分规则表为空或数据不足，使用默认规则 (role_type={role_type}, profession={profession})")
-            default_fallback = {
-                "damage_weight": 0.35,
-                "power_damage_weight": 0.15,
-                "condition_damage_weight": 0.15,
-                "healing_weight": 0.20,
-                "boons_weight": 0.10,
-                "alacrity_weight": 0.05,
-                "quickness_weight": 0.05,
-                "survival_weight": 0.10,
-                "strips_weight": 0.03,
-                "cleanses_weight": 0.02,
-                "kills_weight": 0.05,
-                "breakbar_weight": 0.03,
-                "min_score_threshold": 0.0,
-                "max_score_cap": 100.0,
-            }
-            return default_fallback
+        # 如果表为空，从 JSON 配置加载兜底规则
+        if not rules or len(rules) <= 2:
+            from app.services.scoring.score_query_service import _get_default_fallback_rules
+            rules = _get_default_fallback_rules(role_type)
+            logger.warning(
+                f"评分规则表为空或数据不足，已使用 JSON 兜底规则 "
+                f"(role_type={role_type}, profession={profession})"
+            )
 
         return rules
 
@@ -144,35 +156,16 @@ class ScoringService:
     @staticmethod
     def get_grade(score: float) -> str:
         """根据分数获取等级"""
-        if score >= 90:
-            return "s"
-        elif score >= 80:
-            return "a"
-        elif score >= 70:
-            return "b"
-        elif score >= 60:
-            return "c"
-        elif score >= 40:
-            return "d"
-        else:
-            return "f"
+        return get_grade(score)
 
     @staticmethod
     def get_grade_label(grade: str) -> str:
         """根据等级获取中文标签"""
-        labels = {
-            "s": "S级",
-            "a": "A级",
-            "b": "B级",
-            "c": "C级",
-            "d": "D级",
-            "f": "F级",
-        }
-        return labels.get(grade.lower(), grade.upper())
+        return get_grade_label(grade)
 
     @staticmethod
     def calculate_all_scores(
-        fight_id: int, db: Session, role_type: str = "dps", profession: Optional[str] = None
+        fight_id: int, db: Session, role_type: str = RoleType.DPS, profession: Optional[str] = None
     ) -> Dict[str, Any]:
         """计算一场战斗中所有玩家的评分
         
@@ -230,8 +223,8 @@ class ScoringService:
             player_profession = profession or stat.profession
             player_role_type = role_type
             if not profession and player_profession:
-                from app.services.game_data.game_data_service import GameDataService
-                player_role_type = GameDataService().get_default_role(player_profession)
+                from app.services.game.game_data_service import GameDataService
+                player_role_type = GameDataService().get_role_type(player_profession)
 
             rules = ScoringService.get_scoring_rules(db, player_role_type, player_profession)
             result = ScoringService.calculate_player_score(stat_dict, rules, max_values)
@@ -272,8 +265,8 @@ class ScoringService:
         if not stats_list:
             return {"updated_count": 0}
 
-        from app.services.game_data.game_data_service import GameDataService
-        game_data = GameDataService()
+        from app.services.game.game_data_service import GameDataService
+        game_data = GameDataService(db)
 
         # 计算同场最大值
         max_values = {
@@ -293,7 +286,7 @@ class ScoringService:
         updated_count = 0
         for stat in stats_list:
             profession = stat.profession
-            role_type = game_data.get_default_role(profession) if profession else "dps"
+            role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
             rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
             stat_dict = {
@@ -348,7 +341,7 @@ class ScoringService:
         Returns:
             {"updated_count": 总更新记录数}
         """
-        from app.services.game_data.game_data_service import GameDataService
+        from app.services.game.game_data_service import GameDataService
         game_data = GameDataService()
 
         # 构建基础查询
@@ -406,7 +399,7 @@ class ScoringService:
 
                 for stat in stats_list:
                     profession = stat.profession
-                    role_type = game_data.get_default_role(profession) if profession else "dps"
+                    role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
                     rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
                     stat_dict = {

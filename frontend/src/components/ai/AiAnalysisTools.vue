@@ -1,110 +1,242 @@
 <template>
-  <div class="bg-gray-800 rounded-lg p-4">
-    <h2 class="text-xl font-semibold mb-4">
-      AI分析工具
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="bg-gray-700 rounded p-4">
-        <h3 class="font-medium mb-2">
-          分析战斗
-        </h3>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">ս斗ID</label>
-          <input 
-            v-model="localFightId" 
-            type="text" 
-            class="w-full bg-gray-600 rounded px-3 py-2 text-sm"
-            placeholder="输入战斗ID"
-          >
-        </div>
-        <button 
-          class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors" 
-          @click="analyzeFight"
-        >
-          开始分析
-        </button>
+  <div class="space-y-4">
+    <AiAnalysisDisabled v-if="disabled" />
+
+    <template v-else>
+      <AiAnalysisHeader />
+
+      <div class="space-y-4">
+        <AiAnalysisFight
+          v-model="selectedFightId"
+          :recent-fights="recentFights"
+          :disabled="analyzing"
+          @analyze="handleAnalyzeFight"
+        />
+        <AiAnalysisPlayer
+          v-model="localMemberId"
+          :recent-players="recentPlayers"
+          :disabled="analyzing"
+          @analyze="handleAnalyzeMember"
+        />
+        <AiAnalysisBuild
+          v-model="localBuildId"
+          :recent-builds="recentBuilds"
+          :disabled="analyzing"
+          @analyze="handleAnalyzeBuild"
+        />
       </div>
-      
-      <div class="bg-gray-700 rounded p-4">
-        <h3 class="font-medium mb-2">
-          分析成Ա
-        </h3>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">成ԱID</label>
-          <input 
-            v-model="localMemberId" 
-            type="text" 
-            class="w-full bg-gray-600 rounded px-3 py-2 text-sm"
-            placeholder="输入成ԱID"
-          >
-        </div>
-        <button 
-          class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors" 
-          @click="analyzeMember"
-        >
-          开始分析
-        </button>
-      </div>
-      
-      <div class="bg-gray-700 rounded p-4">
-        <h3 class="font-medium mb-2">
-          分析Build
-        </h3>
-        <div class="mb-2">
-          <label class="block text-sm mb-1">Build ID</label>
-          <input 
-            v-model="localBuildId" 
-            type="text" 
-            class="w-full bg-gray-600 rounded px-3 py-2 text-sm"
-            placeholder="输入Build ID"
-          >
-        </div>
-        <button 
-          class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition-colors" 
-          @click="analyzeBuild"
-        >
-          开始分析
-        </button>
-      </div>
-    </div>
+
+      <AiAnalysisSmartPanel
+        v-model:smart-mode="smartMode"
+        :analyzing="analyzing"
+        :error-message="errorMessage"
+        :smart-suggestion="smartSuggestion"
+        @analyze-all="handleAnalyzeAll"
+        @clear-error="clearError"
+        @execute-smart-action="executeSmartAction"
+      />
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
-/**
- * AI分析工具组件
- * 功能：提供AI分析工具的输入界面
- * 作者：˧姐姐
- * 创建日期：2026-04-27
- */
+import { ref, watch } from 'vue'
+import AiAnalysisDisabled from './AiAnalysisDisabled.vue'
+import AiAnalysisHeader from './AiAnalysisHeader.vue'
+import AiAnalysisFight from './AiAnalysisFight.vue'
+import AiAnalysisPlayer from './AiAnalysisPlayer.vue'
+import AiAnalysisBuild from './AiAnalysisBuild.vue'
+import AiAnalysisSmartPanel from './AiAnalysisSmartPanel.vue'
+import {
+  TOOLS_ERROR_SELECT_FIGHT,
+  TOOLS_ERROR_ENTER_PLAYER,
+  TOOLS_ERROR_ENTER_BUILD,
+  SMART_SUGGESTION_TITLE,
+  SMART_SUGGESTION_COMBO_MSG,
+  SMART_SUGGESTION_COMBO_ACTION,
+  SMART_SUGGESTION_FIGHT_MSG,
+  SMART_SUGGESTION_FIGHT_ACTION,
+  SMART_SUGGESTION_PLAYER_MSG,
+  SMART_SUGGESTION_PLAYER_ACTION,
+} from '@/constants/aiAnalysis'
 
-import { ref } from 'vue'
+interface FightOption {
+  id: string
+  name: string
+  date: string
+}
 
-// Emits
+interface PlayerOption {
+  id: string
+  name: string
+  profession: string
+}
+
+interface BuildOption {
+  id: string
+  name: string
+  profession: string
+}
+
+interface SmartSuggestion {
+  title: string
+  message: string
+  action?: string
+  actionType?: 'fight' | 'player' | 'build'
+  actionId?: string
+}
+
+const props = defineProps<{
+  disabled?: boolean
+  recentFights?: FightOption[]
+  recentPlayers?: PlayerOption[]
+  recentBuilds?: BuildOption[]
+}>()
+
 const emit = defineEmits<{
   'analyze-fight': [fightId: string]
   'analyze-member': [memberId: string]
   'analyze-build': [buildId: string]
+  'analyze-all': []
 }>()
 
-// 本地״̬
-const localFightId = ref('')
+const selectedFightId = ref('')
 const localMemberId = ref('')
 const localBuildId = ref('')
+const analyzing = ref(false)
+const errorMessage = ref('')
+const smartMode = ref(true)
+const smartSuggestion = ref<SmartSuggestion | null>(null)
 
-// 事件处理
-const analyzeFight = () => {
-  if (!localFightId.value) return
-  emit('analyze-fight', localFightId.value)
+const clearError = () => {
+  errorMessage.value = ''
 }
 
-const analyzeMember = () => {
-  if (!localMemberId.value) return
+const updateSmartSuggestion = () => {
+  if (!smartMode.value) {
+    smartSuggestion.value = null
+    return
+  }
+
+  if (selectedFightId.value && localMemberId.value) {
+    smartSuggestion.value = {
+      title: SMART_SUGGESTION_TITLE,
+      message: SMART_SUGGESTION_COMBO_MSG,
+      action: SMART_SUGGESTION_COMBO_ACTION,
+      actionType: 'fight',
+      actionId: selectedFightId.value,
+    }
+  } else if (selectedFightId.value) {
+    smartSuggestion.value = {
+      title: SMART_SUGGESTION_TITLE,
+      message: SMART_SUGGESTION_FIGHT_MSG,
+      action: SMART_SUGGESTION_FIGHT_ACTION,
+      actionType: 'player',
+      actionId: '',
+    }
+  } else if (localMemberId.value) {
+    smartSuggestion.value = {
+      title: SMART_SUGGESTION_TITLE,
+      message: SMART_SUGGESTION_PLAYER_MSG,
+      action: SMART_SUGGESTION_PLAYER_ACTION,
+      actionType: 'fight',
+      actionId: '',
+    }
+  } else {
+    smartSuggestion.value = null
+  }
+}
+
+const executeSmartAction = () => {
+  if (!smartSuggestion.value) return
+
+  switch (smartSuggestion.value.actionType) {
+    case 'fight':
+      if (smartSuggestion.value.actionId) {
+        handleAnalyzeFight()
+      } else if (props.recentFights?.length) {
+        selectedFightId.value = props.recentFights[0].id
+        handleAnalyzeFight()
+      }
+      break
+    case 'player':
+      if (props.recentPlayers?.length) {
+        localMemberId.value = props.recentPlayers[0].id
+        handleAnalyzeMember()
+      }
+      break
+    case 'build':
+      if (smartSuggestion.value.actionId) {
+        localBuildId.value = smartSuggestion.value.actionId
+        handleAnalyzeBuild()
+      }
+      break
+  }
+  smartSuggestion.value = null
+}
+
+watch(smartMode, (newVal) => {
+  if (newVal) {
+    updateSmartSuggestion()
+  } else {
+    smartSuggestion.value = null
+  }
+})
+
+watch([selectedFightId, localMemberId, localBuildId], () => {
+  if (smartMode.value) {
+    updateSmartSuggestion()
+  }
+})
+
+const handleAnalyzeFight = () => {
+  if (!selectedFightId.value) {
+    errorMessage.value = TOOLS_ERROR_SELECT_FIGHT
+    return
+  }
+  clearError()
+  analyzing.value = true
+  smartSuggestion.value = null
+  emit('analyze-fight', selectedFightId.value)
+}
+
+const handleAnalyzeMember = () => {
+  if (!localMemberId.value) {
+    errorMessage.value = TOOLS_ERROR_ENTER_PLAYER
+    return
+  }
+  clearError()
+  analyzing.value = true
+  smartSuggestion.value = null
   emit('analyze-member', localMemberId.value)
+  localMemberId.value = ''
 }
 
-const analyzeBuild = () => {
-  if (!localBuildId.value) return
+const handleAnalyzeBuild = () => {
+  if (!localBuildId.value) {
+    errorMessage.value = TOOLS_ERROR_ENTER_BUILD
+    return
+  }
+  clearError()
+  analyzing.value = true
+  smartSuggestion.value = null
   emit('analyze-build', localBuildId.value)
+  localBuildId.value = ''
 }
+
+const handleAnalyzeAll = () => {
+  clearError()
+  analyzing.value = true
+  smartSuggestion.value = null
+  emit('analyze-all')
+}
+
+defineExpose({
+  resetAnalyzing: () => {
+    analyzing.value = false
+  },
+  triggerSmartSuggestion: () => {
+    updateSmartSuggestion()
+  },
+})
 </script>

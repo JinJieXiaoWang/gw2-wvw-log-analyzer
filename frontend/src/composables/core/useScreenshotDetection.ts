@@ -144,7 +144,6 @@ export function useScreenshotDetection(options: ScreenshotDetectionOptions = {})
       window.addEventListener('focus', handleFocus)
     }
     if (detectClipboard && 'clipboard' in navigator) {
-      // @ts-ignore - clipboardchange 是非标准事件
       navigator.clipboard?.addEventListener?.('clipboardchange', handleClipboardChange)
     }
     if (detectDevTools) {
@@ -158,7 +157,6 @@ export function useScreenshotDetection(options: ScreenshotDetectionOptions = {})
     window.removeEventListener('keydown', handleDevToolsKey)
     window.removeEventListener('blur', handleBlur)
     window.removeEventListener('focus', handleFocus)
-    // @ts-ignore
     navigator.clipboard?.removeEventListener?.('clipboardchange', handleClipboardChange)
     if (blurTimer) clearTimeout(blurTimer)
     if (devToolsTimer) clearInterval(devToolsTimer)

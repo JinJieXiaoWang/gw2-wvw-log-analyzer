@@ -6,26 +6,33 @@
           {{ selectedDictType.dict_name }}
           <span class="type-code">({{ selectedDictType.dict_type }})</span>
         </template>
-        <template v-else>请选择字典分类</template>
+        <template v-else>
+          请选择字典分类
+        </template>
       </h3>
     </div>
     <div class="toolbar-right">
       <IconField>
         <InputIcon class="pi pi-search" />
-        <InputText v-model="localSearch" placeholder="搜索数据..." size="small" :disabled="!selectedDictType" />
+        <InputText
+          v-model="localSearch"
+          placeholder="搜索数据..."
+          size="small"
+          :disabled="!selectedDictType"
+        />
       </IconField>
       <BaseSelect
         v-model="localStatus"
         :options="statusOptions"
         option-label="label"
         option-value="value"
-        placeholder="״̬ɸѡ"
+        placeholder="状态筛选"
         size="small"
         class="status-select"
         :disabled="!selectedDictType"
       />
       <BaseButton
-        v-if="isAdmin"
+        v-if="canWrite"
         label="新增"
         icon="pi pi-plus"
         severity="success"
@@ -34,7 +41,7 @@
         @click="$emit('add')"
       />
       <BaseButton
-        v-if="isAdmin && selectedDictType"
+        v-if="canWrite && selectedDictType"
         label="编辑分类"
         icon="pi pi-pencil"
         severity="warning"
@@ -47,17 +54,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import InputText from 'primevue/inputtext'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import type { DictType } from '@/services/system/dictionaryService'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
-import BaseButton from '@/components/common/ui/BaseButton.vue'
-import BaseSelect from '@/components/common/ui/BaseSelect.vue'
-import type { DictType } from '@/services/system/dictionaryService'
+import InputText from 'primevue/inputtext'
+import { computed } from 'vue'
 
 const props = defineProps<{
   selectedDictType: DictType | null
-  isAdmin: boolean
+  canWrite: boolean
   statusOptions: { label: string; value: number | null }[]
   dataSearchKeyword: string
   statusFilter: number | null
@@ -83,12 +90,55 @@ const localStatus = computed({
 
 <style scoped>
 .toolbar {
-  display: flex; justify-content: space-between; align-items: center;
-  background: #2a2a2a; border-radius: 12px; padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-.toolbar-left { display: flex; align-items: center; }
-.toolbar-title { font-size: 16px; font-weight: 600; color: #e5e5e5; margin: 0; }
-.type-code { font-size: 12px; color: #909399; margin-left: 8px; }
-.toolbar-right { display: flex; align-items: center; gap: 12px; }
-.status-select { width: 120px; }
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.toolbar-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+}
+.type-code {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-left: 8px;
+  font-family: monospace;
+}
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.status-select {
+  width: 120px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .toolbar-left {
+    justify-content: center;
+  }
+  .toolbar-right {
+    justify-content: center;
+  }
+}
 </style>

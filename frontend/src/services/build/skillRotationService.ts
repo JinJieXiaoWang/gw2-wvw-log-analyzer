@@ -1,6 +1,6 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
 
 export interface SkillRotationAnalyzeRequest {
   member_account: string
@@ -32,6 +32,22 @@ export class SkillRotationService {
     const params: any = { benchmark_account: benchmarkAccount }
     if (fightId) params.fight_id = fightId
     return apiFactory.get<any>(API_ENDPOINTS.SKILL_ROTATION.COMPARE_PLAYER(memberAccount), { params })
+  }
+
+  async analyzeSkillRotationByIds(logId: string, memberId: string): Promise<ApiResponse<any>> {
+    return apiFactory.post<any>(API_ENDPOINTS.SKILL_ROTATION.ANALYZE, { log_id: logId, member_id: memberId })
+  }
+
+  async exportReport(logId: string, memberId: string): Promise<Blob | null> {
+    const response = await apiFactory.post<Blob>(
+      API_ENDPOINTS.SKILL_ROTATION.EXPORT_REPORT,
+      { log_id: logId, member_id: memberId },
+      { responseType: 'blob' }
+    )
+    if (response.success && response.data) {
+      return response.data
+    }
+    return null
   }
 }
 

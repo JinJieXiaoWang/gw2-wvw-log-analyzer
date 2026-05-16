@@ -12,7 +12,7 @@
  */
 
 import { ThemeService } from '@/services/system/themeService'
-import type { ThemeConfig } from '@/constants/themes'
+import type { ThemeConfig } from '@/config/themes'
 
 /**
  * 图片颜色调整模式

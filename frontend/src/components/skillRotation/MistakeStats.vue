@@ -1,77 +1,88 @@
+<script setup lang="ts">
+// 模块功能：失误统计组件
+// 作者：帅姐姐
+// 创建日期：2026-05-14
+
+import type { Mistake } from '@/models/skillRotation';
+import { computed } from 'vue';
+
+interface Props {
+  mistakes?: Mistake[] | null
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  mistakes: null
+})
+
+const safeMistakes = computed(() => {
+  if (!Array.isArray(props.mistakes)) return []
+  return props.mistakes.filter(mistake => mistake !== null && mistake !== undefined)
+})
+</script>
+
 <template>
-  <div
-    class="card animate-slide-in-up"
-    style="animation-delay: 0.5s"
-  >
+  <div class="mistake-stats bg-[#1a1a1e] border border-[#2a2a2e] rounded-lg p-4">
     <div class="flex items-center gap-3 mb-4">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-status-warning/30 to-status-error/30 flex items-center justify-center">
-        <i class="pi pi-exclamation-triangle text-status-warning" />
+      <div
+        class="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500/30 to-red-500/30 flex items-center justify-center"
+      >
+        <i class="pi pi-exclamation-triangle text-yellow-500" />
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-neutral-text">
+        <h3 class="text-lg font-semibold text-white">
           失误统计
         </h3>
-        <p class="text-xs text-neutral-text-secondary">
+        <p class="text-xs text-[#909399]">
           需要改进的地方
         </p>
       </div>
     </div>
-    <div class="space-y-4">
+    <div
+      v-if="safeMistakes.length > 0"
+      class="space-y-3"
+    >
       <div
-        v-for="mistake in mistakeStats"
-        :key="mistake.id"
-        class="p-4 bg-neutral-bg hover:bg-neutral-hover rounded-xl transition-all"
+        v-for="(mistake, index) in safeMistakes"
+        :key="index"
+        class="p-3 bg-[#2a2a2e] rounded-md"
       >
         <div class="flex items-start justify-between mb-2">
           <div>
-            <p class="text-neutral-text font-bold">
-              {{ mistake.type }}
+            <p class="text-white font-bold text-sm">
+              {{
+                mistake.type === 'interrupt' ? '技能被打断' :
+                mistake.type === 'cancel' ? '技能取消' :
+                mistake.type === 'early' ? '过早施放' :
+                mistake.type === 'late' ? '过晚施放' : mistake.type
+              }}
             </p>
-            <p class="text-xs text-neutral-text-secondary">
+            <p class="text-xs text-[#909399]">
               {{ mistake.description }}
             </p>
           </div>
-          <span class="game-badge game-badge-error">
-            {{ mistake.count }}次
+          <span
+            class="text-xs px-2 py-1 rounded"
+            :class="
+              mistake.impact === 'high' ? 'bg-red-500/20 text-red-400' :
+              mistake.impact === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+              'bg-blue-500/20 text-blue-400'
+            "
+          >
+            {{
+              mistake.impact === 'high' ? '高影响' :
+              mistake.impact === 'medium' ? '中影响' : '低影响'
+            }}
           </span>
         </div>
-        <div class="flex items-center gap-2">
-          <div class="flex-1 game-progress">
-            <div
-              class="game-progress-error"
-              :style="{ width: (mistake.count / maxMistakeCount * 100) + '%' }"
-            />
-          </div>
-          <span class="text-xs text-neutral-text-disabled font-medium">{{ (mistake.count / maxMistakeCount * 100).toFixed(0) }}%</span>
-        </div>
       </div>
+    </div>
+    <div
+      v-else
+      class="text-[#909399] text-center py-8"
+    >
+      暂无失误数据
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
-/**
- * 失误统计组件
- * 功能：显示技能循环中的失误统计
- * 作者：帅姐姐
- * 创建日期：2026-04-27
- */
-
-import { computed } from 'vue'
-
-// Props
-const props = defineProps<{
-  mistakeStats: Array<{
-    id: number
-    type: string
-    description: string
-    count: number
-  }>
-}>()
-
-// 确保props被使用
-console.log(props.mistakeStats)
-
-// 计算属性
-const maxMistakeCount = computed(() => props.mistakeStats.length > 0 ? Math.max(...props.mistakeStats.map(m => m.count)) : 0)
-</script>
+<style scoped lang="postcss"></style>

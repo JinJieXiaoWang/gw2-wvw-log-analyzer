@@ -18,16 +18,16 @@
         </div>
       </div>
       <div class="flex gap-2">
-        <Button
+        <BaseButton
           label="总览"
           size="small"
-          :class="teamView === 'overview' ? 'btn-game' : 'btn-ghost'"
+          :variant="teamView === 'overview' ? 'game' : 'ghost'"
           @click="changeTeamView('overview')"
         />
-        <Button
+        <BaseButton
           label="详情"
           size="small"
-          :class="teamView === 'detail' ? 'btn-game' : 'btn-ghost'"
+          :variant="teamView === 'detail' ? 'game' : 'ghost'"
           @click="changeTeamView('detail')"
         />
       </div>
@@ -86,7 +86,7 @@
  * 创建日期：2026-04-27
  */
 
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 
 defineProps<{
   teamRanking: Array<{

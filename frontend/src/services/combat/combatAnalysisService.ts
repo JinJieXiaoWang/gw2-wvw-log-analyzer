@@ -6,30 +6,7 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-
-// 字段转换工具函数：snake_case -> camelCase
-export function snakeToCamel(str: string): string {
-  return str.replace(/(_\w)/g, (match) => match[1].toUpperCase())
-}
-
-// 递归转换对象属性名
-export function convertKeysToCamelCase(obj: any): any {
-  if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-  if (Array.isArray(obj)) {
-    return obj.map((item) => convertKeysToCamelCase(item))
-  }
-  const result: Record<string, any> = {}
-  for (const key in obj) {
-    if (Object.prototype.hasOwnProperty.call(obj, key)) {
-      const newKey = snakeToCamel(key)
-      result[newKey] = convertKeysToCamelCase(obj[key])
-    }
-  }
-  return result
-}
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 // 接口数据类型定义
 

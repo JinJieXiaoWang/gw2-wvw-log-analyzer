@@ -71,8 +71,8 @@ defineProps<{
 }>()
 
 const buffList = [
-  { key: 'might', label: '力量', colorClass: 'bg-status-error', textClass: 'text-status-error' },
-  { key: 'fury', label: '狂怒', colorClass: 'bg-status-warning', textClass: 'text-status-warning' },
+  { key: 'might', label: '威能', colorClass: 'bg-status-error', textClass: 'text-status-error' },
+  { key: 'fury', label: '激怒', colorClass: 'bg-status-warning', textClass: 'text-status-warning' },
   { key: 'quickness', label: '急速', colorClass: 'bg-primary', textClass: 'text-primary' },
   { key: 'alacrity', label: '敏捷', colorClass: 'bg-secondary', textClass: 'text-secondary' },
   { key: 'protection', label: '保护', colorClass: 'bg-status-success', textClass: 'text-status-success' },

@@ -10,6 +10,7 @@
       />
       <main class="main-content">
         <DictOverviewCards
+          v-if="showOverviewCards"
           :dict-data-length="dictData.length"
           :enabled-count="enabledCount"
           :disabled-count="disabledCount"
@@ -19,7 +20,7 @@
           v-model:data-search-keyword="dataSearchKeyword"
           v-model:status-filter="statusFilter"
           :selected-dict-type="selectedDictType"
-          :is-admin="isAdmin"
+          :can-write="canWrite"
           :status-options="statusOptions"
           @add="openAddDialog"
           @edit-type="openEditTypeDialog"
@@ -28,7 +29,7 @@
           :selected-dict-type="selectedDictType"
           :filtered-dict-data="filteredDictData"
           :loading="loading"
-          :is-admin="isAdmin"
+          :can-write="canWrite"
           @edit="openEditDialog"
           @delete="confirmDelete"
         />
@@ -40,7 +41,6 @@
       v-model:form="dataForm"
       :editing-data="editingData"
       :saving="saving"
-      :status-options="statusOptions"
       @save="saveData"
     />
     <DictTypeDialog
@@ -48,7 +48,6 @@
       v-model:form="typeForm"
       :editing-type="editingType"
       :saving="saving"
-      :status-options="statusOptions"
       @save="saveType"
     />
     <InitConfirmDialog
@@ -63,20 +62,26 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { useDictionaryManagement } from '@/composables/core/useDictionaryManagement'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
-import { useDictionaryManagement } from '@/composables/core/useDictionaryManagement'
-import DictTypeSidebar from './DictTypeSidebar.vue'
-import DictOverviewCards from './DictOverviewCards.vue'
-import DictDataToolbar from './DictDataToolbar.vue'
-import DictDataTable from './DictDataTable.vue'
+import { onMounted } from 'vue'
 import DictDataDialog from './DictDataDialog.vue'
+import DictDataTable from './DictDataTable.vue'
+import DictDataToolbar from './DictDataToolbar.vue'
+import DictOverviewCards from './DictOverviewCards.vue'
 import DictTypeDialog from './DictTypeDialog.vue'
+import DictTypeSidebar from './DictTypeSidebar.vue'
 import InitConfirmDialog from './InitConfirmDialog.vue'
 
+const props = withDefaults(defineProps<{
+  showOverviewCards?: boolean
+}>(), {
+  showOverviewCards: true
+})
+
 const {
-  isAdmin, isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
+  canWrite, isCollapsed, searchKeyword, dataSearchKeyword, statusFilter,
   refreshing, saving, initializing,
   showDataDialog, showTypeDialog, showInitDialog,
   editingData, editingType,
@@ -96,7 +101,34 @@ defineExpose({ toggleSidebar, handleReloadCache })
 </script>
 
 <style scoped>
-.dictionary-management { display: flex; flex-direction: column; height: 100%; width: 100%; gap: 16px; }
-.content-layout { display: flex; gap: 16px; flex: 1; min-height: 0; }
-.main-content { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.dictionary-management {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+  gap: 16px;
+  padding: 0;
+  box-sizing: border-box;
+}
+.content-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 1024px) {
+  .content-layout {
+    flex-direction: column;
+  }
+}
 </style>

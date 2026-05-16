@@ -1,4 +1,5 @@
 <template>
+  <!-- 动态值，无法使用 Tailwind 静态类 -->
   <div
     class="card animate-slide-in-up"
     style="animation-delay: 0.1s"
@@ -64,10 +65,10 @@
           class="w-full"
         />
       </div>
-      <Button
+      <BaseButton
         label="应用筛选"
         icon="pi pi-search"
-        class="btn-game"
+        variant="game"
         @click="applyFilters"
       />
     </div>
@@ -83,18 +84,20 @@
  */
 
 import { ref, watch, reactive } from 'vue'
-import Button from 'primevue/button'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import Dropdown from 'primevue/dropdown'
 import Calendar from 'primevue/calendar'
 
+// v-model
+const dateRange = defineModel<Date[] | null>('dateRange', { default: null })
+const filters = defineModel<{
+  serverName: string | null
+  mapName: string | null
+  profession: string | null
+}>('filters', { default: () => ({ serverName: null, mapName: null, profession: null }) })
+
 // Props
 const props = defineProps<{
-  dateRange: Date[] | null
-  filters: {
-    serverName: string | null
-    mapName: string | null
-    profession: string | null
-  }
   serverOptions: Array<{ label: string; value: string }>
   mapOptions: Array<{ label: string; value: string }>
   professionOptions: Array<{ label: string; value: string }>
@@ -102,25 +105,23 @@ const props = defineProps<{
 
 // Emits
 const emit = defineEmits<{
-  'update:dateRange': [value: Date[] | null]
-  'update:filters': [value: { serverName: string | null; mapName: string | null; profession: string | null }]
   'apply-filters': []
 }>()
 
 // 本地状态
-const localDateRange = ref<Date[] | null>(props.dateRange)
+const localDateRange = ref<Date[] | null>(dateRange.value)
 const localFilters = reactive({
-  serverName: props.filters.serverName,
-  mapName: props.filters.mapName,
-  profession: props.filters.profession
+  serverName: filters.value.serverName,
+  mapName: filters.value.mapName,
+  profession: filters.value.profession
 })
 
-// 监听props变化
-watch(() => props.dateRange, (newValue) => {
+// 监听model变化
+watch(() => dateRange.value, (newValue) => {
   localDateRange.value = newValue
 })
 
-watch(() => props.filters, (newValue) => {
+watch(() => filters.value, (newValue) => {
   localFilters.serverName = newValue.serverName
   localFilters.mapName = newValue.mapName
   localFilters.profession = newValue.profession
@@ -128,11 +129,11 @@ watch(() => props.filters, (newValue) => {
 
 // 监听本地状态变化
 watch(localDateRange, (newValue) => {
-  emit('update:dateRange', newValue)
+  dateRange.value = newValue
 })
 
 watch(localFilters, (newValue) => {
-  emit('update:filters', { ...newValue })
+  filters.value = { ...newValue }
 }, { deep: true })
 
 // 事件处理

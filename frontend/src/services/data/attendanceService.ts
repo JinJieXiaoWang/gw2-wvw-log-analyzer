@@ -1,6 +1,7 @@
 import { apiFactory } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-import type { ApiResponse } from '../../models'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import type { ApiResponse } from '@/types/api'
+
 
 export interface AttendanceListParams {
   page?: number
@@ -86,6 +87,42 @@ export class AttendanceService {
     if (startDate) params.start_date = startDate
     if (endDate) params.end_date = endDate
     return apiFactory.get<any>(API_ENDPOINTS.ATTENDANCE.DETAIL(memberId), { params })
+  }
+
+  /** v2.0 导出账号出勤详情 */
+  async exportAccountDetail(
+    account: string,
+    format: 'csv' | 'excel' = 'csv',
+    startDate?: string | null,
+    endDate?: string | null
+  ): Promise<void> {
+    const params: any = {}
+    if (startDate) params.start_date = startDate
+    if (endDate) params.end_date = endDate
+    params.format = format
+
+    // 构建URL
+    let url = API_ENDPOINTS.ATTENDANCE.ACCOUNT_EXPORT(account)
+    const queryString = new URLSearchParams(params).toString()
+    if (queryString) {
+      url += `?${queryString}`
+    }
+
+    try {
+      const blob = await apiFactory.download(url)
+      const downloadUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement('a')
+      link.href = downloadUrl
+      const fileExt = format === 'excel' ? 'xlsx' : 'csv'
+      link.download = `${account}_attendance_detail.${fileExt}`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(downloadUrl)
+    } catch (error) {
+      console.error('导出失败:', error)
+      throw error
+    }
   }
 }
 

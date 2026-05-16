@@ -10,10 +10,10 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sqlalchemy.orm import Session, joinedload
 
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.zevtc_data import EiPlayer, EiSkillMap
-from app.services.score_query_service import PlayerScoreService
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.zevtc_data import EiPlayer, EiSkillMap
+from app.services.scoring.score_query_service import PlayerScoreService
 from app.utils.logger import logger
 
 
@@ -30,6 +30,90 @@ def get_fight_with_stats(db: Session, fight_id: int) -> Optional[Fight]:
         .filter(Fight.id == fight_id)
         .first()
     )
+
+
+def build_fight_stats_data(fight: Fight) -> Dict[str, Any]:
+    """将 Fight ORM 对象转换为前端可用的结构化统计数据。
+    
+    Returns:
+        {
+            "players": [...],      # 友方玩家列表
+            "enemy": {...},        # 敌方信息
+            "aggregate": {...},    # 聚合统计
+        }
+    """
+    if not fight or not fight.fight_stats:
+        return {"players": [], "enemy": {}, "aggregate": {}}
+    
+    # 过滤友方玩家（按 team_id）
+    friendly_team = _get_friendly_team_id(fight.fight_stats)
+    if friendly_team is not None:
+        friendly_stats = [s for s in fight.fight_stats if s.team_id == friendly_team]
+    else:
+        friendly_stats = [s for s in fight.fight_stats if s.account]
+    
+    def _float(v):
+        return float(v) if v is not None else 0
+    
+    # 友方玩家列表
+    players = []
+    for s in friendly_stats:
+        players.append({
+            "id": s.id,
+            "member_id": s.member_id,
+            "account": s.account,
+            "character_name": s.character_name,
+            "profession": s.profession,
+            "group_id": s.group_id,
+            "has_commander_tag": bool(s.has_commander_tag),
+            "damage": s.damage,
+            "dps": s.dps,
+            "power_damage": s.power_damage,
+            "condi_damage": s.condi_damage,
+            "critical_rate": _float(s.critical_rate),
+            "flanking_rate": _float(s.flanking_rate),
+            "killed": s.killed,
+            "downed": s.downed,
+            "down_count": s.down_count,
+            "dead_count": s.dead_count,
+            "damage_taken": s.damage_taken,
+            "healing": s.healing,
+            "boon_strips": s.boon_strips,
+            "condition_cleanses": s.condition_cleanses,
+            "resurrects": s.resurrects,
+            "might_uptime": _float(s.might_uptime),
+            "fury_uptime": _float(s.fury_uptime),
+            "quickness_uptime": _float(s.quickness_uptime),
+            "stability_uptime": _float(s.stability_uptime),
+            "protection_uptime": _float(s.protection_uptime),
+        })
+    
+    # 按伤害排序
+    players.sort(key=lambda p: p["damage"], reverse=True)
+    
+    # 聚合统计
+    total_players = len(players)
+    aggregate = {
+        "player_count": total_players,
+        "total_damage": sum(p["damage"] for p in players),
+        "total_dps": sum(p["dps"] for p in players),
+        "total_kills": sum(p["killed"] for p in players),
+        "total_deaths": sum(p["dead_count"] for p in players),
+        "total_healing": sum(p["healing"] for p in players),
+        "avg_dps": round(sum(p["dps"] for p in players) / max(total_players, 1)),
+    }
+    
+    # 敌方信息
+    enemy = {
+        "count": fight.enemy_player_count or 0,
+        "composition": fight.enemy_composition,
+    }
+    
+    return {
+        "players": players,
+        "enemy": enemy,
+        "aggregate": aggregate,
+    }
 
 
 def get_fights_by_log_id(db: Session, log_id: int) -> List[Fight]:
@@ -351,6 +435,26 @@ def _float(v):
     return float(v) if v is not None else 0
 
 
+def _classify_consumables(consumables_raw: Any) -> Dict[str, List[Dict[str, Any]]]:
+    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。"""
+    result: Dict[str, List[Dict[str, Any]]] = {"food": [], "utility": []}
+    if not consumables_raw or not isinstance(consumables_raw, list):
+        return result
+    for item in consumables_raw:
+        if not isinstance(item, dict):
+            continue
+        name = (item.get("name") or "").lower()
+        target = "utility"
+        if any(k in name for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
+            target = "food"
+        result[target].append({
+            "name": item.get("name", ""),
+            "icon": item.get("icon", ""),
+            "id": item.get("id", 0),
+        })
+    return result
+
+
 def get_player_rotation(
     db: Session, log_id: int, account: str
 ) -> Optional[Dict[str, Any]]:
@@ -396,5 +500,5 @@ def get_player_rotation(
         "skill_map": skill_map,
         "weapons": player.weapons_json or [],
         "death_recap": player.death_recap_json or [],
-        "consumables": player.consumables_json or {"food": [], "utility": []},
+        "consumables": _classify_consumables(player.consumables_json),
     }

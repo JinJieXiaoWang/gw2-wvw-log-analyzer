@@ -7,34 +7,8 @@
  */
 
 import { apiFactory, ApiResponse } from '../core/apiService'
-import { API_ENDPOINTS } from '@/constants/apiEndpoints'
-
-// =====================================================================
-// 工具函数：下划线转驼峰
-// =====================================================================
-
-function snakeToCamel(str: string): string {
-  return str.replace(/_([a-z])/g, (_match, letter) => letter.toUpperCase())
-}
-
-function convertObjectKeys(obj: any): any {
-  if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-  
-  if (Array.isArray(obj)) {
-    return obj.map(item => convertObjectKeys(item))
-  }
-  
-  const converted: any = {}
-  for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      const camelKey = snakeToCamel(key)
-      converted[camelKey] = convertObjectKeys(obj[key])
-    }
-  }
-  return converted
-}
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
+import { convertKeysToCamelCase } from '@/utils/core/caseConverter'
 
 // =====================================================================
 // 数据类型定义
@@ -210,7 +184,7 @@ class WvwReportService {
       params: { page, page_size: pageSize }
     })
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -221,7 +195,7 @@ class WvwReportService {
   async getSummary(logId: number): Promise<ApiResponse<WvwSummaryResponse>> {
     const response = await apiFactory.get<WvwSummaryResponse>(API_ENDPOINTS.WVW_REPORT.SUMMARY(logId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -237,7 +211,7 @@ class WvwReportService {
       params: { sort_by: sortBy }
     })
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -251,7 +225,7 @@ class WvwReportService {
   ): Promise<ApiResponse<WvwPlayerDetail>> {
     const response = await apiFactory.get<WvwPlayerDetail>(API_ENDPOINTS.WVW_REPORT.PLAYER_DETAIL(logId, playerId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -262,7 +236,7 @@ class WvwReportService {
   async getTargets(logId: number): Promise<ApiResponse<any>> {
     const response = await apiFactory.get<any>(API_ENDPOINTS.WVW_REPORT.TARGETS(logId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -273,7 +247,7 @@ class WvwReportService {
   async getPhases(logId: number): Promise<ApiResponse<any>> {
     const response = await apiFactory.get<any>(API_ENDPOINTS.WVW_REPORT.PHASES(logId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -284,7 +258,7 @@ class WvwReportService {
   async getTimeline(logId: number): Promise<ApiResponse<WvwTimelineData>> {
     const response = await apiFactory.get<WvwTimelineData>(API_ENDPOINTS.WVW_REPORT.TIMELINE(logId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }
@@ -295,7 +269,7 @@ class WvwReportService {
   async getSkillMap(logId: number): Promise<ApiResponse<any>> {
     const response = await apiFactory.get<any>(API_ENDPOINTS.WVW_REPORT.SKILL_MAP(logId))
     if (response.success && response.data) {
-      response.data = convertObjectKeys(response.data)
+      response.data = convertKeysToCamelCase(response.data)
     }
     return response
   }

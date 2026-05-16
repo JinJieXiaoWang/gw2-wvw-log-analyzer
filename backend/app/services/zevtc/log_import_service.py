@@ -25,13 +25,22 @@ from app.services.system.dps_report_service import (
     DpsReportTimeoutError,
     upload_and_parse,
 )
-from app.models.fight import Fight
-from app.models.fight_stats import FightStats
-from app.models.log import Log
-from app.models.member import Member
-from app.models.zevtc_data import EiPlayer, EiSkillMap, EiTarget
+from app.services.zevtc.ei_json_cache_service import (
+    get_ei_json_from_cache,
+    store_ei_json_cache,
+)
+from app.models.log.fight import Fight
+from app.models.log.fight_stats import FightStats
+from app.models.log.log import Log
+from app.models.auth.member import Member
+from app.models.log.zevtc_data import EiPlayer, EiSkillMap, EiTarget
 from app.services.zevtc.data_validator import EIJsonValidator
 from app.services.zevtc.field_mapper import EIJsonFieldMapper
+from app.services.zevtc.fight_data_extractor import (
+    extract_enemy_composition,
+    resolve_friendly_team_id,
+)
+from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
 # 无效账号名称统计（用于日志记录）
@@ -132,27 +141,45 @@ class LogImportService:
         return 0
 
     def import_log(self, log_id: int, file_path: str) -> Dict[str, Any]:
-        """主入口：导入单个日志文件（完全依赖 dps.report API）。
+        """主入口：导入单个日志文件。
 
         流程：
-        1. 调用 dps.report API 获取 EI JSON
-        2. 数据验证
-        3. 字段映射
-        4. 数据库存储
+        1. 检查 EI JSON 缓存（SHA256 命中则跳过 API）
+        2. 调用 dps.report API 获取 EI JSON（缓存未命中时）
+        3. 数据验证
+        4. 字段映射
+        5. 数据库存储
+        6. 存储 EI JSON 缓存（API 调用后）
         """
         if not os.path.exists(file_path):
             return {"success": False, "error": f"文件不存在: {file_path}"}
 
+        data_source = "dps_report"
+        permalink = None
+
         try:
             # =============================================
-            # 步骤 1: 调用 dps.report API
+            # 步骤 1: 检查 EI JSON 缓存
             # =============================================
-            dps_result = upload_and_parse(file_path)
-            # 【内存优化】pop 出 ei_json，让 dps_result 提前释放引用
-            ei_json = dps_result.pop("ei_json", {})
-            permalink = dps_result.pop("permalink", None)
-            del dps_result
-            logger.info("[import] dps.report 解析成功")
+            cached_ei_json = get_ei_json_from_cache(self.db, log_id)
+            if cached_ei_json:
+                ei_json = cached_ei_json
+                data_source = "cache"
+                logger.info(f"[import] EI JSON 缓存命中: log_id={log_id}, 跳过 dps.report API")
+                # 尝试从 log 记录恢复 permalink
+                log_record = self.db.query(Log).filter(Log.id == log_id).first()
+                if log_record:
+                    permalink = log_record.dps_report_permalink
+            else:
+                # =============================================
+                # 步骤 1b: 调用 dps.report API
+                # =============================================
+                dps_result = upload_and_parse(file_path)
+                # 【内存优化】pop 出 ei_json，让 dps_result 提前释放引用
+                ei_json = dps_result.pop("ei_json", {})
+                permalink = dps_result.pop("permalink", None)
+                del dps_result
+                logger.info("[import] dps.report 解析成功")
 
             # =============================================
             # 步骤 2: 数据验证
@@ -171,6 +198,15 @@ class LogImportService:
             logger.info(f"[import] 数据验证完成，有效玩家数: {len(valid_players)}")
 
             # =============================================
+            # 步骤 2.4: 存储 EI JSON 缓存（在丢弃大字段之前，确保缓存完整）
+            # =============================================
+            if data_source == "dps_report" and ei_json:
+                try:
+                    store_ei_json_cache(self.db, log_id, ei_json)
+                except Exception as cache_e:
+                    logger.warning(f"[import] 存储 EI JSON 缓存失败（非致命）: {cache_e}")
+
+            # =============================================
             # 步骤 2.5: 丢弃不需要的大字段，降低内存峰值
             # =============================================
             dropped_fields = []
@@ -184,8 +220,9 @@ class LogImportService:
             # =============================================
             # 步骤 3: 提取标量数据
             # =============================================
-            fight_data = self._extract_fight_data(ei_json)
-            player_stats = self._extract_player_stats(ei_json)
+            friendly_team_id = resolve_friendly_team_id(ei_json)
+            fight_data = self._extract_fight_data(ei_json, friendly_team_id)
+            player_stats = self._extract_player_stats(ei_json, friendly_team_id)
 
             # =============================================
             # 步骤 4: 写入数据库
@@ -203,13 +240,14 @@ class LogImportService:
             # =============================================
             log = self.db.query(Log).filter(Log.id == log_id).first()
             if log:
-                log.parse_status = "completed"
+                log.parse_status = ParseStatus.COMPLETED
                 log.parsed_at = datetime.now(timezone.utc)
                 log.parse_time_ms = ei_json.get("durationMS", 0)
                 log.parser = "dps_report_ei_v1"
                 log.parsed_data = None
                 if permalink:
                     log.dps_report_permalink = permalink
+                    log.dps_report_permalink_valid = 1
                 self.db.flush()
 
             # =============================================
@@ -249,7 +287,7 @@ class LogImportService:
                 "players_count": players_count,
                 "map_name": fight.map_name,
                 "duration_sec": fight.duration_sec,
-                "data_source": "dps_report",
+                "data_source": data_source,
                 "validation_errors": errors,
                 "validation_warnings": warnings,
                 "integrity_issues": integrity_issues,
@@ -266,8 +304,12 @@ class LogImportService:
                 pass
             return {"success": False, "error": str(e)}
 
-    def _extract_fight_data(self, ei_json: Dict) -> Dict[str, Any]:
-        """提取战斗级标量数据（直接从 EI JSON）。"""
+    def _extract_fight_data(self, ei_json: Dict, friendly_team_id: int = 0) -> Dict[str, Any]:
+        """提取战斗级标量数据（直接从 EI JSON）。
+        
+        Args:
+            friendly_team_id: 友方 teamID，用于区分敌我统计
+        """
         ei_duration_ms = ei_json.get("durationMS", 0)
         duration_sec = max(1, int(ei_duration_ms / 1000))
 
@@ -279,17 +321,35 @@ class LogImportService:
         total_damage = 0
         total_kills = 0
         total_deaths = 0
-        player_count = 0
+        friendly_count = 0
+        enemy_count = 0
+        
         for p in ei_players:
             if p.get("isFake") or p.get("friendlyNPC"):
                 continue
+            
+            team_id = p.get("teamID", 0)
+            is_friendly = (team_id == friendly_team_id) if friendly_team_id else True
+            
             dps_all = p.get("dpsAll", [{}])[0]
-            total_damage += dps_all.get("damage", 0)
             stats_all = p.get("statsAll", [{}])[0]
-            total_kills += stats_all.get("killed", 0)
             defenses = p.get("defenses", [{}])[0]
+            
+            total_damage += dps_all.get("damage", 0)
+            total_kills += stats_all.get("killed", 0)
             total_deaths += defenses.get("deadCount", 0)
-            player_count += 1
+            
+            if is_friendly:
+                friendly_count += 1
+            else:
+                enemy_count += 1
+
+        # 从 targets 提取敌方职业统计
+        extracted_enemy_count, enemy_comp_json = extract_enemy_composition(ei_json, friendly_team_id)
+        
+        # 如果 targets 中没统计到，但 players 中有敌方，用 players 计数兜底
+        if extracted_enemy_count == 0 and enemy_count > 0:
+            extracted_enemy_count = enemy_count
 
         parsed_start = self._parse_ei_time(ei_start)
         parsed_end = self._parse_ei_time(ei_end)
@@ -312,19 +372,37 @@ class LogImportService:
             "total_damage": total_damage,
             "total_healing": sum(
                 self._extract_player_healing(p) for p in ei_json.get("players", [])
+                if not p.get("isFake") and not p.get("friendlyNPC")
             ),
             "kill_count": total_kills,
             "death_count": total_deaths,
-            "player_count": player_count,
+            "player_count": friendly_count + enemy_count,  # 总玩家数（向后兼容）
+            "friendly_player_count": friendly_count,
+            "enemy_player_count": extracted_enemy_count,
+            "enemy_composition": enemy_comp_json,
         }
 
-    def _extract_player_stats(self, ei_json: Dict) -> List[Dict[str, Any]]:
-        """提取每个玩家的标量统计（直接从 EI JSON）。"""
+    def _extract_player_stats(self, ei_json: Dict, friendly_team_id: int = 0) -> List[Dict[str, Any]]:
+        """提取每个玩家的标量统计（直接从 EI JSON），仅提取友方玩家。
+        
+        Args:
+            friendly_team_id: 友方 teamID，用于过滤敌方玩家
+        """
         results = []
 
         for ei_p in ei_json.get("players", []):
             if self._should_skip_player(ei_p):
                 continue
+            
+            # 排除敌方玩家
+            if friendly_team_id:
+                player_team_id = ei_p.get("teamID", 0)
+                if player_team_id != friendly_team_id:
+                    logger.debug(
+                        f"[import] 跳过敌方玩家: {ei_p.get('account')} "
+                        f"(teamID={player_team_id} != friendly={friendly_team_id})"
+                    )
+                    continue
 
             dps_all = ei_p.get("dpsAll", [{}])[0]
             stats_all = ei_p.get("statsAll", [{}])[0]
@@ -478,6 +556,9 @@ class LogImportService:
             kill_count=data.get("kill_count", 0),
             death_count=data.get("death_count", 0),
             player_count=data.get("player_count", 0),
+            friendly_player_count=data.get("friendly_player_count", 0),
+            enemy_player_count=data.get("enemy_player_count", 0),
+            enemy_composition=data.get("enemy_composition"),
             is_ai_analyzed=False,
         )
         self.db.add(fight)
@@ -499,7 +580,7 @@ class LogImportService:
         评分移至查询阶段（PlayerScoreService），规则更新立即生效。
         """
         from datetime import date
-        from app.models.account_character import AccountCharacter
+        from app.models.auth.account_character import AccountCharacter
 
         today = date.today()
         seen_accounts: set = set()
@@ -891,7 +972,7 @@ class LogImportService:
         - 如果解析数据有误，用户可以保留源文件重新解析
         - 文件删除后，log.file_path 将被设置为 None
         """
-        from app.models.log import Log
+        from app.models.log.log import Log
 
         try:
             log = self.db.query(Log).filter(Log.id == log_id).first()
@@ -932,7 +1013,7 @@ class LogImportService:
         返回：{"success": True, "deleted_count": N, "failed_count": M, "errors": [...]}
         """
         from app.config.database import SessionLocal
-        from app.models.log import Log
+        from app.models.log.log import Log
 
         db = SessionLocal()
         deleted_count = 0

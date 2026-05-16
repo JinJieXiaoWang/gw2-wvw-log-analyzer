@@ -1,3 +1,4 @@
+import { NormalDisable } from '@/constants/dictValues'
 import { ref, computed } from 'vue'
 import { useToast } from 'primevue/usetoast'
 import { dictionaryService, type DictType } from '@/services/system/dictionaryService'
@@ -18,8 +19,12 @@ export function useDictionaryWrapper() {
   const showInitDialog = ref(false)
   const isCollapsed = ref(false)
 
-  const isAdmin = computed(() => isOperator.value || isSuperAdmin.value)
-  const typeStats = computed(() => ({ total: dictTypes.value.length, enabled: dictTypes.value.filter(t => t.status === 0).length }))
+  const canWrite = computed(() => isOperator.value || isSuperAdmin.value)
+  const typeStats = computed(() => ({
+    total: dictTypes.value.length,
+    enabled: dictTypes.value.filter(t => String(t.status) === NormalDisable.ENABLED).length,
+    disabled: dictTypes.value.filter(t => String(t.status) === NormalDisable.DISABLED).length,
+  }))
   const dataStats = computed(() => ({ total: dictTypes.value.length * 5 }))
 
   function toggleSidebar() {
@@ -67,7 +72,7 @@ export function useDictionaryWrapper() {
 
   return {
     viewMode, dictManagementRef, dictTypes, loading, refreshing, initializing,
-    cacheStatus, showInitDialog, isCollapsed, isAdmin, typeStats, dataStats,
+    cacheStatus, showInitDialog, isCollapsed, canWrite, typeStats, dataStats,
     toggleSidebar, loadOverviewData, handleQuickReload, handleReloadCache, handleInitData
   }
 }

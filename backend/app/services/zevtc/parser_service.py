@@ -19,7 +19,8 @@ from app.core.zevtc.parser import (
     ZevtcParseError,
     parse_zevtc_file,
 )
-from app.models.log import Log
+from app.constants.dict_values import ParseStatus
+from app.models.log.log import Log
 from app.utils.logger import logger
 
 
@@ -492,7 +493,7 @@ def save_parsed_log_to_db(
     logger.info(f"解析数据保存功能已停用，日志ID: {log_id}")
 
     # 更新日志状态为已解析
-    log.parse_status = "completed"
+    log.parse_status = ParseStatus.COMPLETED
     log.parsed_at = datetime.datetime.now()
     db.commit()
 
@@ -519,7 +520,7 @@ def parse_and_save(
         logger.error(f"解析错误: {e}")
         log = db.query(Log).filter(Log.id == log_id).first()
         if log:
-            log.parse_status = "failed"
+            log.parse_status = ParseStatus.FAILED
             log.error_message = str(e)
             db.commit()
         raise
