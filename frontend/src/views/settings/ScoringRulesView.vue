@@ -114,6 +114,7 @@ import ScoringGradeCards from '@/components/settings/scoring/ScoringGradeCards.v
 import RecalcTaskPanel from '@/components/settings/scoring/RecalcTaskPanel.vue'
 import VersionHistoryTable from '@/components/settings/scoring/VersionHistoryTable.vue'
 import { ref, computed, onMounted } from 'vue'
+import { useToast } from 'primevue/usetoast'
 import { useScoringRules } from '@/composables/scoring/useScoringRules'
 import { usePermission } from '@/composables/system/usePermission'
 import { useSystemConfig } from '@/composables/system/useSystemConfig'
@@ -127,6 +128,7 @@ const LOG_LOAD_ROLE_MAPPING_FAIL = '加载职业角色映射失败:'
 
 const { can } = usePermission()
 const canWrite = can('write')
+const toast = useToast()
 
 const {
   roleTypes, activeRole, loading, saving, resetting, currentRules, editableRules,
@@ -256,6 +258,7 @@ async function saveRoleMapping() {
   const changed = professionRoleMapping.value.filter(p => p.currentRole !== p.role)
   if (changed.length === 0) {
     roleEditMode.value = false
+    toast.add({ severity: 'info', summary: '无需保存', detail: '没有修改任何职业定位', life: 3000 })
     return
   }
   try {
@@ -264,8 +267,10 @@ async function saveRoleMapping() {
     )
     professionRoleMapping.value.forEach(p => { p.role = p.currentRole })
     roleEditMode.value = false
-  } catch (error) {
+    toast.add({ severity: 'success', summary: '保存成功', detail: `已更新 ${changed.length} 个职业定位`, life: 3000 })
+  } catch (error: any) {
     console.error('保存职业定位失败:', error)
+    toast.add({ severity: 'error', summary: '保存失败', detail: error?.response?.data?.message || '更新职业定位失败，请重试', life: 5000 })
   }
 }
 
