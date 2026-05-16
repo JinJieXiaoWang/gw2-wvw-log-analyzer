@@ -47,11 +47,11 @@
         <div class="flex flex-wrap gap-2">
           <span
             v-for="spec in currentRoleSpecs"
-            :key="spec.spec_key"
+            :key="spec.professionKey"
             class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium"
             :style="{ background: roleColors[activeRole] + '18', color: roleColors[activeRole] }"
           >
-            {{ spec.spec_name }}
+            {{ spec.profession }}
           </span>
           <span v-if="currentRoleSpecs.length === 0" class="text-xs text-color-secondary">暂无对应精英特长</span>
         </div>

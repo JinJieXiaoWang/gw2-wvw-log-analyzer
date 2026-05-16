@@ -51,7 +51,7 @@ async def update_spec_role(
 ):
     """更新精英特长的默认角色定义"""
     service = ProfessionService(db)
-    success = service.update_spec_role(spec_key, role_update.role_key)
+    success = service.update_spec_role_type(spec_key, role_update.role_key)
     if success:
         return ApiResponse.success_response(
             message=f"精英特长 {spec_key} 的默认角色定位已更新为 {role_update.role_key}",

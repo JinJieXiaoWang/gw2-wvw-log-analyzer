@@ -116,7 +116,7 @@
     </div>
 
     <div class="mt-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg">
-      <p class="text-xs text-primary-800 dark:text-primary-200">
+      <p class="text-xs text-color">
         <i class="pi pi-info-circle mr-1" />
         <strong>评分说明：</strong>
         <span v-if="scoringMode === 'role_based'">
