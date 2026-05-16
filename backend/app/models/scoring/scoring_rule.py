@@ -35,12 +35,12 @@ class ScoringRule(Base):
     role_type = Column(
         String(50),
         nullable=False,
-        comment="角色类型: dps-输出, support-辅助, tank-承伤",
+        comment="角色类型: dps-输出, support-辅助, tank-坦克, control-控制",
     )
     profession = Column(
         String(50),
         nullable=True,
-        comment="精英特长/职业名称，null表示通用规则",
+        comment="精英特长名称（如Dragonhunter），null表示通用规则",
     )
     dimension = Column(
         String(50),
@@ -109,7 +109,7 @@ class ScoringRulePreset(Base):
         String(50),
         nullable=False,
         unique=True,
-        comment="角色类型: dps/support/tank",
+        comment="角色类型: dps/support/tank/control",
     )
     preset_name = Column(
         String(200),

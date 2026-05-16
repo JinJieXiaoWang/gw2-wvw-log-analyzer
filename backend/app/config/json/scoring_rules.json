@@ -2,13 +2,13 @@
   "dps": [
     {
       "dimension": "survival",
-      "weight": 0.4,
+      "weight": 0.35,
       "description": "生存能力（存活时间/死亡次数）",
       "sort_order": 1
     },
     {
       "dimension": "damage",
-      "weight": 0.3,
+      "weight": 0.25,
       "description": "总有效伤害",
       "sort_order": 2
     },
@@ -19,141 +19,71 @@
       "sort_order": 3
     },
     {
-      "dimension": "breakbar",
-      "weight": 0.08,
-      "description": "破控蔑视伤害",
-      "sort_order": 4
-    },
-    {
-      "dimension": "kills",
-      "weight": 0.07,
-      "description": "击杀贡献",
-      "sort_order": 5
-    },
-    {
-      "dimension": "strips",
-      "weight": 0.05,
-      "description": "破法削增益",
-      "sort_order": 6
-    }
-  ],
-  "condition": [
-    {
-      "dimension": "survival",
-      "weight": 0.4,
-      "description": "生存能力（存活时间/死亡次数）",
-      "sort_order": 1
-    },
-    {
       "dimension": "condition_damage",
-      "weight": 0.3,
-      "description": "症状伤害",
-      "sort_order": 2
-    },
-    {
-      "dimension": "damage",
       "weight": 0.1,
-      "description": "总伤害",
-      "sort_order": 3
+      "description": "症状伤害",
+      "sort_order": 4
     },
     {
       "dimension": "breakbar",
       "weight": 0.08,
       "description": "破控蔑视伤害",
-      "sort_order": 4
+      "sort_order": 5
     },
     {
       "dimension": "kills",
       "weight": 0.07,
       "description": "击杀贡献",
-      "sort_order": 5
+      "sort_order": 6
     },
     {
       "dimension": "strips",
       "weight": 0.05,
       "description": "破法削增益",
-      "sort_order": 6
-    }
-  ],
-  "healing": [
-    {
-      "dimension": "survival",
-      "weight": 0.4,
-      "description": "生存能力（奶死则团灭）",
-      "sort_order": 1
-    },
-    {
-      "dimension": "healing",
-      "weight": 0.3,
-      "description": "治疗量",
-      "sort_order": 2
-    },
-    {
-      "dimension": "cleanses",
-      "weight": 0.12,
-      "description": "清症",
-      "sort_order": 3
-    },
-    {
-      "dimension": "boons",
-      "weight": 0.08,
-      "description": "增益覆盖",
-      "sort_order": 4
-    },
-    {
-      "dimension": "alacrity",
-      "weight": 0.05,
-      "description": "敏捷覆盖",
-      "sort_order": 5
-    },
-    {
-      "dimension": "quickness",
-      "weight": 0.05,
-      "description": "急速覆盖",
-      "sort_order": 6
+      "sort_order": 7
     }
   ],
   "support": [
     {
       "dimension": "survival",
-      "weight": 0.4,
+      "weight": 0.35,
       "description": "生存能力（辅助死团队崩）",
       "sort_order": 1
     },
     {
       "dimension": "boons",
-      "weight": 0.2,
+      "weight": 0.18,
       "description": "增益覆盖",
       "sort_order": 2
+    },
+    {
+      "dimension": "healing",
+      "weight": 0.15,
+      "description": "治疗量",
+      "sort_order": 3
     },
     {
       "dimension": "alacrity",
       "weight": 0.1,
       "description": "敏捷覆盖",
-      "sort_order": 3
+      "sort_order": 4
     },
     {
       "dimension": "quickness",
       "weight": 0.1,
       "description": "急速覆盖",
-      "sort_order": 4
-    },
-    {
-      "dimension": "cleanses",
-      "weight": 0.1,
-      "description": "清症",
       "sort_order": 5
     },
     {
-      "dimension": "strips",
-      "weight": 0.06,
-      "description": "破法",
+      "dimension": "cleanses",
+      "weight": 0.07,
+      "description": "清症",
       "sort_order": 6
     },
     {
-      "dimension": "healing",
-      "weight": 0.04,
-      "description": "治疗辅助",
+      "dimension": "strips",
+      "weight": 0.05,
+      "description": "破法",
       "sort_order": 7
     }
   ],
@@ -198,7 +128,7 @@
   "control": [
     {
       "dimension": "survival",
-      "weight": 0.4,
+      "weight": 0.35,
       "description": "生存能力（控制位必须活）",
       "sort_order": 1
     },
@@ -210,7 +140,7 @@
     },
     {
       "dimension": "strips",
-      "weight": 0.15,
+      "weight": 0.2,
       "description": "破法削增益",
       "sort_order": 3
     },
@@ -222,52 +152,14 @@
     },
     {
       "dimension": "cleanses",
-      "weight": 0.06,
+      "weight": 0.05,
       "description": "清症",
       "sort_order": 5
     },
     {
       "dimension": "blocked_count",
-      "weight": 0.04,
-      "description": "格挡",
-      "sort_order": 6
-    }
-  ],
-  "utility": [
-    {
-      "dimension": "survival",
-      "weight": 0.4,
-      "description": "生存能力",
-      "sort_order": 1
-    },
-    {
-      "dimension": "boons",
-      "weight": 0.2,
-      "description": "增益覆盖",
-      "sort_order": 2
-    },
-    {
-      "dimension": "cleanses",
-      "weight": 0.15,
-      "description": "清症",
-      "sort_order": 3
-    },
-    {
-      "dimension": "strips",
-      "weight": 0.12,
-      "description": "破法",
-      "sort_order": 4
-    },
-    {
-      "dimension": "breakbar",
-      "weight": 0.08,
-      "description": "破控",
-      "sort_order": 5
-    },
-    {
-      "dimension": "healing",
       "weight": 0.05,
-      "description": "治疗辅助",
+      "description": "格挡",
       "sort_order": 6
     }
   ],
@@ -292,7 +184,7 @@
       "support_multiplier": 1.1,
       "survival_bonus": 15
     },
-    "condition": {
+    "control": {
       "utility_multiplier": 1.3,
       "damage_bonus": 5
     },

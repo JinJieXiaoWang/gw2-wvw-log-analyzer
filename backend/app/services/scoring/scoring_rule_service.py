@@ -381,7 +381,7 @@ class ScoringRuleService:
                 if not scoring_config or not spec_name:
                     continue
 
-                default_role = spec.get("default_role", RoleType.DPS)
+                role_type = spec.get("role_type", RoleType.DPS)
 
                 # 归一化权重
                 total_weight = sum(scoring_config.values())
@@ -392,7 +392,7 @@ class ScoringRuleService:
                 for dimension, weight in scoring_config.items():
                     normalized_weight = round(weight / total_weight, 4)
                     rule = ScoringRule(
-                        role_type=default_role,
+                        role_type=role_type,
                         profession=spec_name,
                         dimension=dimension,
                         weight=normalized_weight,

@@ -167,7 +167,7 @@ const openEdit = (type: 'profession' | 'spec', item: any) => {
   editType.value = type
   editForm.value = {
     key: type === 'profession' ? item.profession_key : item.spec_key,
-    default_role: item.default_role,
+    role_type: item.role_type,
     is_active: !!item.is_active,
   }
   editVisible.value = true
@@ -180,7 +180,7 @@ const saveEdit = async () => {
     const endpoint = editType.value === 'profession'
       ? API_ENDPOINTS.PROFESSIONS.UPDATE_PROFESSION_ROLE(editForm.value.key)
       : API_ENDPOINTS.PROFESSIONS.UPDATE_ELITE_SPEC_ROLE(editForm.value.key)
-    const res = await apiFactory.put(endpoint, null, { params: { role_key: editForm.value.default_role } })
+    const res = await apiFactory.put(endpoint, null, { params: { role_key: editForm.value.role_type } })
     if (res.success) {
       toast.add({ severity: 'success', summary: '保存成功', life: 3000 })
       editVisible.value = false

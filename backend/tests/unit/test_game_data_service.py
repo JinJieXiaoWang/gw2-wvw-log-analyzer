@@ -27,7 +27,7 @@ class TestGameDataService:
                 "profession_name": "守护",
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             },
             {
@@ -35,7 +35,7 @@ class TestGameDataService:
                 "profession_name": "战士",
                 "profession_name_en": "Warrior",
                 "color": "#C41E3A",
-                "default_role": "dps",
+                "role_type": "dps",
                 "icon": "warrior.png"
             }
         ]
@@ -48,7 +48,7 @@ class TestGameDataService:
                 "spec_name_en": "Dragonhunter",
                 "profession_key": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "dps",
+                "role_type": "dps",
                 "icon": "dragonhunter.png",
                 "scoring_config": {"damage": 80, "support": 20}
             },
@@ -58,7 +58,7 @@ class TestGameDataService:
                 "spec_name_en": "Firebrand",
                 "profession_key": "Guardian",
                 "color": "#F58220",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "firebrand.png",
                 "scoring_config": {"support": 70, "damage": 30}
             }
@@ -123,7 +123,7 @@ class TestGameDataService:
                 "profession_name": "守护",
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             }
         ]
@@ -135,8 +135,18 @@ class TestGameDataService:
                 "spec_name_en": "Dragonhunter",
                 "profession_key": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "dps",
+                "role_type": "dps",
                 "icon": "dragonhunter.png",
+                "scoring_config": {}
+            },
+            {
+                "spec_key": "Firebrand",
+                "spec_name": "燃火者",
+                "spec_name_en": "Firebrand",
+                "profession_key": "Guardian",
+                "color": "#ff7043",
+                "role_type": "support",
+                "icon": "firebrand.png",
                 "scoring_config": {}
             }
         ]
@@ -161,8 +171,12 @@ class TestGameDataService:
             cn_name = service.get_profession_name_cn("Unknown")
             assert cn_name == "Unknown"
 
-    def test_get_default_role(self):
-        """测试获取职业默认角色定位"""
+    def test_get_role_type(self):
+        """测试获取精英特长角色定位"""
+        # 清除全局缓存，避免受之前测试影响
+        from app.services.game.game_data_service import get_global_cache
+        get_global_cache().clear_memory()
+        
         mock_db = Mock(spec=Session)
         
         mock_professions = [
@@ -171,7 +185,7 @@ class TestGameDataService:
                 "profession_name": "守护",
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             }
         ]
@@ -183,7 +197,7 @@ class TestGameDataService:
                 "spec_name_en": "Dragonhunter",
                 "profession_key": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "dps",
+                "role_type": "dps",
                 "icon": "dragonhunter.png",
                 "scoring_config": {}
             }
@@ -197,16 +211,16 @@ class TestGameDataService:
             
             service = GameDataService(db=mock_db)
             
-            # 测试获取精英特长的默认角色定位
-            role = service.get_default_role("Dragonhunter")
+            # 测试获取精英特长的角色定位
+            role = service.get_role_type("Dragonhunter")
             assert role == "dps"
             
-            # 测试获取基础职业的默认角色定位
-            role = service.get_default_role("Guardian")
+            # 测试获取另一精英特长的角色定位
+            role = service.get_role_type("Firebrand")
             assert role == "support"
             
             # 测试获取不存在的职业
-            role = service.get_default_role("Unknown")
+            role = service.get_role_type("Unknown")
             assert role == "dps"
 
     def test_cache_mechanism(self):
@@ -219,7 +233,7 @@ class TestGameDataService:
                 "profession_name": "守护",
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             }
         ]
@@ -257,7 +271,7 @@ class TestGameDataService:
                 "profession_name": "守护",
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             }
         ]
@@ -268,7 +282,7 @@ class TestGameDataService:
                 "profession_name": "守护者",  # 修改名称
                 "profession_name_en": "Guardian",
                 "color": "#3BA55D",
-                "default_role": "support",
+                "role_type": "support",
                 "icon": "guardian.png"
             },
             {
@@ -276,7 +290,7 @@ class TestGameDataService:
                 "profession_name": "战士",
                 "profession_name_en": "Warrior",
                 "color": "#C41E3A",
-                "default_role": "dps",
+                "role_type": "dps",
                 "icon": "warrior.png"
             }
         ]

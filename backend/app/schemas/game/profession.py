@@ -36,8 +36,6 @@ class ProfessionBase(BaseModel):
     profession_name_en: Optional[str] = Field(None, description="职业英文名称")
     color: Optional[str] = Field(None, description="颜色")
     icon: Optional[str] = Field(None, description="图标")
-    default_role: Optional[str] = Field("dps", description="默认角色定位")
-    possible_roles: Optional[List[str]] = Field(None, description="可能的角色定义")
     is_active: Optional[int] = Field(1, description="是否启用")
     sort_order: Optional[int] = Field(0, description="排序")
 
@@ -51,8 +49,6 @@ class ProfessionUpdate(BaseModel):
     profession_name_en: Optional[str] = None
     color: Optional[str] = None
     icon: Optional[str] = None
-    default_role: Optional[str] = None
-    possible_roles: Optional[List[str]] = None
     is_active: Optional[int] = None
     sort_order: Optional[int] = None
 
@@ -70,10 +66,9 @@ class EliteSpecBase(BaseModel):
     profession_key: str = Field(..., description="所属职业键")
     color: Optional[str] = Field(None, description="颜色")
     icon: Optional[str] = Field(None, description="图标")
-    default_role: Optional[str] = Field("dps", description="默认角色定位")
-    dps_type: Optional[str] = Field(None, description="DPS类型")
+    role_type: Optional[str] = Field("dps", description="角色定位: dps/support/tank/control")
+    dps_type: Optional[str] = Field(None, description="DPS类型(power/condi/hybrid)")
     scoring_config: Optional[Dict[str, Any]] = Field(None, description="评分配置")
-    is_key_support: Optional[int] = Field(0, description="是否关键辅助")
     is_active: Optional[int] = Field(1, description="是否启用")
     sort_order: Optional[int] = Field(0, description="排序")
 
@@ -87,10 +82,9 @@ class EliteSpecUpdate(BaseModel):
     spec_name_en: Optional[str] = None
     color: Optional[str] = None
     icon: Optional[str] = None
-    default_role: Optional[str] = None
+    role_type: Optional[str] = None
     dps_type: Optional[str] = None
     scoring_config: Optional[Dict[str, Any]] = None
-    is_key_support: Optional[int] = None
     is_active: Optional[int] = None
     sort_order: Optional[int] = None
 

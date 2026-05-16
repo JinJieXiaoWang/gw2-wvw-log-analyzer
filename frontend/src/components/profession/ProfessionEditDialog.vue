@@ -11,9 +11,9 @@
       class="space-y-4"
     >
       <div>
-        <label class="block text-sm text-neutral-text-secondary mb-1">默认角色</label>
+        <label class="block text-sm text-neutral-text-secondary mb-1">角色定位</label>
         <BaseSelect
-          v-model="localForm.default_role"
+          v-model="localForm.role_type"
           :options="roleOptions"
           option-label="label"
           option-value="value"

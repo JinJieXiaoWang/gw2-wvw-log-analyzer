@@ -11,12 +11,6 @@
       "profession_name_en": "Guardian",
       "color": "#ffc107",
       "icon": "Guardian.png",
-      "default_role": "support",
-      "possible_roles": [
-        "dps",
-        "support",
-        "tank"
-      ],
       "sort_order": 1
     },
     {
@@ -25,12 +19,6 @@
       "profession_name_en": "Warrior",
       "color": "#ff5722",
       "icon": "Warrior.png",
-      "default_role": "dps",
-      "possible_roles": [
-        "dps",
-        "support",
-        "tank"
-      ],
       "sort_order": 2
     },
     {
@@ -39,11 +27,6 @@
       "profession_name_en": "Engineer",
       "color": "#795548",
       "icon": "Engineer.png",
-      "default_role": "support",
-      "possible_roles": [
-        "dps",
-        "support"
-      ],
       "sort_order": 3
     },
     {
@@ -52,11 +35,6 @@
       "profession_name_en": "Ranger",
       "color": "#4caf50",
       "icon": "Ranger.png",
-      "default_role": "dps",
-      "possible_roles": [
-        "dps",
-        "support"
-      ],
       "sort_order": 4
     },
     {
@@ -65,10 +43,6 @@
       "profession_name_en": "Thief",
       "color": "#607d8b",
       "icon": "Thief.png",
-      "default_role": "dps",
-      "possible_roles": [
-        "dps"
-      ],
       "sort_order": 5
     },
     {
@@ -77,11 +51,6 @@
       "profession_name_en": "Elementalist",
       "color": "#e91e63",
       "icon": "Elementalist.png",
-      "default_role": "dps",
-      "possible_roles": [
-        "dps",
-        "support"
-      ],
       "sort_order": 6
     },
     {
@@ -90,11 +59,6 @@
       "profession_name_en": "Mesmer",
       "color": "#9c27b0",
       "icon": "Mesmer.png",
-      "default_role": "support",
-      "possible_roles": [
-        "dps",
-        "support"
-      ],
       "sort_order": 7
     },
     {
@@ -103,11 +67,6 @@
       "profession_name_en": "Necromancer",
       "color": "#00bcd4",
       "icon": "Necromancer.png",
-      "default_role": "support",
-      "possible_roles": [
-        "dps",
-        "support"
-      ],
       "sort_order": 8
     },
     {
@@ -116,12 +75,6 @@
       "profession_name_en": "Revenant",
       "color": "#3f51b5",
       "icon": "Revenant.png",
-      "default_role": "support",
-      "possible_roles": [
-        "dps",
-        "support",
-        "tank"
-      ],
       "sort_order": 9
     }
   ]

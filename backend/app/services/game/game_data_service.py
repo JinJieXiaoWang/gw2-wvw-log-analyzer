@@ -414,7 +414,7 @@ class GameDataService:
                                 "name": prof["profession_name_en"],
                                 "name_cn": prof["profession_name"],
                                 "color": prof["color"],
-                                "default_role": prof["default_role"],
+                                "role_type": prof.get("role_type"),
                                 "icon": prof["icon"],
                             }
                         
@@ -424,7 +424,7 @@ class GameDataService:
                                 "name_cn": spec["spec_name"],
                                 "base_profession": spec["profession_key"],
                                 "color": spec["color"],
-                                "default_role": spec["default_role"],
+                                "role_type": spec["role_type"],
                                 "icon": spec["icon"],
                                 "scoring_config": spec["scoring_config"] or {},
                             }
@@ -585,17 +585,12 @@ class GameDataService:
         self._cache.set(cache_key, result)
         return result
 
-    def get_default_role(self, profession_name: str) -> str:
-        # 功能：获取职业默认定位
+    def get_role_type(self, profession_name: str) -> str:
+        # 功能：获取精英特长角色定位
         spec = self.get_elite_spec(profession_name)
         if spec:
-            return spec.get("default_role", RoleType.DPS)
-
-        prof = self.get_profession(profession_name)
-        if prof:
-            return prof.get("default_role", RoleType.DPS)
-
-        return RoleType.DPS
+            return spec.get("role_type") or RoleType.DPS.value
+        return RoleType.DPS.value
 
     def get_scoring_config(self, profession_name: str) -> Optional[Dict[str, int]]:
         # 功能：获取职业评分配置

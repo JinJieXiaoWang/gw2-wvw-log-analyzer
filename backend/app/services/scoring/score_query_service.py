@@ -144,7 +144,7 @@ class PlayerScoreService:
         player_role = role_type
 
         if player_role is None and player_profession:
-            player_role = GameDataService(db).get_default_role(player_profession)
+            player_role = GameDataService(db).get_role_type(player_profession)
         if player_role is None:
             player_role = RoleType.DPS
 

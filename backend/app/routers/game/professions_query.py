@@ -181,15 +181,15 @@ async def get_profession_name(
         data={"profession_key": profession_key, "name": name},
     )
 
-@router.get("/default-role/{profession_key}", response_model=ApiResponse, summary="获取职业默认角色定位")
-async def get_profession_default_role(
-    profession_key: str,
+@router.get("/spec-role/{spec_key}", response_model=ApiResponse, summary="获取精英特长角色定位")
+async def get_spec_role_type(
+    spec_key: str,
     db: Session = Depends(get_db),
 ):
-    """获取职业的默认角色定义"""
+    """获取精英特长的角色定位"""
     service = ProfessionService(db)
-    role = service.get_profession_default_role(profession_key)
+    role = service.get_spec_role_type(spec_key)
     return ApiResponse.success_response(
-        message="获取默认角色定位成功",
-        data={"profession_key": profession_key, "default_role": role},
+        message="获取角色定位成功",
+        data={"spec_key": spec_key, "role_type": role},
     )

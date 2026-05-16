@@ -24,10 +24,9 @@ export interface EliteSpecialization {
   profession_key: string
   color: string
   icon: string
-  default_role: string
+  role_type: string
   dps_type: 'power' | 'condi' | 'hybrid' | null
   scoring_config: Record<string, number>
-  is_key_support: boolean
   is_active: boolean
   sort_order: number
 }
@@ -40,8 +39,6 @@ export interface Profession {
   profession_name_en: string
   color: string
   icon: string
-  default_role: string
-  possible_roles: string[]
   is_active: boolean
   sort_order: number
   elite_specializations?: EliteSpecialization[]
@@ -52,12 +49,12 @@ export interface ProfessionCascade {
   value: string
   label: string
   color: string
-  default_role?: string
+  role_type?: string
   elite_specs: Array<{
     value: string
     label: string
     color: string
-    default_role?: string
+    role_type?: string
   }>
 }
 
@@ -294,22 +291,6 @@ export function getIconUrl(key: string): string {
 }
 
 /**
- * 获取职业默认角色定位
- */
-export function getProfessionDefaultRole(professionKey: string): string {
-  const profession = getProfession(professionKey)
-  return profession?.default_role || 'dps'
-}
-
-/**
- * 获取职业可能的角色定位
- */
-export function getProfessionPossibleRoles(professionKey: string): string[] {
-  const profession = getProfession(professionKey)
-  return profession?.possible_roles || ['dps']
-}
-
-/**
  * 获取指定职业的精英特长
  */
 export async function getSpecsByProfession(professionKey: string): Promise<EliteSpecialization[]> {
@@ -349,19 +330,11 @@ export function getEliteSpecProfession(specKey: string): string | undefined {
 }
 
 /**
- * 获取精英特长默认角色定位
+ * 获取精英特长角色定位
  */
-export function getEliteSpecDefaultRole(specKey: string): string {
+export function getEliteSpecRoleType(specKey: string): string {
   const spec = getEliteSpec(specKey)
-  return spec?.default_role || 'dps'
-}
-
-/**
- * 判断是否为关键辅助
- */
-export function isKeySupport(specKey: string): boolean {
-  const spec = getEliteSpec(specKey)
-  return spec?.is_key_support || false
+  return spec?.role_type || 'dps'
 }
 
 /**
@@ -418,16 +391,18 @@ export async function getRoleOptions(): Promise<Array<{ label: string; value: st
 }
 
 /**
- * 根据职业或精英特长获取角色定位
+ * 根据精英特长获取角色定位
  */
 export function getRoleByProfessionOrSpec(professionKey: string, specKey?: string): string {
   if (specKey) {
-    const specRole = getEliteSpecDefaultRole(specKey)
-    if (specRole !== 'dps') {
-      return specRole
-    }
+    return getEliteSpecRoleType(specKey)
   }
-  return getProfessionDefaultRole(professionKey)
+  // 基础职业不再有自己的角色定位，返回该职业下第一个精英特长的定位
+  const specs = eliteSpecsCache.filter(s => s.profession_key === professionKey)
+  if (specs.length > 0) {
+    return specs[0].role_type || 'dps'
+  }
+  return 'dps'
 }
 
 /**
@@ -514,13 +489,10 @@ export const professionService = {
   getProfessionIconUrl,
   getEliteSpecIconUrl,
   getIconUrl,
-  getProfessionDefaultRole,
-  getProfessionPossibleRoles,
+  getEliteSpecRoleType,
   getEliteSpecName,
   getEliteSpecColor,
   getEliteSpecProfession,
-  getEliteSpecDefaultRole,
-  isKeySupport,
   getSpecsByProfession,
   getRoleByProfessionOrSpec,
   getProfessionOptions,

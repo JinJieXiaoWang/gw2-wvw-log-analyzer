@@ -57,9 +57,9 @@
             />
           </div>
           <div class="flex items-center justify-between text-sm">
-            <span class="text-neutral-text-secondary">默认角色</span>
+            <span class="text-neutral-text-secondary">角色定位</span>
             <Tag
-              :value="getRoleName(spec.default_role)"
+              :value="getRoleName(spec.role_type)"
               severity="info"
               class="text-xs"
             />

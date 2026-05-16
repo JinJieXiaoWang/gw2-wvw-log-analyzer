@@ -224,7 +224,7 @@ class ScoringService:
             player_role_type = role_type
             if not profession and player_profession:
                 from app.services.game.game_data_service import GameDataService
-                player_role_type = GameDataService().get_default_role(player_profession)
+                player_role_type = GameDataService().get_role_type(player_profession)
 
             rules = ScoringService.get_scoring_rules(db, player_role_type, player_profession)
             result = ScoringService.calculate_player_score(stat_dict, rules, max_values)
@@ -286,7 +286,7 @@ class ScoringService:
         updated_count = 0
         for stat in stats_list:
             profession = stat.profession
-            role_type = game_data.get_default_role(profession) if profession else RoleType.DPS
+            role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
             rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
             stat_dict = {
@@ -399,7 +399,7 @@ class ScoringService:
 
                 for stat in stats_list:
                     profession = stat.profession
-                    role_type = game_data.get_default_role(profession) if profession else RoleType.DPS
+                    role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
                     rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
                     stat_dict = {

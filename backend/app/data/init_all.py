@@ -642,8 +642,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Guardian",
         "color": "#ffc107",
         "icon": "Guardian.png",
-        "default_role": "support",
-        "possible_roles": ["dps", "support", "tank"],
+        "role_type": "support",
         "sort_order": 1,
     },
     {
@@ -652,8 +651,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Warrior",
         "color": "#ff5722",
         "icon": "Warrior.png",
-        "default_role": "dps",
-        "possible_roles": ["dps", "support", "tank"],
+        "role_type": "dps",
         "sort_order": 2,
     },
     {
@@ -662,8 +660,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Engineer",
         "color": "#795548",
         "icon": "Engineer.png",
-        "default_role": "support",
-        "possible_roles": ["dps", "support"],
+        "role_type": "support",
         "sort_order": 3,
     },
     {
@@ -672,8 +669,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Ranger",
         "color": "#4caf50",
         "icon": "Ranger.png",
-        "default_role": "dps",
-        "possible_roles": ["dps", "support"],
+        "role_type": "dps",
         "sort_order": 4,
     },
     {
@@ -682,8 +678,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Thief",
         "color": "#607d8b",
         "icon": "Thief.png",
-        "default_role": "dps",
-        "possible_roles": ["dps"],
+        "role_type": "dps",
         "sort_order": 5,
     },
     {
@@ -692,8 +687,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Elementalist",
         "color": "#e91e63",
         "icon": "Elementalist.png",
-        "default_role": "dps",
-        "possible_roles": ["dps", "support"],
+        "role_type": "dps",
         "sort_order": 6,
     },
     {
@@ -702,8 +696,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Mesmer",
         "color": "#9c27b0",
         "icon": "Mesmer.png",
-        "default_role": "support",
-        "possible_roles": ["dps", "support"],
+        "role_type": "support",
         "sort_order": 7,
     },
     {
@@ -712,8 +705,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Necromancer",
         "color": "#00bcd4",
         "icon": "Necromancer.png",
-        "default_role": "support",
-        "possible_roles": ["dps", "support"],
+        "role_type": "support",
         "sort_order": 8,
     },
     {
@@ -722,8 +714,7 @@ _PROFESSION_SEED = [
         "profession_name_en": "Revenant",
         "color": "#3f51b5",
         "icon": "Revenant.png",
-        "default_role": "support",
-        "possible_roles": ["dps", "support", "tank"],
+        "role_type": "support",
         "sort_order": 9,
     },
 ]
@@ -741,7 +732,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Guardian",
         "color": "#ffc107",
         "icon": "Dragonhunter.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 1,
@@ -753,7 +744,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Guardian",
         "color": "#ff7043",
         "icon": "Firebrand.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "hybrid",
         "scoring_config": {
             "quickness": 20,
@@ -763,7 +754,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 20,
         },
-        "is_key_support": 1,
         "sort_order": 2,
     },
     {
@@ -773,7 +763,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Guardian",
         "color": "#ffa726",
         "icon": "Willbender.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "hybrid",
         "scoring_config": {"damage": 40, "breakbar": 25, "kills": 20, "survival": 15},
         "sort_order": 3,
@@ -785,7 +775,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Guardian",
         "color": "#ffca28",
         "icon": "Luminary.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "hybrid",
         "scoring_config": {
             "quickness": 15,
@@ -796,7 +786,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
     # Warrior
@@ -807,7 +796,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Warrior",
         "color": "#ff5722",
         "icon": "Berserker.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 50, "breakbar": 25, "kills": 15, "survival": 10},
         "sort_order": 1,
@@ -819,7 +808,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Warrior",
         "color": "#ff7043",
         "icon": "Spellbreaker.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {
             "damage": 35,
@@ -837,7 +826,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Warrior",
         "color": "#ff8a65",
         "icon": "Bladesworn.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 55, "breakbar": 20, "kills": 15, "survival": 10},
         "sort_order": 3,
@@ -849,7 +838,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Warrior",
         "color": "#ffa726",
         "icon": "Paragon.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 15,
@@ -860,7 +849,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
     # Engineer
@@ -871,7 +859,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Engineer",
         "color": "#795548",
         "icon": "Scrapper.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 15,
@@ -882,7 +870,6 @@ _ELITE_SPEC_SEED = [
             "survival": 10,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 1,
     },
     {
@@ -892,7 +879,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Engineer",
         "color": "#8d6e63",
         "icon": "Holosmith.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "hybrid",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 2,
@@ -904,7 +891,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Engineer",
         "color": "#a1887f",
         "icon": "Mechanist.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "hybrid",
         "scoring_config": {
             "quickness": 10,
@@ -915,7 +902,6 @@ _ELITE_SPEC_SEED = [
             "survival": 10,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 3,
     },
     {
@@ -925,7 +911,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Engineer",
         "color": "#bcaaa4",
         "icon": "Amalgam.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "hybrid",
         "scoring_config": {
             "damage": 40,
@@ -944,7 +930,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Ranger",
         "color": "#4caf50",
         "icon": "Druid.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 0,
@@ -955,7 +941,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 45,
         },
-        "is_key_support": 1,
         "sort_order": 1,
     },
     {
@@ -965,7 +950,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Ranger",
         "color": "#66bb6a",
         "icon": "Soulbeast.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 2,
@@ -977,7 +962,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Ranger",
         "color": "#81c784",
         "icon": "Untamed.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "hybrid",
         "scoring_config": {"damage": 40, "breakbar": 25, "kills": 20, "survival": 15},
         "sort_order": 3,
@@ -989,7 +974,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Ranger",
         "color": "#a5d6a7",
         "icon": "Galeshot.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 4,
@@ -1002,7 +987,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Thief",
         "color": "#607d8b",
         "icon": "Daredevil.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 1,
@@ -1014,7 +999,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Thief",
         "color": "#78909c",
         "icon": "Deadeye.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 2,
@@ -1026,7 +1011,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Thief",
         "color": "#90a4ae",
         "icon": "Specter.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "condi",
         "scoring_config": {
             "damage": 40,
@@ -1044,7 +1029,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Thief",
         "color": "#b0bec5",
         "icon": "Antiquary.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "condi",
         "scoring_config": {
             "damage": 35,
@@ -1054,7 +1039,6 @@ _ELITE_SPEC_SEED = [
             "cleanses": 10,
             "survival": 10,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
     # Elementalist
@@ -1065,7 +1049,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Elementalist",
         "color": "#e91e63",
         "icon": "Tempest.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "hybrid",
         "scoring_config": {
             "quickness": 0,
@@ -1076,7 +1060,6 @@ _ELITE_SPEC_SEED = [
             "survival": 10,
             "healing": 40,
         },
-        "is_key_support": 1,
         "sort_order": 1,
     },
     {
@@ -1086,7 +1069,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Elementalist",
         "color": "#ec407a",
         "icon": "Weaver.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "hybrid",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 2,
@@ -1098,7 +1081,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Elementalist",
         "color": "#f06292",
         "icon": "Catalyst.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 3,
@@ -1110,7 +1093,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Elementalist",
         "color": "#f48fb1",
         "icon": "Evoker.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 4,
@@ -1123,7 +1106,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Mesmer",
         "color": "#9c27b0",
         "icon": "Chronomancer.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 20,
@@ -1134,7 +1117,6 @@ _ELITE_SPEC_SEED = [
             "survival": 10,
             "healing": 10,
         },
-        "is_key_support": 1,
         "sort_order": 1,
     },
     {
@@ -1144,7 +1126,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Mesmer",
         "color": "#ab47bc",
         "icon": "Mirage.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "condi",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 2,
@@ -1156,7 +1138,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Mesmer",
         "color": "#ba68c8",
         "icon": "Virtuoso.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 3,
@@ -1168,7 +1150,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Mesmer",
         "color": "#ce93d8",
         "icon": "Troubadour.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 15,
@@ -1179,7 +1161,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
     # Necromancer
@@ -1190,7 +1171,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Necromancer",
         "color": "#00bcd4",
         "icon": "Reaper.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 1,
@@ -1202,7 +1183,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Necromancer",
         "color": "#26c6da",
         "icon": "Scourge.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "condi",
         "scoring_config": {
             "quickness": 0,
@@ -1213,7 +1194,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 35,
         },
-        "is_key_support": 1,
         "sort_order": 2,
     },
     {
@@ -1223,7 +1203,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Necromancer",
         "color": "#4dd0e1",
         "icon": "Harbinger.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "condi",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 3,
@@ -1235,7 +1215,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Necromancer",
         "color": "#80deea",
         "icon": "Ritualist.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "condi",
         "scoring_config": {
             "quickness": 10,
@@ -1246,7 +1226,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 20,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
     # Revenant
@@ -1257,7 +1236,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Revenant",
         "color": "#3f51b5",
         "icon": "Herald.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 0,
@@ -1268,7 +1247,6 @@ _ELITE_SPEC_SEED = [
             "survival": 20,
             "healing": 30,
         },
-        "is_key_support": 1,
         "sort_order": 1,
     },
     {
@@ -1278,7 +1256,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Revenant",
         "color": "#5c6bc0",
         "icon": "Renegade.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "condi",
         "scoring_config": {
             "damage": 40,
@@ -1296,7 +1274,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Revenant",
         "color": "#7986cb",
         "icon": "Vindicator.png",
-        "default_role": "dps",
+        "role_type": "dps",
         "dps_type": "power",
         "scoring_config": {"damage": 45, "breakbar": 25, "kills": 20, "survival": 10},
         "sort_order": 3,
@@ -1308,7 +1286,7 @@ _ELITE_SPEC_SEED = [
         "profession_key": "Revenant",
         "color": "#9fa8da",
         "icon": "Conduit.png",
-        "default_role": "support",
+        "role_type": "support",
         "dps_type": "power",
         "scoring_config": {
             "quickness": 15,
@@ -1319,7 +1297,6 @@ _ELITE_SPEC_SEED = [
             "survival": 15,
             "healing": 15,
         },
-        "is_key_support": 1,
         "sort_order": 4,
     },
 ]
@@ -1872,7 +1849,7 @@ def _init_scoring_rules(db: Session) -> Dict[str, Any]:
             if not scoring_config or not isinstance(scoring_config, dict):
                 continue
             
-            default_role = spec.default_role or "dps"
+            role_type = spec.role_type or "dps"
             
             # 归一化权重
             total_weight = sum(scoring_config.values())
@@ -1883,7 +1860,7 @@ def _init_scoring_rules(db: Session) -> Dict[str, Any]:
             for dimension, weight in scoring_config.items():
                 normalized_weight = round(weight / total_weight, 4)
                 rule = ScoringRule(
-                    role_type=default_role,
+                    role_type=role_type,
                     profession=spec.spec_key,
                     dimension=dimension,
                     weight=normalized_weight,

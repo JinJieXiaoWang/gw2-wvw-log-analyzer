@@ -70,15 +70,12 @@ class ParseStatus(str, Enum):
 # =============================================================================
 
 class RoleType(str, Enum):
-    """角色定位类型"""
+    """角色定位类型（精简为4种核心定位）"""
 
     DPS = "dps"
     SUPPORT = "support"
     TANK = "tank"
-    CONDITION = "condition"
-    HEALING = "healing"
     CONTROL = "control"
-    UTILITY = "utility"
 
     @classmethod
     def get_default(cls) -> str:
@@ -88,12 +85,12 @@ class RoleType(str, Enum):
     @classmethod
     def is_damage_role(cls, role_type: str) -> bool:
         """是否为输出向角色"""
-        return role_type in (cls.DPS.value, cls.CONDITION.value)
+        return role_type == cls.DPS.value
 
     @classmethod
     def is_support_role(cls, role_type: str) -> bool:
-        """是否为辅助向角色"""
-        return role_type in (cls.SUPPORT.value, cls.HEALING.value, cls.TANK.value)
+        """是否为辅助向角色（含坦克、控制）"""
+        return role_type in (cls.SUPPORT.value, cls.TANK.value, cls.CONTROL.value)
 
 
 # =============================================================================

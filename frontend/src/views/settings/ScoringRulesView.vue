@@ -200,11 +200,11 @@ async function loadProfessionRoleMapping() {
     professionRoleMapping.value = professions.map(p => ({
       profession: p.profession_name,
       professionKey: p.profession_key,
-      role: p.default_role || ROLE_FALLBACK,
-      roleLabel: p.default_role || ROLE_FALLBACK,
+      role: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK,
+      roleLabel: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK,
       icon: 'pi pi-user',
       eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_name),
-      currentRole: p.default_role || ROLE_FALLBACK
+      currentRole: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK
     }))
   } catch (error) {
     console.error(LOG_LOAD_ROLE_MAPPING_FAIL, error)

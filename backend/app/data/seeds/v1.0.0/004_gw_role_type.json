@@ -25,6 +25,13 @@
       "color": "#165DFF",
       "icon": "pi pi-shield",
       "sort_order": 3
+    },
+    {
+      "role_key": "control",
+      "role_name": "控制",
+      "color": "#9333EA",
+      "icon": "pi pi-ban",
+      "sort_order": 4
     }
   ]
 }

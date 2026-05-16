@@ -57,7 +57,7 @@ def get_account_score_breakdown(
 
     # 确定角色类型
     game_data = GameDataService()
-    role_type = game_data.get_default_role(most_used_profession) if most_used_profession else RoleType.DPS
+    role_type = game_data.get_role_type(most_used_profession) if most_used_profession else RoleType.DPS
 
     # 获取评分规则服务
     rule_service = ScoringRuleService(db)
@@ -157,7 +157,7 @@ def _get_profession_and_role_type(
 
     game_data = GameDataService()
     role_type = (
-        game_data.get_default_role(most_used_profession)
+        game_data.get_role_type(most_used_profession)
         if most_used_profession
         else RoleType.DPS
     )

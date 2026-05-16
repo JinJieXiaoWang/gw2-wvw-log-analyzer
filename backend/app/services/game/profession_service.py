@@ -47,8 +47,6 @@ class ProfessionService:
             "profession_name_en": profession.profession_name_en,
             "color": profession.color,
             "icon": profession.icon,
-            "default_role": profession.default_role,
-            "possible_roles": profession.possible_roles or [],
             "is_active": profession.is_active,
             "sort_order": profession.sort_order,
         }
@@ -69,10 +67,9 @@ class ProfessionService:
             "profession_key": spec.profession_key,
             "color": spec.color,
             "icon": spec.icon,
-            "default_role": spec.default_role,
+            "role_type": spec.role_type,
             "dps_type": spec.dps_type,
             "scoring_config": spec.scoring_config or {},
-            "is_key_support": spec.is_key_support == 1,
             "is_active": spec.is_active,
             "sort_order": spec.sort_order,
         }
@@ -121,11 +118,6 @@ class ProfessionService:
         profession = self.get_profession(profession_key)
         return profession.get("profession_name", profession_key) if profession else profession_key
 
-    def get_profession_default_role(self, profession_key: str) -> str:
-        """获取职业默认角色定位"""
-        profession = self.get_profession(profession_key)
-        return profession.get("default_role", RoleType.DPS) if profession else RoleType.DPS
-
     # ==================== 精英特长操作 ====================
 
     def get_all_specs(self, active_only: bool = True) -> List[Dict[str, Any]]:
@@ -158,20 +150,15 @@ class ProfessionService:
         spec = self.get_spec_by_key(spec_key)
         return spec.get("profession_key") if spec else None
 
-    def get_spec_default_role(self, spec_key: str) -> str:
-        """获取精英特长默认角色定位"""
+    def get_spec_role_type(self, spec_key: str) -> str:
+        """获取精英特长角色定位"""
         spec = self.get_spec_by_key(spec_key)
-        return spec.get("default_role", RoleType.DPS) if spec else RoleType.DPS
+        return spec.get("role_type", RoleType.DPS) if spec else RoleType.DPS
 
     def get_spec_color(self, spec_key: str) -> Optional[str]:
         """获取精英特长颜色"""
         spec = self.get_spec_by_key(spec_key)
         return spec.get("color") if spec else None
-
-    def is_key_support(self, spec_key: str) -> bool:
-        """判断是否为关键辅助特长"""
-        spec = self.get_spec_by_key(spec_key)
-        return spec.get("is_key_support", False) if spec else False
 
     # ==================== 层级查询 ====================
 
@@ -200,23 +187,16 @@ class ProfessionService:
             })
         return result
 
-    def get_role_profession_mapping(self) -> Dict[str, List[Dict[str, Any]]]:
-        """获取角色定位到职业的映射（用于评分规则页面）"""
+    def get_role_spec_mapping(self) -> Dict[str, List[Dict[str, Any]]]:
+        """获取角色定位到精英特长的映射（用于评分规则页面）"""
         result: Dict[str, List[Dict[str, Any]]] = {}
-        professions = self.get_all_professions(include_specs=True)
+        specs = self.get_all_specs()
 
-        for prof in professions:
-            role = prof.get("default_role", RoleType.DPS)
+        for spec in specs:
+            role = spec.get("role_type", RoleType.DPS)
             if role not in result:
                 result[role] = []
-
-            specs = prof.get("elite_specializations", [])
-            result[role].append({
-                "profession": prof["profession_key"],
-                "profession_name": prof["profession_name"],
-                "color": prof["color"],
-                "elite_specs": [s["spec_key"] for s in specs],
-            })
+            result[role].append(spec)
 
         return result
 
@@ -246,28 +226,16 @@ class ProfessionService:
 
     # ==================== CRUD 操作 ====================
 
-    def update_profession_role(self, profession_key: str, role_key: str) -> bool:
-        """更新职业的默认角色定义"""
-        profession = self.db.query(GwProfession).filter(
-            GwProfession.profession_key == profession_key
-        ).first()
-        if not profession:
-            return False
-        profession.default_role = role_key
-        self.db.commit()
-        logger.info(f"更新职业 {profession_key} 的默认角色定位为 {role_key}")
-        return True
-
-    def update_spec_role(self, spec_key: str, role_key: str) -> bool:
-        """更新精英特长的默认角色定义"""
+    def update_spec_role_type(self, spec_key: str, role_key: str) -> bool:
+        """更新精英特长的角色定位"""
         spec = self.db.query(GwEliteSpecialization).filter(
             GwEliteSpecialization.spec_key == spec_key
         ).first()
         if not spec:
             return False
-        spec.default_role = role_key
+        spec.role_type = role_key
         self.db.commit()
-        logger.info(f"更新精英特长 {spec_key} 的默认角色定位为 {role_key}")
+        logger.info(f"更新精英特长 {spec_key} 的角色定位为 {role_key}")
         return True
 
     def create_profession(self, profession_data: Dict[str, Any]) -> Optional[Dict[str, Any]]:

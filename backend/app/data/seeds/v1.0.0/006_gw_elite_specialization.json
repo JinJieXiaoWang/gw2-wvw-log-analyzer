@@ -12,7 +12,6 @@
       "profession_key": "Guardian",
       "color": "#ffc107",
       "icon": "Dragonhunter.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -20,7 +19,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "dps"
     },
     {
       "spec_key": "Firebrand",
@@ -29,7 +29,6 @@
       "profession_key": "Guardian",
       "color": "#ff7043",
       "icon": "Firebrand.png",
-      "default_role": "support",
       "dps_type": "hybrid",
       "scoring_config": {
         "quickness": 20,
@@ -39,8 +38,8 @@
         "survival": 15,
         "healing": 20
       },
-      "is_key_support": 1,
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "support"
     },
     {
       "spec_key": "Willbender",
@@ -49,7 +48,6 @@
       "profession_key": "Guardian",
       "color": "#ffa726",
       "icon": "Willbender.png",
-      "default_role": "dps",
       "dps_type": "hybrid",
       "scoring_config": {
         "damage": 40,
@@ -57,7 +55,8 @@
         "kills": 20,
         "survival": 15
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Luminary",
@@ -66,7 +65,6 @@
       "profession_key": "Guardian",
       "color": "#ffca28",
       "icon": "Luminary.png",
-      "default_role": "support",
       "dps_type": "hybrid",
       "scoring_config": {
         "quickness": 15,
@@ -77,8 +75,8 @@
         "survival": 15,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "support"
     },
     {
       "spec_key": "Berserker",
@@ -87,7 +85,6 @@
       "profession_key": "Warrior",
       "color": "#ff5722",
       "icon": "Berserker.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 50,
@@ -95,7 +92,8 @@
         "kills": 15,
         "survival": 10
       },
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "dps"
     },
     {
       "spec_key": "Spellbreaker",
@@ -104,7 +102,6 @@
       "profession_key": "Warrior",
       "color": "#ff7043",
       "icon": "Spellbreaker.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 35,
@@ -113,7 +110,8 @@
         "kills": 15,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "control"
     },
     {
       "spec_key": "Bladesworn",
@@ -122,7 +120,6 @@
       "profession_key": "Warrior",
       "color": "#ff8a65",
       "icon": "Bladesworn.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 55,
@@ -130,7 +127,8 @@
         "kills": 15,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Paragon",
@@ -139,7 +137,6 @@
       "profession_key": "Warrior",
       "color": "#ffa726",
       "icon": "Paragon.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 15,
@@ -150,8 +147,8 @@
         "survival": 15,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "tank"
     },
     {
       "spec_key": "Scrapper",
@@ -160,7 +157,6 @@
       "profession_key": "Engineer",
       "color": "#795548",
       "icon": "Scrapper.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 15,
@@ -171,8 +167,8 @@
         "survival": 10,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "support"
     },
     {
       "spec_key": "Holosmith",
@@ -181,7 +177,6 @@
       "profession_key": "Engineer",
       "color": "#8d6e63",
       "icon": "Holosmith.png",
-      "default_role": "dps",
       "dps_type": "hybrid",
       "scoring_config": {
         "damage": 45,
@@ -189,7 +184,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Mechanist",
@@ -198,7 +194,6 @@
       "profession_key": "Engineer",
       "color": "#a1887f",
       "icon": "Mechanist.png",
-      "default_role": "support",
       "dps_type": "hybrid",
       "scoring_config": {
         "quickness": 10,
@@ -209,8 +204,8 @@
         "survival": 10,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "support"
     },
     {
       "spec_key": "Amalgam",
@@ -219,7 +214,6 @@
       "profession_key": "Engineer",
       "color": "#bcaaa4",
       "icon": "Amalgam.png",
-      "default_role": "dps",
       "dps_type": "hybrid",
       "scoring_config": {
         "damage": 40,
@@ -228,7 +222,8 @@
         "cleanses": 5,
         "survival": 10
       },
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "dps"
     },
     {
       "spec_key": "Druid",
@@ -237,7 +232,6 @@
       "profession_key": "Ranger",
       "color": "#4caf50",
       "icon": "Druid.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 0,
@@ -248,8 +242,8 @@
         "survival": 15,
         "healing": 45
       },
-      "is_key_support": 1,
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "support"
     },
     {
       "spec_key": "Soulbeast",
@@ -258,7 +252,6 @@
       "profession_key": "Ranger",
       "color": "#66bb6a",
       "icon": "Soulbeast.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -266,7 +259,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Untamed",
@@ -275,7 +269,6 @@
       "profession_key": "Ranger",
       "color": "#81c784",
       "icon": "Untamed.png",
-      "default_role": "dps",
       "dps_type": "hybrid",
       "scoring_config": {
         "damage": 40,
@@ -283,7 +276,8 @@
         "kills": 20,
         "survival": 15
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Galeshot",
@@ -292,7 +286,6 @@
       "profession_key": "Ranger",
       "color": "#a5d6a7",
       "icon": "Galeshot.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -300,7 +293,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "dps"
     },
     {
       "spec_key": "Daredevil",
@@ -309,7 +303,6 @@
       "profession_key": "Thief",
       "color": "#607d8b",
       "icon": "Daredevil.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -317,7 +310,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "dps"
     },
     {
       "spec_key": "Deadeye",
@@ -326,7 +320,6 @@
       "profession_key": "Thief",
       "color": "#78909c",
       "icon": "Deadeye.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -334,7 +327,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Specter",
@@ -343,7 +337,6 @@
       "profession_key": "Thief",
       "color": "#90a4ae",
       "icon": "Specter.png",
-      "default_role": "dps",
       "dps_type": "condi",
       "scoring_config": {
         "damage": 40,
@@ -352,7 +345,8 @@
         "cleanses": 10,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Antiquary",
@@ -361,7 +355,6 @@
       "profession_key": "Thief",
       "color": "#b0bec5",
       "icon": "Antiquary.png",
-      "default_role": "support",
       "dps_type": "condi",
       "scoring_config": {
         "damage": 35,
@@ -371,8 +364,8 @@
         "cleanses": 10,
         "survival": 10
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "support"
     },
     {
       "spec_key": "Tempest",
@@ -381,7 +374,6 @@
       "profession_key": "Elementalist",
       "color": "#e91e63",
       "icon": "Tempest.png",
-      "default_role": "support",
       "dps_type": "hybrid",
       "scoring_config": {
         "quickness": 0,
@@ -392,8 +384,8 @@
         "survival": 10,
         "healing": 40
       },
-      "is_key_support": 1,
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "support"
     },
     {
       "spec_key": "Weaver",
@@ -402,7 +394,6 @@
       "profession_key": "Elementalist",
       "color": "#ec407a",
       "icon": "Weaver.png",
-      "default_role": "dps",
       "dps_type": "hybrid",
       "scoring_config": {
         "damage": 45,
@@ -410,7 +401,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Catalyst",
@@ -419,7 +411,6 @@
       "profession_key": "Elementalist",
       "color": "#f06292",
       "icon": "Catalyst.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -427,7 +418,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Evoker",
@@ -436,7 +428,6 @@
       "profession_key": "Elementalist",
       "color": "#f48fb1",
       "icon": "Evoker.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -444,7 +435,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "dps"
     },
     {
       "spec_key": "Chronomancer",
@@ -453,7 +445,6 @@
       "profession_key": "Mesmer",
       "color": "#9c27b0",
       "icon": "Chronomancer.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 20,
@@ -464,8 +455,8 @@
         "survival": 10,
         "healing": 10
       },
-      "is_key_support": 1,
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "support"
     },
     {
       "spec_key": "Mirage",
@@ -474,7 +465,6 @@
       "profession_key": "Mesmer",
       "color": "#ab47bc",
       "icon": "Mirage.png",
-      "default_role": "dps",
       "dps_type": "condi",
       "scoring_config": {
         "damage": 45,
@@ -482,7 +472,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Virtuoso",
@@ -491,7 +482,6 @@
       "profession_key": "Mesmer",
       "color": "#ba68c8",
       "icon": "Virtuoso.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -499,7 +489,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Troubadour",
@@ -508,7 +499,6 @@
       "profession_key": "Mesmer",
       "color": "#ce93d8",
       "icon": "Troubadour.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 15,
@@ -519,8 +509,8 @@
         "survival": 15,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "support"
     },
     {
       "spec_key": "Reaper",
@@ -529,7 +519,6 @@
       "profession_key": "Necromancer",
       "color": "#00bcd4",
       "icon": "Reaper.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -537,7 +526,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "dps"
     },
     {
       "spec_key": "Scourge",
@@ -546,7 +536,6 @@
       "profession_key": "Necromancer",
       "color": "#26c6da",
       "icon": "Scourge.png",
-      "default_role": "support",
       "dps_type": "condi",
       "scoring_config": {
         "quickness": 0,
@@ -557,8 +546,8 @@
         "survival": 15,
         "healing": 35
       },
-      "is_key_support": 1,
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "support"
     },
     {
       "spec_key": "Harbinger",
@@ -567,7 +556,6 @@
       "profession_key": "Necromancer",
       "color": "#4dd0e1",
       "icon": "Harbinger.png",
-      "default_role": "dps",
       "dps_type": "condi",
       "scoring_config": {
         "damage": 45,
@@ -575,7 +563,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Ritualist",
@@ -584,7 +573,6 @@
       "profession_key": "Necromancer",
       "color": "#80deea",
       "icon": "Ritualist.png",
-      "default_role": "support",
       "dps_type": "condi",
       "scoring_config": {
         "quickness": 10,
@@ -595,8 +583,8 @@
         "survival": 15,
         "healing": 20
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "support"
     },
     {
       "spec_key": "Herald",
@@ -605,7 +593,6 @@
       "profession_key": "Revenant",
       "color": "#3f51b5",
       "icon": "Herald.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 0,
@@ -616,8 +603,8 @@
         "survival": 20,
         "healing": 30
       },
-      "is_key_support": 1,
-      "sort_order": 1
+      "sort_order": 1,
+      "role_type": "support"
     },
     {
       "spec_key": "Renegade",
@@ -626,7 +613,6 @@
       "profession_key": "Revenant",
       "color": "#5c6bc0",
       "icon": "Renegade.png",
-      "default_role": "dps",
       "dps_type": "condi",
       "scoring_config": {
         "damage": 40,
@@ -635,7 +621,8 @@
         "kills": 10,
         "survival": 10
       },
-      "sort_order": 2
+      "sort_order": 2,
+      "role_type": "dps"
     },
     {
       "spec_key": "Vindicator",
@@ -644,7 +631,6 @@
       "profession_key": "Revenant",
       "color": "#7986cb",
       "icon": "Vindicator.png",
-      "default_role": "dps",
       "dps_type": "power",
       "scoring_config": {
         "damage": 45,
@@ -652,7 +638,8 @@
         "kills": 20,
         "survival": 10
       },
-      "sort_order": 3
+      "sort_order": 3,
+      "role_type": "dps"
     },
     {
       "spec_key": "Conduit",
@@ -661,7 +648,6 @@
       "profession_key": "Revenant",
       "color": "#9fa8da",
       "icon": "Conduit.png",
-      "default_role": "support",
       "dps_type": "power",
       "scoring_config": {
         "quickness": 15,
@@ -672,8 +658,8 @@
         "survival": 15,
         "healing": 15
       },
-      "is_key_support": 1,
-      "sort_order": 4
+      "sort_order": 4,
+      "role_type": "support"
     }
   ]
 }

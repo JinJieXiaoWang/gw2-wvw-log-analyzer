@@ -49,14 +49,6 @@
         </div>
         <div class="p-5 space-y-3">
           <div class="flex items-center justify-between text-sm">
-            <span class="text-neutral-text-secondary">默认角色</span>
-            <Tag
-              :value="getRoleName(prof.default_role)"
-              severity="info"
-              class="text-xs"
-            />
-          </div>
-          <div class="flex items-center justify-between text-sm">
             <span class="text-neutral-text-secondary">精英特长</span>
             <span class="text-neutral-text font-medium">{{ prof.elite_specializations?.length || 0 }} 个</span>
           </div>

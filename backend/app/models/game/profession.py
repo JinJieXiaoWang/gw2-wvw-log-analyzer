@@ -39,8 +39,6 @@ class GwProfession(Base):
     profession_name_en = Column(String(100), nullable=False, comment="职业英文名称")
     color = Column(String(20), nullable=False, comment="职业颜色(HEX)")
     icon = Column(String(200), nullable=True, comment="职业图标URL")
-    default_role = Column(String(20), default="dps", comment="默认角色定位")
-    possible_roles = Column(JSON, default=list, comment="可能的角色定位列(JSON)")
     is_active = Column(Integer, default=1, comment="是否启用: 1-启用, 0-禁用")
     sort_order = Column(Integer, default=0, comment="排序顺序")
 
@@ -60,10 +58,9 @@ class GwEliteSpecialization(Base):
     profession_key = Column(String(50), nullable=False, index=True, comment="所属职业键")
     color = Column(String(20), nullable=True, comment="特长颜色(HEX)")
     icon = Column(String(200), nullable=True, comment="特长图标URL")
-    default_role = Column(String(20), default="dps", comment="默认角色定位")
-    dps_type = Column(String(20), nullable=True, comment="DPS类型(power/condi/hybrid)")
+    role_type = Column(String(20), default="dps", comment="角色定位: dps-输出, support-辅助, tank-坦克, control-控制")
+    dps_type = Column(String(20), nullable=True, comment="DPS类型(power/condi/hybrid)，仅role_type=dps时有效")
     scoring_config = Column(JSON, default=dict, comment="评分配置")
-    is_key_support = Column(Integer, default=0, comment="是否关键辅助: 1-是, 0-否")
     is_active = Column(Integer, default=1, comment="是否启用: 1-启用, 0-禁用")
     sort_order = Column(Integer, default=0, comment="排序顺序")
 

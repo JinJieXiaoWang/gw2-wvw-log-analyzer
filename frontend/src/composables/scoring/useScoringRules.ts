@@ -231,10 +231,10 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
       if (cascadeData && cascadeData.length > 0) {
         cascadeProfessions.value = cascadeData.map((prof) => ({
           value: prof.value, label: prof.label, color: prof.color,
-          default_role: prof.default_role || prof.value,
+          role_type: prof.role_type || prof.value,
           elite_specs: (prof.elite_specs || []).map((spec) => ({
             value: spec.value, label: spec.label, color: spec.color,
-            default_role: spec.default_role || spec.value,
+            role_type: spec.role_type || spec.value,
           })),
         }))
         professionOptions.value = []
