@@ -14,7 +14,7 @@ from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.services.scoring.scoring_rule_service import ScoringRuleService
 from app.services.system.sys_config_service import SysConfigService
-from app.constants.dict_values import RoleType, get_grade, get_grade_label
+from app.constants.dict_values import get_grade, get_grade_label
 from app.utils.logger import logger
 
 
@@ -29,7 +29,7 @@ class ScoringService:
 
     @staticmethod
     def get_scoring_rules(
-        db: Session, role_type: str = RoleType.DPS, profession: Optional[str] = None
+        db: Session, role_type: str = "dps", profession: Optional[str] = None
     ) -> Dict[str, float]:
         """从评分规则表获取规则（按角色类型和职业）
         
@@ -165,7 +165,7 @@ class ScoringService:
 
     @staticmethod
     def calculate_all_scores(
-        fight_id: int, db: Session, role_type: str = RoleType.DPS, profession: Optional[str] = None
+        fight_id: int, db: Session, role_type: str = "dps", profession: Optional[str] = None
     ) -> Dict[str, Any]:
         """计算一场战斗中所有玩家的评分
         
@@ -286,7 +286,7 @@ class ScoringService:
         updated_count = 0
         for stat in stats_list:
             profession = stat.profession
-            role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
+            role_type = game_data.get_role_type(profession) if profession else "dps"
             rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
             stat_dict = {
@@ -399,7 +399,7 @@ class ScoringService:
 
                 for stat in stats_list:
                     profession = stat.profession
-                    role_type = game_data.get_role_type(profession) if profession else RoleType.DPS
+                    role_type = game_data.get_role_type(profession) if profession else "dps"
                     rules = ScoringService.get_scoring_rules(db, role_type, profession)
 
                     stat_dict = {

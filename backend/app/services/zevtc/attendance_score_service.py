@@ -10,7 +10,6 @@ from sqlalchemy.orm import Session
 
 from app.config.json_loader import load_json_config
 from app.models.log.fight import Fight
-from app.constants.dict_values import RoleType
 from app.models.log.fight_stats import FightStats
 
 
@@ -57,7 +56,7 @@ def get_account_score_breakdown(
 
     # 确定角色类型
     game_data = GameDataService()
-    role_type = game_data.get_role_type(most_used_profession) if most_used_profession else RoleType.DPS
+    role_type = game_data.get_role_type(most_used_profession) if most_used_profession else "dps"
 
     # 获取评分规则服务
     rule_service = ScoringRuleService(db)
@@ -159,7 +158,7 @@ def _get_profession_and_role_type(
     role_type = (
         game_data.get_role_type(most_used_profession)
         if most_used_profession
-        else RoleType.DPS
+        else "dps"
     )
     return most_used_profession, role_type
 
@@ -252,12 +251,12 @@ def _apply_role_type_adjustments(
     adjustments = config.get("role_adjustments", {})
     adj = adjustments.get(role_type, {})
 
-    if role_type == RoleType.SUPPORT or role_type == RoleType.HEALING:
+    if role_type == "support":
         abilities["healing"] = min(100, abilities["healing"] + adj.get("healing_bonus", 15))
         abilities["support"] = min(100, abilities["support"] + adj.get("support_bonus", 10))
-    elif role_type == RoleType.TANK:
+    elif role_type == "tank":
         abilities["survival"] = min(100, abilities["survival"] + adj.get("survival_bonus", 15))
-    elif role_type == RoleType.CONDITION:
+    elif role_type == "control":
         abilities["damage"] = min(100, abilities["damage"] + adj.get("damage_bonus", 5))
     # dps 保持不变
 

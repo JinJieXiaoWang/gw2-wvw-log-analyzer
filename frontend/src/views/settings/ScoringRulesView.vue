@@ -15,17 +15,16 @@
         icon-gradient="bg-gradient-to-br from-primary via-ai to-secondary"
       />
 
-      <Message
-        severity="info"
-        class="shadow-sm"
-      >
-        <div class="flex items-start gap-3">
-          <i class="pi pi-calculator mt-0.5 text-info-500" />
-          <div class="text-sm leading-relaxed">
-            <strong>{{ AUTO_CALCULATION.TITLE }}</strong>{{ AUTO_CALCULATION.DESCRIPTION_PREFIX }}<strong>{{ AUTO_CALCULATION.HIGHLIGHT }}</strong>{{ AUTO_CALCULATION.DESCRIPTION_SUFFIX }}
-          </div>
+      <!-- 评分模式概览 -->
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4 flex items-center gap-3">
+        <div class="w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0">
+          <i class="pi pi-calculator text-primary-500" />
         </div>
-      </Message>
+        <div class="min-w-0">
+          <div class="text-sm font-medium text-color">当前评分模式：{{ scoringModeLabel }}</div>
+          <div class="text-xs text-color-secondary mt-0.5">{{ scoringModeDesc }}</div>
+        </div>
+      </div>
 
       <!-- 角色类型卡片 -->
       <ScoringRoleCards
@@ -52,29 +51,8 @@
 
       <!-- 规则编辑器 -->
       <ScoringRulesEditor
-        :active-role="activeRole"
-        :active-role-label="activeRoleLabel"
-        :active-role-icon="activeRoleIcon"
-        :role-colors="roleColors"
-        :role-gradients="roleGradients"
-        :rule-scope="ruleScope"
-        :selected-profession="selectedProfession"
-        :editable-rules="editableRules"
-        :loading="loading"
-        :saving="saving"
-        :resetting="resetting"
-        :recalculating="recalculating"
-        :can-recalculate="canRecalculate"
-        :current-profession-has-rules="currentProfessionHasRules"
-        :deleting-profession="deletingProfession"
-        :total-weight="totalWeight"
-        :weight-status-class="weightStatusClass"
+        v-bind="editorData"
         :has-unsaved-changes="hasUnsavedChanges(activeRole)"
-        :can-write="canWrite"
-        :new-rule-dimension="newRuleDimension"
-        :new-rule-weight="newRuleWeight"
-        :new-rule-desc="newRuleDesc"
-        :available-dimensions="availableDimensions"
         :get-dimension-icon="getDimensionIcon"
         :get-dimension-color="getDimensionColor"
         :get-dimension-label="getDimensionLabel"
@@ -89,33 +67,28 @@
         @add="addRule"
       />
 
-      <!-- 职业定位管理 -->
-      <ProfessionRoleEditor
-        :role-types="roleTypes"
-        :profession-role-mapping="professionRoleMapping"
-        :is-edit-mode="roleEditMode"
-        :can-write="canWrite"
-        :scoring-mode="scoringMode"
-        @toggle-edit="toggleRoleEditMode"
-        @save="saveRoleMapping"
-        @profession-change="updateProfessionRole"
-      />
-
-      <!-- 评分等级 -->
-      <ScoringGradeCards :grades="gradeList" />
-
-      <!-- 重算任务 -->
-      <RecalcTaskPanel
-        :task="recalcTask"
-        :severity="recalcStatusSeverity"
-        @close="recalcTask = null"
-      />
-
-      <!-- 版本历史 -->
-      <VersionHistoryTable
-        :versions="versionHistory"
-        :format-date="formatDate"
-      />
+      <!-- 高级设置（默认折叠） -->
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden">
+        <button class="w-full flex items-center justify-between p-4 text-sm font-medium text-color hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors" @click="showAdvanced = !showAdvanced">
+          <span class="flex items-center gap-2"><i class="pi pi-cog text-color-secondary" />高级设置（职业定位 / 评分等级 / 历史重算 / 版本）</span>
+          <i :class="showAdvanced ? 'pi-chevron-up' : 'pi-chevron-down'" class="pi text-color-secondary" />
+        </button>
+        <div v-show="showAdvanced" class="p-4 border-t border-surface-200 dark:border-surface-700 flex flex-col gap-4">
+          <ProfessionRoleEditor
+            :role-types="roleTypes"
+            :profession-role-mapping="professionRoleMapping"
+            :is-edit-mode="roleEditMode"
+            :can-write="canWrite"
+            :scoring-mode="scoringMode"
+            @toggle-edit="toggleRoleEditMode"
+            @save="saveRoleMapping"
+            @profession-change="updateProfessionRole"
+          />
+          <ScoringGradeCards :grades="gradeList" />
+          <RecalcTaskPanel :task="recalcTask" :severity="recalcStatusSeverity" @close="recalcTask = null" />
+          <VersionHistoryTable :versions="versionHistory" :format-date="formatDate" />
+        </div>
+      </div>
     </div>
 
     <ConfirmDialog />
@@ -125,7 +98,6 @@
 
 <script setup lang="ts">
 import PageHeader from '@/layout/components/PageHeader.vue'
-import Message from 'primevue/message'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
 import RuleScopeSelector from '@/components/settings/scoring/RuleScopeSelector.vue'
@@ -138,17 +110,12 @@ import VersionHistoryTable from '@/components/settings/scoring/VersionHistoryTab
 import { ref, computed, onMounted } from 'vue'
 import { useScoringRules } from '@/composables/scoring/useScoringRules'
 import { usePermission } from '@/composables/system/usePermission'
+import { useSystemConfig } from '@/composables/system/useSystemConfig'
 import { professionService } from '@/services'
 
 // === 常量定义 ===
 const PAGE_TITLE = '评分规则配置'
-const PAGE_SUBTITLE = '为不同角色类型定制评分维度和权重'
-const AUTO_CALCULATION = {
-  TITLE: '评分自动计算机制：',
-  DESCRIPTION_PREFIX: '当日志导入完成后，系统会根据当前生效的评分规则版本，结合玩家的职业和角色定位，',
-  HIGHLIGHT: '自动计算',
-  DESCRIPTION_SUFFIX: '每个玩家的 AI 评分与等级。修改规则后，可通过"应用到历史数据"按钮重新计算历史日志。',
-} as const
+const PAGE_SUBTITLE = '定义各角色定位的评分维度和权重'
 const ROLE_FALLBACK = 'dps'
 const LOG_LOAD_ROLE_MAPPING_FAIL = '加载职业角色映射失败:'
 
@@ -187,24 +154,73 @@ const weightProgress = computed(() => {
   return map
 })
 
-// 职业定位管理
+// 规则编辑器数据（打包传递减少 template 行数）
+const editorData = computed(() => ({
+  activeRole: activeRole.value,
+  activeRoleLabel: activeRoleLabel.value,
+  activeRoleIcon: activeRoleIcon.value,
+  roleColors: roleColors.value,
+  roleGradients: roleGradients.value,
+  ruleScope: ruleScope.value,
+  selectedProfession: selectedProfession.value,
+  editableRules: editableRules.value,
+  loading: loading.value,
+  saving: saving.value,
+  resetting: resetting.value,
+  recalculating: recalculating.value,
+  canRecalculate: canRecalculate.value,
+  currentProfessionHasRules: currentProfessionHasRules.value,
+  deletingProfession: deletingProfession.value,
+  totalWeight: totalWeight.value,
+  weightStatusClass: weightStatusClass.value,
+  canWrite,
+  newRuleDimension: newRuleDimension.value,
+  newRuleWeight: newRuleWeight.value,
+  newRuleDesc: newRuleDesc.value,
+  availableDimensions: availableDimensions.value,
+}))
+
+// 系统配置
+const { getConfig, loadSystemConfigs } = useSystemConfig()
+
+// 评分模式
 const scoringMode = ref<'role_based' | 'profession_based'>('role_based')
+const scoringModeLabel = computed(() => scoringMode.value === 'role_based' ? '角色定位评分' : '职业评分')
+const scoringModeDesc = computed(() =>
+  scoringMode.value === 'role_based'
+    ? '所有职业按默认定位（输出/辅助/坦克/控制）应用对应的通用评分规则'
+    : '优先使用职业特定评分规则，无则回退到角色定位规则'
+)
+
+// 高级设置折叠
+const showAdvanced = ref(false)
+
+// 职业定位管理
 const roleEditMode = ref(false)
 const professionRoleMapping = ref<any[]>([])
 const isLoadingRoleMapping = ref(false)
 
+async function loadScoringMode() {
+  try {
+    await loadSystemConfigs()
+    scoringMode.value = (getConfig('scoring_mode', 'role_based') as 'role_based' | 'profession_based') || 'role_based'
+  } catch (error) {
+    console.error('加载评分模式配置失败:', error)
+  }
+}
+
 async function loadProfessionRoleMapping() {
   isLoadingRoleMapping.value = true
   try {
-    const professions = await professionService.getProfessions(false)
-    professionRoleMapping.value = professions.map(p => ({
-      profession: p.profession_name,
-      professionKey: p.profession_key,
-      role: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK,
-      roleLabel: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK,
-      icon: 'pi pi-user',
-      eliteSpecs: (p.elite_specializations || []).map((s: any) => s.spec_name),
-      currentRole: p.elite_specializations?.[0]?.role_type || ROLE_FALLBACK
+    const specs = await professionService.getEliteSpecs()
+    professionRoleMapping.value = specs.map(s => ({
+      profession: s.spec_name,
+      professionKey: s.spec_key,
+      role: s.role_type || ROLE_FALLBACK,
+      roleLabel: s.role_type || ROLE_FALLBACK,
+      icon: s.icon || 'pi pi-user',
+      eliteSpecs: [],
+      currentRole: s.role_type || ROLE_FALLBACK
     }))
   } catch (error) {
     console.error(LOG_LOAD_ROLE_MAPPING_FAIL, error)
@@ -221,19 +237,31 @@ function toggleRoleEditMode() {
 }
 
 function updateProfessionRole(prof: any) {
-  const item = professionRoleMapping.value.find(p => p.profession === prof.profession)
+  const item = professionRoleMapping.value.find(p => p.professionKey === prof.professionKey)
   if (item) {
     item.currentRole = prof.currentRole
   }
 }
 
-function saveRoleMapping() {
-  professionRoleMapping.value.forEach(p => { p.role = p.currentRole })
-  roleEditMode.value = false
-  // TODO: 调用 API 保存角色映射
+async function saveRoleMapping() {
+  const changed = professionRoleMapping.value.filter(p => p.currentRole !== p.role)
+  if (changed.length === 0) {
+    roleEditMode.value = false
+    return
+  }
+  try {
+    await Promise.all(
+      changed.map(p => professionService.updateSpecRole(p.professionKey, p.currentRole))
+    )
+    professionRoleMapping.value.forEach(p => { p.role = p.currentRole })
+    roleEditMode.value = false
+  } catch (error) {
+    console.error('保存职业定位失败:', error)
+  }
 }
 
 onMounted(() => {
+  loadScoringMode()
   loadProfessionRoleMapping()
 })
 </script>

@@ -21,11 +21,10 @@ from sqlalchemy.orm import Session
 # 评分规则内存缓存: {(role_type, profession): (rules_dict, expire_time)}
 _rules_cache: Dict[Tuple[str, Optional[str]], Tuple[Dict[str, float], float]] = {}
 
-from app.constants.dict_values import RoleType
 from app.utils.db.dict_utils import get_dict_label
 
 
-def _get_default_fallback_rules(role_type: str = RoleType.DPS) -> Dict[str, float]:
+def _get_default_fallback_rules(role_type: str = "dps") -> Dict[str, float]:
     """从 JSON 配置加载兜底评分规则
     
     scoring_rules.json 格式:
@@ -146,7 +145,7 @@ class PlayerScoreService:
         if player_role is None and player_profession:
             player_role = GameDataService(db).get_role_type(player_profession)
         if player_role is None:
-            player_role = RoleType.DPS
+            player_role = "dps"
 
         rules = _get_cached_rules(db, player_role, player_profession)
         stat_dict = _fight_stats_to_dict(stat)

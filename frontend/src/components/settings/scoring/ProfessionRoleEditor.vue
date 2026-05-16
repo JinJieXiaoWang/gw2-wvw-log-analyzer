@@ -91,7 +91,7 @@
                 option-value="type"
                 size="small"
                 class="w-28"
-                @change="(val) => onProfessionRoleChange(prof, val)"
+                @change="() => onProfessionRoleChange(prof)"
               />
             </div>
             <div class="flex flex-wrap gap-1">
@@ -185,8 +185,8 @@ const professionByRole = computed(() => {
   return grouped
 })
 
-function onProfessionRoleChange(prof: any, newRole: string) {
-  emit('profession-change', { ...prof, currentRole: newRole })
+function onProfessionRoleChange(prof: any) {
+  emit('profession-change', { ...prof, currentRole: prof.currentRole })
 }
 </script>
 

@@ -455,6 +455,12 @@ export async function deleteEliteSpec(specKey: string): Promise<any> {
   return res.data
 }
 
+export async function updateSpecRole(specKey: string, roleKey: string): Promise<any> {
+  const res = await apiFactory.put(`${API_PREFIX}/elite-spec/${specKey}/role`, { role_key: roleKey })
+  clearCache()
+  return res.data
+}
+
 export async function createRoleType(data: Partial<RoleType>): Promise<any> {
   const res = await apiFactory.post(`${API_PREFIX}/role-type`, data)
   clearCache()
@@ -505,6 +511,7 @@ export const professionService = {
   createEliteSpec,
   updateEliteSpec,
   deleteEliteSpec,
+  updateSpecRole,
   createRoleType,
   updateRoleType,
   deleteRoleType,

@@ -19,7 +19,6 @@ from sqlalchemy.orm import Session
 from app.models.auth.account_character import AccountCharacter
 from app.models.auth.member import Member
 from app.models.log.fight import Fight
-from app.constants.dict_values import RoleType
 from app.models.log.fight_stats import FightStats
 
 
@@ -401,9 +400,9 @@ def _calculate_comprehensive_abilities(
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
         except Exception:
             # 如果找不到对应职业规则，使用dps规则
-            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+            rules = ScoringService.get_scoring_rules(db, "dps")
     else:
-        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+        rules = ScoringService.get_scoring_rules(db, "dps")
     
     # 查询该账号在统计周期内的所有战斗数据
     query = (
@@ -502,14 +501,14 @@ def _calculate_comprehensive_abilities(
     adjustments = scoring_config.get("role_adjustments", {})
     adj = adjustments.get(role_type, {})
 
-    if role_type == RoleType.SUPPORT:
+    if role_type == "support":
         healing_score = min(100.0, healing_score * adj.get("healing_multiplier", 1.3))
         support_score = min(100.0, support_score * adj.get("support_multiplier", 1.3))
         damage_score = damage_score * adj.get("damage_multiplier", 0.8)
-    elif role_type == RoleType.TANK:
+    elif role_type == "tank":
         survival_score = min(100.0, survival_score * adj.get("survival_multiplier", 1.3))
         support_score = min(100.0, support_score * adj.get("support_multiplier", 1.1))
-    elif role_type == RoleType.CONDITION:
+    elif role_type == "control":
         utility_score = min(100.0, utility_score * adj.get("utility_multiplier", 1.3))
     
     return {
@@ -525,25 +524,20 @@ def _calculate_comprehensive_abilities(
 def _determine_role_type(profession: Optional[str], rules: Dict[str, Any]) -> str:
     """根据职业和评分规则确定角色类型"""
     if not profession:
-        return RoleType.DPS
-    
-    prof_lower = profession.lower()
-    
-    # 常见辅助职业
-    support_profs = ["firebrand", "tempest", "druid", "mechanist", "scourge", "herald"]
-    # 常见坦克职业
-    tank_profs = ["spellbreaker", "bladesworn", "guardian", "warrior"]
-    # 常见症状职业
-    condi_profs = ["scourge", "condition mirage", "soulbeast", "untamed"]
-    
-    if prof_lower in support_profs or rules.get("healing_weight", 0) > 0.15:
-        return RoleType.SUPPORT
-    elif prof_lower in tank_profs or rules.get("survival_weight", 0) > 0.15:
-        return RoleType.TANK
-    elif prof_lower in condi_profs:
-        return RoleType.CONDITION
-    else:
-        return RoleType.DPS
+        return "dps"
+
+    # 优先从游戏数据获取角色类型
+    from app.services.game.game_data_service import GameDataService
+    game_data = GameDataService()
+    role_type = game_data.get_role_type(profession)
+
+    # 根据评分规则权重微调
+    if rules.get("healing_weight", 0) > 0.15 and role_type != "support":
+        return "support"
+    elif rules.get("survival_weight", 0) > 0.15 and role_type not in ("tank", "control"):
+        return "tank"
+
+    return role_type
 
 
 def get_character_detail(
@@ -774,15 +768,15 @@ def get_account_score_breakdown(
 
     # 获取最常用职业和角色类型
     most_used_profession = _get_most_used_profession(stats_list)
-    role_type = RoleType.DPS
+    role_type = "dps"
     if most_used_profession:
         try:
             rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
             role_type = _determine_role_type(most_used_profession, rules)
         except Exception:
-            rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+            rules = ScoringService.get_scoring_rules(db, "dps")
     else:
-        rules = ScoringService.get_scoring_rules(db, RoleType.DPS)
+        rules = ScoringService.get_scoring_rules(db, "dps")
 
     # 按维度聚合
     total_score_sum = 0.0
@@ -814,10 +808,10 @@ def get_account_score_breakdown(
 
     # 角色类型标签映射
     role_labels = {
-        RoleType.DPS: "伤害输出",
-        RoleType.SUPPORT: "辅助治疗",
-        RoleType.TANK: "坦克承伤",
-        RoleType.CONDITION: "症状输出",
+        "dps": "伤害输出",
+        "support": "辅助治疗",
+        "tank": "坦克承伤",
+        "control": "控制",
     }
 
     return {

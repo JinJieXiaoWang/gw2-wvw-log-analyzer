@@ -13,7 +13,7 @@ from app.utils.logger import logger
 from sqlalchemy.orm import Session
 
 from app.config.json_loader import load_json_config
-from app.constants.dict_values import RoleType, ScoringRuleStatus
+from app.constants.dict_values import ScoringRuleStatus
 from app.utils.db.dict_utils import get_dict_label
 
 
@@ -248,7 +248,7 @@ class ScoringRuleService:
         return {"initialized": True, **result}
 
     def get_rules_for_scoring(
-        self, role_type: str = RoleType.DPS, profession: Optional[str] = None
+        self, role_type: str = "dps", profession: Optional[str] = None
     ) -> Dict[str, float]:
         """获取用于评分的规则字典（兼容旧版 scoring_service 接口）
         
@@ -381,7 +381,7 @@ class ScoringRuleService:
                 if not scoring_config or not spec_name:
                     continue
 
-                role_type = spec.get("role_type", RoleType.DPS)
+                role_type = spec.get("role_type", "dps")
 
                 # 归一化权重
                 total_weight = sum(scoring_config.values())
@@ -438,11 +438,11 @@ class ScoringRuleService:
     ) -> Dict[str, Any]:
         """获取评分规则响应数据（含条件分支与数据组装）"""
         if profession:
-            rules = self.get_rules_by_role(role_type or RoleType.DPS, profession, active_only)
+            rules = self.get_rules_by_role(role_type or "dps", profession, active_only)
             return {
-                "role_type": role_type or RoleType.DPS,
+                "role_type": role_type or "dps",
                 "profession": profession,
-                "role_label": self.get_role_label(role_type or RoleType.DPS),
+                "role_label": self.get_role_label(role_type or "dps"),
                 "rules": [ScoringRuleResponse.model_validate(r) for r in rules],
             }
         elif role_type:

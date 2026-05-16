@@ -66,34 +66,6 @@ class ParseStatus(str, Enum):
 
 
 # =============================================================================
-# 角色定位 (role)
-# =============================================================================
-
-class RoleType(str, Enum):
-    """角色定位类型（精简为4种核心定位）"""
-
-    DPS = "dps"
-    SUPPORT = "support"
-    TANK = "tank"
-    CONTROL = "control"
-
-    @classmethod
-    def get_default(cls) -> str:
-        """获取默认角色类型"""
-        return cls.DPS.value
-
-    @classmethod
-    def is_damage_role(cls, role_type: str) -> bool:
-        """是否为输出向角色"""
-        return role_type == cls.DPS.value
-
-    @classmethod
-    def is_support_role(cls, role_type: str) -> bool:
-        """是否为辅助向角色（含坦克、控制）"""
-        return role_type in (cls.SUPPORT.value, cls.TANK.value, cls.CONTROL.value)
-
-
-# =============================================================================
 # 通用状态 (sys_normal_disable)
 # 注意：dict_value 字段为字符串类型，故使用 str Enum
 # =============================================================================
