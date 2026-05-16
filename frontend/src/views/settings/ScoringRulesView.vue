@@ -38,16 +38,24 @@
         @switch="switchRole"
       />
 
-      <!-- 规则范围 -->
-      <RuleScopeSelector
-        v-model:selected-profession="selectedProfession"
-        v-model:selected-base-profession="selectedBaseProfession"
-        :scope="ruleScope"
-        :cascade-professions="cascadeProfessions"
-        @change-scope="switchScope"
-        @base-profession-change="onBaseProfessionChange"
-        @profession-change="onProfessionChange"
-      />
+      <!-- 当前角色下的精英特长 -->
+      <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4">
+        <div class="flex items-center gap-2 text-sm text-color-secondary mb-3">
+          <i class="pi pi-users" />
+          <span>{{ activeRoleLabel }}定位下的精英特长</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="spec in currentRoleSpecs"
+            :key="spec.spec_key"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium"
+            :style="{ background: roleColors[activeRole] + '18', color: roleColors[activeRole] }"
+          >
+            {{ spec.spec_name }}
+          </span>
+          <span v-if="currentRoleSpecs.length === 0" class="text-xs text-color-secondary">暂无对应精英特长</span>
+        </div>
+      </div>
 
       <!-- 规则编辑器 -->
       <ScoringRulesEditor
@@ -57,7 +65,6 @@
         :get-dimension-color="getDimensionColor"
         :get-dimension-label="getDimensionLabel"
         @recalculate="confirmRecalculate"
-        @delete-profession="confirmDeleteProfessionRules"
         @reset="confirmReset"
         @save="saveChanges"
         @move-up="moveUp"
@@ -100,7 +107,6 @@
 import PageHeader from '@/layout/components/PageHeader.vue'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
-import RuleScopeSelector from '@/components/settings/scoring/RuleScopeSelector.vue'
 import ProfessionRoleEditor from '@/components/settings/scoring/ProfessionRoleEditor.vue'
 import ScoringRulesEditor from '@/components/settings/scoring/ScoringRulesEditor.vue'
 import ScoringRoleCards from '@/components/settings/scoring/ScoringRoleCards.vue'
@@ -125,16 +131,14 @@ const canWrite = can('write')
 const {
   roleTypes, activeRole, loading, saving, resetting, currentRules, editableRules,
   changedRoles, allDimensions, newRuleDimension, newRuleWeight, newRuleDesc,
-  ruleScope, selectedProfession, professionOptions, professionRulesMap,
-  deletingProfession, cascadeProfessions, selectedBaseProfession,
   recalculating, recalcTask, versionHistory,
   roleColors, roleGradients, activeRoleLabel, activeRoleIcon,
-  canRecalculate, currentProfessionHasRules, recalcStatusSeverity,
+  canRecalculate, recalcStatusSeverity,
   totalWeight, availableDimensions, weightStatusClass, gradeList,
   hasUnsavedChanges, getWeightProgress, getDimensionIcon, getDimensionColor, getDimensionLabel,
   switchRole, markChanged, moveUp, moveDown, removeRule, addRule,
-  saveChanges, confirmReset, switchScope, onBaseProfessionChange, onProfessionChange,
-  fetchProfessions, fetchVersions, confirmRecalculate, confirmDeleteProfessionRules,
+  saveChanges, confirmReset,
+  fetchVersions, confirmRecalculate,
   formatDate,
 } = useScoringRules()
 
@@ -154,6 +158,11 @@ const weightProgress = computed(() => {
   return map
 })
 
+// 当前角色下的精英特长
+const currentRoleSpecs = computed(() => {
+  return professionRoleMapping.value.filter(p => p.role === activeRole.value)
+})
+
 // 规则编辑器数据（打包传递减少 template 行数）
 const editorData = computed(() => ({
   activeRole: activeRole.value,
@@ -161,16 +170,16 @@ const editorData = computed(() => ({
   activeRoleIcon: activeRoleIcon.value,
   roleColors: roleColors.value,
   roleGradients: roleGradients.value,
-  ruleScope: ruleScope.value,
-  selectedProfession: selectedProfession.value,
+  ruleScope: 'generic',
+  selectedProfession: '',
   editableRules: editableRules.value,
   loading: loading.value,
   saving: saving.value,
   resetting: resetting.value,
   recalculating: recalculating.value,
   canRecalculate: canRecalculate.value,
-  currentProfessionHasRules: currentProfessionHasRules.value,
-  deletingProfession: deletingProfession.value,
+  currentProfessionHasRules: false,
+  deletingProfession: false,
   totalWeight: totalWeight.value,
   weightStatusClass: weightStatusClass.value,
   canWrite,

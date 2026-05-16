@@ -313,11 +313,10 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
 
   function addRule() {
     if (!newRuleDimension.value) return
-    const dim = allDimensions.value.find(d => d.key === newRuleDimension.value)
     editableRules.value.push({
       id: 0, role_type: activeRole.value, dimension: newRuleDimension.value,
       weight: newRuleWeight.value / 100, is_active: true,
-      description: newRuleDesc.value || dim?.label || '', sort_order: editableRules.value.length,
+      description: newRuleDesc.value || '', sort_order: editableRules.value.length,
     })
     newRuleDimension.value = ''
     newRuleWeight.value = 10
@@ -326,6 +325,11 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   }
 
   async function saveChanges() {
+    const activeTotal = editableRules.value.filter(r => r.is_active).reduce((sum, r) => sum + (r.weight || 0), 0)
+    if (Math.abs(activeTotal - 1.0) > 0.001) {
+      toast.add({ severity: 'warn', summary: '权重校验失败', detail: `当前权重总和为 ${activeTotal.toFixed(2)}，请调整为 1.00 后再保存`, life: configManager.get('ui').toastErrorLife })
+      return
+    }
     saving.value = true
     try {
       const rulesToSave = editableRules.value.map((r, idx) => ({
@@ -333,18 +337,11 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
         is_active: r.is_active, description: r.description, sort_order: idx,
         min_value: r.min_value, max_value: r.max_value,
       }))
-      if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
-        await scoringRulesService.upsertProfessionRules(selectedProfession.value, activeRole.value, rulesToSave)
-        const refreshed = await scoringRulesService.getRules(activeRole.value, selectedProfession.value) as Record<string, unknown> | null
-        if (refreshed && refreshed.rules) professionRulesMap.value[selectedProfession.value] = refreshed.rules as ScoringRule[]
-        toast.add({ severity: 'success', summary: '保存成功', detail: `${selectedProfession.value} 职业特定规则已更新`, life: configManager.get('ui').toastLife })
-      } else {
-        await scoringRulesService.batchUpdate(activeRole.value, rulesToSave)
-        const refreshed = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
-        if (refreshed && refreshed.rules) currentRules.value[activeRole.value] = refreshed.rules as ScoringRule[]
-        originalRules.value[activeRole.value] = JSON.parse(JSON.stringify((refreshed && refreshed.rules) || []))
-        toast.add({ severity: 'success', summary: '保存成功', detail: `${activeRoleLabel.value}通用评分规则已更新`, life: configManager.get('ui').toastLife })
-      }
+      await scoringRulesService.batchUpdate(activeRole.value, rulesToSave)
+      const refreshed = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
+      if (refreshed && refreshed.rules) currentRules.value[activeRole.value] = refreshed.rules as ScoringRule[]
+      originalRules.value[activeRole.value] = JSON.parse(JSON.stringify((refreshed && refreshed.rules) || []))
+      toast.add({ severity: 'success', summary: '保存成功', detail: `${activeRoleLabel.value}通用评分规则已更新`, life: configManager.get('ui').toastLife })
       changedRoles.value.delete(activeRole.value)
       syncEditableRules()
       if (enableVersionHistory) await fetchVersions()
