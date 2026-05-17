@@ -38,11 +38,10 @@ export class SkillRotationService {
     return apiFactory.post<any>(API_ENDPOINTS.SKILL_ROTATION.ANALYZE, { log_id: logId, member_id: memberId })
   }
 
-  async exportReport(logId: string, memberId: string): Promise<Blob | null> {
-    const response = await apiFactory.post<Blob>(
+  async exportReport(logId: string, memberId: string): Promise<any | null> {
+    const response = await apiFactory.post<ApiResponse<any>>(
       API_ENDPOINTS.SKILL_ROTATION.EXPORT_REPORT,
-      { log_id: logId, member_id: memberId },
-      { responseType: 'blob' }
+      { log_id: logId, member_id: memberId }
     )
     if (response.success && response.data) {
       return response.data

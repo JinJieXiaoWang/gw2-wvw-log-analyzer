@@ -6,6 +6,7 @@ import CombatStatCards from '@/components/combat/detail/overview/CombatStatCards
 import CombatDetailStats from '@/components/combat/detail/overview/CombatDetailStats.vue'
 import CombatTacticalPanel from '@/components/combat/detail/overview/CombatTacticalPanel.vue'
 import { fmtCompact, getProfessionColor, getProfessionName, groupColor } from '@/composables/combat/useCombatHelpers'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   summary: EiAnalysisResponse | null
@@ -21,6 +22,8 @@ const emit = defineEmits<{
   'show-damage-detail': []
 }>()
 
+const { t } = useI18n()
+
 const powerPct = computed(() => props.summary?.percentages?.power || 0)
 const condiPct = computed(() => props.summary?.percentages?.condi || 0)
 const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
@@ -34,6 +37,7 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
       :buff-leaders="summary?.buff_leaders || {}"
       :support-leaders="summary?.support_leaders || {}"
       :defense-leaders="summary?.defense_leaders || {}"
+      :leader-labels="summary?.leader_labels"
       :agg="agg"
     />
 
@@ -54,9 +58,9 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
           <div class="p-1.5 rounded-lg bg-info/10">
             <i class="pi pi-users text-info" />
           </div>
-          职业分布
+          {{ t('tactical.overview.professionDist') }}
         </h3>
-        <span class="text-xs text-neutral-text-secondary">{{ summary?.total_players || 0 }} 人参战</span>
+        <span class="text-xs text-neutral-text-secondary">{{ summary?.total_players || 0 }} {{ t('tactical.overview.playersInBattle') }}</span>
       </div>
       <div class="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2">
         <div
@@ -93,7 +97,7 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
         <div class="p-1.5 rounded-lg bg-primary/10">
           <i class="pi pi-chart-bar text-primary" />
         </div>
-        小队对比分析
+        {{ t('tactical.overview.squadCompare') }}
       </h3>
       <div class="space-y-3">
         <div
@@ -107,7 +111,7 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
           >{{ g.id }}</span>
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between mb-1">
-              <span class="text-xs text-neutral-text-secondary">小队 {{ g.id }} · {{ g.players.length }}人</span>
+              <span class="text-xs text-neutral-text-secondary">{{ t('tactical.overview.squadPrefix') }} {{ g.id }} · {{ g.players.length }}{{ t('tactical.units.person') }}</span>
               <span class="text-xs font-semibold text-primary">{{ fmtCompact(g.total_damage) }}</span>
             </div>
             <div class="h-2 bg-neutral-bg rounded-full overflow-hidden">
@@ -120,15 +124,15 @@ const breakbarPct = computed(() => props.summary?.percentages?.breakbar || 0)
           <div class="flex items-center gap-3 text-xs flex-shrink-0">
             <div class="text-center">
               <span class="block font-semibold text-neutral-text">{{ fmtCompact(g.avg_dps) }}</span>
-              <span class="text-neutral-text-secondary">平均DPS</span>
+              <span class="text-neutral-text-secondary">{{ t('tactical.overview.avgDps') }}</span>
             </div>
             <div class="text-center">
               <span class="block font-semibold text-error">{{ g.total_dead }}</span>
-              <span class="text-neutral-text-secondary">死亡</span>
+              <span class="text-neutral-text-secondary">{{ t('tactical.overview.death') }}</span>
             </div>
             <div class="text-center">
               <span class="block font-semibold text-warning">{{ g.total_downed }}</span>
-              <span class="text-neutral-text-secondary">击倒</span>
+              <span class="text-neutral-text-secondary">{{ t('tactical.overview.downed') }}</span>
             </div>
           </div>
         </div>

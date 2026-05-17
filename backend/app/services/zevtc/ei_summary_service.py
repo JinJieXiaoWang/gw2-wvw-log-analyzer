@@ -36,6 +36,7 @@ def build_ei_summary(db: Session, log_id: int, sort_by: str = "damage") -> Dict[
     buff_leaders = _calc_buff_leaders(players)
     support_leaders = _calc_support_leaders(players)
     defense_leaders = _calc_defense_leaders(players)
+    leader_labels = _build_leader_labels()
 
     return {
         "log_id": log_id,
@@ -57,6 +58,7 @@ def build_ei_summary(db: Session, log_id: int, sort_by: str = "damage") -> Dict[
         "buff_leaders": buff_leaders,
         "support_leaders": support_leaders,
         "defense_leaders": defense_leaders,
+        "leader_labels": leader_labels,
     }
 
 
@@ -213,6 +215,40 @@ def _calc_percentages(aggregate: Dict[str, Any]) -> Dict[str, int]:
     }
 
 
+# 非 Buff 类统计指标的中文回退映射（这些不是 gw_buff 表中的条目）
+_FALLBACK_LEADER_LABELS = {
+    "boon_strips": "增益驱散",
+    "condition_cleanses": "症状清除",
+    "resurrects": "复活",
+    "damage_taken": "承受伤害",
+    "dodge_count": "翻滚次数",
+}
+
+
+def _build_leader_labels() -> Dict[str, str]:
+    """构建排行榜中文标签映射。
+
+    Buff 类名称（might/fury 等）优先从 gw_buff 表查询 name_cn，
+    非 Buff 统计指标使用 _FALLBACK_LEADER_LABELS 回退。
+    """
+    from app.services.game.game_data_service import GameDataService
+
+    gs = GameDataService()
+    labels = dict(_FALLBACK_LEADER_LABELS)
+    # Buff 覆盖率字段：通过英文名查 gw_buff 字典表
+    buff_keys = [
+        "might", "fury", "quickness", "alacrity",
+        "stability", "protection",
+        "regeneration", "swiftness", "vigor",
+        "aegis", "resistance", "resolution",
+    ]
+    for key in buff_keys:
+        cn = gs.get_buff_name_cn_by_en(key)
+        if cn:
+            labels[key] = cn
+    return labels
+
+
 def _calc_buff_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
     """计算 Buff 排行榜"""
     return {
@@ -221,6 +257,12 @@ def _calc_buff_leaders(players: List[Dict[str, Any]]) -> Dict[str, List[Dict[str
         "alacrity": sorted(players, key=lambda x: x.get("alacrity_uptime", 0), reverse=True)[:5],
         "fury": sorted(players, key=lambda x: x.get("fury_uptime", 0), reverse=True)[:5],
         "stability": sorted(players, key=lambda x: x.get("stability_uptime", 0), reverse=True)[:5],
+        "regeneration": sorted(players, key=lambda x: x.get("regeneration_uptime", 0), reverse=True)[:5],
+        "swiftness": sorted(players, key=lambda x: x.get("swiftness_uptime", 0), reverse=True)[:5],
+        "vigor": sorted(players, key=lambda x: x.get("vigor_uptime", 0), reverse=True)[:5],
+        "aegis": sorted(players, key=lambda x: x.get("aegis_uptime", 0), reverse=True)[:5],
+        "resistance": sorted(players, key=lambda x: x.get("resistance_uptime", 0), reverse=True)[:5],
+        "resolution": sorted(players, key=lambda x: x.get("resolution_uptime", 0), reverse=True)[:5],
     }
 
 

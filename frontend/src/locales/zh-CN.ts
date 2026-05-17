@@ -184,6 +184,150 @@ export default {
     conditions: '症状',
     noFights: '暂无战斗数据'
   },
+  tactical: {
+    panelTitle: '战术分析面板',
+    layers: {
+      team: '团队画像',
+      damage: '输出分析',
+      buff: '增益覆盖',
+      survival: '生存统计'
+    },
+    labels: {
+      might: '威能',
+      fury: '激怒',
+      quickness: '敏捷',
+      alacrity: '急速',
+      protection: '保护',
+      stability: '稳固',
+      boonStrip: '增益驱散',
+      condiCleanse: '症状清除',
+      resurrect: '复活',
+      damageTaken: '承受伤害',
+      dodgeCount: '翻滚次数',
+      playerCount: '参战人数',
+      commander: '指挥官',
+      noCommander: '无',
+      avgSkillCast: '平均技能施放',
+      weaponSwapCount: '武器切换次数',
+      totalDamage: '总伤害',
+      damageBreakdown: '直伤 / 症状 / 破蔑视',
+      topDps: 'Top DPS',
+      deathDowned: '死亡 / 击倒',
+      avgDodge: '场均翻滚',
+      totalHealingRes: '总治疗 / 复活'
+    },
+    kpi: {
+      totalDamage: '总伤害',
+      totalDamageTaken: '总承伤',
+      kills: '击杀',
+      deaths: '死亡',
+      downed: '击倒',
+      avgDps: '平均DPS',
+      score: '评分'
+    },
+    tabs: {
+      overview: '战斗概况',
+      players: '玩家 & 小队'
+    },
+    units: {
+      person: '人',
+      times: '次',
+      percent: '%'
+    },
+    stats: {
+      title: '战斗属性统计',
+      damageComp: '伤害构成',
+      protection: '保护',
+      stability: '稳固',
+      condiCleanse: '清症',
+      boonStrip: '削增益',
+      damageTaken: '承伤',
+      hitRate: '命中率',
+      downed: '击倒',
+      castUptime: '施法占比',
+      stackDist: '堆叠距离',
+      comDist: '指挥距离'
+    },
+    table: {
+      player: '玩家',
+      damage: '伤害',
+      dps: 'DPS',
+      powerDamage: '直伤',
+      condiDamage: '症状',
+      breakbar: '破甲',
+      flanking: '侧身率',
+      glance: '擦过率',
+      missed: '未命中',
+      interrupt: '打断',
+      swap: '换武器',
+      block: '格挡',
+      evade: '闪避',
+      dodge: '翻滚',
+      boonStrip: '剥增益',
+      condiCleanse: '清症',
+      downed: '击倒',
+      stunBreak: '解控'
+    },
+    overview: {
+      professionDist: '职业分布',
+      playersInBattle: '人参战',
+      squadCompare: '小队对比分析',
+      squadPrefix: '小队',
+      avgDps: '平均DPS',
+      death: '死亡',
+      downed: '击倒'
+    },
+    ranking: {
+      title: '玩家排行 & 小队编制',
+      enemyTarget: '敌方目标',
+      unknown: '未知',
+      more: '更多'
+    },
+    quickInfo: {
+      duration: '战斗时长',
+      playerCount: '参战人数',
+      map: '地图',
+      uploadTime: '上传时间',
+      eiReport: 'EI报告',
+      kills: '击杀',
+      deaths: '死亡',
+      avgDps: '平均DPS'
+    },
+    team: {
+      dpsTop10: 'DPS 排行 TOP10',
+      commander: '指挥',
+      dps: 'DPS',
+      squadStats: '小队统计',
+      ungrouped: '未分组'
+    },
+    statOverview: {
+      title: '团队统计概览',
+      protection: '保护覆盖',
+      stability: '稳固覆盖',
+      hitRate: '命中率',
+      skillCast: '技能施放',
+      stackDist: '堆叠距离',
+      comDist: '指挥距离'
+    },
+    combatAnalysis: {
+      title: '战斗统计',
+      expand: '展开',
+      collapse: '收起',
+      powerDamage: '直伤总量',
+      condiDamage: '症状总量',
+      breakbarDamage: '破甲总量'
+    },
+    ai: {
+      analyzing: 'AI分析中',
+      processing: '正在处理您的数据...',
+      fightAnalysis: '战斗分析中',
+      aiAnalyzingFight: 'AI正在分析选定的战斗数据...',
+      playerAnalysis: '玩家分析中',
+      aiAnalyzingPlayer: 'AI正在分析该玩家的选定数据...',
+      buildAnalysis: 'Build分析中',
+      aiAnalyzingBuild: 'AI正在评估Build配置...'
+    }
+  },
   navigation: {
     home: '首页',
     logs: '日志管理',

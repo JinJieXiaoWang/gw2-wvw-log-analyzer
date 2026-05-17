@@ -5,16 +5,16 @@
  * 更新：2026-05-11
  */
 
-import { computed } from 'vue'
-import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
+import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService';
+import { computed } from 'vue';
 
 const props = defineProps<{
   players: EiAnalysisPlayer[]
 }>()
 
 const buffStats = computed(() => [
-  { label: '力量', key: 'might_uptime', icon: '🔥', color: '#FF4D6A' },
-  { label: '狂怒', key: 'fury_uptime', icon: '⚡', color: '#FFAA00' },
+  { label: '威能', key: 'might_uptime', icon: '🔥', color: '#FF4D6A' },
+  { label: '激怒', key: 'fury_uptime', icon: '⚡', color: '#FFAA00' },
   { label: '保护', key: 'protection_uptime', icon: '🛡️', color: '#00D68F' },
   { label: '急速', key: 'quickness_uptime', icon: '⏱️', color: '#165DFF' },
   { label: '敏捷', key: 'alacrity_uptime', icon: '⏩', color: '#6366F1' },

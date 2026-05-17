@@ -104,7 +104,7 @@ class GwBuff(Base):
     """增益效果表 → 对应 buffs.json
 
     存储游戏中所有 Buff/Condition 的定义，用于战斗日志解析和增益统计。
-    替代 sys_dict_data ?dict_type='buff_id' 的字典项。
+    替代 sys_dict_data  dict_type='buff_id' 的字典项。
     """
 
     __tablename__ = "gw_buff"

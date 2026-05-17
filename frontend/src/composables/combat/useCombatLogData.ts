@@ -22,6 +22,7 @@ export function useCombatLogData() {
     selectedPlayer: detail.selectedPlayer,
     playerRotation: detail.playerRotation,
     rotationLoading: detail.rotationLoading,
+    rotationViewMode: detail.rotationViewMode,
     dialogVisible: detail.dialogVisible,
 
     // Computed
@@ -34,6 +35,15 @@ export function useCombatLogData() {
     ungroupedPlayers: detail.ungroupedPlayers,
     sortedPlayerList: detail.sortedPlayerList,
     quickInfoItems: detail.quickInfoItems,
+
+    // Rotation computed
+    hasPlayerDetailData: detail.hasPlayerDetailData,
+    sortedSkillCasts: detail.sortedSkillCasts,
+    top10SkillCasts: detail.top10SkillCasts,
+    rotationEvents: detail.rotationEvents,
+    autoAttackRatio: detail.autoAttackRatio,
+    weaponSwapCount: detail.weaponSwapCount,
+    weaponSwapIntervals: detail.weaponSwapIntervals,
 
     // Actions
     loadData,

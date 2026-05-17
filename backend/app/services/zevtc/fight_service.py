@@ -211,6 +211,12 @@ def get_log_player_stats(
         "alacrity_uptime",
         "protection_uptime",
         "stability_uptime",
+        "regeneration_uptime",
+        "swiftness_uptime",
+        "vigor_uptime",
+        "aegis_uptime",
+        "resistance_uptime",
+        "resolution_uptime",
         "ai_score",
         "healing",
     }
@@ -293,6 +299,12 @@ def get_log_player_stats(
             "alacrity_uptime": _float(s.alacrity_uptime),
             "protection_uptime": _float(s.protection_uptime),
             "stability_uptime": _float(s.stability_uptime),
+            "regeneration_uptime": _float(s.regeneration_uptime),
+            "swiftness_uptime": _float(s.swiftness_uptime),
+            "vigor_uptime": _float(s.vigor_uptime),
+            "aegis_uptime": _float(s.aegis_uptime),
+            "resistance_uptime": _float(s.resistance_uptime),
+            "resolution_uptime": _float(s.resolution_uptime),
             # 技能效率与位置
             "wasted": s.wasted or 0,
             "saved": s.saved or 0,
@@ -436,21 +448,44 @@ def _float(v):
 
 
 def _classify_consumables(consumables_raw: Any) -> Dict[str, List[Dict[str, Any]]]:
-    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。"""
+    """将 EI 原始 consumables 数组分类为 {food, utility} 对象格式。
+
+    当 EI 数据中的 name 为空时，通过 item id 从 ref/ 参考数据查询中文名和 icon。
+    """
+    from app.services.game.ref_data_service import GW2RefDataLoader as RefLoader
+
     result: Dict[str, List[Dict[str, Any]]] = {"food": [], "utility": []}
     if not consumables_raw or not isinstance(consumables_raw, list):
         return result
     for item in consumables_raw:
         if not isinstance(item, dict):
             continue
-        name = (item.get("name") or "").lower()
+        item_id = item.get("id", 0)
+        raw_name = item.get("name", "")
+        raw_icon = item.get("icon", "")
+
+        # 若 name 为空，尝试通过 id 从参考数据反查
+        if not raw_name and item_id:
+            ref_data = RefLoader.get_food(str(item_id))
+            if ref_data:
+                raw_name = ref_data.get("name", "")
+                if not raw_icon:
+                    raw_icon = ref_data.get("icon", "")
+            if not raw_name:
+                ref_data = RefLoader.get_utility(str(item_id))
+                if ref_data:
+                    raw_name = ref_data.get("name", "")
+                    if not raw_icon:
+                        raw_icon = ref_data.get("icon", "")
+
+        name_lower = raw_name.lower()
         target = "utility"
-        if any(k in name for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
+        if any(k in name_lower for k in ["food", "stew", "pie", "cake", "bread", "soup", "cheese", "meat", "fruit"]):
             target = "food"
         result[target].append({
-            "name": item.get("name", ""),
-            "icon": item.get("icon", ""),
-            "id": item.get("id", 0),
+            "name": raw_name,
+            "icon": raw_icon,
+            "id": item_id,
         })
     return result
 
@@ -479,6 +514,11 @@ def get_player_rotation(
             "name": sm.name,
             "gw2_id": sm.gw2_skill_id,
             "skill_key": sm.skill_key,
+            "icon": sm.icon or "",
+            "auto_attack": bool(sm.auto_attack),
+            "is_swap": bool(sm.is_swap),
+            "is_instant_cast": bool(sm.is_instant_cast),
+            "is_trait_proc": bool(sm.is_trait_proc),
         }
 
     # 从 rotation_json 统计 skill_casts（EI JSON 的 statsAll 中没有 skillCasts 字段）

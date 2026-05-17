@@ -56,6 +56,7 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   const selectedProfession = ref('')
   const professionOptions = ref<{ label: string; value: string }[]>([])
   const professionRulesMap = ref<Record<string, ScoringRule[]>>({})
+  const professionsWithSpecificRules = ref<Set<string>>(new Set())
   const cascadeProfessions = ref<ProfessionCascade[]>([])
   const selectedBaseProfession = ref('')
 
@@ -80,9 +81,9 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   const activeRoleLabel = computed(() => roleTypes.value.find(r => r.type === activeRole.value)?.label || '')
   const activeRoleIcon = computed(() => roleTypes.value.find(r => r.type === activeRole.value)?.icon || 'pi pi-star')
 
-  const canRecalculate = computed(() => ruleScope.value === 'generic' && !recalculating.value && !hasUnsavedChanges(activeRole.value))
+  const canRecalculate = computed(() => ruleScope.value === 'generic' && !recalculating.value && !hasUnsavedChanges())
 
-  const currentProfessionHasRules = computed(() => !!(selectedProfession.value && (professionRulesMap.value[selectedProfession.value]?.length || 0) > 0))
+  const currentProfessionHasRules = computed(() => !!(selectedProfession.value && professionsWithSpecificRules.value.has(selectedProfession.value)))
 
   const recalcStatusSeverity = computed(() => {
     const s = recalcTask.value?.status
@@ -121,8 +122,18 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   ]
 
   // ========== Helpers ==========
-  function hasUnsavedChanges(role: string) {
-    return changedRoles.value.has(role)
+  function getChangeKey(): string {
+    if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
+      return `profession:${selectedProfession.value}`
+    }
+    return activeRole.value
+  }
+
+  function hasUnsavedChanges(role?: string): boolean {
+    if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
+      return changedRoles.value.has(`profession:${selectedProfession.value}`)
+    }
+    return changedRoles.value.has(role || activeRole.value)
   }
 
   function getWeightProgress(role: string): number {
@@ -195,7 +206,21 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     try {
       if (enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value) {
         const data = await scoringRulesService.getRules(activeRole.value, selectedProfession.value) as Record<string, unknown> | null
-        if (data && (data.rules as ScoringRule[])) professionRulesMap.value[selectedProfession.value] = data.rules as ScoringRule[]
+        const rules = (data?.rules as ScoringRule[]) || []
+        if (rules.length > 0) {
+          professionRulesMap.value[selectedProfession.value] = rules
+          professionsWithSpecificRules.value.add(selectedProfession.value)
+        } else {
+          professionsWithSpecificRules.value.delete(selectedProfession.value)
+          if (!currentRules.value[activeRole.value] || currentRules.value[activeRole.value].length === 0) {
+            const genericData = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
+            if (genericData && genericData.rules) {
+              currentRules.value[activeRole.value] = genericData.rules as ScoringRule[]
+              originalRules.value[activeRole.value] = JSON.parse(JSON.stringify(genericData.rules as ScoringRule[]))
+            }
+          }
+          professionRulesMap.value[selectedProfession.value] = JSON.parse(JSON.stringify(currentRules.value[activeRole.value] || []))
+        }
       } else {
         const data = await scoringRulesService.getRules() as Record<string, unknown> | null
         if (data) {
@@ -288,7 +313,7 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
     syncEditableRules()
   }
 
-  function markChanged() { changedRoles.value.add(activeRole.value) }
+  function markChanged() { changedRoles.value.add(getChangeKey()) }
 
   function moveUp(index: number) {
     if (index === 0) return
@@ -337,12 +362,19 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
         is_active: r.is_active, description: r.description, sort_order: idx,
         min_value: r.min_value, max_value: r.max_value,
       }))
-      await scoringRulesService.batchUpdate(activeRole.value, rulesToSave)
-      const refreshed = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
-      if (refreshed && refreshed.rules) currentRules.value[activeRole.value] = refreshed.rules as ScoringRule[]
-      originalRules.value[activeRole.value] = JSON.parse(JSON.stringify((refreshed && refreshed.rules) || []))
-      toast.add({ severity: 'success', summary: '保存成功', detail: `${activeRoleLabel.value}通用评分规则已更新`, life: configManager.get('ui').toastLife })
-      changedRoles.value.delete(activeRole.value)
+      const targetProfession = enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value ? selectedProfession.value : null
+      await scoringRulesService.batchUpdate(activeRole.value, rulesToSave, targetProfession)
+      if (targetProfession) {
+        const refreshed = await scoringRulesService.getRules(activeRole.value, targetProfession) as Record<string, unknown> | null
+        if (refreshed && refreshed.rules) professionRulesMap.value[targetProfession] = refreshed.rules as ScoringRule[]
+        toast.add({ severity: 'success', summary: '保存成功', detail: `${getSpecLabel(targetProfession)} 职业特定评分规则已更新`, life: configManager.get('ui').toastLife })
+      } else {
+        const refreshed = await scoringRulesService.getRules(activeRole.value) as Record<string, unknown> | null
+        if (refreshed && refreshed.rules) currentRules.value[activeRole.value] = refreshed.rules as ScoringRule[]
+        originalRules.value[activeRole.value] = JSON.parse(JSON.stringify((refreshed && refreshed.rules) || []))
+        toast.add({ severity: 'success', summary: '保存成功', detail: `${activeRoleLabel.value}通用评分规则已更新`, life: configManager.get('ui').toastLife })
+      }
+      changedRoles.value.delete(getChangeKey())
       syncEditableRules()
       if (enableVersionHistory) await fetchVersions()
     } catch (e: unknown) {
@@ -353,23 +385,40 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
   }
 
   function resetChanges() {
-    if (!hasUnsavedChanges(activeRole.value)) return
-    currentRules.value[activeRole.value] = JSON.parse(JSON.stringify(originalRules.value[activeRole.value] || []))
-    changedRoles.value.delete(activeRole.value)
-    syncEditableRules()
+    const key = getChangeKey()
+    if (!changedRoles.value.has(key)) return
+    if (key.startsWith('profession:')) {
+      const prof = key.replace('profession:', '')
+      delete professionRulesMap.value[prof]
+      fetchRules()
+    } else {
+      currentRules.value[activeRole.value] = JSON.parse(JSON.stringify(originalRules.value[activeRole.value] || []))
+      syncEditableRules()
+    }
+    changedRoles.value.delete(key)
   }
 
   function confirmReset() {
+    const isProfessionMode = enableProfessionRules && ruleScope.value === 'profession' && selectedProfession.value
     confirm.require({
-      message: `确定要将 ${activeRoleLabel.value} 的评分规则重置为系统默认吗？此操作不可撤销。`,
+      message: isProfessionMode
+        ? `确定要删除 ${getSpecLabel(selectedProfession.value)} 的职业特定规则吗？删除后将回退到通用规则。`
+        : `确定要将 ${activeRoleLabel.value} 的评分规则重置为系统默认吗？此操作不可撤销。`,
       header: '确认重置', icon: 'pi pi-exclamation-triangle', acceptClass: 'p-button-danger',
       accept: async () => {
         resetting.value = true
         try {
-          await scoringRulesService.resetDefault(activeRole.value)
-          changedRoles.value.delete(activeRole.value)
+          if (isProfessionMode) {
+            await scoringRulesService.deleteProfessionRules(selectedProfession.value, activeRole.value)
+            delete professionRulesMap.value[selectedProfession.value]
+            professionsWithSpecificRules.value.delete(selectedProfession.value)
+          } else {
+            await scoringRulesService.resetDefault(activeRole.value)
+          }
+          changedRoles.value.delete(getChangeKey())
           await fetchRules()
-          toast.add({ severity: 'success', summary: '重置成功', detail: `${activeRoleLabel.value}评分规则已重置为默认`, life: configManager.get('ui').toastLife })
+          syncEditableRules()
+          toast.add({ severity: 'success', summary: '重置成功', detail: isProfessionMode ? `${getSpecLabel(selectedProfession.value)} 职业特定规则已删除` : `${activeRoleLabel.value}评分规则已重置为默认`, life: configManager.get('ui').toastLife })
         } catch (e: unknown) {
           toast.add({ severity: 'error', summary: '重置失败', detail: e instanceof Error ? e.message : '操作失败', life: configManager.get('ui').toastErrorLife })
         } finally { resetting.value = false }
@@ -432,15 +481,16 @@ export function useScoringRules(options: UseScoringRulesOptions = {}) {
 
   function confirmDeleteProfessionRules() {
     confirm.require({
-      message: `确定要删除 ${selectedProfession.value} 的职业特定规则吗？删除后将回退到通用规则。`,
+      message: `确定要删除 ${getSpecLabel(selectedProfession.value)} 的职业特定规则吗？删除后将回退到通用规则。`,
       header: '确认删除职业规则', icon: 'pi pi-exclamation-triangle', acceptClass: 'p-button-danger',
       accept: async () => {
         deletingProfession.value = true
         try {
           await scoringRulesService.deleteProfessionRules(selectedProfession.value)
           professionRulesMap.value[selectedProfession.value] = []
+          professionsWithSpecificRules.value.delete(selectedProfession.value)
           syncEditableRules()
-          toast.add({ severity: 'success', summary: '删除成功', detail: `${selectedProfession.value} 职业特定规则已删除`, life: configManager.get('ui').toastLife })
+          toast.add({ severity: 'success', summary: '删除成功', detail: `${getSpecLabel(selectedProfession.value)} 职业特定规则已删除`, life: configManager.get('ui').toastLife })
         } catch (e: unknown) {
           toast.add({ severity: 'error', summary: '删除失败', detail: e instanceof Error ? e.message : '操作失败', life: configManager.get('ui').toastErrorLife })
         } finally { deletingProfession.value = false }

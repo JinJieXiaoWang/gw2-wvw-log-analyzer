@@ -166,6 +166,7 @@ import AttendanceFightsPanel from './detail/AttendanceFightsPanel.vue'
 import AttendanceCharDialog from './detail/AttendanceCharDialog.vue'
 import { getProfessionColor } from '@/utils/profession/professionUtils'
 import { getScoreColor, formatNumber, formatDps, formatDateTime, formatDuration } from '@/utils/common/attendanceFormatters'
+import { exportAttendanceCsv } from '@/utils/attendance/csvExport'
 
 const toast = useToast()
 const props = defineProps<{ data?: any; loading?: boolean }>()
@@ -199,7 +200,17 @@ function exportExcel() {
 }
 
 function exportCSV() {
-  toast.add({ severity: 'success', summary: '导出成功', detail: 'CSV文件已下载', life: 3000 })
+  if (!props.data) {
+    toast.add({ severity: 'warn', summary: '警告', detail: '暂无数据可导出', life: 3000 })
+    return
+  }
+  try {
+    exportAttendanceCsv(props.data.account || 'unknown', props.data)
+    toast.add({ severity: 'success', summary: '导出成功', detail: 'CSV文件已下载', life: 3000 })
+  } catch (err) {
+    console.error('CSV导出失败:', err)
+    toast.add({ severity: 'error', summary: '导出失败', detail: 'CSV文件生成失败', life: 3000 })
+  }
 }
 
 const cardStyles: Record<string, any> = {

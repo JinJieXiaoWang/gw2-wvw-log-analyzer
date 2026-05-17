@@ -1,12 +1,13 @@
 <script setup lang="ts">
 // 模块功能：技能循环分析配置组件
-// 作者：帅姐姐
-// 创建日期：2026-04-27
-// 更新日期：2026-05-14
+// 说明：从后端API获取真实日志列表和玩家列表
 
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { logsService } from '@/services/combat/logsService'
+import { apiFactory } from '@/services/core/apiService'
+import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 interface Props {
   modelValue?: any
@@ -26,6 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'update:selectedLogId': [value: string | null]
   'update:selectedMemberId': [value: string | null]
+  'update:compareMode': [value: string]
+  'update:timeRange': [value: string]
   'analyze': []
 }>()
 
@@ -34,16 +37,27 @@ const localMemberId = ref(props.selectedMemberId)
 const compareMode = ref('time')
 const timeRange = ref('full')
 
+// 日志列表
+const logs = ref<any[]>([])
+const logsLoading = ref(false)
+// 玩家列表
+const players = ref<any[]>([])
+const playersLoading = ref(false)
+
 const logOptions = computed(() => [
   { label: '选择一个日志', value: null },
-  { label: '示例日志 1', value: '1' },
-  { label: '示例日志 2', value: '2' }
+  ...logs.value.map((log: any) => ({
+    label: `${log.filename || log.fileName || '未命名日志'} (${log.id})`,
+    value: String(log.id)
+  }))
 ])
 
 const playerOptions = computed(() => [
   { label: '选择一个玩家', value: null },
-  { label: '玩家 A', value: '1' },
-  { label: '玩家 B', value: '2' }
+  ...players.value.map((p: any) => ({
+    label: `${p.account} · ${p.profession}`,
+    value: p.account
+  }))
 ])
 
 const compareModeOptions = [
@@ -54,6 +68,45 @@ const compareModeOptions = [
 
 import { LOG_TIME_RANGE_OPTIONS } from '@/constants/options'
 const timeRangeOptions = LOG_TIME_RANGE_OPTIONS
+
+// 获取日志列表
+async function fetchLogs() {
+  logsLoading.value = true
+  try {
+    const response = await logsService.getLogs({ page: 1, page_size: 100 })
+    if (response.success && response.data) {
+      // 适配不同分页结构
+      const items = response.data.items || response.data.list || response.data || []
+      logs.value = Array.isArray(items) ? items : []
+    }
+  } catch (err) {
+    console.error('获取日志列表失败:', err)
+  } finally {
+    logsLoading.value = false
+  }
+}
+
+// 获取指定日志的玩家列表
+async function fetchPlayers(logId: string | null) {
+  if (!logId) {
+    players.value = []
+    return
+  }
+  playersLoading.value = true
+  try {
+    const response = await apiFactory.get<any>(`ei-analysis/${logId}`)
+    if (response.success && response.data && response.data.players) {
+      players.value = response.data.players
+    } else {
+      players.value = []
+    }
+  } catch (err) {
+    console.error('获取玩家列表失败:', err)
+    players.value = []
+  } finally {
+    playersLoading.value = false
+  }
+}
 
 watch(
   () => props.selectedLogId,
@@ -71,96 +124,103 @@ watch(
 
 watch(localLogId, (newValue) => {
   emit('update:selectedLogId', newValue)
+  // 日志改变时，重置玩家选择并获取新玩家列表
+  localMemberId.value = null
+  emit('update:selectedMemberId', null)
+  fetchPlayers(newValue)
 })
 
 watch(localMemberId, (newValue) => {
   emit('update:selectedMemberId', newValue)
 })
 
+watch(compareMode, (newValue) => {
+  emit('update:compareMode', newValue)
+})
+
+watch(timeRange, (newValue) => {
+  emit('update:timeRange', newValue)
+})
+
 function handleAnalyze() {
   emit('analyze')
 }
+
+onMounted(() => {
+  fetchLogs()
+})
 </script>
 
 <template>
-  <div class="analysis-config bg-[#1a1a1e] border border-[#2a2a2e] rounded-lg p-4">
-    <div class="flex items-center gap-3 mb-4">
-      <div
-        class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#165DFF]/30 to-[#FF7D00]/30 flex items-center justify-center"
-      >
-        <i class="pi pi-cog text-[#165DFF]" />
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold text-white">
-          分析配置
-        </h3>
-        <p class="text-xs text-[#909399]">
-          选择日志和玩家进行技能循环分析
-        </p>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-      <div>
-        <label class="block text-sm text-[#909399] mb-2">选择日志</label>
+  <div class="bg-neutral-bg-secondary rounded-xl p-4 border border-neutral-border/30">
+    <div class="flex flex-wrap items-end gap-4">
+      <!-- 日志选择 -->
+      <div class="flex-1 min-w-[200px]">
+        <label class="block text-sm text-neutral-text-secondary mb-1.5">选择日志</label>
         <Dropdown
           v-model="localLogId"
           :options="logOptions"
           option-label="label"
           option-value="value"
-          placeholder="选择日志"
+          placeholder="选择一个日志"
           class="w-full"
-          :disabled="loading"
+          :loading="logsLoading"
+          :disabled="disabled"
+          scroll-height="250px"
         />
       </div>
-      <div>
-        <label class="block text-sm text-[#909399] mb-2">选择玩家</label>
+
+      <!-- 玩家选择 -->
+      <div class="flex-1 min-w-[200px]">
+        <label class="block text-sm text-neutral-text-secondary mb-1.5">选择玩家</label>
         <Dropdown
           v-model="localMemberId"
           :options="playerOptions"
           option-label="label"
           option-value="value"
-          placeholder="选择玩家"
+          placeholder="选择一个玩家"
           class="w-full"
-          :disabled="loading"
+          :loading="playersLoading"
+          :disabled="disabled || !localLogId"
+          scroll-height="250px"
         />
       </div>
-      <div>
-        <label class="block text-sm text-[#909399] mb-2">对比模式</label>
+
+      <!-- 对比模式 -->
+      <div class="w-[160px]">
+        <label class="block text-sm text-neutral-text-secondary mb-1.5">对比模式</label>
         <Dropdown
           v-model="compareMode"
           :options="compareModeOptions"
           option-label="label"
           option-value="value"
           class="w-full"
-          :disabled="loading"
+          :disabled="disabled"
         />
       </div>
-      <div>
-        <label class="block text-sm text-[#909399] mb-2">时间范围</label>
+
+      <!-- 时间范围 -->
+      <div class="w-[160px]">
+        <label class="block text-sm text-neutral-text-secondary mb-1.5">时间范围</label>
         <Dropdown
           v-model="timeRange"
           :options="timeRangeOptions"
           option-label="label"
           option-value="value"
           class="w-full"
-          :disabled="loading"
+          :disabled="disabled"
         />
       </div>
-      <div class="flex items-end">
-        <Button
-          label="分析"
-          icon="pi pi-refresh"
-          :loading="loading"
-          :disabled="disabled || loading"
-          class="w-full"
-          :pt="{
-            root: { class: 'bg-[#165DFF] hover:bg-[#0f4cd9] text-white' }
-          }"
-          @click="handleAnalyze"
-        />
-      </div>
+
+      <!-- 分析按钮 -->
+      <Button
+        label="执行分析"
+        icon="pi pi-play"
+        class="h-[42px] px-6"
+        :loading="loading"
+        :disabled="disabled || !localLogId || !localMemberId"
+        @click="handleAnalyze"
+      />
     </div>
   </div>
 </template>
-
-<style scoped lang="postcss"></style>

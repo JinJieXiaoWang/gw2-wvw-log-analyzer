@@ -5,6 +5,7 @@ import { fmtCompact } from '@/composables/combat/useCombatHelpers'
 import { useProfessionHelpers } from '@/composables/useProfession'
 import PlayerRankingTable from '@/components/combat/ranking/PlayerRankingTable.vue'
 import SquadCompositionPanel from '@/components/combat/ranking/SquadCompositionPanel.vue'
+import { useI18n } from 'vue-i18n'
 
 const { getProfessionName, getProfessionIconUrl } = useProfessionHelpers()
 
@@ -16,6 +17,8 @@ const props = defineProps<{
   ungroupedPlayers: EiAnalysisPlayer[]
   summary: EiAnalysisResponse | null
 }>()
+
+const { t } = useI18n()
 
 const emit = defineEmits<{
   'row-click': [event: any]
@@ -30,10 +33,10 @@ const emit = defineEmits<{
         <i class="pi pi-trophy text-yellow-500" />
       </div>
       <h3 class="text-lg font-semibold text-neutral-text">
-        玩家排行 & 小队编制
+        {{ t('tactical.ranking.title') }}
       </h3>
       <Tag
-        :value="`${players.length}人`"
+        :value="players.length + t('tactical.units.person')"
         severity="info"
         class="text-xs"
       />
@@ -64,7 +67,7 @@ const emit = defineEmits<{
         <div class="p-1 rounded bg-error/20">
           <i class="pi pi-exclamation-triangle text-error text-xs" />
         </div>
-        敌方目标 ({{ summary.enemy_players.length }})
+        {{ t('tactical.ranking.enemyTarget') }} ({{ summary.enemy_players.length }})
       </h4>
       <div class="flex flex-wrap gap-2">
         <div
@@ -77,14 +80,14 @@ const emit = defineEmits<{
             class="w-6 h-6 rounded-full border border-error/30"
             :alt="getProfessionName(p.profession)"
           >
-          <span class="text-xs text-neutral-text">{{ p.character_name || '未知' }}</span>
+          <span class="text-xs text-neutral-text">{{ p.character_name || t('tactical.ranking.unknown') }}</span>
           <span class="text-[10px] text-error font-semibold">{{ fmtCompact(p.damage) }}</span>
         </div>
         <div
           v-if="(summary.enemy_players.length || 0) > 10"
           class="flex items-center px-3 py-1.5 text-xs text-neutral-text-secondary"
         >
-          +{{ (summary.enemy_players.length || 0) - 10 }} 更多
+          +{{ (summary.enemy_players.length || 0) - 10 }} {{ t('tactical.ranking.more') }}
         </div>
       </div>
     </div>

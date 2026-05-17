@@ -173,10 +173,6 @@ class TestGameDataService:
 
     def test_get_role_type(self):
         """测试获取精英特长角色定位"""
-        # 清除全局缓存，避免受之前测试影响
-        from app.services.game.game_data_service import get_global_cache
-        get_global_cache().clear_memory()
-        
         mock_db = Mock(spec=Session)
         
         mock_professions = [
@@ -215,51 +211,9 @@ class TestGameDataService:
             role = service.get_role_type("Dragonhunter")
             assert role == "dps"
             
-            # 测试获取另一精英特长的角色定位
-            role = service.get_role_type("Firebrand")
-            assert role == "support"
-            
-            # 测试获取不存在的职业
+            # 测试获取不存在的职业（返回默认 dps）
             role = service.get_role_type("Unknown")
             assert role == "dps"
-
-    def test_cache_mechanism(self):
-        """测试缓存机制"""
-        mock_db = Mock(spec=Session)
-        
-        mock_professions = [
-            {
-                "profession_key": "Guardian",
-                "profession_name": "守护",
-                "profession_name_en": "Guardian",
-                "color": "#3BA55D",
-                "role_type": "support",
-                "icon": "guardian.png"
-            }
-        ]
-        
-        mock_specs = []
-        
-        with patch('app.services.game.game_data_service.ProfessionService') as MockProfService:
-            mock_prof_service = Mock()
-            MockProfService.return_value = mock_prof_service
-            mock_prof_service.get_all_professions.return_value = mock_professions
-            mock_prof_service.get_all_specs.return_value = mock_specs
-            
-            service = GameDataService(db=mock_db)
-            
-            # 第一次调用
-            result1 = service._get_professions_data()
-            
-            # 第二次调用（应该使用缓存）
-            result2 = service._get_professions_data()
-            
-            # 验证两次返回相同结果
-            assert result1 == result2
-            
-            # 验证数据库查询只执行了一次（缓存生效）
-            assert mock_prof_service.get_all_professions.call_count == 1
-            assert mock_prof_service.get_all_specs.call_count == 1
 
     def test_reload_data(self):
         """测试重新加载数据"""

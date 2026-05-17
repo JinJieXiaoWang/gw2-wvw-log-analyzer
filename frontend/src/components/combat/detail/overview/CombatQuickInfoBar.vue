@@ -2,6 +2,7 @@
 import type { EiAnalysisFight, EiAnalysisResponse, EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
 import { fmtCompact, fmtDuration, fmtDate } from '@/composables/combat/useCombatHelpers'
 import Tag from 'primevue/tag'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   fightSummary: EiAnalysisFight
@@ -9,6 +10,8 @@ const props = defineProps<{
   summary: EiAnalysisResponse | null
   agg: EiAnalysisAggregate
 }>()
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -21,7 +24,7 @@ const props = defineProps<{
           </div>
           <div>
             <p class="text-xs text-neutral-text-secondary">
-              战斗时长
+              {{ t('tactical.quickInfo.duration') }}
             </p>
             <p class="text-sm font-semibold text-neutral-text">
               {{ fmtDuration(props.fightSummary.duration_sec || 0) }}
@@ -34,10 +37,10 @@ const props = defineProps<{
           </div>
           <div>
             <p class="text-xs text-neutral-text-secondary">
-              参战人数
+              {{ t('tactical.quickInfo.playerCount') }}
             </p>
             <p class="text-sm font-semibold text-neutral-text">
-              {{ summary?.total_players || 0 }} 人
+              {{ summary?.total_players || 0 }} {{ t('tactical.units.person') }}
             </p>
           </div>
         </div>
@@ -47,7 +50,7 @@ const props = defineProps<{
           </div>
           <div>
             <p class="text-xs text-neutral-text-secondary">
-              地图
+              {{ t('tactical.quickInfo.map') }}
             </p>
             <p class="text-sm font-semibold text-neutral-text">
               {{ fightSummary.map_name || '-' }}
@@ -60,7 +63,7 @@ const props = defineProps<{
           </div>
           <div>
             <p class="text-xs text-neutral-text-secondary">
-              上传时间
+              {{ t('tactical.quickInfo.uploadTime') }}
             </p>
             <p class="text-sm font-semibold text-neutral-text">
               {{ fmtDate(logDetail.upload_time) }}
@@ -76,25 +79,25 @@ const props = defineProps<{
           class="no-underline"
         >
           <Tag
-            value="EI报告"
+            :value="t('tactical.quickInfo.eiReport')"
             icon="pi pi-external-link"
             severity="info"
             class="text-xs cursor-pointer hover:bg-info/30 transition-all"
           />
         </a>
         <Tag
-          :value="`击杀 ${fightSummary.kill_count || 0}`"
+          :value="t('tactical.quickInfo.kills') + ' ' + (fightSummary.kill_count || 0)"
           severity="success"
           class="text-xs px-2 py-1"
         />
         <Tag
-          :value="`死亡 ${fightSummary.death_count || 0}`"
+          :value="t('tactical.quickInfo.deaths') + ' ' + (fightSummary.death_count || 0)"
           severity="danger"
           class="text-xs px-2 py-1"
         />
         <Tag
           v-if="agg.player_count"
-          :value="`平均DPS ${fmtCompact(agg.avg_dps)}`"
+          :value="t('tactical.quickInfo.avgDps') + ' ' + fmtCompact(agg.avg_dps)"
           severity="info"
           class="text-xs px-2 py-1"
         />

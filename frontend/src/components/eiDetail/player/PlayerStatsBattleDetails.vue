@@ -1,6 +1,8 @@
 <template>
   <div class="detail-section">
-    <h4 class="section-title">{{ SECTION_BATTLE_DETAILS }}</h4>
+    <h4 class="section-title">
+      {{ SECTION_BATTLE_DETAILS }}
+    </h4>
     <div class="detail-grid">
       <div class="detail-item">
         <span class="detail-label">{{ LABEL_DIRECT_DAMAGE }}</span>

@@ -1,64 +1,113 @@
 <template>
-  <div class="space-y-6" :class="{ 'opacity-50': disabled }">
+  <div
+    class="space-y-6"
+    :class="{ 'opacity-50': disabled }"
+  >
     <!-- 加载状态 -->
-    <div v-if="loading" class="flex flex-col items-center justify-center py-12">
+    <div
+      v-if="loading"
+      class="flex flex-col items-center justify-center py-12"
+    >
       <div class="relative w-16 h-16 mb-4">
         <div class="absolute inset-0 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full animate-pulse opacity-30" />
         <div class="absolute inset-0 flex items-center justify-center">
           <div class="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin" />
         </div>
       </div>
-      <p class="text-gray-400 text-sm">{{ STATUS_TEXT.LOADING }}</p>
+      <p class="text-gray-400 text-sm">
+        {{ STATUS_TEXT.LOADING }}
+      </p>
     </div>
 
     <!-- 空状态 -->
-    <div v-else-if="!trendData || trendData.data_points === 0" class="text-center py-12">
+    <div
+      v-else-if="!trendData || trendData.data_points === 0"
+      class="text-center py-12"
+    >
       <div class="inline-flex items-center justify-center p-4 bg-gray-700/50 rounded-xl mb-4">
-        <SvgIcon icon="trending-up" :size="32" class="text-gray-500" />
+        <SvgIcon
+          icon="trending-up"
+          :size="32"
+          class="text-gray-500"
+        />
       </div>
-      <p class="text-gray-400 mb-2">{{ STATUS_TEXT.EMPTY_TITLE }}</p>
-      <p class="text-sm text-gray-500">{{ STATUS_TEXT.EMPTY_HINT }}</p>
+      <p class="text-gray-400 mb-2">
+        {{ STATUS_TEXT.EMPTY_TITLE }}
+      </p>
+      <p class="text-sm text-gray-500">
+        {{ STATUS_TEXT.EMPTY_HINT }}
+      </p>
     </div>
 
     <!-- 趋势数据 -->
-    <div v-else class="space-y-6">
+    <div
+      v-else
+      class="space-y-6"
+    >
       <!-- 统计卡片 -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="bg-gradient-to-br from-blue-900/30 to-gray-800/30 rounded-xl p-4 border border-blue-700/30 hover:border-blue-500/50 transition-all duration-300">
           <div class="flex items-center gap-2 mb-2">
-            <SvgIcon icon="bar-chart-2" :size="16" class="text-blue-400" />
+            <SvgIcon
+              icon="bar-chart-2"
+              :size="16"
+              class="text-blue-400"
+            />
             <span class="text-xs text-gray-400">{{ STAT_CARD_LABELS.DATA_POINTS }}</span>
           </div>
-          <p class="text-2xl font-bold text-blue-400">{{ trendData.data_points || 0 }}</p>
+          <p class="text-2xl font-bold text-blue-400">
+            {{ trendData.data_points || 0 }}
+          </p>
         </div>
         
         <div class="bg-gradient-to-br from-red-900/30 to-gray-800/30 rounded-xl p-4 border border-red-700/30 hover:border-red-500/50 transition-all duration-300">
           <div class="flex items-center gap-2 mb-2">
-            <SvgIcon icon="swords" :size="16" class="text-red-400" />
+            <SvgIcon
+              icon="swords"
+              :size="16"
+              class="text-red-400"
+            />
             <span class="text-xs text-gray-400">{{ STAT_CARD_LABELS.TOTAL_DAMAGE }}</span>
           </div>
-          <p class="text-2xl font-bold text-red-400">{{ formatNumber(trendData.total_damage || 0) }}</p>
+          <p class="text-2xl font-bold text-red-400">
+            {{ formatNumber(trendData.total_damage || 0) }}
+          </p>
         </div>
         
         <div class="bg-gradient-to-br from-green-900/30 to-gray-800/30 rounded-xl p-4 border border-green-700/30 hover:border-green-500/50 transition-all duration-300">
           <div class="flex items-center gap-2 mb-2">
-            <SvgIcon icon="skull" :size="16" class="text-green-400" />
+            <SvgIcon
+              icon="skull"
+              :size="16"
+              class="text-green-400"
+            />
             <span class="text-xs text-gray-400">{{ STAT_CARD_LABELS.TOTAL_KILLS }}</span>
           </div>
-          <p class="text-2xl font-bold text-green-400">{{ trendData.total_kills || 0 }}</p>
+          <p class="text-2xl font-bold text-green-400">
+            {{ trendData.total_kills || 0 }}
+          </p>
         </div>
         
         <div class="bg-gradient-to-br from-yellow-900/30 to-gray-800/30 rounded-xl p-4 border border-yellow-700/30 hover:border-yellow-500/50 transition-all duration-300">
           <div class="flex items-center gap-2 mb-2">
-            <SvgIcon icon="clock" :size="16" class="text-yellow-400" />
+            <SvgIcon
+              icon="clock"
+              :size="16"
+              class="text-yellow-400"
+            />
             <span class="text-xs text-gray-400">{{ STAT_CARD_LABELS.AVG_DURATION }}</span>
           </div>
-          <p class="text-2xl font-bold text-yellow-400">{{ formatDuration(trendData.avg_duration || 0) }}</p>
+          <p class="text-2xl font-bold text-yellow-400">
+            {{ formatDuration(trendData.avg_duration || 0) }}
+          </p>
         </div>
       </div>
 
       <!-- 趋势指示器 -->
-      <div v-if="trendData.trend" class="bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl p-4 border border-gray-600/50">
+      <div
+        v-if="trendData.trend"
+        class="bg-gradient-to-r from-gray-700/40 to-gray-800/40 rounded-xl p-4 border border-gray-600/50"
+      >
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div 
@@ -75,7 +124,9 @@
               <p class="text-sm font-medium text-gray-200">
                 {{ trendLabel }}
               </p>
-              <p class="text-xs text-gray-500">{{ STATUS_TEXT.DATA_SOURCE }}</p>
+              <p class="text-xs text-gray-500">
+                {{ STATUS_TEXT.DATA_SOURCE }}
+              </p>
             </div>
           </div>
           <div 
@@ -88,12 +139,21 @@
       </div>
 
       <!-- 分析洞察 -->
-      <div v-if="trendData.insights && trendData.insights.length > 0" class="space-y-3">
+      <div
+        v-if="trendData.insights && trendData.insights.length > 0"
+        class="space-y-3"
+      >
         <div class="flex items-center gap-2">
           <div class="p-1.5 bg-purple-500/20 rounded-lg">
-            <SvgIcon icon="eye" :size="14" class="text-purple-400" />
+            <SvgIcon
+              icon="eye"
+              :size="14"
+              class="text-purple-400"
+            />
           </div>
-          <h3 class="text-sm font-semibold text-purple-400">{{ SECTION_TITLES.INSIGHTS }}</h3>
+          <h3 class="text-sm font-semibold text-purple-400">
+            {{ SECTION_TITLES.INSIGHTS }}
+          </h3>
           <div class="flex-1 h-px bg-gradient-to-r from-purple-500/50 to-transparent" />
         </div>
         
@@ -103,19 +163,34 @@
             :key="index"
             class="flex items-start gap-3 bg-gray-700/30 rounded-lg p-3 hover:bg-gray-700/50 transition-colors"
           >
-            <SvgIcon icon="info" :size="14" class="text-purple-400 flex-shrink-0 mt-0.5" />
-            <p class="text-sm text-gray-300">{{ insight }}</p>
+            <SvgIcon
+              icon="info"
+              :size="14"
+              class="text-purple-400 flex-shrink-0 mt-0.5"
+            />
+            <p class="text-sm text-gray-300">
+              {{ insight }}
+            </p>
           </div>
         </div>
       </div>
 
       <!-- 异常检测 -->
-      <div v-if="trendData.anomalies && trendData.anomalies.length > 0" class="space-y-3">
+      <div
+        v-if="trendData.anomalies && trendData.anomalies.length > 0"
+        class="space-y-3"
+      >
         <div class="flex items-center gap-2">
           <div class="p-1.5 bg-orange-500/20 rounded-lg">
-            <SvgIcon icon="alert-circle" :size="14" class="text-orange-400" />
+            <SvgIcon
+              icon="alert-circle"
+              :size="14"
+              class="text-orange-400"
+            />
           </div>
-          <h3 class="text-sm font-semibold text-orange-400">{{ SECTION_TITLES.ANOMALIES }}</h3>
+          <h3 class="text-sm font-semibold text-orange-400">
+            {{ SECTION_TITLES.ANOMALIES }}
+          </h3>
           <div class="flex-1 h-px bg-gradient-to-r from-orange-500/50 to-transparent" />
         </div>
         
@@ -125,19 +200,34 @@
             :key="index"
             class="flex items-start gap-3 bg-orange-900/20 rounded-lg p-3 border border-orange-700/30"
           >
-            <SvgIcon icon="alert-triangle" :size="14" class="text-orange-400 flex-shrink-0 mt-0.5" />
-            <p class="text-sm text-gray-300">{{ formatAnomaly(anomaly) }}</p>
+            <SvgIcon
+              icon="alert-triangle"
+              :size="14"
+              class="text-orange-400 flex-shrink-0 mt-0.5"
+            />
+            <p class="text-sm text-gray-300">
+              {{ formatAnomaly(anomaly) }}
+            </p>
           </div>
         </div>
       </div>
 
       <!-- 预测信息 -->
-      <div v-if="trendData.predictions && trendData.predictions.length > 0" class="space-y-3">
+      <div
+        v-if="trendData.predictions && trendData.predictions.length > 0"
+        class="space-y-3"
+      >
         <div class="flex items-center gap-2">
           <div class="p-1.5 bg-cyan-500/20 rounded-lg">
-            <SvgIcon icon="target" :size="14" class="text-cyan-400" />
+            <SvgIcon
+              icon="target"
+              :size="14"
+              class="text-cyan-400"
+            />
           </div>
-          <h3 class="text-sm font-semibold text-cyan-400">{{ SECTION_TITLES.PREDICTIONS }}</h3>
+          <h3 class="text-sm font-semibold text-cyan-400">
+            {{ SECTION_TITLES.PREDICTIONS }}
+          </h3>
           <div class="flex-1 h-px bg-gradient-to-r from-cyan-500/50 to-transparent" />
         </div>
         
@@ -148,7 +238,11 @@
               :key="index"
               class="flex items-center gap-2 px-3 py-2 bg-gray-700/50 rounded-lg"
             >
-              <SvgIcon icon="trending-up" :size="12" class="text-cyan-400" />
+              <SvgIcon
+                icon="trending-up"
+                :size="12"
+                class="text-cyan-400"
+              />
               <span class="text-sm text-gray-300">{{ formatPrediction(prediction) }}...</span>
             </div>
           </div>

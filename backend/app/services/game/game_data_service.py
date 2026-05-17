@@ -25,310 +25,8 @@ from app.models.game.profession import (
 
 # 导入 ProfessionService 进行数据库查询
 from app.services.game.profession_service import ProfessionService
+from app.services.game.buff_mapper_service import get_global_buff_mapper
 from app.utils.logger import logger
-
-# =============================================================================
-# 缓存键定义
-# =============================================================================
-CACHE_KEY_PROFESSIONS = "game_data:professions"
-CACHE_KEY_BUFFS = "game_data:buffs"
-CACHE_KEY_PROFESSION_NAME_CN = "game_data:profession_name_cn"
-CACHE_KEY_BUFF_NAME_CN = "game_data:buff_name_cn"
-CACHE_KEY_PROFESSION_DETAIL = "game_data:profession_detail"
-CACHE_KEY_BUFF_DETAIL = "game_data:buff_detail"
-
-# 缓存过期时间配置（秒）
-CACHE_EXPIRE_MEMORY = 300  # 内存缓存5分钟
-CACHE_EXPIRE_PERSISTENT = 3600  # 持久化缓存1小时
-
-
-# =============================================================================
-# 缓存条目类
-# =============================================================================
-class CacheEntry:
-    # 功能：缓存条目封装类
-    def __init__(self, key: str, value: Any, expire_seconds: int = CACHE_EXPIRE_MEMORY):
-        self.key = key
-        self.value = value
-        self.created_at = datetime.now()
-        self.expire_seconds = expire_seconds
-        self.access_count = 0
-        self.last_accessed = datetime.now()
-
-    def is_expired(self) -> bool:
-        # 功能：检查是否过期
-        if self.expire_seconds <= 0:
-            return False
-        elapsed = (datetime.now() - self.created_at).total_seconds()
-        return elapsed >= self.expire_seconds
-
-    def get_value(self) -> Any:
-        # 功能：获取值（访问时更新统计）
-        self.access_count += 1
-        self.last_accessed = datetime.now()
-        return self.value
-
-
-# =============================================================================
-# 多级缓存管理器
-# =============================================================================
-class MultiLevelCache:
-    # 功能：多级缓存管理器（内存缓存 + 持久化缓存）
-    # 增强：添加内存上限和过期条目主动清理，防止无界增长
-
-    def __init__(self, cache_dir: Optional[Path] = None, max_memory_entries: int = 2000):
-        self._memory_cache: Dict[str, CacheEntry] = {}
-        self._cache_dir = cache_dir or (DATA_DIR / ".cache")
-        self._cache_dir.mkdir(parents=True, exist_ok=True)
-        self._max_memory_entries = max_memory_entries
-        self._lock = threading.RLock()
-        self._hit_count = 0
-        self._miss_count = 0
-        self._stats_lock = threading.Lock()
-
-    def _evict_oldest(self) -> None:
-        """LRU驱逐：删除最久未访问的内存缓存条目"""
-        if not self._memory_cache:
-            return
-        oldest_key = min(
-            self._memory_cache,
-            key=lambda k: self._memory_cache[k].last_accessed
-        )
-        del self._memory_cache[oldest_key]
-        logger.debug(f"MultiLevelCache LRU驱逐: {oldest_key}")
-
-    def clear_expired(self) -> int:
-        """主动清理所有过期的内存缓存条目，返回清理数量"""
-        with self._lock:
-            expired_keys = [
-                k for k, entry in self._memory_cache.items()
-                if entry.is_expired()
-            ]
-            for k in expired_keys:
-                del self._memory_cache[k]
-            if expired_keys:
-                logger.info(f"MultiLevelCache 清理 {len(expired_keys)} 个过期条目")
-            return len(expired_keys)
-
-    def get(
-        self, key: str, loader: Optional[Callable[[], Any]] = None
-    ) -> Optional[Any]:
-        # 功能：获取缓存值
-        # 参数：key - 缓存键；loader - 缓存未命中时的加载器
-        # 返回：缓存值或加载器返回值
-        with self._lock:
-            memory_entry = self._memory_cache.get(key)
-
-            if memory_entry:
-                if not memory_entry.is_expired():
-                    with self._stats_lock:
-                        self._hit_count += 1
-                    return memory_entry.get_value()
-                else:
-                    # 过期条目立即清理
-                    del self._memory_cache[key]
-
-            persistent_value = self._load_from_persistent(key)
-            if persistent_value is not None:
-                self._memory_cache[key] = CacheEntry(
-                    key, persistent_value, CACHE_EXPIRE_MEMORY
-                )
-                with self._stats_lock:
-                    self._hit_count += 1
-                return persistent_value
-
-            if loader:
-                value = loader()
-                self.set(key, value)
-                with self._stats_lock:
-                    self._miss_count += 1
-                return value
-
-            with self._stats_lock:
-                self._miss_count += 1
-            return None
-
-    def set(
-        self, key: str, value: Any, expire_seconds: int = CACHE_EXPIRE_MEMORY
-    ) -> None:
-        # 功能：设置缓存值
-        with self._lock:
-            # 如果达到内存上限，先LRU驱逐最久未访问的条目
-            if len(self._memory_cache) >= self._max_memory_entries and key not in self._memory_cache:
-                self._evict_oldest()
-
-            entry = CacheEntry(key, copy.deepcopy(value), expire_seconds)
-            self._memory_cache[key] = entry
-            self._save_to_persistent(key, value)
-
-    def invalidate(self, key: str) -> None:
-        # 功能：使缓存失效
-        with self._lock:
-            if key in self._memory_cache:
-                del self._memory_cache[key]
-            self._delete_persistent(key)
-
-    def clear_memory(self) -> None:
-        # 功能：清除内存缓存
-        with self._lock:
-            self._memory_cache.clear()
-
-    def get_stats(self) -> Dict[str, Any]:
-        # 功能：获取缓存统计信息
-        with self._stats_lock:
-            total = self._hit_count + self._miss_count
-            hit_rate = (self._hit_count / total * 100) if total > 0 else 0
-            return {
-                "hit_count": self._hit_count,
-                "miss_count": self._miss_count,
-                "total_requests": total,
-                "hit_rate_percent": round(hit_rate, 2),
-                "memory_cache_size": len(self._memory_cache),
-                "max_memory_entries": self._max_memory_entries,
-            }
-
-    def _get_persistent_path(self, key: str) -> Path:
-        # 功能：获取持久化文件路径
-        key_hash = hashlib.md5(key.encode()).hexdigest()
-        return self._cache_dir / f"{key_hash}.cache"
-
-    def _save_to_persistent(self, key: str, value: Any) -> None:
-        # 功能：保存到持久化缓存（使用JSON序列化替代pickle）
-        try:
-            path = self._get_persistent_path(key)
-            data = {"key": key, "value": value, "saved_at": datetime.now().isoformat()}
-            with open(path, "w", encoding="utf-8") as f:
-                json.dump(data, f, ensure_ascii=False, default=str)
-        except Exception as e:
-            logger.warning(f"持久化缓存保存失败: {key}, {e}")
-
-    def _load_from_persistent(self, key: str) -> Optional[Any]:
-        # 功能：从持久化缓存加载（使用JSON反序列化替代pickle）
-        try:
-            path = self._get_persistent_path(key)
-            if not path.exists():
-                return None
-
-            with open(path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                return data.get("value")
-        except Exception as e:
-            logger.warning(f"持久化缓存加载失败: {key}, {e}")
-            return None
-
-    def _delete_persistent(self, key: str) -> None:
-        # 功能：删除持久化缓存
-        try:
-            path = self._get_persistent_path(key)
-            if path.exists():
-                path.unlink()
-        except Exception as e:
-            logger.warning(f"持久化缓存删除失败: {key}, {e}")
-
-
-# 全局缓存管理器
-_global_cache: Optional[MultiLevelCache] = None
-
-
-def get_global_cache() -> MultiLevelCache:
-    # 功能：获取全局缓存管理器
-    global _global_cache
-    if _global_cache is None:
-        _global_cache = MultiLevelCache()
-    return _global_cache
-
-
-# =============================================================================
-# Buff名称映射器（支持热更新）
-# =============================================================================
-class BuffNameMapper:
-    # 功能：Buff名称映射器（支持热更新）
-    # 静态映射（内置）+ 动态映射（外部配置）
-
-    STATIC_BUFF_NAMES = {
-        717: "Regeneration",
-        718: "Swiftness",
-        719: "Fury",
-        725: "Might",
-        726: "Vigor",
-        728: "Protection",
-        740: "Aegis",
-        743: "Stability",
-        1122: "Quickness",
-        1187: "Resistance",
-        26980: "Alacrity",
-        30328: "Vigor",
-        26981: "Resolution",
-        9283: "Empathy",
-        110942: "Stone",
-        13797: "Geomancy",
-    }
-
-    def __init__(self):
-        self._dynamic_mappings: Dict[int, str] = {}
-        self._last_update: Optional[datetime] = None
-        self._lock = threading.RLock()
-
-    def update_mappings(self, mappings: Dict[int, str]) -> None:
-        # 功能：更新动态映射
-        with self._lock:
-            self._dynamic_mappings.update(mappings)
-            self._last_update = datetime.now()
-            logger.info(f"Buff动态映射已更新，共 {len(mappings)} 条映射")
-
-    def get_name(self, buff_id: int, use_cache: bool = True) -> str:
-        # 功能：获取Buff名称（优先动态映射，其次静态映射）
-        cache_key = f"{CACHE_KEY_BUFF_NAME_CN}:{buff_id}"
-        cache = get_global_cache()
-
-        if use_cache:
-            cached = cache.get(cache_key)
-            if cached is not None:
-                return cached
-
-        with self._lock:
-            if buff_id in self._dynamic_mappings:
-                name = self._dynamic_mappings[buff_id]
-            elif buff_id in self.STATIC_BUFF_NAMES:
-                name = self.STATIC_BUFF_NAMES[buff_id]
-            else:
-                name = f"Buff:{buff_id}"
-
-            if use_cache:
-                cache.set(cache_key, name)
-
-            return name
-
-    def get_name_cn(
-        self, buff_id: int, game_data_service: Optional["GameDataService"] = None
-    ) -> str:
-        # 功能：获取Buff中文名
-        if game_data_service:
-            cn_name = game_data_service.get_buff_name_cn(buff_id)
-            if cn_name != f"Buff:{buff_id}":
-                return cn_name
-
-        return self.get_name(buff_id)
-
-    def reload(self) -> None:
-        # 功能：重新加载映射（用于热更新）
-        with self._lock:
-            self._dynamic_mappings.clear()
-            self._last_update = None
-        logger.info("Buff名称映射已重置")
-
-
-# 全局Buff名称映射器
-_global_buff_mapper: Optional[BuffNameMapper] = None
-
-
-def get_global_buff_mapper() -> BuffNameMapper:
-    # 功能：获取全局Buff名称映射器
-    global _global_buff_mapper
-    if _global_buff_mapper is None:
-        _global_buff_mapper = BuffNameMapper()
-    return _global_buff_mapper
-
 
 # =============================================================================
 # 游戏数据服务（增强版）
@@ -340,35 +38,42 @@ class GameDataService:
         self._professions_data: Optional[Dict] = None
         self._buffs_data: Optional[Dict] = None
         self._last_reload: Optional[datetime] = None
-        self._cache = get_global_cache()
         self._buff_mapper = get_global_buff_mapper()
         self._lock = threading.RLock()
         self._db = db  # 数据库会话（可选，用于从数据库读取职业数据）
 
         self._buff_name_to_id_cache: Dict[str, int] = {}
+        self._buff_name_en_to_cn_cache: Dict[str, str] = {}
         self._profession_name_to_data_cache: Dict[str, Dict] = {}
 
         # 尝试从字典表加载 buff 映射到全局 buff mapper
         self._load_buff_mappings_from_dict()
 
     def _load_buff_mappings_from_dict(self) -> None:
-        """从字典表加载 buff 名称映射到全局 BuffNameMapper"""
+        """从 gw_buff 表加载 buff 名称映射到全局 BuffNameMapper
+
+        注意：不再从 sys_dict_data 字典表加载，因为字典表数据可能过时。
+        gw_buff 表的数据来源于 game_static_buffs 种子数据，是权威数据源。
+        """
         try:
-            from app.utils.db.dict_utils import get_dict_options
-            buff_options = get_dict_options("buff")
-            if buff_options:
-                mappings = {}
-                for opt in buff_options:
-                    try:
-                        buff_id = int(opt["value"])
-                        mappings[buff_id] = opt["label"]
-                    except (ValueError, TypeError):
-                        continue
-                if mappings:
-                    self._buff_mapper.update_mappings(mappings)
-                    logger.debug(f"从字典表加载了 {len(mappings)} 条 buff 映射")
+            from app.config.database import SessionLocal
+            from app.models.game.game_static_data import GwBuff
+
+            db = SessionLocal()
+            try:
+                buffs = db.query(GwBuff).all()
+                if buffs:
+                    mappings = {}
+                    for buff in buffs:
+                        if buff.name:
+                            mappings[buff.id] = buff.name
+                    if mappings:
+                        self._buff_mapper.update_mappings(mappings)
+                        logger.debug(f"从 gw_buff 表加载了 {len(mappings)} 条 buff 映射")
+            finally:
+                db.close()
         except Exception as e:
-            logger.debug(f"从字典表加载 buff 映射失败: {e}")
+            logger.debug(f"从 gw_buff 表加载 buff 映射失败: {e}")
 
     def _get_professions_data(self, force_reload: bool = False) -> Dict:
         # 功能：获取职业数据（内部方法，带缓存） - 从数据库读取
@@ -491,16 +196,19 @@ class GameDataService:
 
         for key, buff in self._buffs_data.get("buffs", {}).items():
             buff_id = buff.get("id")
+            name_en = buff.get("name", "")
+            name_cn = buff.get("name_cn", "")
             if buff_id:
-                self._buff_name_to_id_cache[buff.get("name", "")] = buff_id
-                self._buff_name_to_id_cache[buff.get("name_cn", "")] = buff_id
+                self._buff_name_to_id_cache[name_en] = buff_id
+                self._buff_name_to_id_cache[name_cn] = buff_id
+            if name_en and name_cn:
+                self._buff_name_en_to_cn_cache[name_en.lower()] = name_cn
 
     def reload_all_data(self) -> Dict[str, Any]:
         # 功能：重新加载所有数据（支持热更新）
         logger.info("开始重新加载所有游戏数据...")
         self._professions_data = None
         self._buffs_data = None
-        self._cache.clear_memory()
 
         prof_data = self._get_professions_data(force_reload=True)
         buff_data = self._get_buffs_data(force_reload=True)
@@ -532,29 +240,13 @@ class GameDataService:
 
     def get_profession(self, name: str) -> Optional[Dict]:
         # 功能：获取指定基础职业
-        cache_key = f"{CACHE_KEY_PROFESSION_DETAIL}:base:{name}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
         data = self._get_professions_data()
-        result = data.get("base_professions", {}).get(name)
-        if result:
-            self._cache.set(cache_key, result)
-        return result
+        return data.get("base_professions", {}).get(name)
 
     def get_elite_spec(self, name: str) -> Optional[Dict]:
         # 功能：获取指定精英特长
-        cache_key = f"{CACHE_KEY_PROFESSION_DETAIL}:elite:{name}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
         data = self._get_professions_data()
-        result = data.get("elite_specs", {}).get(name)
-        if result:
-            self._cache.set(cache_key, result)
-        return result
+        return data.get("elite_specs", {}).get(name)
 
     def get_elite_specs_by_base(self, base_profession: str) -> List[Dict]:
         # 功能：获取某基础职业的所有精英特长
@@ -567,22 +259,13 @@ class GameDataService:
 
     def get_profession_name_cn(self, name: str) -> str:
         # 功能：获取职业中文名
-        cache_key = f"{CACHE_KEY_PROFESSION_NAME_CN}:{name}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
-        result = name
         spec = self.get_elite_spec(name)
         if spec:
-            result = spec.get("name_cn", name)
-        else:
-            prof = self.get_profession(name)
-            if prof:
-                result = prof.get("name_cn", name)
-
-        self._cache.set(cache_key, result)
-        return result
+            return spec.get("name_cn", name)
+        prof = self.get_profession(name)
+        if prof:
+            return prof.get("name_cn", name)
+        return name
 
     def get_role_type(self, profession_name: str) -> str:
         # 功能：获取精英特长角色定位
@@ -610,34 +293,18 @@ class GameDataService:
 
     def get_buff(self, buff_id: int) -> Optional[Dict]:
         # 功能：获取指定Buff
-        cache_key = f"{CACHE_KEY_BUFF_DETAIL}:{buff_id}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
         data = self._get_buffs_data()
-        result = data.get("buffs", {}).get(str(buff_id))
-        if result:
-            self._cache.set(cache_key, result)
-        return result
+        return data.get("buffs", {}).get(str(buff_id))
 
     def get_buff_name_cn(self, buff_id: int) -> str:
         # 功能：获取Buff中文名
-        cache_key = f"{CACHE_KEY_BUFF_NAME_CN}:{buff_id}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
         buff = self.get_buff(buff_id)
         if buff:
-            result = buff.get("name_cn", f"Buff:{buff_id}")
-        else:
-            # 回退到字典表查找
-            from app.utils.db.dict_utils import get_dict_label
-            dict_name = get_dict_label("buff", str(buff_id))
-            result = dict_name if dict_name and dict_name != str(buff_id) else f"Buff:{buff_id}"
-        self._cache.set(cache_key, result)
-        return result
+            return buff.get("name_cn", f"Buff:{buff_id}")
+        # 回退到字典表查找
+        from app.utils.db.dict_utils import get_dict_label
+        dict_name = get_dict_label("buff", str(buff_id))
+        return dict_name if dict_name and dict_name != str(buff_id) else f"Buff:{buff_id}"
 
     def get_buffs_by_category(self, category: str) -> List[Dict]:
         # 功能：按分类获取Buff列表
@@ -681,7 +348,6 @@ class GameDataService:
     def update_buff_name_mappings(self, mappings: Dict[int, str]) -> Dict[str, Any]:
         # 功能：更新Buff名称映射（用于热更新）
         self._buff_mapper.update_mappings(mappings)
-        self._cache.invalidate(CACHE_KEY_BUFF_NAME_CN)
         return {
             "success": True,
             "updated_count": len(mappings),
@@ -691,6 +357,16 @@ class GameDataService:
     def get_buff_name_en(self, buff_id: int) -> str:
         # 功能：获取Buff英文名
         return self._buff_mapper.get_name(buff_id)
+
+    def get_buff_name_cn_by_en(self, name_en: str) -> Optional[str]:
+        """通过Buff英文名（不区分大小写）查询中文名。
+
+        数据来源于 gw_buff 种子数据，在 _build_buff_caches 时已预加载到内存。
+        若未找到匹配，返回 None。
+        """
+        if not self._buff_name_en_to_cn_cache:
+            self._get_buffs_data()
+        return self._buff_name_en_to_cn_cache.get(name_en.lower())
 
     # ==================== 版本和元数据 ====================
 
@@ -713,12 +389,11 @@ class GameDataService:
                 "count": len(buff_data.get("buffs", {})),
                 "categories": list(buff_data.get("categories", {}).keys()),
             },
-            "cache_stats": self._cache.get_stats(),
         }
 
     def get_cache_stats(self) -> Dict[str, Any]:
-        # 功能：获取缓存统计信息
-        return self._cache.get_stats()
+        # 功能：获取缓存统计信息（已废弃，始终返回空）
+        return {}
 
 
 # 全局单例

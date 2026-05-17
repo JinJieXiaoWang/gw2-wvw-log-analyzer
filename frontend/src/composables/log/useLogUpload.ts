@@ -196,12 +196,12 @@ export function useLogUpload(options: UseLogUploadOptions = {}) {
   }
 
   const reset = () => {
-    if (!uploadComplete.value) {
-      selectedFiles.value = []
-      uploadItems.value = []
-    }
+    selectedFiles.value = []
+    uploadItems.value = []
     uploadPhase.value = 'idle'
+    uploadComplete.value = false
     currentError.value = ''
+    currentUploadIndex.value = 0
   }
 
   return {

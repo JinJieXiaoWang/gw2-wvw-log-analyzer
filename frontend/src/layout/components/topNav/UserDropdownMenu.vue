@@ -87,4 +87,15 @@ const { visible, isAuthenticated, user, userInitial, canWrite } = defineProps<{
 const emit = defineEmits(['close', 'logout'])
 </script>
 
-<style scoped>@import './topNav.css';</style>
+<style scoped>
+/* Vue <transition name="dropdown"> 必需的动画类 */
+.dropdown-enter-active,
+.dropdown-leave-active {
+  transition: all 0.2s ease;
+}
+.dropdown-enter-from,
+.dropdown-leave-to {
+  opacity: 0;
+  transform: translateY(-10px) scale(0.95);
+}
+</style>

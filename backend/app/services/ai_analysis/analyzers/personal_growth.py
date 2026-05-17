@@ -26,38 +26,53 @@ class PersonalGrowthAnalyzer:
     """个人战力成长档案分析器"""
 
     # 成长档案核心维度定义
+    # label 优先从 scoring_dimension 字典表读取，回退到默认描述
     DIMENSIONS = {
         "damage_output": {
-            "label": "输出能力",
+            "dict_key": "damage",
             "fields": ["damage", "dps", "power_damage", "condi_damage", "critical_rate"],
             "description": "对敌方造成的总伤害、DPS、直伤/症状伤害占比、暴击率",
         },
         "survival": {
-            "label": "生存能力",
+            "dict_key": "survival",
             "fields": ["damage_taken", "blocked_count", "evaded_count", "dodge_count", "down_count", "dead_count"],
             "description": "受到伤害、格挡/闪避/翻滚次数、倒地/死亡次数",
         },
         "support": {
-            "label": "辅助贡献",
+            "dict_key": "healing",
             "fields": ["healing", "resurrects", "condi_cleanse_ally", "boon_strips_ally"],
             "description": "治疗量、复活次数、清除盟友症状、剥离敌方增益",
         },
         "buff_management": {
-            "label": "Buff管理",
+            "dict_key": None,
+            "default_label": "Buff管理",
             "fields": ["might_uptime_active", "quickness_uptime_active", "alacrity_uptime_active", "fury_uptime"],
             "description": "战斗中威能/急速/敏捷/愤怒覆盖率",
         },
         "cc_control": {
-            "label": "控制能力",
+            "dict_key": None,
+            "default_label": "控制能力",
             "fields": ["applied_cc_duration", "applied_cc_count", "interrupts", "stun_break"],
             "description": "施加CC时长/次数、打断次数、解除昏迷",
         },
         "positioning": {
-            "label": "站位意识",
+            "dict_key": None,
+            "default_label": "站位意识",
             "fields": ["stack_dist", "dist_to_com", "flanking_rate"],
             "description": "与堆叠点距离、与指挥官距离、侧击率",
         },
     }
+
+    def _get_dim_label(self, dim_key: str) -> str:
+        """获取维度中文标签（优先从字典表读取）"""
+        from app.utils.db.dict_utils import get_dict_label
+        dim_config = self.DIMENSIONS.get(dim_key, {})
+        dict_key = dim_config.get("dict_key")
+        if dict_key:
+            label = get_dict_label("scoring_dimension", dict_key)
+            if label:
+                return label
+        return dim_config.get("default_label", dim_key)
 
     def __init__(self, db: Session, orchestrator=None):
         self.db = db
@@ -133,14 +148,14 @@ class PersonalGrowthAnalyzer:
                     values.append(sum(dim_values) / len(dim_values))
 
             if not values:
-                scores[dim_key] = {"score": 0, "label": dim_config["label"], "trend": TrendStatus.STABLE.value}
+                scores[dim_key] = {"score": 0, "label": self._get_dim_label(dim_key), "trend": TrendStatus.STABLE.value}
                 continue
 
             avg = sum(values) / len(values)
             # 将原始值映射到0-100分（使用最近一场的公会平均值作为基准）
             scores[dim_key] = {
                 "score": min(100, max(0, round(avg / 10))),  # 简单映射，实际应基于基准
-                "label": dim_config["label"],
+                "label": self._get_dim_label(dim_key),
                 "avg_raw": round(avg, 2),
                 "trend": self._compute_single_trend(values),
             }
@@ -159,7 +174,7 @@ class PersonalGrowthAnalyzer:
             return TrendStatus.IMPROVING.value
         elif diff_pct < -0.15:
             return TrendStatus.DECLINING.value
-        return "stable"
+        return TrendStatus.STABLE.value
 
     def _calculate_percentiles(self, account: str, history: List[Dict]) -> Dict[str, int]:
         """计算各维度在公会内的百分位排名"""

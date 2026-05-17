@@ -1,6 +1,7 @@
 import { aiService } from '@/services'
 import type { AiReport } from '@/services/ai/aiService'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 export type { AiReport }
 
@@ -131,10 +132,11 @@ export interface CriticalMomentsData {
 }
 
 export function useAiAnalysis() {
+  const { t } = useI18n()
   const aiEnabled = ref(true)
   const analyzing = ref(false)
-  const analyzingTitle = ref('AI分析中')
-  const analyzingMessage = ref('正在处理您的数据...')
+  const analyzingTitle = ref(t('tactical.ai.analyzing'))
+  const analyzingMessage = ref(t('tactical.ai.processing'))
   const analyzingProgress = ref(0)
   const currentProvider = ref('DeepSeek')
   const cacheHitRate = ref(78)
@@ -206,10 +208,10 @@ export function useAiAnalysis() {
 
   const analyzeFight = async (fightId: number, scope: 'current' | 'full' = 'current') => {
     analyzing.value = true
-    analyzingTitle.value = '战斗分析中'
-    analyzingMessage.value = scope === 'current' 
-      ? 'AI正在分析选定的战斗数据...' 
-      : 'AI正在分析全部战斗数据...'
+    analyzingTitle.value = t('tactical.ai.fightAnalysis')
+    analyzingMessage.value = scope === 'current'
+      ? t('tactical.ai.aiAnalyzingFight')
+      : t('tactical.ai.aiAnalyzingFight')
     analyzingProgress.value = 0
     
     const progressInterval = setInterval(() => {
@@ -237,10 +239,10 @@ export function useAiAnalysis() {
 
   const analyzeMember = async (memberId: number, scope: 'current' | 'full' = 'current') => {
     analyzing.value = true
-    analyzingTitle.value = '玩家分析中'
+    analyzingTitle.value = t('tactical.ai.playerAnalysis')
     analyzingMessage.value = scope === 'current'
-      ? 'AI正在分析该玩家的选定数据...'
-      : 'AI正在分析该玩家的全部历史数据...'
+      ? t('tactical.ai.aiAnalyzingPlayer')
+      : t('tactical.ai.aiAnalyzingPlayer')
     analyzingProgress.value = 0
     
     const progressInterval = setInterval(() => {
@@ -268,8 +270,8 @@ export function useAiAnalysis() {
 
   const analyzeBuild = async (buildId: number) => {
     analyzing.value = true
-    analyzingTitle.value = 'Build分析中'
-    analyzingMessage.value = 'AI正在评估Build配置...'
+    analyzingTitle.value = t('tactical.ai.buildAnalysis')
+    analyzingMessage.value = t('tactical.ai.aiAnalyzingBuild')
     analyzingProgress.value = 0
     
     const progressInterval = setInterval(() => {

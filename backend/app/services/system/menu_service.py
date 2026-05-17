@@ -10,20 +10,15 @@ from sqlalchemy.orm import Session
 from app.constants.default_menus import DEFAULT_MENUS
 from app.constants.dict_values import MenuStatus, MenuType, MenuVisible, MenuYesNo
 from app.models.system.sys_menu import SysMenu
-from app.utils.cache.cache import Cache
 from app.utils.logger import logger
 from app.utils.menu_tree_builder import build_menu_tree, filter_accessible_menus
 
-CACHE_PREFIX = "menu:"
-CACHE_TTL = 3600
-
 
 class MenuService:
-    """菜单管理服务"""
+    """菜单管理服务（无缓存，直接查询SQLite）"""
 
     def __init__(self, db: Session):
         self.db = db
-        self.cache = Cache()
 
     def create_menu(self, menu_create: dict, create_by: str = "") -> SysMenu:
         """创建菜单（含名称重复、父菜单存在性校验）"""
@@ -62,7 +57,6 @@ class MenuService:
         self.db.commit()
         self.db.refresh(menu)
         logger.info(f"创建菜单成功: {menu.menu_id} - {menu.menu_name}")
-        self._clear_cache()
         return menu
 
     def get_menu_by_id(self, menu_id: int) -> Optional[SysMenu]:
@@ -108,7 +102,6 @@ class MenuService:
         self.db.commit()
         self.db.refresh(menu)
         logger.info(f"更新菜单成功: {menu_id} - {menu.menu_name}")
-        self._clear_cache()
         return menu
 
     def delete_menu(self, menu_id: int) -> bool:
@@ -123,7 +116,6 @@ class MenuService:
         self.db.delete(menu)
         self.db.commit()
         logger.info(f"删除菜单成功: {menu_id} - {menu.menu_name}")
-        self._clear_cache()
         return True
 
     def list_menus(
@@ -154,47 +146,23 @@ class MenuService:
         return total, items
 
     def get_all_menus(self) -> List[SysMenu]:
-        """获取所有菜单（按父ID和排序号排序）"""
-        cache_key = f"{CACHE_PREFIX}all"
-        cached = self.cache.get(cache_key)
-        if cached:
-            return cached
-        menus = self.db.query(SysMenu).order_by(SysMenu.parent_id, SysMenu.order_num).all()
-        self.cache.set(cache_key, menus, CACHE_TTL)
-        return menus
+        """获取所有菜单（按父ID和排序号排序，直接查库）"""
+        return self.db.query(SysMenu).order_by(SysMenu.parent_id, SysMenu.order_num).all()
 
     def get_menu_tree(self, parent_id: int = 0) -> List[Dict]:
         """获取菜单树形结构"""
-        cache_key = f"{CACHE_PREFIX}tree:{parent_id}"
-        cached = self.cache.get(cache_key)
-        if cached:
-            return cached
-        tree = build_menu_tree(self.get_all_menus(), parent_id)
-        self.cache.set(cache_key, tree, CACHE_TTL)
-        return tree
+        return build_menu_tree(self.get_all_menus(), parent_id)
 
     def get_user_menus(self, user_role: str, user_permissions: List[str]) -> List[Dict]:
         """获取用户有权限访问的菜单"""
-        cache_key = f"{CACHE_PREFIX}user:{user_role}:{hash(tuple(user_permissions))}"
-        cached = self.cache.get(cache_key)
-        if cached:
-            return cached
         accessible = filter_accessible_menus(self.get_all_menus(), user_role, user_permissions)
-        tree = build_menu_tree(accessible, 0)
-        self.cache.set(cache_key, tree, CACHE_TTL)
-        return tree
+        return build_menu_tree(accessible, 0)
 
     def get_public_menus(self) -> List[Dict]:
         """获取游客可访问的公开菜单"""
-        cache_key = f"{CACHE_PREFIX}public"
-        cached = self.cache.get(cache_key)
-        if cached:
-            return cached
         public = filter_accessible_menus(self.get_all_menus(), None, None, public_only=True)
-        tree = build_menu_tree(public, 0)
-        self.cache.set(cache_key, tree, CACHE_TTL)
         logger.debug("获取公开菜单成功")
-        return tree
+        return build_menu_tree(public, 0)
 
     def check_menu_permission(self, menu_id: int, user_permissions: List[str]) -> bool:
         """检查用户是否有权限访问指定菜单"""
@@ -229,13 +197,6 @@ class MenuService:
                 permissions.update(menu.perms.split(","))
         return sorted(list(permissions))
 
-    def _clear_cache(self):
-        """清除所有菜单相关缓存"""
-        keys_to_delete = [key for key in self.cache.cache if key.startswith(CACHE_PREFIX)]
-        for key in keys_to_delete:
-            self.cache.delete(key)
-        logger.debug("菜单缓存已清除")
-
     def batch_update_menus(self, menus_data: List[dict], update_by: str = "") -> int:
         """批量更新菜单"""
         updated_count = 0
@@ -254,7 +215,6 @@ class MenuService:
         if updated_count > 0:
             self.db.commit()
             logger.info(f"批量更新菜单成功: {updated_count} 条")
-            self._clear_cache()
         return updated_count
 
     def _upsert_menu_def(self, menu_def: dict, parent_id: int, init_by: str) -> Tuple[int, bool]:
@@ -312,6 +272,5 @@ class MenuService:
                 created_count += 1
 
         self.db.commit()
-        self._clear_cache()
         logger.info(f"初始化默认菜单完成，共创建 {created_count} 条菜单")
         return created_count

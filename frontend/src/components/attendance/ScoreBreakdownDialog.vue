@@ -1,11 +1,9 @@
 <template>
   <Dialog
     v-model:visible="localVisible"
-    :header="`维度评分详情：${account}`"
+    :header="dialogHeader"
     modal
-    :style="{ width: '560px', maxWidth: '95vw' }"
-    :breakpoints="{ '960px': '95vw' }"
-    class="game-dialog"
+    class="game-dialog w-[560px] max-w-[95vw]"
   >
     <LoadingState
       v-if="loading"
@@ -42,14 +40,27 @@
         </div>
         <div
           v-if="data.role_label || data.most_used_profession"
-          class="flex items-center gap-2 pt-2 border-t border-neutral-border"
+          class="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-border"
         >
+          <!-- 职业定位（基于常用职业查表） -->
           <div
-            v-if="data.role_label"
+            v-if="data.profession_role_label"
             class="flex items-center gap-1"
           >
-            <span class="text-xs text-neutral-text-secondary">角色定位：</span>
-            <span class="px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">{{ data.role_label }}</span>
+            <span class="text-xs text-neutral-text-secondary">职业定位：</span>
+            <span class="px-2 py-1 rounded-full text-xs bg-primary/10 text-primary">{{ data.profession_role_label }}</span>
+          </div>
+          <!-- 数据定位（基于实际战斗数据） -->
+          <div
+            v-if="data.data_role_label"
+            class="flex items-center gap-1"
+          >
+            <span class="text-xs text-neutral-text-secondary">数据定位：</span>
+            <span
+              class="px-2 py-1 rounded-full text-xs"
+              :class="dataRoleClass"
+              :title="data.data_role_reason"
+            >{{ data.data_role_label }}</span>
           </div>
           <div
             v-if="data.most_used_profession"
@@ -57,6 +68,15 @@
           >
             <span class="text-xs text-neutral-text-secondary">常用职业：</span>
             <span class="px-2 py-1 rounded-full text-xs bg-secondary/10 text-secondary">{{ getProfessionName(data.most_used_profession) }}</span>
+          </div>
+          <!-- 定位冲突提示 -->
+          <div
+            v-if="isRoleMismatch"
+            class="flex items-center gap-1 text-xs text-warning"
+            :title="`职业定位「${data.profession_role_label}」与数据定位「${data.data_role_label}」不一致`"
+          >
+            <i class="pi pi-exclamation-circle" />
+            <span>定位冲突</span>
           </div>
         </div>
       </div>
@@ -72,14 +92,12 @@
               权重 {{ dim.weight }} × 得分 {{ dim.score }} = <span class="font-semibold text-primary">{{ dim.weighted_score }}</span>
             </span>
           </div>
-          <div class="w-full h-2 bg-neutral-border rounded-full overflow-hidden">
-            <!-- 动态值，无法使用 Tailwind 静态类 -->
-            <div
-              class="h-full rounded-full transition-all duration-500"
-              :class="scoreBarClass(dim.score)"
-              :style="{ width: dim.score + '%' }"
-            />
-          </div>
+          <ProgressBar
+            :value="dim.score"
+            :class="progressBarClass(dim.score)"
+            class="h-2"
+            :show-value="false"
+          />
         </div>
       </div>
     </div>
@@ -94,12 +112,14 @@
 
 import { computed } from 'vue'
 import Dialog from 'primevue/dialog'
+import ProgressBar from 'primevue/progressbar'
 import LoadingState from '@/components/common/ui/feedback/LoadingState.vue'
 import { getProfessionName } from '@/services/professionService'
 
 const props = defineProps<{
   visible: boolean
   account: string
+  profession?: string
   loading: boolean
   data: any
 }>()
@@ -113,12 +133,31 @@ const localVisible = computed({
   set: v => emit('update:visible', v)
 })
 
+const dialogHeader = computed(() => {
+  const prof = props.profession ? ` · ${getProfessionName(props.profession)}` : ''
+  return `维度评分详情：${props.account}${prof}`
+})
+
 const sortedDimensions = computed(() => {
   if (!props.data?.dimensions) return []
   const dims = props.data.dimensions as Record<string, any>
   return Object.entries(dims)
     .map(([key, val]) => ({ key, ...val }))
     .sort((a, b) => (b.weighted_score || 0) - (a.weighted_score || 0))
+})
+
+/** 数据定位与职业定位是否冲突 */
+const isRoleMismatch = computed(() => {
+  return props.data?.profession_role_type && props.data?.data_role_type
+    && props.data.profession_role_type !== props.data.data_role_type
+})
+
+const dataRoleClass = computed(() => {
+  const roleType = props.data?.data_role_type
+  if (roleType === 'tank') return 'bg-status-error/10 text-status-error'
+  if (roleType === 'support') return 'bg-status-success/10 text-status-success'
+  if (roleType === 'control') return 'bg-warning/10 text-warning'
+  return 'bg-primary/10 text-primary'
 })
 
 function gradeClass(g?: string) {
@@ -129,10 +168,10 @@ function gradeClass(g?: string) {
   return base
 }
 
-function scoreBarClass(score: number) {
-  if (score >= 80) return 'bg-gradient-to-r from-status-error to-status-warning'
-  if (score >= 60) return 'bg-gradient-to-r from-status-warning to-primary'
-  if (score >= 40) return 'bg-gradient-to-r from-primary to-secondary'
-  return 'bg-neutral-text-secondary'
+function progressBarClass(score: number) {
+  if (score >= 80) return 'progress-bar-high'
+  if (score >= 60) return 'progress-bar-medium'
+  if (score >= 40) return 'progress-bar-low'
+  return 'progress-bar-very-low'
 }
 </script>

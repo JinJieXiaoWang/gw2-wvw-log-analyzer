@@ -8,10 +8,13 @@
 import { computed } from 'vue'
 import type { EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   agg: EiAnalysisAggregate
 }>()
+
+const { t } = useI18n()
 
 const kpiList = computed(() => {
   const maxDamage = 5000000
@@ -23,7 +26,7 @@ const kpiList = computed(() => {
   return [
     {
       icon: 'pi pi-bolt',
-      label: '总伤害',
+      label: t('tactical.kpi.totalDamage'),
       value: fmtCompact(agg.total_damage),
       color: 'text-primary',
       bg: 'from-primary/20 to-primary/5',
@@ -33,7 +36,7 @@ const kpiList = computed(() => {
     },
     {
       icon: 'pi pi-shield',
-      label: '总承伤',
+      label: t('tactical.kpi.totalDamageTaken'),
       value: fmtCompact(agg.total_damage_taken),
       color: 'text-secondary',
       bg: 'from-secondary/20 to-secondary/5',
@@ -43,37 +46,37 @@ const kpiList = computed(() => {
     },
     {
       icon: 'pi pi-star',
-      label: '击杀',
+      label: t('tactical.kpi.kills'),
       value: String(agg.total_kills || 0),
       color: 'text-success',
       bg: 'from-success/20 to-success/5',
       barColor: 'bg-success',
-      unit: '次',
+      unit: t('tactical.units.times'),
       percent: Math.min((agg.total_kills / maxDeaths) * 100, 100)
     },
     {
       icon: 'pi pi-times-circle',
-      label: '死亡',
+      label: t('tactical.kpi.deaths'),
       value: String(agg.total_deaths || 0),
       color: 'text-error',
       bg: 'from-error/20 to-error/5',
       barColor: 'bg-error',
-      unit: '次',
+      unit: t('tactical.units.times'),
       percent: Math.min((agg.total_deaths / maxDeaths) * 100, 100)
     },
     {
       icon: 'pi pi-arrow-down',
-      label: '击倒',
+      label: t('tactical.kpi.downed'),
       value: String(agg.total_downed || 0),
       color: 'text-warning',
       bg: 'from-warning/20 to-warning/5',
       barColor: 'bg-warning',
-      unit: '次',
+      unit: t('tactical.units.times'),
       percent: Math.min((agg.total_downed / maxDowned) * 100, 100)
     },
     {
       icon: 'pi pi-chart-line',
-      label: '平均DPS',
+      label: t('tactical.kpi.avgDps'),
       value: fmtCompact(agg.avg_dps),
       color: 'text-primary',
       bg: 'from-primary/20 to-primary/5',

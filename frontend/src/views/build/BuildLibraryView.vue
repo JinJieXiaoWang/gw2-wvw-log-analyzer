@@ -195,6 +195,7 @@ import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseCheckbox from '@/components/common/ui/input/BaseCheckbox.vue'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import { useBuildLibraryStore } from '@/store/build/buildLibrary'
+import { useAuthGuard } from '@/composables/useAuthGuard'
 import type { BuildEntry, SubRoleFilter } from '@/types/buildLibrary'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Drawer from 'primevue/drawer'
@@ -253,6 +254,7 @@ const TOAST_MESSAGES = {
 
 const toast = useToast()
 const confirm = useConfirm()
+const { requireAuth } = useAuthGuard()
 const store = useBuildLibraryStore()
 
 const filters = computed(() => store.filters)
@@ -291,11 +293,13 @@ const openDetail = (build: BuildEntry) => {
 }
 
 const openCreateDialog = () => {
+  if (!requireAuth()) return
   editingBuild.value = null
   showEditDialog.value = true
 }
 
 const openEditDialog = () => {
+  if (!requireAuth()) return
   if (selectedBuild.value) {
     editingBuild.value = selectedBuild.value
     showEditDialog.value = true
@@ -303,11 +307,13 @@ const openEditDialog = () => {
 }
 
 const openEditDialogFromCard = (build: BuildEntry) => {
+  if (!requireAuth()) return
   editingBuild.value = build
   showEditDialog.value = true
 }
 
 const confirmDelete = () => {
+  if (!requireAuth()) return
   if (!selectedBuild.value) return
   const build = selectedBuild.value
   confirm.require({
@@ -383,6 +389,7 @@ watch(filteredBuilds, () => {
 })
 
 const batchDelete = () => {
+  if (!requireAuth()) return
   if (selectedBuildIds.value.length === 0) return
   const count = selectedBuildIds.value.length
   confirm.require({

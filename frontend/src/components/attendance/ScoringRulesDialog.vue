@@ -14,30 +14,14 @@
     <div v-else>
       <TabView v-model:active-index="localActiveTab">
         <TabPanel
-          header="输出"
-          value="0"
+          v-for="tab in roleTabs"
+          :key="tab.roleKey"
+          :header="tab.label"
+          :value="tab.roleKey"
         >
           <RuleList
-            :rules="rulesData.dps?.rules || []"
-            empty-text="暂无输出角色的评分规则"
-          />
-        </TabPanel>
-        <TabPanel
-          header="辅助"
-          value="1"
-        >
-          <RuleList
-            :rules="rulesData.support?.rules || []"
-            empty-text="暂无辅助角色的评分规则"
-          />
-        </TabPanel>
-        <TabPanel
-          header="承伤"
-          value="2"
-        >
-          <RuleList
-            :rules="rulesData.tank?.rules || []"
-            empty-text="暂无承伤角色的评分规则"
+            :rules="rulesData[tab.roleKey]?.rules || []"
+            :empty-text="`暂无${tab.label}角色的评分规则`"
           />
         </TabPanel>
       </TabView>
@@ -87,13 +71,6 @@
             当前规则版本: <span class="font-semibold text-primary">v{{ ruleVersion }}</span>
           </span>
         </div>
-        <BaseButton
-          label="前往管理"
-          icon="pi pi-external-link"
-          size="small"
-          text
-          @click="goToRulesManagement"
-        />
       </div>
     </div>
   </Dialog>
@@ -102,7 +79,7 @@
 <script setup lang="ts">
 /**
  * 评分规则查看对话框组件
- * 功能：展示输出/辅助/承伤三种角色的评分规则配置
+ * 功能：动态展示所有角色类型的评分规则配置
  */
 
 import { RoleType } from '@/constants/dictValues'
@@ -142,13 +119,32 @@ const localActiveTab = computed({
   set: v => emit('update:activeTab', v)
 })
 
+/** 角色类型 → 中文标签 */
+const ROLE_LABEL_MAP: Record<string, string> = {
+  [RoleType.DPS]: '输出',
+  [RoleType.SUPPORT]: '辅助',
+  [RoleType.TANK]: '承伤',
+  [RoleType.CONTROL]: '削控',
+}
+
+/** 动态生成 Tab 列表，仅包含 rulesData 中实际存在的角色 */
+const roleTabs = computed(() => {
+  const keys = Object.keys(props.rulesData || {}).filter(
+    k => ROLE_LABEL_MAP[k]
+  )
+  // 保持固定顺序：输出 → 辅助 → 承伤 → 削控
+  const order: string[] = [RoleType.DPS, RoleType.SUPPORT, RoleType.TANK, RoleType.CONTROL]
+  const sortedKeys = keys.sort(
+    (a, b) => order.indexOf(a) - order.indexOf(b)
+  )
+  return sortedKeys.map(roleKey => ({
+    roleKey,
+    label: ROLE_LABEL_MAP[roleKey],
+  }))
+})
+
 const roleLabel = computed(() => {
-  const map: Record<string, string> = {
-    [RoleType.DPS]: '输出',
-    [RoleType.SUPPORT]: '辅助',
-    [RoleType.TANK]: '承伤'
-  }
-  return props.roleType ? (map[props.roleType] || '输出') : ''
+  return props.roleType ? (ROLE_LABEL_MAP[props.roleType] || '输出') : ''
 })
 
 const goToRulesManagement = () => {

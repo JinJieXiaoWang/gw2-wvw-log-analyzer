@@ -114,6 +114,19 @@ class GradeLevel(str, Enum):
     D = "d"
     F = "f"
 
+    @property
+    def label(self) -> str:
+        """评分等级中文标签"""
+        labels = {
+            "s": "S级",
+            "a": "A级",
+            "b": "B级",
+            "c": "C级",
+            "d": "D级",
+            "f": "F级",
+        }
+        return labels.get(self.value, self.value.upper())
+
 
 # 评分等级阈值（与 grade_level 字典对应，后续可从配置表加载）
 GRADE_THRESHOLDS = [
@@ -123,16 +136,6 @@ GRADE_THRESHOLDS = [
     (60, GradeLevel.C),
     (40, GradeLevel.D),
 ]
-
-# 评分等级中文标签映射
-GRADE_LABELS = {
-    "s": "S级",
-    "a": "A级",
-    "b": "B级",
-    "c": "C级",
-    "d": "D级",
-    "f": "F级",
-}
 
 
 def get_grade(score: float) -> str:
@@ -144,8 +147,9 @@ def get_grade(score: float) -> str:
 
 
 def get_grade_label(grade: str) -> str:
-    """根据等级获取中文标签"""
-    return GRADE_LABELS.get(grade.lower(), grade.upper())
+    """根据等级获取中文标签（从字典表读取，消灭硬编码）"""
+    from app.utils.db.dict_utils import get_dict_label
+    return get_dict_label("grade_level", grade.lower()) or grade.upper()
 
 
 # =============================================================================

@@ -7,10 +7,13 @@
 
 import { computed } from 'vue'
 import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
+import { useI18n } from 'vue-i18n'
 
 const props = defineProps<{
   players: EiAnalysisPlayer[]
 }>()
+
+const { t } = useI18n()
 
 const statAverages = computed(() => {
   const list = props.players
@@ -53,12 +56,12 @@ const statAverages = computed(() => {
 })
 
 const statList = computed(() => [
-  { label: '保护覆盖', value: statAverages.value.protection, unit: '%', icon: 'pi pi-shield', color: '#00D68F', threshold: 70 },
-  { label: '稳固覆盖', value: statAverages.value.stability, unit: '%', icon: 'pi pi-lock', color: '#165DFF', threshold: 60 },
-  { label: '命中率', value: statAverages.value.hitRate, unit: '%', icon: 'pi pi-check', color: '#FFAA00', threshold: 90 },
-  { label: '技能施放', value: statAverages.value.skillCastUptime, unit: '%', icon: 'pi pi-play', color: '#FF4D6A', threshold: 70 },
-  { label: '堆叠距离', value: statAverages.value.stackDist, unit: '', icon: 'pi pi-users', color: '#6366F1', threshold: null },
-  { label: '指挥距离', value: statAverages.value.distToCom, unit: '', icon: 'pi pi-map-marker', color: '#00B4FF', threshold: null },
+  { label: t('tactical.statOverview.protection'), value: statAverages.value.protection, unit: '%', icon: 'pi pi-shield', color: '#00D68F', threshold: 70 },
+  { label: t('tactical.statOverview.stability'), value: statAverages.value.stability, unit: '%', icon: 'pi pi-lock', color: '#165DFF', threshold: 60 },
+  { label: t('tactical.statOverview.hitRate'), value: statAverages.value.hitRate, unit: '%', icon: 'pi pi-check', color: '#FFAA00', threshold: 90 },
+  { label: t('tactical.statOverview.skillCast'), value: statAverages.value.skillCastUptime, unit: '%', icon: 'pi pi-play', color: '#FF4D6A', threshold: 70 },
+  { label: t('tactical.statOverview.stackDist'), value: statAverages.value.stackDist, unit: '', icon: 'pi pi-users', color: '#6366F1', threshold: null },
+  { label: t('tactical.statOverview.comDist'), value: statAverages.value.distToCom, unit: '', icon: 'pi pi-map-marker', color: '#00B4FF', threshold: null },
 ])
 
 const getValueColor = (item: typeof statList.value[0]) => {
@@ -70,7 +73,7 @@ const getValueColor = (item: typeof statList.value[0]) => {
 <template>
   <div class="card p-6 rounded-xl">
     <h3 class="font-semibold text-neutral-text mb-4">
-      团队统计概览
+      {{ t('tactical.statOverview.title') }}
     </h3>
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
       <div

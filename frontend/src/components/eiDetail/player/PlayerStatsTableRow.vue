@@ -5,7 +5,10 @@
     @click="$emit('select-player', player.instanceID)"
   >
     <td class="rank-col">
-      <span class="rank-badge" :class="getRankClass(index)">{{ index + 1 }}</span>
+      <span
+        class="rank-badge"
+        :class="getRankClass(index)"
+      >{{ index + 1 }}</span>
     </td>
     <td class="player-col">
       <div class="player-info">
@@ -18,27 +21,53 @@
         <div class="player-name-group">
           <span class="player-name">
             {{ player.name }}
-            <span v-if="player.hasCommanderTag" class="commander-tag"><i class="pi pi-star-fill" /></span>
+            <span
+              v-if="player.hasCommanderTag"
+              class="commander-tag"
+            ><i class="pi pi-star-fill" /></span>
           </span>
           <span class="account-name">{{ player.account }}</span>
         </div>
       </div>
     </td>
     <td class="prof-col">
-      <span class="prof-name" :style="{ backgroundColor: getColor(player.profession) }">
+      <span
+        class="prof-name"
+        :style="{ backgroundColor: getColor(player.profession) }"
+      >
         {{ getName(player.profession) }}
       </span>
     </td>
-    <td class="score-col"><span class="score-value">{{ player.total_score }}</span></td>
-    <td class="dmg-col"><span class="damage-value">{{ formatDamage(getPlayerDamage(player)) }}</span></td>
-    <td class="dps-col"><span class="dps-value">{{ player.dps }}</span></td>
-    <td class="power-col"><span class="power-value">{{ formatDamage(getPlayerPowerDamage(player)) }}</span></td>
-    <td class="condi-col"><span class="condi-value">{{ formatDamage(getPlayerCondiDamage(player)) }}</span></td>
-    <td class="cc-col"><span class="cc-value">{{ player.cc || 0 }}</span></td>
-    <td class="down-col"><span class="down-value">{{ player.downs || 0 }}</span></td>
-    <td class="death-col"><span class="death-value">{{ player.deaths || 0 }}</span></td>
+    <td class="score-col">
+      <span class="score-value">{{ player.total_score }}</span>
+    </td>
+    <td class="dmg-col">
+      <span class="damage-value">{{ formatDamage(getPlayerDamage(player)) }}</span>
+    </td>
+    <td class="dps-col">
+      <span class="dps-value">{{ player.dps }}</span>
+    </td>
+    <td class="power-col">
+      <span class="power-value">{{ formatDamage(getPlayerPowerDamage(player)) }}</span>
+    </td>
+    <td class="condi-col">
+      <span class="condi-value">{{ formatDamage(getPlayerCondiDamage(player)) }}</span>
+    </td>
+    <td class="cc-col">
+      <span class="cc-value">{{ player.cc || 0 }}</span>
+    </td>
+    <td class="down-col">
+      <span class="down-value">{{ player.downs || 0 }}</span>
+    </td>
+    <td class="death-col">
+      <span class="death-value">{{ player.deaths || 0 }}</span>
+    </td>
     <td class="actions-col">
-      <BaseButton size="small" icon="pi pi-eye" @click.stop="$emit('select-player', player.instanceID)" />
+      <BaseButton
+        size="small"
+        icon="pi pi-eye"
+        @click.stop="$emit('select-player', player.instanceID)"
+      />
     </td>
   </tr>
 </template>

@@ -1,15 +1,23 @@
 <template>
   <div class="status-section">
-    <h4 class="section-title">{{ SECTION_BATTLE_STATUS }}</h4>
+    <h4 class="section-title">
+      {{ SECTION_BATTLE_STATUS }}
+    </h4>
     <div class="status-grid">
-      <div class="status-item" :class="{ danger: player.downs > 0 }">
+      <div
+        class="status-item"
+        :class="{ danger: player.downs > 0 }"
+      >
         <i class="pi pi-skull-crossbones" />
         <div class="status-data">
           <span class="status-value">{{ player.downs }}</span>
           <span class="status-label">{{ LABEL_DOWNS }}</span>
         </div>
       </div>
-      <div class="status-item" :class="{ danger: player.deaths > 0 }">
+      <div
+        class="status-item"
+        :class="{ danger: player.deaths > 0 }"
+      >
         <i class="pi pi-heart-broken" />
         <div class="status-data">
           <span class="status-value">{{ player.deaths }}</span>

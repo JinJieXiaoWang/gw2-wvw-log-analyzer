@@ -30,6 +30,7 @@ export interface SkillCycle {
 export interface TimelineTick {
   time: number
   position: number
+  label?: string
 }
 
 export interface TrackCast {

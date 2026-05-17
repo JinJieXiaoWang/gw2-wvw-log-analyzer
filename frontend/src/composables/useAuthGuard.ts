@@ -8,6 +8,7 @@ import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { usePermission } from './system/usePermission'
 import { authStore } from './system/usePermission'
+import { isLoggedIn } from '@/utils/auth/tokenManager'
 
 export function useAuthGuard() {
   const route = useRoute()
@@ -34,12 +35,14 @@ export function useAuthGuard() {
   })
 
   /**
-   * 强制要求认证，未登录则跳转登录页并记录重定向路径
+   * 强制要求认证，未登录或 Token 已过期则跳转登录页并记录重定向路径
+   * 实时验证 token 有效性，避免 authStore 缓存状态与 tokenManager 不一致
    */
   const requireAuth = (): boolean => {
-    if (isAuthenticated.value) {
+    if (isAuthenticated.value && isLoggedIn()) {
       return true
     }
+    authStore.clearAuth()
     sessionStorage.setItem('auth_redirect', route.fullPath)
     router.push('/login')
     return false

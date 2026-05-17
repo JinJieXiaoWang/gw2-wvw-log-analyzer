@@ -13,7 +13,6 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from app.core.initialization import SeedDataLoader
-from app.services.game.game_data_service import get_global_cache
 from app.utils.logger import logger
 
 # =============================================================================
@@ -281,7 +280,6 @@ class BDCodeService:
     def __init__(self):
         self._parser = GW2BuildParser()
         self._loader = GW2LocalDataLoader()
-        self._cache = get_global_cache()
 
     def validate_bdcode(self, bd_code: str) -> Dict[str, Any]:
         """
@@ -314,44 +312,33 @@ class BDCodeService:
 
     def parse_bdcode(self, bd_code: str, include_icons: bool = True) -> Dict[str, Any]:
         """
-        解析BD码
+        解析BD码（无缓存，直接解析）
         参数:
             bd_code: BD码字符串
             include_icons: 是否包含图标URL
         返回:
             完整的Build信息
         """
-        cache_key = f"bdcode:parse:{hash(bd_code)}:{include_icons}"
-        cached = self._cache.get(cache_key)
-        if cached is not None:
-            return cached
-
         validation = self.validate_bdcode(bd_code)
         if not validation["is_valid"]:
-            result = {
+            return {
                 "success": False,
                 "error": validation["error"],
                 "bd_code": bd_code,
             }
-            self._cache.set(cache_key, result)
-            return result
 
         try:
             parse_result = self._parser.parse(bd_code)
             build_info = self._build_full_info(bd_code, parse_result, include_icons)
-
-            result = {"success": True, "data": asdict(build_info), "bd_code": bd_code}
-            self._cache.set(cache_key, result)
-            return result
+            return {"success": True, "data": asdict(build_info), "bd_code": bd_code}
 
         except Exception as e:
             logger.error(f"BD码解析异常: {e}")
-            result = {
+            return {
                 "success": False,
                 "error": f"解析失败: {str(e)}",
                 "bd_code": bd_code,
             }
-            return result
 
     def _build_full_info(
         self, bd_code: str, parse_result: Dict, include_icons: bool

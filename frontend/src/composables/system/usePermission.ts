@@ -11,7 +11,7 @@ import type { User, Permission, Role, LoginCredentials, AuthState, MenuItem } fr
 import { SystemRole, GUEST_PERMISSIONS, OPERATOR_PERMISSIONS, SUPER_ADMIN_PERMISSIONS } from '@/types/permission'
 import { apiFactory } from '@/services/core/apiService'
 import { authService } from '@/services/auth/authService'
-import { saveAccessToken, clearToken } from '@/utils/auth/tokenManager'
+import { saveAccessToken, clearToken, getToken } from '@/utils/auth/tokenManager'
 import { API_ENDPOINTS } from '@/config/apiEndpoints'
 
 const STORAGE_KEY = 'gw2_wvw_auth'
@@ -41,13 +41,17 @@ class AuthStore {
       if (stored) {
         const data = JSON.parse(stored)
         if (data.isAuthenticated && data.user && data.token) {
+          // 验证 token 是否有效（tokenManager 会检查过期时间）
+          const tokenInfo = getToken()
+          if (!tokenInfo) {
+            this.clearAuth()
+            return
+          }
+
           this.state.isAuthenticated = data.isAuthenticated
           this.state.user = data.user
           this.state.token = data.token
           this.state.permissions = this.getPermissionsByRole(data.user.role)
-          
-          // 同时保存token到统一 token 管理器
-          saveAccessToken(data.token)
         }
       }
     } catch (error) {
@@ -243,7 +247,7 @@ class AuthStore {
 
       if (result.success && result.data) {
         const { is_logged_in, user, permissions, menus } = result.data
-        
+
         if (is_logged_in && user) {
           this.state.isAuthenticated = true
           this.state.user = {
@@ -253,13 +257,13 @@ class AuthStore {
             loginTime: user.last_login,
             lastActiveTime: new Date().toISOString()
           }
-          this.state.permissions = permissions.length > 0 
-            ? this.parsePermissions(permissions) 
+          this.state.permissions = permissions.length > 0
+            ? this.parsePermissions(permissions)
             : this.getPermissionsByRole((user.role as Role) || SystemRole.OPERATOR)
           this.state.menus = menus || []
-          
+
           this.saveToStorage()
-          
+
           return {
             is_logged_in: true,
             user: this.state.user,
@@ -267,11 +271,16 @@ class AuthStore {
             menus: this.state.menus
           }
         }
+
+        // 后端返回未登录，同步清除本地状态
+        this.clearAuth()
+      } else {
+        this.clearAuth()
       }
-      
-      // 如果未登录，获取公开菜单
+
+      // 获取公开菜单
       await this.loadPublicMenus()
-      
+
       return {
         is_logged_in: false,
         user: null,
@@ -280,14 +289,15 @@ class AuthStore {
       }
     } catch (error) {
       console.error('Get status error:', error)
-      
+      this.clearAuth()
+
       // 出错时也尝试获取公开菜单
       try {
         await this.loadPublicMenus()
       } catch (e) {
         console.error('Load public menus error:', e)
       }
-      
+
       return {
         is_logged_in: false,
         user: null,
@@ -388,8 +398,6 @@ class AuthStore {
     this.state.user = null
     this.state.permissions = GUEST_PERMISSIONS
     this.state.token = null
-    // 清除菜单时保留公开菜单
-    this.loadPublicMenus()
     localStorage.removeItem(STORAGE_KEY)
     clearToken()
   }

@@ -1,28 +1,36 @@
 <template>
   <div class="stats-grid">
     <div class="stat-box damage">
-      <div class="stat-icon"><i class="pi pi-bolt" /></div>
+      <div class="stat-icon">
+        <i class="pi pi-bolt" />
+      </div>
       <div class="stat-data">
         <span class="stat-value">{{ formatLargeNumber(player.dpsAll?.[0]?.damage || 0) }}</span>
         <span class="stat-label">{{ LABEL_TOTAL_DAMAGE }}</span>
       </div>
     </div>
     <div class="stat-box dps">
-      <div class="stat-icon"><i class="pi pi-gauge" /></div>
+      <div class="stat-icon">
+        <i class="pi pi-gauge" />
+      </div>
       <div class="stat-data">
         <span class="stat-value">{{ player.dps }}</span>
         <span class="stat-label">{{ LABEL_DPS }}</span>
       </div>
     </div>
     <div class="stat-box score">
-      <div class="stat-icon"><i class="pi pi-trophy" /></div>
+      <div class="stat-icon">
+        <i class="pi pi-trophy" />
+      </div>
       <div class="stat-data">
         <span class="stat-value">{{ player.total_score }}</span>
         <span class="stat-label">{{ LABEL_SCORE }}</span>
       </div>
     </div>
     <div class="stat-box cleanse">
-      <div class="stat-icon"><i class="pi pi-minus-circle" /></div>
+      <div class="stat-icon">
+        <i class="pi pi-minus-circle" />
+      </div>
       <div class="stat-data">
         <span class="stat-value">{{ player.support?.[0]?.condiCleanse || 0 }}</span>
         <span class="stat-label">{{ LABEL_CLEANSE }}</span>

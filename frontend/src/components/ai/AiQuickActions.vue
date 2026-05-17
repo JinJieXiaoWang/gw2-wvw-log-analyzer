@@ -1,7 +1,11 @@
 <template>
   <div>
-    <h3 class="text-lg font-semibold text-white mb-2">快速操作</h3>
-    <p class="text-sm text-neutral-text-tertiary mb-4">快速分析最近的战斗或玩家数据</p>
+    <h3 class="text-lg font-semibold text-white mb-2">
+      快速操作
+    </h3>
+    <p class="text-sm text-neutral-text-tertiary mb-4">
+      快速分析最近的战斗或玩家数据
+    </p>
     <div class="flex flex-wrap gap-3">
       <BaseButton
         icon="pi pi-bolt"

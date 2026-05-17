@@ -67,7 +67,12 @@ app.component('DictSelect', DictSelect)
  * - 公开页面：清除状态 + Toast 提示，不跳转
  * - 认证页面：清除状态 + 跳转登录页
  */
+let isHandlingLogout = false
+
 window.addEventListener('auth:logout', (event: Event) => {
+  if (isHandlingLogout) return
+  isHandlingLogout = true
+
   const customEvent = event as CustomEvent
   const source = customEvent.detail?.source || 'unknown'
 
@@ -77,7 +82,7 @@ window.addEventListener('auth:logout', (event: Event) => {
 
   const currentRoute = router.currentRoute.value
 
-  // 触发全局 Toast 事件（由 App.vue 消费）
+  // 触发全局 Toast 事件（由 App.vue 消费），避免重复提示
   if (source === 'api') {
     window.dispatchEvent(new CustomEvent('global:toast', {
       detail: {
@@ -94,6 +99,9 @@ window.addEventListener('auth:logout', (event: Event) => {
     sessionStorage.setItem('auth_redirect', currentRoute.fullPath)
     router.push('/login')
   }
+
+  // 3秒后重置标志，允许再次处理（理论上不应发生，但防止极端情况）
+  setTimeout(() => { isHandlingLogout = false }, 3000)
 })
 
 /**

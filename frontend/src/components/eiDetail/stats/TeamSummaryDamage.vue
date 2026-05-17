@@ -7,8 +7,12 @@
           <i class="pi pi-chart-line" />
         </div>
         <div class="stat-content">
-          <div class="stat-label">总伤害</div>
-          <div class="stat-value">{{ formatDamage(totalDamage.total) }}</div>
+          <div class="stat-label">
+            总伤害
+          </div>
+          <div class="stat-value">
+            {{ formatDamage(totalDamage.total) }}
+          </div>
           <div class="stat-breakdown">
             <span class="power">
               <span class="dot" />
@@ -28,9 +32,15 @@
           <i class="pi pi-fire" />
         </div>
         <div class="stat-content">
-          <div class="stat-label">平均 DPS</div>
-          <div class="stat-value">{{ formatDamage(Math.round(avgDps)) }}</div>
-          <div class="stat-sub">总计 {{ formatDamage(Math.round(totalDps)) }}</div>
+          <div class="stat-label">
+            平均 DPS
+          </div>
+          <div class="stat-value">
+            {{ formatDamage(Math.round(avgDps)) }}
+          </div>
+          <div class="stat-sub">
+            总计 {{ formatDamage(Math.round(totalDps)) }}
+          </div>
         </div>
       </div>
     </div>
@@ -38,8 +48,14 @@
     <!-- 伤害占比进度条 -->
     <div class="damage-bar-container">
       <div class="damage-bar">
-        <div class="damage-segment power" :style="{ width: powerPercent }" />
-        <div class="damage-segment condi" :style="{ width: condiPercent }" />
+        <div
+          class="damage-segment power"
+          :style="{ width: powerPercent }"
+        />
+        <div
+          class="damage-segment condi"
+          :style="{ width: condiPercent }"
+        />
       </div>
       <div class="damage-labels">
         <span class="label power">

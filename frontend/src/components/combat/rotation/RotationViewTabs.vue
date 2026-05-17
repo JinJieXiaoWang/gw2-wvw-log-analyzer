@@ -1,13 +1,13 @@
 <template>
-  <div class="sr-view-tabs">
+  <div class="flex gap-2 p-1 rounded-lg bg-white/[0.03]">
     <button
       v-for="tab in tabs"
       :key="tab.value"
-      class="tab-btn"
-      :class="{ active: modelValue === tab.value }"
+      class="flex items-center gap-1.5 px-3 py-2 rounded-md bg-transparent text-xs cursor-pointer transition-all duration-200 hover:bg-white/5 hover:text-neutral-text-primary"
+      :class="modelValue === tab.value ? 'bg-primary text-white hover:bg-primary' : 'text-neutral-text-secondary'"
       @click="$emit('update:modelValue', tab.value)"
     >
-      <i :class="['pi', tab.icon]" />
+      <i :class="['pi', tab.icon, 'text-xs']" />
       <span>{{ tab.label }}</span>
     </button>
   </div>
@@ -15,55 +15,15 @@
 
 <script setup lang="ts">
 const props = defineProps<{
-  modelValue: 'stats' | 'timeline' | 'heatmap' | 'cycle'
+  modelValue: 'stats' | 'rotation'
 }>()
 
 defineEmits<{
-  'update:modelValue': [value: 'stats' | 'timeline' | 'heatmap' | 'cycle']
+  'update:modelValue': [value: 'stats' | 'rotation']
 }>()
 
-const tabs: { value: 'stats' | 'timeline' | 'heatmap' | 'cycle'; label: string; icon: string }[] = [
+const tabs: { value: 'stats' | 'rotation'; label: string; icon: string }[] = [
   { value: 'stats', label: '技能统计', icon: 'pi pi-chart-pie' },
-  { value: 'timeline', label: '时间轴', icon: 'pi pi-timeline' },
-  { value: 'heatmap', label: '热力图', icon: 'pi pi-square' },
-  { value: 'cycle', label: '循环视图', icon: 'pi pi-repeat' },
+  { value: 'rotation', label: '技能时间流', icon: 'pi pi-history' },
 ]
 </script>
-
-<style scoped>
-.sr-view-tabs {
-  display: flex;
-  gap: 0.5rem;
-  padding: 0.25rem;
-  background: rgba(255,255,255,0.03);
-  border-radius: 0.5rem;
-}
-
-.tab-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.5rem 0.75rem;
-  border: none;
-  border-radius: 0.375rem;
-  background: transparent;
-  color: var(--color-text-secondary, #94a3b8);
-  font-size: 0.75rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.tab-btn:hover {
-  background: rgba(255,255,255,0.05);
-  color: var(--color-text-primary, #f1f5f9);
-}
-
-.tab-btn.active {
-  background: var(--color-primary, #165DFF);
-  color: white;
-}
-
-.tab-btn i {
-  font-size: 0.75rem;
-}
-</style>

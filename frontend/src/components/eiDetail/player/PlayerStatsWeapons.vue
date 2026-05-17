@@ -1,6 +1,8 @@
 <template>
   <div class="weapons-section">
-    <h4 class="section-title">{{ SECTION_WEAPON_CONFIG }}</h4>
+    <h4 class="section-title">
+      {{ SECTION_WEAPON_CONFIG }}
+    </h4>
     <div class="weapons-info">
       <span class="weapons-text">{{ player.weapons?.join(' / ') || LABEL_WEAPONS_NOT_RECORDED }}</span>
     </div>

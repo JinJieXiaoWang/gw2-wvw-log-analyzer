@@ -63,11 +63,6 @@ export { default as Traits } from './build/shared/Traits.vue'
 
 // ── 战斗日志 ──
 export { default as PlayerDetailHeader } from './combat/PlayerDetailHeader.vue'
-export { default as PlayerDetailPanel } from './combat/PlayerDetailPanel.vue'
-export { default as PlayerDetailRotation } from './combat/PlayerDetailRotation.vue'
-export { default as SkillRotationTimeline } from './combat/SkillRotationTimeline.vue'
-export { default as SkillRotationViewer } from './combat/SkillRotationViewer.vue'
-
 // ── 战斗详情 ──
 export { default as DamageDetailDialog } from './combat/detail/dialogs/DamageDetailDialog.vue'
 export { default as FightOverviewTab } from './combat/detail/FightOverviewTab.vue'
@@ -75,13 +70,6 @@ export { default as FightPlayerStatsTable } from './combat/detail/FightPlayerSta
 export { default as PlayerSquadTab } from './combat/detail/PlayerSquadTab.vue'
 export { default as SquadRoster } from './combat/detail/SquadRoster.vue'
 export { default as StatDetailDialog } from './combat/detail/dialogs/StatDetailDialog.vue'
-
-// ── 战斗轮转 ──
-export { default as RotationCycleView } from './combat/rotation/RotationCycleView.vue'
-export { default as RotationHeatmapView } from './combat/rotation/RotationHeatmapView.vue'
-export { default as RotationTimelineLegend } from './combat/rotation/RotationTimelineLegend.vue'
-export { default as RotationTimelineView } from './combat/rotation/RotationTimelineView.vue'
-export { default as RotationViewModeBar } from './combat/rotation/RotationViewModeBar.vue'
 
 // ── 仪表盘 ──
 export { default as BattleHistory } from './dashboard/BattleHistory.vue'

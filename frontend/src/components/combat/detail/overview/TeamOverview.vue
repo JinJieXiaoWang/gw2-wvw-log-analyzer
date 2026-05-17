@@ -9,6 +9,7 @@ import type { EiAnalysisGroup, EiAnalysisPlayer } from '@/services/ei/eiAnalysis
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers';
 import { getProfessionColor, getProfessionIconUrl, getProfessionName } from '@/utils/profession/professionUtils';
 import { computed } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{
   players: EiAnalysisPlayer[]
@@ -16,6 +17,8 @@ const props = defineProps<{
   groups: EiAnalysisGroup[]
   ungroupedPlayers: EiAnalysisPlayer[]
 }>()
+
+const { t } = useI18n()
 
 const topDpsPlayers = computed(() => {
   return [...props.players].sort((a, b) => b.dps - a.dps).slice(0, 10)
@@ -34,7 +37,7 @@ const getScoreClass = (score: number | null | undefined) => {
     <!-- DPS 排行 -->
     <div class="card p-6 rounded-xl">
       <h3 class="font-semibold text-neutral-text mb-4">
-        DPS 排行 TOP10
+        {{ t('tactical.team.dpsTop10') }}
       </h3>
       <div class="space-y-2">
         <div
@@ -62,7 +65,7 @@ const getScoreClass = (score: number | null | undefined) => {
                 v-if="commanders.some(c => c.account_name === player.account_name)"
                 class="px-1.5 py-0.5 text-xs rounded bg-primary/20 text-primary"
               >
-                指挥
+                {{ t('tactical.team.commander') }}
               </span>
             </div>
             <span
@@ -77,7 +80,7 @@ const getScoreClass = (score: number | null | undefined) => {
               {{ fmtCompact(player.dps) }}
             </div>
             <div class="text-xs text-neutral-text-secondary">
-              DPS
+              {{ t('tactical.team.dps') }}
             </div>
           </div>
         </div>
@@ -87,7 +90,7 @@ const getScoreClass = (score: number | null | undefined) => {
     <!-- 小队列表 -->
     <div class="card p-6 rounded-xl">
       <h3 class="font-semibold text-neutral-text mb-4">
-        小队统计
+        {{ t('tactical.team.squadStats') }}
       </h3>
       <div class="space-y-3">
         <div
@@ -100,21 +103,21 @@ const getScoreClass = (score: number | null | undefined) => {
               <span class="w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">
                 {{ g.id }}
               </span>
-              <span class="text-sm text-neutral-text">小队 {{ g.id }}</span>
+              <span class="text-sm text-neutral-text">{{ t('tactical.overview.squadPrefix') }} {{ g.id }}</span>
               <span class="text-xs text-neutral-text-secondary">({{ g.players.length }}人)</span>
             </div>
             <div class="flex items-center gap-4 text-xs">
               <span class="text-neutral-text-secondary">
-                总伤: <span class="text-neutral-text">{{ fmtCompact(g.total_damage) }}</span>
+                {{ t('tactical.labels.totalDamage') }}: <span class="text-neutral-text">{{ fmtCompact(g.total_damage) }}</span>
               </span>
               <span class="text-neutral-text-secondary">
-                均DPS: <span class="text-neutral-text">{{ fmtCompact(g.avg_dps) }}</span>
+                {{ t('tactical.kpi.avgDps') }}: <span class="text-neutral-text">{{ fmtCompact(g.avg_dps) }}</span>
               </span>
               <span
                 v-if="g.avg_score !== null"
                 :class="getScoreClass(g.avg_score)"
               >
-                评分: {{ g.avg_score.toFixed(0) }}
+                {{ t('tactical.kpi.score') }}: {{ g.avg_score.toFixed(0) }}
               </span>
             </div>
           </div>
@@ -138,7 +141,7 @@ const getScoreClass = (score: number | null | undefined) => {
           class="p-3 rounded-lg bg-neutral-bg/30 border border-dashed border-neutral-border"
         >
           <div class="text-xs text-neutral-text-secondary mb-2">
-            未分组 ({{ ungroupedPlayers.length }}人)
+            {{ t('tactical.team.ungrouped') }} ({{ ungroupedPlayers.length }}{{ t('tactical.units.person') }})
           </div>
           <div class="flex gap-1 flex-wrap">
             <div

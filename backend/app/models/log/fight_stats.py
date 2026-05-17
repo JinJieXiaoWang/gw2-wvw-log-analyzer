@@ -80,6 +80,12 @@ class FightStats(Base):
     alacrity_uptime = Column(Float, default=0, comment="敏捷覆盖(百分比)")
     protection_uptime = Column(Float, default=0, comment="保护覆盖(百分比)")
     stability_uptime = Column(Float, default=0, comment="稳定覆盖(百分比)")
+    regeneration_uptime = Column(Float, default=0, comment="再生覆盖(百分比)")
+    swiftness_uptime = Column(Float, default=0, comment="迅捷覆盖(百分比)")
+    vigor_uptime = Column(Float, default=0, comment="活力覆盖(百分比)")
+    aegis_uptime = Column(Float, default=0, comment="圣盾覆盖(百分比)")
+    resistance_uptime = Column(Float, default=0, comment="抗性覆盖(百分比)")
+    resolution_uptime = Column(Float, default=0, comment="决心覆盖(百分比)")
 
     # === 高级战斗指标（dps.report API 专有）===
     down_contribution = Column(Integer, default=0, comment="倒地贡献")

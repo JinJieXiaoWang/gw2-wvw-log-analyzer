@@ -47,21 +47,24 @@
 import type { EiAnalysisGroup } from '@/services/ei/eiAnalysisService'
 import { groupColor } from '@/utils/combat/combatFormatters'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const SECTION_TITLES = {
-  SQUAD_COMPARISON: '小队对比分析',
+  SQUAD_COMPARISON: t('tactical.overview.squadCompare'),
 } as const
 
 const SQUAD_LABELS = {
-  SQUAD_PREFIX: '小队',
+  SQUAD_PREFIX: t('tactical.overview.squadPrefix'),
   SEPARATOR: '·',
 } as const
 
 const UI_LABELS = {
-  AVG_DPS: '平均DPS',
-  DEATHS: '死亡',
-  DOWNED: '击倒',
-  PLAYERS_COUNT_UNIT: '人',
+  AVG_DPS: t('tactical.overview.avgDps'),
+  DEATHS: t('tactical.overview.death'),
+  DOWNED: t('tactical.overview.downed'),
+  PLAYERS_COUNT_UNIT: t('tactical.units.person'),
 } as const
 
 const TEAM_BAR_CONFIG = {

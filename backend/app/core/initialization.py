@@ -223,7 +223,7 @@ class SeedDataLoader:
         try:
             file_path = cls.SEED_FILE_MAP.get(seed_name)
             if file_path:
-                full_path = os.path.join("backend/app/data/seeds", file_path)
+                full_path = os.path.join("app/data/seeds", file_path)
                 if os.path.exists(full_path):
                     with open(full_path, "r", encoding="utf-8") as f:
                         data = json.load(f)

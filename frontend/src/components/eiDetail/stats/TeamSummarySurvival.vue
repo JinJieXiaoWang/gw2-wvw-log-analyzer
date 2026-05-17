@@ -4,7 +4,9 @@
       <i class="pi pi-shield" />
     </div>
     <div class="stat-content">
-      <div class="stat-label">生存数据</div>
+      <div class="stat-label">
+        生存数据
+      </div>
       <div class="stat-values">
         <span class="down">
           <i class="pi pi-exclamation-triangle" />

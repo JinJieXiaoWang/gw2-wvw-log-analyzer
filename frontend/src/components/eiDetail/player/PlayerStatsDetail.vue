@@ -1,6 +1,9 @@
 <template>
   <div class="player-detail-card">
-    <PlayerStatsDetailHeader :player="player" @close="$emit('close')" />
+    <PlayerStatsDetailHeader
+      :player="player"
+      @close="$emit('close')"
+    />
 
     <div class="card-content">
       <PlayerStatsOverview :player="player" />

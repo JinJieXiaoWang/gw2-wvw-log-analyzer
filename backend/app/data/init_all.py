@@ -49,25 +49,46 @@ from app.utils.logger import logger
 # =============================================================================
 
 def _try_load_seed_from_module(var_name: str, default_data: Any) -> Any:
-    """尝试从构建生成的 seed_modules.py 加载种子数据"""
-    try:
-        from app.data._generated.seed_modules import load_seed
-        file_map = {
-            "_SYS_MENU_SEED": "v1.0.0/001_sys_menu.json",
-            "_SYS_DICT_TYPE_SEED": "v1.0.0/002_sys_dict_type.json",
-            "_SYS_DICT_DATA_SEED": "v1.0.0/003_sys_dict_data.json",
-            "_ROLE_TYPE_SEED": "v1.0.0/004_gw_role_type.json",
-            "_PROFESSION_SEED": "v1.0.0/005_gw_profession.json",
-            "_ELITE_SPEC_SEED": "v1.0.0/006_gw_elite_specialization.json",
-        }
-        file_name = file_map.get(var_name)
-        if file_name:
+    """尝试从构建生成的 seed_modules.py 加载种子数据
+    
+    优先从 app/data/seeds/ 目录下的 JSON 文件读取（便于开发时直接修改），
+    如果 JSON 文件不存在，则回退到 seed_modules.py。
+    """
+    import json
+    from pathlib import Path
+    
+    file_map = {
+        "_SYS_MENU_SEED": "v1.0.0/001_sys_menu.json",
+        "_SYS_DICT_TYPE_SEED": "v1.0.0/002_sys_dict_type.json",
+        "_SYS_DICT_DATA_SEED": "v1.0.0/003_sys_dict_data.json",
+        "_ROLE_TYPE_SEED": "v1.0.0/004_gw_role_type.json",
+        "_PROFESSION_SEED": "v1.0.0/005_gw_profession.json",
+        "_ELITE_SPEC_SEED": "v1.0.0/006_gw_elite_specialization.json",
+    }
+    file_name = file_map.get(var_name)
+    if file_name:
+        # 优先从 JSON 文件读取（开发模式）
+        json_path = Path(__file__).parent / "seeds" / file_name
+        if json_path.exists():
+            try:
+                with open(json_path, "r", encoding="utf-8") as f:
+                    loaded = json.load(f)
+                data = loaded.get("data", default_data)
+                logger.info(f"[init_all] 从 JSON 文件加载 {var_name}: {json_path}")
+                return data
+            except Exception as e:
+                logger.warning(f"[init_all] 从 JSON 加载失败 {var_name}: {e}")
+        
+        # 回退到 seed_modules.py
+        try:
+            from app.data._generated.seed_modules import load_seed
             loaded = load_seed(file_name)
             data = loaded.get("data", default_data)
             logger.info(f"[init_all] 从 seed_modules 加载 {var_name}")
             return data
-    except Exception:
-        pass
+        except Exception:
+            pass
+    
     return default_data
 
 
@@ -325,10 +346,50 @@ _SYS_DICT_TYPE_SEED = [
         "is_system": 1,
     },
     {
+        "dict_type": "ai_build_type",
+        "dict_name": "AI Build\u7c7b\u578b",
+        "status": 0,
+        "sort_order": 11,
+        "remark": "AI Build\u6267\u884c\u5206\u6790\u7c7b\u578b",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "death_category",
+        "dict_name": "\u6b7b\u4ea1\u5f52\u56e0\u5206\u7c7b",
+        "status": 0,
+        "sort_order": 12,
+        "remark": "AI\u6b7b\u4ea1\u5f52\u56e0\u5206\u6790\u5206\u7c7b",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "trend_status",
+        "dict_name": "\u8d8b\u52bf\u72b6\u6001",
+        "status": 0,
+        "sort_order": 13,
+        "remark": "AI\u8d8b\u52bf\u5206\u6790\u72b6\u6001",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "ai_check_item",
+        "dict_name": "AI\u68c0\u67e5\u9879",
+        "status": 0,
+        "sort_order": 14,
+        "remark": "AI Build\u6267\u884c\u6548\u80fd\u68c0\u67e5\u9879",
+        "is_system": 1,
+    },
+    {
+        "dict_type": "parse_stage",
+        "dict_name": "\u89e3\u6790\u9636\u6bb5",
+        "status": 0,
+        "sort_order": 15,
+        "remark": "\u65e5\u5fd7\u89e3\u6790\u8fdb\u5ea6\u9636\u6bb5",
+        "is_system": 1,
+    },
+    {
         "dict_type": "session_timeout",
         "dict_name": "\u4f1a\u8bdd\u8d85\u65f6",
         "status": 0,
-        "sort_order": 11,
+        "sort_order": 16,
         "remark": "\u4f1a\u8bdd\u8d85\u65f6\u65f6\u95f4\u9009\u9879",
         "is_system": 1,
     },
@@ -474,21 +535,20 @@ _SYS_DICT_DATA_SEED = {
         ("partial", "\u90e8\u5206\u5b8c\u6210", "#f97316", ""),
     ],
     "buff": [
-        ("717", "Regeneration", "#4caf50", ""),
-        ("718", "Swiftness", "#2196f3", ""),
-        ("719", "Fury", "#ff9800", ""),
-        ("725", "Might", "#f44336", ""),
+        # 基于 EI JSON 实际数据验证的 buff 映射
+        ("717", "Protection", "#00bcd4", ""),
+        ("718", "Regeneration", "#4caf50", ""),
+        ("719", "Swiftness", "#2196f3", ""),
+        ("725", "Fury", "#ff9800", ""),
         ("726", "Vigor", "#9c27b0", ""),
-        ("728", "Protection", "#00bcd4", ""),
-        ("740", "Aegis", "#ffeb3b", ""),
-        ("743", "Stability", "#795548", ""),
-        ("1122", "Quickness", "#e91e63", ""),
-        ("1187", "Resistance", "#607d8b", ""),
-        ("26980", "Alacrity", "#3f51b5", ""),
-        ("26981", "Resolution", "#009688", ""),
-        ("9283", "Empathy", "#8bc34a", ""),
-        ("110942", "Stone", "#795548", ""),
-        ("13797", "Geomancy", "#ff5722", ""),
+        ("740", "Might", "#f44336", ""),
+        ("743", "Aegis", "#ffeb3b", ""),
+        ("873", "Resolution", "#009688", ""),
+        ("1122", "Stability", "#795548", ""),
+        ("1187", "Quickness", "#e91e63", ""),
+        ("26980", "Resistance", "#607d8b", ""),
+        ("30328", "Alacrity", "#3f51b5", ""),
+        ("9283", "Reinforced Armor", "#8bc34a", ""),
     ],
     "dashboard_time_range": [
         ("7d", "\u6700\u8fd17\u5929", "#3b82f6", ""),
@@ -512,12 +572,51 @@ _SYS_DICT_DATA_SEED = {
         ("import", "\u5bfc\u5165", "#8b5cf6", ""),
     ],
     "grade_level": [
-        ("S", "S\u7ea7", "#f59e0b", "\u5353\u8d8a"),
-        ("A", "A\u7ea7", "#10b981", "\u4f18\u79c0"),
-        ("B", "B\u7ea7", "#3b82f6", "\u826f\u597d"),
-        ("C", "C\u7ea7", "#6b7280", "\u4e00\u822c"),
-        ("D", "D\u7ea7", "#ef4444", "\u5f85\u63d0\u5347"),
-        ("F", "F\u7ea7", "#991b1b", "\u4e0d\u53ca\u683c"),
+        ("s", "S\u7ea7", "#f59e0b", "\u5353\u8d8a"),
+        ("a", "A\u7ea7", "#10b981", "\u4f18\u79c0"),
+        ("b", "B\u7ea7", "#3b82f6", "\u826f\u597d"),
+        ("c", "C\u7ea7", "#6b7280", "\u4e00\u822c"),
+        ("d", "D\u7ea7", "#ef4444", "\u5f85\u63d0\u5347"),
+        ("f", "F\u7ea7", "#991b1b", "\u4e0d\u53ca\u683c"),
+    ],
+    "ai_build_type": [
+        ("power", "\u76f4\u4f24Build", "#ff4500", "\u4ee5\u76f4\u4f24\u4e3a\u4e3b\u7684Build"),
+        ("condi", "\u75c7\u72b6Build", "#9400d3", "\u4ee5\u75c7\u72b6\u4f24\u5bb3\u4e3a\u4e3b\u7684Build"),
+        ("support", "\u8f85\u52a9Build", "#00ced1", "\u4ee5\u6cbb\u7597\u548c\u589e\u76ca\u4e3a\u4e3b\u7684Build"),
+        ("tank", "\u5766\u514bBuild", "#165dff", "\u4ee5\u627f\u4f24\u548c\u63a7\u573a\u4e3a\u4e3b\u7684Build"),
+    ],
+    "death_category": [
+        ("focused_fire", "\u88ab\u96c6\u706b", "#ef4444", "\u77ed\u65f6\u95f4\u5185\u53d7\u5230\u591a\u4e2a\u654c\u65b9\u76ee\u6807\u7684\u9ad8\u989d\u4f24\u5bb3"),
+        ("positioning_error", "\u8d70\u4f4d\u5931\u8bef", "#f59e0b", "\u8131\u79bb\u56e2\u961f\u5806\u53e0\u70b9\uff0c\u66b4\u9732\u5728\u654c\u65b9\u706b\u529b\u8303\u56f4\u5185"),
+        ("buff_gap", "Buff\u65ad\u6863", "#3b82f6", "\u5173\u952e\u589e\u76ca\uff08\u4fdd\u62a4/\u7a33\u56fa\uff09\u8986\u76d6\u7387\u4e0d\u8db3"),
+        ("cooldown_mismatch", "\u6280\u80fd\u672a\u4ea4", "#6b7280", "\u62e5\u6709\u89e3\u63a7/\u65e0\u654c/\u7ffb\u6eda\u7b49\u751f\u5b58\u6280\u80fd\u4f46\u672a\u4f7f\u7528"),
+        ("healing_deficit", "\u6cbb\u7597\u7f3a\u53e3", "#10b981", "\u53d7\u5230\u4f24\u5bb3\u91cf\u8d85\u8fc7\u56e2\u961f\u6cbb\u7597\u80fd\u529b\u8986\u76d6"),
+        ("cc_chain", "\u63a7\u5236\u94fe", "#991b1b", "\u88ab\u8fde\u7eed\u63a7\u5236\u65e0\u6cd5\u64cd\u4f5c\u76f4\u81f3\u6b7b\u4ea1"),
+    ],
+    "trend_status": [
+        ("improving", "\u4e0a\u5347", "#10b981", "\u6307\u6807\u5448\u4e0a\u5347\u8d8b\u52bf"),
+        ("declining", "\u4e0b\u964d", "#ef4444", "\u6307\u6807\u5448\u4e0b\u964d\u8d8b\u52bf"),
+        ("stable", "\u7a33\u5b9a", "#6b7280", "\u6307\u6807\u4fdd\u6301\u7a33\u5b9a"),
+    ],
+    "ai_check_item": [
+        ("power_damage_ratio", "\u76f4\u4f24\u5360\u6bd4", "#ff4500", "\u76f4\u4f24\u5e94\u5360\u603b\u4f24\u5bb370%+"),
+        ("critical_rate", "\u66b4\u51fb\u7387", "#ff9800", "\u66b4\u51fb\u738760%+"),
+        ("condi_damage_ratio", "\u75c7\u72b6\u5360\u6bd4", "#9400d3", "\u75c7\u72b6\u5e94\u5360\u603b\u4f24\u5bb370%+"),
+        ("healing_output", "\u6bcf\u5206\u949f\u6cbb\u7597", "#00ced1", "\u6bcf\u5206\u949f\u6cbb\u7597\u91cf"),
+        ("boon_uptime", "\u589e\u76ca\u8986\u76d6", "#ffd700", "\u589e\u76ca\u8986\u76d6\u738760%+"),
+        ("dps_efficiency", "DPS\u6548\u7387", "#3b82f6", "\u6bcf\u79d2\u8f93\u51fa\u6548\u7387"),
+        ("skill_engagement", "\u6280\u80fd\u53c2\u4e0e\u5ea6", "#6b7280", "\u6280\u80fd\u65bd\u653e\u7387\u548c\u6b66\u5668\u5207\u6362\u9891\u7387"),
+        ("weapon_presence", "\u6b66\u5668\u914d\u7f6e", "#795548", "\u4e3b\u526f\u624b\u6b66\u5668\u662f\u5426\u9f50\u5168"),
+        ("food_consumable", "\u98df\u7269\u589e\u76ca", "#ff7043", "\u662f\u5426\u4f7f\u7528WvW\u98df\u7269"),
+        ("utility_consumable", "\u589e\u5f3a\u9053\u5177", "#607d8b", "\u662f\u5426\u4f7f\u7528\u78e8\u5200\u77f3/\u6cb9/\u8c03\u8c10"),
+        ("profession_match", "\u804c\u4e1a\u5339\u914d", "#4caf50", "\u5b9e\u9645\u804c\u4e1a\u4e0e\u9884\u671f\u662f\u5426\u4e00\u81f4"),
+    ],
+    "parse_stage": [
+        ("pending", "\u5f85\u5f00\u59cb", "#6b7280", "\u89e3\u6790\u4efb\u52a1\u5df2\u521b\u5efa\uff0c\u7b49\u5f85\u6267\u884c"),
+        ("initializing", "\u521d\u59cb\u5316", "#3b82f6", "\u6b63\u5728\u521d\u59cb\u5316\u89e3\u6790\u73af\u5883"),
+        ("parsing", "\u89e3\u6790\u4e2d", "#f59e0b", "\u6b63\u5728\u89e3\u6790\u65e5\u5fd7\u6587\u4ef6"),
+        ("completed", "\u5df2\u5b8c\u6210", "#10b981", "\u89e3\u6790\u5b8c\u6210"),
+        ("failed", "\u5931\u8d25", "#ef4444", "\u89e3\u6790\u8fc7\u7a0b\u4e2d\u53d1\u751f\u9519\u8bef"),
     ],
     "session_timeout": [
         ("15", "15\u5206\u949f", "#6b7280", ""),
@@ -1304,8 +1403,6 @@ _ELITE_SPEC_SEED = _try_load_seed_from_module("_ELITE_SPEC_SEED", _ELITE_SPEC_SE
 
 def _init_sys_menu(db: Session) -> int:
     """初始化系统菜单（支持新增和更新）"""
-    from app.utils.cache.cache import Cache
-    
     now = datetime.now()
     created = 0
     updated = 0
@@ -1362,14 +1459,6 @@ def _init_sys_menu(db: Session) -> int:
             created += 1
     
     db.commit()
-    
-    # 清除菜单缓存
-    cache = Cache()
-    keys_to_delete = [key for key in cache.cache if key.startswith("menu:")]
-    for key in keys_to_delete:
-        cache.delete(key)
-    logger.info(f"菜单缓存已清除")
-    
     logger.info(f"sys_menu 初始化完成：新增 {created} 条，更新 {updated} 条")
     return created
 

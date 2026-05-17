@@ -1,5 +1,8 @@
 <template>
-  <div class="bg-gray-800 rounded-lg p-4" :class="{ 'opacity-50': disabled }">
+  <div
+    class="bg-gray-800 rounded-lg p-4"
+    :class="{ 'opacity-50': disabled }"
+  >
     <h2 class="text-xl font-semibold mb-4">
       AI报告列表
     </h2>
@@ -14,7 +17,9 @@
       class="text-center py-8 text-gray-400"
     >
       <p>暂无AI报告</p>
-      <p class="text-sm mt-2 text-gray-500">配置AI后可生成分析报告</p>
+      <p class="text-sm mt-2 text-gray-500">
+        配置AI后可生成分析报告
+      </p>
     </div>
     <div
       v-else

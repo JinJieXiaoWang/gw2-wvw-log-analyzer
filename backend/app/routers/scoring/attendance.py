@@ -131,13 +131,15 @@ async def get_account_detail(
 )
 async def get_account_score_breakdown(
     account_name: str = Path(..., description="账号"),
+    profession: Optional[str] = Query(None, description="指定职业（精英特长英文名），不传则自动识别最常用职业"),
     start_date: Optional[str] = Query(None, description="开始日期(YYYY-MM-DD)"),
     end_date: Optional[str] = Query(None, description="结束日期 (YYYY-MM-DD)"),
     db: Session = Depends(get_db),
 ):
     """获取指定账号的评分维度明细（点击评分分数时展示）
 
-    返回该账号在统计周期内各评分维度的平均得分、权重及加权贡献值?
+    返回该账号在统计周期内各评分维度的平均得分、权重及加权贡献值。
+    支持传入 profession 参数查看指定角色的评分维度，不传则自动识别最常用职业。
     """
     try:
         start_dt = datetime.strptime(start_date, "%Y-%m-%d") if start_date else None
@@ -148,7 +150,7 @@ async def get_account_score_breakdown(
         )
 
         data = attendance_service.get_account_score_breakdown(
-            db, account_name, start_date=start_dt, end_date=end_dt
+            db, account_name, profession=profession, start_date=start_dt, end_date=end_dt
         )
 
         if not data:

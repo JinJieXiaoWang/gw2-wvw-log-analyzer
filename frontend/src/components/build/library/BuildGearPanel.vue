@@ -1,5 +1,8 @@
 <template>
-  <Panel :header="$t('buildParser.equipment')" toggleable>
+  <Panel
+    :header="$t('buildParser.equipment')"
+    toggleable
+  >
     <div class="space-y-3">
       <!-- 古物 + 符文 -->
       <div class="grid grid-cols-2 gap-3">

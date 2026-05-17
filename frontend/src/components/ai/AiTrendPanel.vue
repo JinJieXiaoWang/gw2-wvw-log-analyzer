@@ -2,8 +2,16 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
-        <div class="p-2 bg-gradient-to-br from-ai/20 to-emerald-500/20 rounded-xl"><SvgIcon icon="trending-up" :size="24" class="text-ai" /></div>
-        <h2 class="text-xl font-bold text-white">战斗趋势分析</h2>
+        <div class="p-2 bg-gradient-to-br from-ai/20 to-emerald-500/20 rounded-xl">
+          <SvgIcon
+            icon="trending-up"
+            :size="24"
+            class="text-ai"
+          />
+        </div>
+        <h2 class="text-xl font-bold text-white">
+          战斗趋势分析
+        </h2>
       </div>
       <div class="flex items-center gap-2">
         <BaseSelect
@@ -25,24 +33,82 @@
         </BaseButton>
       </div>
     </div>
-    <div v-if="loading" class="h-48 bg-neutral-card-active/50 rounded-xl animate-pulse" />
-    <div v-else-if="data" class="space-y-4">
+    <div
+      v-if="loading"
+      class="h-48 bg-neutral-card-active/50 rounded-xl animate-pulse"
+    />
+    <div
+      v-else-if="data"
+      class="space-y-4"
+    >
       <!-- 趋势图表 -->
-      <div v-if="hasTimeSeries" class="bg-neutral-card-active/50 rounded-xl p-4 border border-neutral-border">
-        <v-chart class="w-full h-64" :option="chartOption" autoresize />
+      <div
+        v-if="hasTimeSeries"
+        class="bg-neutral-card-active/50 rounded-xl p-4 border border-neutral-border"
+      >
+        <v-chart
+          class="w-full h-64"
+          :option="chartOption"
+          autoresize
+        />
       </div>
       <div class="grid grid-cols-2 gap-4">
-        <div class="p-4 bg-neutral-card-active/50 rounded-xl"><p class="text-sm text-neutral-text-tertiary">数据点数</p><p class="text-2xl font-bold text-white">{{ data.data_points || 0 }}</p></div>
-        <div class="p-4 bg-neutral-card-active/50 rounded-xl"><p class="text-sm text-neutral-text-tertiary">总伤害</p><p class="text-2xl font-bold text-primary">{{ formatNumber(data.total_damage) }}</p></div>
-        <div class="p-4 bg-neutral-card-active/50 rounded-xl"><p class="text-sm text-neutral-text-tertiary">击杀/死亡</p><p class="text-2xl font-bold text-ai">{{ data.total_kills || 0 }}</p></div>
-        <div class="p-4 bg-neutral-card-active/50 rounded-xl"><p class="text-sm text-neutral-text-tertiary">趋势</p><p class="text-2xl font-bold" :class="trendClass">{{ data.trend || '未知' }}</p></div>
+        <div class="p-4 bg-neutral-card-active/50 rounded-xl">
+          <p class="text-sm text-neutral-text-tertiary">
+            数据点数
+          </p><p class="text-2xl font-bold text-white">
+            {{ data.data_points || 0 }}
+          </p>
+        </div>
+        <div class="p-4 bg-neutral-card-active/50 rounded-xl">
+          <p class="text-sm text-neutral-text-tertiary">
+            总伤害
+          </p><p class="text-2xl font-bold text-primary">
+            {{ formatNumber(data.total_damage) }}
+          </p>
+        </div>
+        <div class="p-4 bg-neutral-card-active/50 rounded-xl">
+          <p class="text-sm text-neutral-text-tertiary">
+            击杀/死亡
+          </p><p class="text-2xl font-bold text-ai">
+            {{ data.total_kills || 0 }}
+          </p>
+        </div>
+        <div class="p-4 bg-neutral-card-active/50 rounded-xl">
+          <p class="text-sm text-neutral-text-tertiary">
+            趋势
+          </p><p
+            class="text-2xl font-bold"
+            :class="trendClass"
+          >
+            {{ data.trend || '未知' }}
+          </p>
+        </div>
       </div>
-      <div v-if="data.insights?.length" class="p-4 bg-neutral-card-active/50 rounded-xl">
-        <p class="text-sm text-neutral-text-tertiary mb-2">关键洞察</p>
-        <p v-for="(insight, i) in data.insights.slice(0, 3)" :key="i" class="text-sm text-neutral-text-secondary mb-1">{{ insight }}</p>
+      <div
+        v-if="data.insights?.length"
+        class="p-4 bg-neutral-card-active/50 rounded-xl"
+      >
+        <p class="text-sm text-neutral-text-tertiary mb-2">
+          关键洞察
+        </p>
+        <p
+          v-for="(insight, i) in data.insights.slice(0, 3)"
+          :key="i"
+          class="text-sm text-neutral-text-secondary mb-1"
+        >
+          {{ insight }}
+        </p>
       </div>
     </div>
-    <div v-else class="text-center py-8"><p class="text-neutral-text-tertiary">暂无趋势数据</p></div>
+    <div
+      v-else
+      class="text-center py-8"
+    >
+      <p class="text-neutral-text-tertiary">
+        暂无趋势数据
+      </p>
+    </div>
   </div>
 </template>
 

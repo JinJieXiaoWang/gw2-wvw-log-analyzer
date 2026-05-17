@@ -233,6 +233,17 @@ class ProfessionService:
         ).first()
         if not spec:
             return False
+        
+        # 校验角色定位合理性
+        from app.config.profession_role_validation import check_role_conflict
+        conflict = check_role_conflict(spec_key, role_key)
+        if conflict:
+            logger.warning(
+                f"[角色定位校验] 精英特长 {spec_key} 被设置为非推荐定位: "
+                f"当前={conflict['current_role_label']}, "
+                f"推荐={conflict['recommended_role_label']}"
+            )
+        
         spec.role_type = role_key
         self.db.commit()
         logger.info(f"更新精英特长 {spec_key} 的角色定位为 {role_key}")

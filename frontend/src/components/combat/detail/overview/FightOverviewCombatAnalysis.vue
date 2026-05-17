@@ -66,20 +66,23 @@ import FightPlayerStatsTable from '@/components/combat/detail/tables/FightPlayer
 import type { EiAnalysisPlayer } from '@/services/ei/eiAnalysisService'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
 import { computed, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const SECTION_TITLES = {
-  COMBAT_ANALYSIS: '战斗统计',
+  COMBAT_ANALYSIS: t('tactical.combatAnalysis.title'),
 } as const
 
 const UI_LABELS = {
-  COLLAPSE: '收起',
-  EXPAND: '展开',
+  COLLAPSE: t('tactical.combatAnalysis.collapse'),
+  EXPAND: t('tactical.combatAnalysis.expand'),
 } as const
 
 const DAMAGE_LABELS = {
-  POWER_DAMAGE: '直伤总量',
-  CONDI_DAMAGE: '症状总量',
-  BREAKBAR_DAMAGE: '破甲总量',
+  POWER_DAMAGE: t('tactical.combatAnalysis.powerDamage'),
+  CONDI_DAMAGE: t('tactical.combatAnalysis.condiDamage'),
+  BREAKBAR_DAMAGE: t('tactical.combatAnalysis.breakbarDamage'),
 } as const
 
 const props = defineProps<{

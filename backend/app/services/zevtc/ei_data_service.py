@@ -54,6 +54,16 @@ def insert_ei_players(db: Session, log_id: int, ei_json: Dict[str, Any]):
         db.flush()
 
 
+def _extract_skill_id_from_key(sk_key: str) -> int:
+    """从技能键（如 s12345 或 s-2）提取技能ID"""
+    if sk_key.startswith("s"):
+        try:
+            return int(sk_key[1:])
+        except ValueError:
+            pass
+    return 0
+
+
 def insert_skill_maps(db: Session, log_id: int, ei_json: Dict[str, Any]):
     """插入/更新 EiSkillMap（技能映射，name 去除双引号）
     【优化】使 bulk_insert_mappings 绕过 ORM 跟踪，降低内存峰值
@@ -68,14 +78,13 @@ def insert_skill_maps(db: Session, log_id: int, ei_json: Dict[str, Any]):
         name = sk.get("name", "")
         if isinstance(name, str):
             name = name.strip('"')
+        gw2_skill_id = sk.get("gw2_skill_id")
+        if not gw2_skill_id:
+            gw2_skill_id = _extract_skill_id_from_key(sk_key)
         mappings.append({
             "log_id": log_id,
             "skill_key": sk_key,
-            "gw2_skill_id": (
-                sk.get("gw2_skill_id", 0) or int(sk_key.lstrip("s"))
-                if sk_key.startswith("s") and sk_key[1:].isdigit()
-                else 0
-            ),
+            "gw2_skill_id": gw2_skill_id,
             "name": name,
             "auto_attack": 1 if sk.get("autoAttack") else 0,
             "can_crit": 1 if sk.get("canCrit") else 0,

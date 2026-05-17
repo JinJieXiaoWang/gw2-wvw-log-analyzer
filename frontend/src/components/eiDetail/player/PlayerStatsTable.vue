@@ -17,17 +17,39 @@
       <table>
         <thead>
           <tr>
-            <th class="rank-col">#</th>
-            <th class="player-col">玩家</th>
-            <th class="prof-col">职业</th>
-            <th class="score-col">评分</th>
-            <th class="dmg-col">总伤害</th>
-            <th class="dps-col">DPS</th>
-            <th class="power-col">直伤</th>
-            <th class="condi-col">症状</th>
-            <th class="cc-col">CC</th>
-            <th class="down-col">倒地</th>
-            <th class="death-col">死亡</th>
+            <th class="rank-col">
+              #
+            </th>
+            <th class="player-col">
+              玩家
+            </th>
+            <th class="prof-col">
+              职业
+            </th>
+            <th class="score-col">
+              评分
+            </th>
+            <th class="dmg-col">
+              总伤害
+            </th>
+            <th class="dps-col">
+              DPS
+            </th>
+            <th class="power-col">
+              直伤
+            </th>
+            <th class="condi-col">
+              症状
+            </th>
+            <th class="cc-col">
+              CC
+            </th>
+            <th class="down-col">
+              倒地
+            </th>
+            <th class="death-col">
+              死亡
+            </th>
             <th class="actions-col" />
           </tr>
         </thead>

@@ -6,11 +6,22 @@
         {{ PLAYER_HEALING_DETAIL_TITLE }}
       </h3>
       <div class="table-controls">
-        <select v-model="sortByModel" class="sort-dropdown">
-          <option value="healing">{{ SORT_OPTION_HEALING }}</option>
-          <option value="barrier">{{ SORT_OPTION_BARRIER }}</option>
-          <option value="hps">{{ SORT_OPTION_HPS }}</option>
-          <option value="overheal">{{ SORT_OPTION_OVERHEAL }}</option>
+        <select
+          v-model="sortByModel"
+          class="sort-dropdown"
+        >
+          <option value="healing">
+            {{ SORT_OPTION_HEALING }}
+          </option>
+          <option value="barrier">
+            {{ SORT_OPTION_BARRIER }}
+          </option>
+          <option value="hps">
+            {{ SORT_OPTION_HPS }}
+          </option>
+          <option value="overheal">
+            {{ SORT_OPTION_OVERHEAL }}
+          </option>
         </select>
       </div>
     </div>

@@ -112,10 +112,38 @@ def get_account_attendance_list(
     skip = (page - 1) * page_size
     results = query.offset(skip).limit(page_size).all()
 
+    # 批量获取每个账号的最常用职业（仅1次查询）
+    accounts = [r.account for r in results]
+    primary_prof_map: Dict[str, str] = {}
+    if accounts:
+        prof_count = func.count().label("prof_cnt")
+        prof_rows = (
+            db.query(
+                FightStats.account,
+                FightStats.profession,
+                prof_count,
+            )
+            .join(Fight, FightStats.fight_id == Fight.id)
+            .filter(FightStats.account.in_(accounts))
+            .group_by(FightStats.account, FightStats.profession)
+            .order_by(FightStats.account, prof_count.desc())
+            .all()
+        )
+        for acc, prof, cnt in prof_rows:
+            if acc not in primary_prof_map:
+                primary_prof_map[acc] = prof
+
+    # 批量查询职业中文名
+    all_prof_keys = list(set(v for v in primary_prof_map.values() if v))
+    prof_name_map = _batch_get_spec_names(db, all_prof_keys)
+
     items = []
     for r in results:
         kills = int(r.total_kills or 0)
         deaths = int(r.total_deaths or 0)
+        avg_score = round(float(r.avg_score), 2) if r.avg_score else 0
+        primary_prof = primary_prof_map.get(r.account)
+        primary_prof_cn = prof_name_map.get(primary_prof, primary_prof) if primary_prof else None
         items.append(
             {
                 "account": r.account,
@@ -127,7 +155,9 @@ def get_account_attendance_list(
                 "total_kills": kills,
                 "total_deaths": deaths,
                 "kd_ratio": round(kills / max(deaths, 1), 2),
-                "avg_score": round(float(r.avg_score), 2) if r.avg_score else 0,
+                "avg_score": avg_score,
+                "score_grade": _get_score_grade(avg_score),
+                "primary_profession": primary_prof_cn,
                 "last_attendance": (
                     r.last_attendance.isoformat() if r.last_attendance else None
                 ),
@@ -135,6 +165,51 @@ def get_account_attendance_list(
         )
 
     return items, total
+
+
+def _get_score_grade(score: float) -> str:
+    """根据分数返回评分等级"""
+    if score >= 90:
+        return "S"
+    elif score >= 80:
+        return "A"
+    elif score >= 70:
+        return "B"
+    elif score >= 60:
+        return "C"
+    else:
+        return "D"
+
+
+def _batch_get_spec_names(db: Session, spec_keys: List[str]) -> Dict[str, str]:
+    """批量查询精英特长中文名称
+    
+    Returns:
+        {spec_key: spec_name} 映射字典，未找到的保留原 key
+    """
+    if not spec_keys:
+        return {}
+    from app.models.game.profession import GwEliteSpecialization
+    unique_keys = list(set(k for k in spec_keys if k))
+    rows = (
+        db.query(GwEliteSpecialization.spec_key, GwEliteSpecialization.spec_name)
+        .filter(GwEliteSpecialization.spec_key.in_(unique_keys))
+        .all()
+    )
+    name_map = {row.spec_key: row.spec_name for row in rows}
+    # 未找到的尝试作为基础职业查询
+    missing = [k for k in unique_keys if k not in name_map]
+    if missing:
+        from app.models.game.profession import GwProfession
+        prof_rows = (
+            db.query(GwProfession.profession_key, GwProfession.profession_name)
+            .filter(GwProfession.profession_key.in_(missing))
+            .all()
+        )
+        for row in prof_rows:
+            name_map[row.profession_key] = row.profession_name
+    # 对于仍未找到的，保留原 key
+    return {k: name_map.get(k, k) for k in spec_keys if k}
 
 
 def get_account_detail(
@@ -290,6 +365,19 @@ def get_account_detail(
             }
         )
 
+    # 批量查询所有角色和战斗记录中的职业中文名
+    all_prof_keys = list(set(
+        [c["profession"] for c in character_list if c.get("profession")]
+        + [rf.profession for rf in recent_fights if rf.profession]
+    ))
+    prof_name_map = _batch_get_spec_names(db, all_prof_keys)
+
+    # 为角色数据和战斗记录添加中文职业名，同时保留英文 key
+    for char in character_list:
+        if char.get("profession"):
+            char["profession_en"] = char["profession"]
+            char["profession"] = prof_name_map.get(char["profession"], char["profession"])
+
     # 组装最近战斗记录
     recent_records = []
     for rf in recent_fights:
@@ -301,7 +389,8 @@ def get_account_detail(
                 "fight_date": rf.start_time.isoformat() if rf.start_time else None,
                 "duration_sec": rf.duration_sec or 0,
                 "character_name": rf.character_name,
-                "profession": rf.profession,
+                "profession_en": rf.profession,
+                "profession": prof_name_map.get(rf.profession, rf.profession) if rf.profession else None,
                 "damage": rf.damage or 0,
                 "dps": rf.dps or 0,
                 "downed": rf.downed or 0,
@@ -321,18 +410,27 @@ def get_account_detail(
 
     total_kills = int(summary.total_kills or 0)
     total_deaths = int(summary.total_deaths or 0)
-    
-    # 计算综合能力评分
-    comprehensive_abilities = _calculate_comprehensive_abilities(
-        db, account_name, character_list, start_date, end_date
+
+    # 为每个角色计算独立评分与综合能力
+    from app.services.zevtc.attendance_character_service import (
+        calculate_character_abilities,
+        get_daily_fights,
     )
+
+    for char in character_list:
+        char["score_grade"] = _get_score_grade(char.get("avg_score", 0))
+        char["comprehensive_abilities"] = calculate_character_abilities(
+            db, account_name, char["character_name"], char["profession"], start_date, end_date
+        )
+
+    # 按日期分组的战斗记录
+    daily_fights = get_daily_fights(db, account_name, start_date, end_date)
 
     return {
         "account": account_name,
         "guild_tag": member.guild_tag if member else None,
         "join_date": member.join_date.isoformat() if member and member.join_date else None,
         "summary": {
-            # 账号维度：按自然日去重（当天多角色只计 1 次）
             "attendance_count": int(summary.attendance_count or 0),
             "total_duration_sec": int(summary.total_duration_sec or 0),
             "total_damage": int(summary.total_damage or 0),
@@ -340,7 +438,6 @@ def get_account_detail(
             "total_kills": total_kills,
             "total_deaths": total_deaths,
             "kd_ratio": round(total_kills / max(total_deaths, 1), 2),
-            "avg_score": round(float(summary.avg_score), 2) if summary.avg_score else 0,
             "last_attendance": (
                 summary.last_attendance.isoformat()
                 if summary.last_attendance
@@ -349,196 +446,8 @@ def get_account_detail(
         },
         "characters": character_list,
         "character_count": len(character_list),
-        "recent_fights": recent_records,
-        "comprehensive_abilities": comprehensive_abilities,
+        "daily_fights": daily_fights,
     }
-
-
-def _calculate_comprehensive_abilities(
-    db: Session,
-    account_name: str,
-    character_list: List[Dict[str, Any]],
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
-) -> Dict[str, float]:
-    """基于评分规则计算综合能力评分
-    
-    计算6个维度的能力评分：
-    - damage: 伤害能力
-    - downed: 击倒能力
-    - survival: 生存能力
-    - support: 支援能力
-    - utility: 功能能力
-    - mobility: 机动能力
-    """
-    from app.services.wvw.scoring_service import ScoringService
-    
-    # 默认能力值
-    default_abilities = {
-        "damage": 70.0,
-        "downed": 60.0,
-        "survival": 65.0,
-        "support": 55.0,
-        "utility": 60.0,
-        "mobility": 65.0,
-    }
-    
-    if not character_list:
-        return default_abilities
-    
-    # 获取最常用的职业来确定角色定位
-    most_used_profession = None
-    max_attendance = 0
-    for char in character_list:
-        if char["attendance_count"] > max_attendance:
-            max_attendance = char["attendance_count"]
-            most_used_profession = char["profession"]
-    
-    # 获取该职业的评分规则
-    if most_used_profession:
-        try:
-            rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
-        except Exception:
-            # 如果找不到对应职业规则，使用dps规则
-            rules = ScoringService.get_scoring_rules(db, "dps")
-    else:
-        rules = ScoringService.get_scoring_rules(db, "dps")
-    
-    # 查询该账号在统计周期内的所有战斗数据
-    query = (
-        db.query(FightStats)
-        .join(Fight, FightStats.fight_id == Fight.id)
-        .filter(FightStats.account == account_name)
-    )
-    
-    if start_date:
-        query = query.filter(Fight.start_time >= start_date)
-    if end_date:
-        query = query.filter(Fight.start_time < end_date)
-    
-    stats_list = query.all()
-    
-    if not stats_list:
-        return default_abilities
-    
-    # 聚合统计数据
-    total_damage = 0.0
-    total_healing = 0.0
-    total_damage_taken = 0.0
-    total_boon_strips = 0.0
-    total_cleanses = 0.0
-    total_interrupts = 0.0
-    total_dodge_count = 0.0
-    total_dead_count = 0.0
-    total_fights = len(stats_list)
-    
-    avg_might = 0.0
-    avg_fury = 0.0
-    avg_quickness = 0.0
-    avg_alacrity = 0.0
-    avg_protection = 0.0
-    avg_stability = 0.0
-    
-    for stat in stats_list:
-        total_damage += float(stat.damage or 0)
-        total_healing += float(stat.healing or 0)
-        total_damage_taken += float(stat.damage_taken or 0)
-        total_boon_strips += float(stat.boon_strips or 0)
-        total_cleanses += float(stat.condition_cleanses or 0)
-        total_interrupts += float(stat.interrupts or 0)
-        total_dodge_count += float(stat.dodge_count or 0)
-        total_dead_count += float(stat.dead_count or 0)
-        
-        avg_might += float(stat.might_uptime or 0)
-        avg_fury += float(stat.fury_uptime or 0)
-        avg_quickness += float(stat.quickness_uptime or 0)
-        avg_alacrity += float(stat.alacrity_uptime or 0)
-        avg_protection += float(stat.protection_uptime or 0)
-        avg_stability += float(stat.stability_uptime or 0)
-    
-    # 计算平均值
-    avg_might = avg_might / total_fights if total_fights > 0 else 0
-    avg_fury = avg_fury / total_fights if total_fights > 0 else 0
-    avg_quickness = avg_quickness / total_fights if total_fights > 0 else 0
-    avg_alacrity = avg_alacrity / total_fights if total_fights > 0 else 0
-    avg_protection = avg_protection / total_fights if total_fights > 0 else 0
-    avg_stability = avg_stability / total_fights if total_fights > 0 else 0
-    
-    # 计算各维度评分
-    # 伤害能力：基于伤害值和buff覆盖
-    damage_score = min(100.0, max(30.0, (total_damage / max(total_fights * 500000, 1)) * 100))
-    damage_score = 0.7 * damage_score + 0.3 * ((avg_might + avg_fury) / 2)
-    
-    # 治疗能力：基于治疗值
-    healing_score = min(100.0, max(30.0, (total_healing / max(total_fights * 200000, 1)) * 100))
-    
-    # 生存能力：基于死亡次数、承伤、保护buff覆盖
-    survival_death_penalty = (total_dead_count / max(total_fights * 2, 1)) * 50
-    survival_score = 100 - survival_death_penalty
-    survival_score = 0.6 * survival_score + 0.4 * avg_protection
-    survival_score = min(100.0, max(30.0, survival_score))
-    
-    # 支援能力：基于增益覆盖和治疗
-    support_buffs = (avg_quickness + avg_alacrity + avg_might + avg_fury) / 4
-    support_score = 0.5 * support_buffs + 0.3 * healing_score + 0.2 * (total_boon_strips / max(total_fights * 20, 1) * 100)
-    support_score = min(100.0, max(30.0, support_score))
-    
-    # 功能能力：基于打断、净化、增益清除
-    utility_score = ((total_interrupts / max(total_fights * 5, 1)) * 33 + 
-                     (total_cleanses / max(total_fights * 20, 1)) * 33 +
-                     (total_boon_strips / max(total_fights * 20, 1)) * 34)
-    utility_score = min(100.0, max(30.0, utility_score))
-    
-    # 机动能力：基于闪避和稳定buff
-    mobility_score = (total_dodge_count / max(total_fights * 10, 1)) * 50 + avg_stability * 0.5
-    mobility_score = min(100.0, max(30.0, mobility_score))
-    
-    # 根据角色定位调整权重（从 JSON 配置加载）
-    from app.config.json_loader import load_json_config
-
-    role_type = _determine_role_type(most_used_profession, rules)
-    scoring_config = load_json_config("scoring_rules") or {}
-    adjustments = scoring_config.get("role_adjustments", {})
-    adj = adjustments.get(role_type, {})
-
-    if role_type == "support":
-        healing_score = min(100.0, healing_score * adj.get("healing_multiplier", 1.3))
-        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.3))
-        damage_score = damage_score * adj.get("damage_multiplier", 0.8)
-    elif role_type == "tank":
-        survival_score = min(100.0, survival_score * adj.get("survival_multiplier", 1.3))
-        support_score = min(100.0, support_score * adj.get("support_multiplier", 1.1))
-    elif role_type == "control":
-        utility_score = min(100.0, utility_score * adj.get("utility_multiplier", 1.3))
-    
-    return {
-        "damage": round(damage_score, 1),
-        "healing": round(healing_score, 1),
-        "survival": round(survival_score, 1),
-        "support": round(support_score, 1),
-        "utility": round(utility_score, 1),
-        "mobility": round(mobility_score, 1),
-    }
-
-
-def _determine_role_type(profession: Optional[str], rules: Dict[str, Any]) -> str:
-    """根据职业和评分规则确定角色类型"""
-    if not profession:
-        return "dps"
-
-    # 优先从游戏数据获取角色类型
-    from app.services.game.game_data_service import GameDataService
-    game_data = GameDataService()
-    role_type = game_data.get_role_type(profession)
-
-    # 根据评分规则权重微调
-    if rules.get("healing_weight", 0) > 0.15 and role_type != "support":
-        return "support"
-    elif rules.get("survival_weight", 0) > 0.15 and role_type not in ("tank", "control"):
-        return "tank"
-
-    return role_type
-
 
 def get_character_detail(
     db: Session,
@@ -701,6 +610,10 @@ def get_character_detail(
     return items, total, summary
 
 
+# 从 attendance_score_service 重新导出，避免路由层调用失败
+from app.services.zevtc.attendance_score_service import get_account_score_breakdown
+
+
 def get_distinct_servers(db: Session) -> List[str]:
     """获取所有出现过的服务器名称（用于筛选下拉框）"""
     results = (
@@ -737,104 +650,3 @@ def get_distinct_professions(db: Session) -> List[str]:
     return [r[0] for r in results if r[0]]
 
 
-def get_account_score_breakdown(
-    db: Session,
-    account_name: str,
-    start_date: Optional[datetime] = None,
-    end_date: Optional[datetime] = None,
-) -> Optional[Dict[str, Any]]:
-    """获取账号的评分维度明细（用于前端模态框展示）
-
-    严格依据 scoring_rule 表中当前启用的维度配置进行展示，
-    将该账号在统计周期内所有 fight_stats 的 score_breakdown 按维度求平均值。
-    """
-    from app.services.wvw.scoring_service import ScoringService
-    from app.utils.db.dict_utils import get_dict_label
-
-    # 查询该账号的所有 FightStats（带日期筛选）
-    query = (
-        db.query(FightStats)
-        .join(Fight, FightStats.fight_id == Fight.id)
-        .filter(FightStats.account == account_name)
-    )
-    if start_date:
-        query = query.filter(Fight.start_time >= start_date)
-    if end_date:
-        query = query.filter(Fight.start_time < end_date)
-
-    stats_list = query.all()
-    if not stats_list:
-        return None
-
-    # 获取最常用职业和角色类型
-    most_used_profession = _get_most_used_profession(stats_list)
-    role_type = "dps"
-    if most_used_profession:
-        try:
-            rules = ScoringService.get_scoring_rules(db, most_used_profession.lower())
-            role_type = _determine_role_type(most_used_profession, rules)
-        except Exception:
-            rules = ScoringService.get_scoring_rules(db, "dps")
-    else:
-        rules = ScoringService.get_scoring_rules(db, "dps")
-
-    # 按维度聚合
-    total_score_sum = 0.0
-    dimension_values: Dict[str, List[float]] = {}
-
-    for stat in stats_list:
-        total_score_sum += float(stat.ai_score or 0)
-        if stat.score_breakdown:
-            for dim, score in stat.score_breakdown.items():
-                dimension_values.setdefault(dim, []).append(float(score))
-
-    if not dimension_values:
-        return None
-
-    # 构建维度详情
-    dimensions = {}
-    for dim, values in sorted(dimension_values.items()):
-        avg_score = round(sum(values) / len(values), 2)
-        weight = rules.get(f"{dim}_weight", 0)
-        dimensions[dim] = {
-            "score": avg_score,
-            "weight": weight,
-            "label": get_dict_label("scoring_dimension", dim) or dim,
-            "weighted_score": round(avg_score * weight, 2),
-        }
-
-    total_fights = len(stats_list)
-    avg_total_score = round(total_score_sum / total_fights, 2) if total_fights > 0 else 0
-
-    # 角色类型标签映射
-    role_labels = {
-        "dps": "伤害输出",
-        "support": "辅助治疗",
-        "tank": "坦克承伤",
-        "control": "控制",
-    }
-
-    return {
-        "account": account_name,
-        "total_fights": total_fights,
-        "avg_total_score": avg_total_score,
-        "avg_grade": ScoringService.get_grade(avg_total_score),
-        "dimensions": dimensions,
-        "most_used_profession": most_used_profession,
-        "role_type": role_type,
-        "role_label": role_labels.get(role_type, "伤害输出"),
-    }
-
-
-def _get_most_used_profession(stats_list: List[Any]) -> Optional[str]:
-    """从战斗记录中获取最常用的职业"""
-    profession_count: Dict[str, int] = {}
-    for stat in stats_list:
-        if stat.profession:
-            profession_count[stat.profession] = profession_count.get(stat.profession, 0) + 1
-    
-    if not profession_count:
-        return None
-    
-    # 返回出现次数最多的职业
-    return max(profession_count.items(), key=lambda x: x[1])[0]

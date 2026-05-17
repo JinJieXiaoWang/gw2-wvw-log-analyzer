@@ -13,8 +13,6 @@ from sqlalchemy.orm import Session
 
 from app.models.log.fight_stats import FightStats
 from app.models.auth.member import Member
-from app.utils.cache import cache_result
-
 
 def get_member_by_id(db: Session, member_id: int) -> Optional[Member]:
     """根据ID获取成员"""
@@ -70,7 +68,6 @@ def get_member_stats(db: Session, member_id: int) -> dict:
     }
 
 
-@cache_result(ttl=300)
 def get_member_ranking(
     db: Session, skip: int = 0, limit: int = 20, sort_by: str = "total_damage"
 ) -> List[dict]:

@@ -6,7 +6,9 @@
         class="player-avatar-lg"
       >
       <div class="player-main-info">
-        <h3 class="player-name-lg">{{ player.name }}</h3>
+        <h3 class="player-name-lg">
+          {{ player.name }}
+        </h3>
         <span
           class="profession-tag"
           :style="{ backgroundColor: getProfessionColor(player.profession) }"
@@ -15,7 +17,10 @@
         </span>
       </div>
     </div>
-    <button class="close-btn" @click="$emit('close')">
+    <button
+      class="close-btn"
+      @click="$emit('close')"
+    >
       <i class="pi pi-times" />
     </button>
   </div>

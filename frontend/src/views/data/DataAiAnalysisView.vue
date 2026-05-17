@@ -2,9 +2,15 @@
   <div class="min-h-screen bg-gradient-to-br from-neutral-bg via-slate-950 to-neutral-bg relative overflow-hidden">
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
       <!-- 动态值，无法使用 Tailwind 静态类 -->
-      <div class="absolute top-0 left-1/4 bg-primary/8 rounded-full blur-3xl animate-pulse-slow" :style="decoStyle" />
+      <div
+        class="absolute top-0 left-1/4 bg-primary/8 rounded-full blur-3xl animate-pulse-slow"
+        :style="decoStyle"
+      />
       <!-- 动态值，无法使用 Tailwind 静态类 -->
-      <div class="absolute bottom-0 right-1/4 bg-purple-600/8 rounded-full blur-3xl animate-pulse-slow" :style="decoStyleDelayed" />
+      <div
+        class="absolute bottom-0 right-1/4 bg-purple-600/8 rounded-full blur-3xl animate-pulse-slow"
+        :style="decoStyleDelayed"
+      />
       <div class="absolute inset-0 opacity-[0.02] bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[length:50px_50px]" />
     </div>
     <div class="relative z-10 p-4 md:p-6 lg:p-8">
@@ -22,17 +28,25 @@
         @test-connection="testConnection"
       />
 
-      <div v-if="showConfig" class="bg-neutral-card/50 backdrop-blur-sm rounded-2xl border border-neutral-border p-6 lg:p-8 mb-6">
+      <div
+        v-if="showConfig"
+        class="bg-neutral-card/50 backdrop-blur-sm rounded-2xl border border-neutral-border p-6 lg:p-8 mb-6"
+      >
         <AiConfigPanel @config-updated="handleConfigUpdated" />
       </div>
 
       <div class="flex items-center gap-1 mb-6 overflow-x-auto pb-1 scrollbar-hide">
-        <button v-for="tab in ANALYSIS_TABS" :key="tab.key"
-          @click="activeAnalysisTab = tab.key"
+        <button
+          v-for="tab in ANALYSIS_TABS"
+          :key="tab.key"
           class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-all"
           :class="activeAnalysisTab === tab.key ? 'bg-primary/20 text-primary border border-primary/30' : 'text-neutral-text-secondary hover:text-white hover:bg-neutral-card-active'"
+          @click="activeAnalysisTab = tab.key"
         >
-          <SvgIcon :icon="tab.icon" :size="16" />
+          <SvgIcon
+            :icon="tab.icon"
+            :size="16"
+          />
           {{ tab.label }}
         </button>
       </div>
@@ -123,9 +137,21 @@
       />
     </div>
 
-    <AiReportDetailModal v-if="selectedReport" :report="selectedReport" @close="selectedReport = null" />
-    <AiAnalyzingModal v-if="analyzing" :title="analyzingTitle" :message="analyzingMessage" :progress="analyzingProgress" />
-    <AiNotificationToast v-bind="notification" @close="notification.show = false" />
+    <AiReportDetailModal
+      v-if="selectedReport"
+      :report="selectedReport"
+      @close="selectedReport = null"
+    />
+    <AiAnalyzingModal
+      v-if="analyzing"
+      :title="analyzingTitle"
+      :message="analyzingMessage"
+      :progress="analyzingProgress"
+    />
+    <AiNotificationToast
+      v-bind="notification"
+      @close="notification.show = false"
+    />
   </div>
 </template>
 

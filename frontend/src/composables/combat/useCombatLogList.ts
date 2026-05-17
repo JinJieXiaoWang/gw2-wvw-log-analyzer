@@ -2,6 +2,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useToast } from 'primevue/usetoast'
 import { usePagination } from '@/composables/common/usePagination'
+import { useAuthGuard } from '@/composables/useAuthGuard'
 import { logsService } from '@/services'
 import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { formatDate } from '@/utils/core/helpers'
@@ -23,6 +24,7 @@ const STATUS_TEXT_MAP: Record<string, string> = {
 export function useCombatLogList() {
   const router = useRouter()
   const toast = useToast()
+  const { requireAuth } = useAuthGuard()
 
   const isLoading = ref(false)
   const selectedLogs = ref<LogFile[]>([])
@@ -105,6 +107,7 @@ export function useCombatLogList() {
   function handleUploadSuccess() { fetchLogs() }
 
   async function startBatchParse() {
+    if (!requireAuth()) return
     if (selectedLogs.value.length === 0) {
       toast.add({ severity: 'warn', summary: '提示', detail: '请先选择要解析的日志文件', life: configManager.get('ui').toastLife })
       return
@@ -161,6 +164,7 @@ export function useCombatLogList() {
   function viewLogDetail(log: LogFile) { router.push(`/logs/${log.id}`) }
 
   async function parseLog(log: LogFile) {
+    if (!requireAuth()) return
     const logId = Number(log.id)
     if (parseProgressMap.value.has(logId)) {
       toast.add({ severity: 'warn', summary: '解析中', detail: `${log.fileName} 正在解析中，请勿重复操作`, life: configManager.get('ui').toastLife })
@@ -181,9 +185,13 @@ export function useCombatLogList() {
     }
   }
 
-  function confirmDeleteLog(log: LogFile) { logToDelete.value = log; showDeleteDialog.value = true }
+  function confirmDeleteLog(log: LogFile) {
+    if (!requireAuth()) return
+    logToDelete.value = log; showDeleteDialog.value = true
+  }
 
   async function deleteLog() {
+    if (!requireAuth()) return
     if (!logToDelete.value) return
     const result = await ApiResponseWrapper.wrap(
       logsService.deleteLog(Number(logToDelete.value.id)),

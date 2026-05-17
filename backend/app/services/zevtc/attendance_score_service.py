@@ -16,13 +16,17 @@ from app.models.log.fight_stats import FightStats
 def get_account_score_breakdown(
     db: Session,
     account_name: str,
+    profession: Optional[str] = None,
     start_date: Optional[datetime] = None,
     end_date: Optional[datetime] = None,
 ) -> Optional[Dict[str, Any]]:
     """获取账号的评分维度明细（用于前端模态框展示）
     严格依据 scoring_rule 表中当前启用的维度配置进行展示，
     将该账号在统计周期内所有 fight_stats 中的 score_breakdown 按维度求平均值
-    根据该账号最常用的职业确定角色类型和规则配置    """
+    
+    Args:
+        profession: 指定职业（精英特长英文名），为 None 时自动计算最常用职业
+    """
     from app.services.game.game_data_service import GameDataService
     from app.services.scoring.scoring_rule_service import ScoringRuleService
     from app.utils.db.dict_utils import get_dict_label
@@ -43,29 +47,40 @@ def get_account_score_breakdown(
     if not stats_list:
         return None
 
-    # 确定该账号最常用的职业和角色类型
-    profession_count: Dict[str, int] = {}
-    for stat in stats_list:
-        if stat.profession:
-            profession_count[stat.profession] = profession_count.get(stat.profession, 0) + 1
+    # 确定职业和角色类型
+    if profession:
+        # 指定了职业：直接使用该职业查询规则
+        target_profession = profession
+        # 从该职业的数据中重新过滤 stats_list（只保留该职业的数据）
+        stats_list = [s for s in stats_list if s.profession == profession]
+        if not stats_list:
+            return None
+    else:
+        # 未指定职业：计算最常用职业
+        profession_count: Dict[str, int] = {}
+        for stat in stats_list:
+            if stat.profession:
+                profession_count[stat.profession] = profession_count.get(stat.profession, 0) + 1
+        target_profession = max(profession_count.items(), key=lambda x: x[1])[0] if profession_count else None
 
-    # 获取最常用职业
-    most_used_profession = None
-    if profession_count:
-        most_used_profession = max(profession_count.items(), key=lambda x: x[1])[0]
-
-    # 确定角色类型
-    game_data = GameDataService()
-    role_type = game_data.get_role_type(most_used_profession) if most_used_profession else "dps"
+    # 确定角色类型 — 从数据库直接查询，避免 GameDataService 缓存数据不准
+    role_type = _get_role_type_from_db(db, target_profession) if target_profession else "dps"
 
     # 获取评分规则服务
     rule_service = ScoringRuleService(db)
     
-    # 获取评分规则
-    rules = ScoringService.get_scoring_rules(db, role_type, most_used_profession)
+    # 根据评分模式选择规则来源
+    scoring_mode = ScoringService._get_scoring_mode(db)
     
-    # 获取评分规则的维度详细信息（用于展示）
-    display_rules = rule_service.get_rules_for_profession(role_type, most_used_profession, active_only=True)
+    if scoring_mode == "profession_based" and target_profession:
+        # 职业评分模式：优先使用职业特定规则
+        rules = ScoringService.get_scoring_rules(db, role_type, target_profession)
+        display_rules = rule_service.get_rules_for_profession(role_type, target_profession, active_only=True)
+    else:
+        # 角色定位评分模式：强制使用通用规则
+        rules = ScoringService.get_scoring_rules(db, role_type, None)
+        display_rules = rule_service.get_rules_by_role(role_type, None, active_only=True)
+    
     display_rules_dict = {rule.dimension: rule for rule in display_rules}
 
     # 按维度聚集评分
@@ -81,7 +96,11 @@ def get_account_score_breakdown(
     if not dimension_values:
         return None
 
-    # 构建维度详情 - 优先使用规则中的维度和描述
+    # 获取通用规则的标准描述（用于统一显示效果）
+    generic_rules = rule_service.get_rules_by_role(role_type, None, active_only=True)
+    generic_desc_map = {rule.dimension: rule.description for rule in generic_rules if rule.description}
+
+    # 构建维度详情 - 使用通用规则的标准描述，确保职业特定规则与通用规则显示一致
     dimensions = {}
     
     # 首先添加规则中定义的维度
@@ -89,27 +108,22 @@ def get_account_score_breakdown(
         dim = rule.dimension
         values = dimension_values.get(dim, [])
         avg_score = round(sum(values) / len(values), 2) if values else 0
+        # 优先使用通用规则的标准描述，避免职业特定规则 description 格式不一致
+        standard_label = generic_desc_map.get(dim) or get_dict_label("scoring_dimension", dim) or rule.description or dim
         dimensions[dim] = {
             "score": avg_score,
             "weight": rule.weight,
-            "label": rule.description or get_dict_label("scoring_dimension", dim) or dim,
+            "label": standard_label,
             "weighted_score": round(avg_score * rule.weight, 2),
         }
     
-    # 添加其他可能存在但规则中未明确的维度
-    for dim, values in sorted(dimension_values.items()):
-        if dim not in dimensions:
-            avg_score = round(sum(values) / len(values), 2)
-            weight = rules.get(f"{dim}_weight", 0)
-            dimensions[dim] = {
-                "score": avg_score,
-                "weight": weight,
-                "label": get_dict_label("scoring_dimension", dim) or dim,
-                "weighted_score": round(avg_score * weight, 2),
-            }
+    # 严格只展示该角色类型评分规则中定义的维度
 
     total_fights = len(stats_list)
     avg_total_score = round(total_score_sum / total_fights, 2) if total_fights > 0 else 0
+
+    # 数据驱动的角色定位
+    data_role = _detect_role_by_data(stats_list)
 
     return {
         "account": account_name,
@@ -118,8 +132,86 @@ def get_account_score_breakdown(
         "avg_grade": ScoringService.get_grade(avg_total_score),
         "role_type": role_type,
         "role_label": rule_service.get_role_label(role_type),
-        "most_used_profession": most_used_profession,
+        "profession_role_type": role_type,
+        "profession_role_label": rule_service.get_role_label(role_type),
+        "data_role_type": data_role["role_type"],
+        "data_role_label": data_role["role_label"],
+        "data_role_reason": data_role["reason"],
+        "most_used_profession": target_profession,
+        "most_used_profession_cn": _get_profession_name(db, target_profession),
         "dimensions": dimensions,
+    }
+
+
+def _detect_role_by_data(stats_list: List[FightStats]) -> Dict[str, str]:
+    """根据实际战斗数据判定角色定位（数据驱动）
+    
+    判定逻辑：
+    - Support: 治疗量 > 0 且 (might_uptime > 50% 或 quickness_uptime > 30%)
+    - Tank: 承伤量 > 团队平均120% 且 死亡次数 <= 团队平均
+    - Control: 削增益次数 > 团队平均120% 或 清症次数 > 团队平均120%
+    - DPS: 以上都不是，但伤害量高
+    """
+    if not stats_list:
+        return {"role_type": "dps", "role_label": "输出", "reason": "无战斗数据"}
+
+    # 计算团队平均值（用于相对比较）
+    team_avg_damage = sum((s.damage or 0) for s in stats_list) / len(stats_list)
+    team_avg_healing = sum((s.healing or 0) for s in stats_list) / len(stats_list)
+    team_avg_damage_taken = sum((s.damage_taken or 0) for s in stats_list) / len(stats_list)
+    team_avg_boon_strips = sum((s.boon_strips or 0) for s in stats_list) / len(stats_list)
+    team_avg_cleanses = sum((s.condition_cleanses or 0) for s in stats_list) / len(stats_list)
+    team_avg_deaths = sum((s.dead_count or 0) for s in stats_list) / len(stats_list)
+
+    # 计算该账号的平均值
+    avg_healing = sum((s.healing or 0) for s in stats_list) / len(stats_list)
+    avg_might = sum(float(s.might_uptime or 0) for s in stats_list) / len(stats_list)
+    avg_quickness = sum(float(s.quickness_uptime or 0) for s in stats_list) / len(stats_list)
+    avg_damage_taken = sum((s.damage_taken or 0) for s in stats_list) / len(stats_list)
+    avg_boon_strips = sum((s.boon_strips or 0) for s in stats_list) / len(stats_list)
+    avg_cleanses = sum((s.condition_cleanses or 0) for s in stats_list) / len(stats_list)
+    avg_deaths = sum((s.dead_count or 0) for s in stats_list) / len(stats_list)
+    avg_damage = sum((s.damage or 0) for s in stats_list) / len(stats_list)
+
+    ROLE_LABELS = {"dps": "输出", "support": "辅助", "tank": "坦克", "control": "控制"}
+
+    # Support 判定：有治疗且增益覆盖高
+    if avg_healing > 0 and (avg_might > 50 or avg_quickness > 30):
+        return {
+            "role_type": "support",
+            "role_label": ROLE_LABELS["support"],
+            "reason": f"治疗量{avg_healing:.0f}，增益覆盖(Might:{avg_might:.0f}%/Quick:{avg_quickness:.0f}%)",
+        }
+
+    # Tank 判定：承伤高且生存能力强
+    if team_avg_damage_taken > 0 and avg_damage_taken > team_avg_damage_taken * 1.2:
+        if avg_deaths <= team_avg_deaths * 1.2:
+            return {
+                "role_type": "tank",
+                "role_label": ROLE_LABELS["tank"],
+                "reason": f"承伤量{avg_damage_taken:.0f}（团队均值{team_avg_damage_taken:.0f}的{avg_damage_taken/team_avg_damage_taken*100:.0f}%）",
+            }
+
+    # Control 判定：削增益或清症高
+    if team_avg_boon_strips > 0 and avg_boon_strips > team_avg_boon_strips * 1.2:
+        return {
+            "role_type": "control",
+            "role_label": ROLE_LABELS["control"],
+            "reason": f"削增益{avg_boon_strips:.0f}次（团队均值{team_avg_boon_strips:.0f}的{avg_boon_strips/team_avg_boon_strips*100:.0f}%）",
+        }
+    if team_avg_cleanses > 0 and avg_cleanses > team_avg_cleanses * 1.2:
+        return {
+            "role_type": "control",
+            "role_label": ROLE_LABELS["control"],
+            "reason": f"清症{avg_cleanses:.0f}次（团队均值{team_avg_cleanses:.0f}的{avg_cleanses/team_avg_cleanses*100:.0f}%）",
+        }
+
+    # 默认 DPS
+    damage_ratio = (avg_damage / team_avg_damage * 100) if team_avg_damage > 0 else 0
+    return {
+        "role_type": "dps",
+        "role_label": ROLE_LABELS["dps"],
+        "reason": f"伤害量{avg_damage:.0f}（团队均值的{damage_ratio:.0f}%）",
     }
 
 
@@ -137,30 +229,6 @@ def _get_default_abilities() -> Dict[str, float]:
             "mobility": 65,
         }
     return defaults.copy()
-
-
-def _get_profession_and_role_type(
-    stats_list: List[FightStats],
-) -> Tuple[Optional[str], str]:
-    """根据战斗统计数据确定最常用的职业和角色类型"""
-    from app.services.game.game_data_service import GameDataService
-
-    profession_count: Dict[str, int] = {}
-    for stat in stats_list:
-        if stat.profession:
-            profession_count[stat.profession] = profession_count.get(stat.profession, 0) + 1
-
-    most_used_profession = None
-    if profession_count:
-        most_used_profession = max(profession_count.items(), key=lambda x: x[1])[0]
-
-    game_data = GameDataService()
-    role_type = (
-        game_data.get_role_type(most_used_profession)
-        if most_used_profession
-        else "dps"
-    )
-    return most_used_profession, role_type
 
 
 def _calculate_damage_ability(
@@ -298,8 +366,9 @@ def _calculate_comprehensive_abilities(
     if not stats_list:
         return default_abilities
 
-    # 确定最常用的职业和角色类型
-    most_used_profession, role_type = _get_profession_and_role_type(stats_list)
+    # 确定最常用的职业和角色类型（使用统一角色定位服务）
+    from app.services.zevtc.role_type_service import get_profession_and_role_type
+    most_used_profession, role_type = get_profession_and_role_type(stats_list)
 
     # 计算累计数据
     total_damage = sum(float(s.damage or 0) for s in stats_list)
@@ -344,3 +413,31 @@ def _calculate_comprehensive_abilities(
     _apply_role_type_adjustments(abilities, role_type)
 
     return abilities
+
+
+def _get_profession_name(db: Session, profession_key: Optional[str]) -> Optional[str]:
+    """根据精英特长英文键获取中文名称"""
+    if not profession_key:
+        return None
+    from app.services.game.profession_service import ProfessionService
+    service = ProfessionService(db)
+    spec = service.get_spec_by_key(profession_key)
+    if spec:
+        return spec.get("spec_name") or profession_key
+    # 回退：尝试作为基础职业查询
+    prof = service.get_profession(profession_key)
+    return prof.get("profession_name") if prof else profession_key
+
+
+def _get_role_type_from_db(db: Session, profession_key: str) -> str:
+    """从数据库查询精英特长的角色定位，避免使用可能过时的缓存数据"""
+    from app.services.game.profession_service import ProfessionService
+    service = ProfessionService(db)
+    spec = service.get_spec_by_key(profession_key)
+    if spec:
+        return spec.get("role_type", "dps") or "dps"
+    # 回退：尝试从基础职业查询
+    prof = service.get_profession(profession_key)
+    if prof:
+        return prof.get("role_type", "dps") or "dps"
+    return "dps"

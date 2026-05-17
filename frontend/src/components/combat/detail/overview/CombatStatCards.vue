@@ -282,34 +282,37 @@
 import type { EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
 import DonutChart from '@/components/common/charts/DonutChart.vue'
 import { fmtCompact } from '@/composables/combat/useCombatHelpers'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // === 常量定义 ===
-const SECTION_TITLE = '战斗属性统计'
+const SECTION_TITLE = t('tactical.stats.title')
 
 const STAT_LABELS = {
-  DAMAGE_COMPOSITION: '伤害构成',
-  PROTECTION: '保护',
-  STABILITY: '稳固',
-  CLEANSES: '清症',
-  BOON_STRIPS: '削增益',
-  DAMAGE_TAKEN: '承伤',
-  HIT_RATE: '命中率',
-  DOWNED: '击倒',
-  SKILL_CAST_UPTIME: '施法占比',
-  STACK_DISTANCE: '堆叠距离',
-  COMMANDER_DISTANCE: '指挥距离',
+  DAMAGE_COMPOSITION: t('tactical.stats.damageComp'),
+  PROTECTION: t('tactical.stats.protection'),
+  STABILITY: t('tactical.stats.stability'),
+  CLEANSES: t('tactical.stats.condiCleanse'),
+  BOON_STRIPS: t('tactical.stats.boonStrip'),
+  DAMAGE_TAKEN: t('tactical.stats.damageTaken'),
+  HIT_RATE: t('tactical.stats.hitRate'),
+  DOWNED: t('tactical.stats.downed'),
+  SKILL_CAST_UPTIME: t('tactical.stats.castUptime'),
+  STACK_DISTANCE: t('tactical.stats.stackDist'),
+  COMMANDER_DISTANCE: t('tactical.stats.comDist'),
 } as const
 
 const STAT_DETAIL_TITLES = {
-  PROTECTION: '保护覆盖率',
-  STABILITY: '稳固覆盖率',
-  CLEANSES: '清症统计',
-  BOON_STRIPS: '削增益统计',
-  DAMAGE_TAKEN: '承伤统计',
-  HIT_RATE: '命中率统计',
-  CONTROL: '击倒控制统计',
-  EFFICIENCY: '技能效率统计',
-  POSITION: '位置协同统计',
+  PROTECTION: t('tactical.stats.protection'),
+  STABILITY: t('tactical.stats.stability'),
+  CLEANSES: t('tactical.stats.condiCleanse'),
+  BOON_STRIPS: t('tactical.stats.boonStrip'),
+  DAMAGE_TAKEN: t('tactical.stats.damageTaken'),
+  HIT_RATE: t('tactical.stats.hitRate'),
+  CONTROL: t('tactical.stats.downed'),
+  EFFICIENCY: t('tactical.stats.castUptime'),
+  POSITION: t('tactical.stats.stackDist'),
 } as const
 
 const SVG_CONFIG = {

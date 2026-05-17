@@ -40,6 +40,7 @@ from app.services.zevtc.fight_data_extractor import (
     extract_enemy_composition,
     resolve_friendly_team_id,
 )
+from app.constants.buffs import BUFF_ID_MAP
 from app.constants.dict_values import ParseStatus
 from app.utils.logger import logger
 
@@ -413,15 +414,6 @@ class LogImportService:
             # 注：EI JSON 中 buffUptimes 项使用 id 而非 name 标识增益，
             # 尤其在 detailed WvW 模式下 name 字段可能缺失。
             # 另外，uptime 可能位于 buffData[0].uptime 而非顶层。
-            BUFF_ID_MAP = {
-                725: "might",
-                726: "fury",
-                740: "quickness",
-                743: "alacrity",
-                717: "protection",
-                1122: "stability",
-            }
-
             def _extract_uptime(bu: dict) -> float:
                 """兼容多种 buffUptimes 结构提取 uptime。"""
                 # 方案1：顶层 uptime（常规 EI）

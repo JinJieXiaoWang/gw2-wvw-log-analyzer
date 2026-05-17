@@ -1,4 +1,3 @@
-import html2canvas from 'html2canvas'
 import { useSettingsStore } from '@/store/system/settings'
 
 export interface CaptureOptions {
@@ -11,7 +10,7 @@ export interface CaptureOptions {
   /** 自定义水印文字（优先级高于设置） */
   customWatermarkText?: string
   /** html2canvas 配置 */
-  canvasOptions?: Partial<Parameters<typeof html2canvas>[1]>
+  canvasOptions?: Record<string, any>
 }
 
 /**
@@ -30,7 +29,8 @@ export async function captureWithWatermark(options: CaptureOptions = {}): Promis
   const settingsStore = useSettingsStore()
   const settings = settingsStore.settings
 
-  // 1. 使用 html2canvas 截图
+  // 1. 动态导入 html2canvas（按需加载，减少初始包体积）
+  const { default: html2canvas } = await import('html2canvas')
   const canvas = await html2canvas(element, {
     scale: 2,
     useCORS: true,

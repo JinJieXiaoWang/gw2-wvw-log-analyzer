@@ -2,26 +2,65 @@
   <div>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
       <div class="lg:col-span-8 bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiQuickActions :recent-fights="recentFights" :recent-players="recentPlayers" :recent-builds="recentBuilds" :disabled="!aiEnabled || analyzing" @analyze-fight="$emit('quickAnalyzeFight')" @analyze-player="$emit('quickAnalyzePlayer')" @analyze-team="$emit('quickAnalyzeTeam')" />
+        <AiQuickActions
+          :recent-fights="recentFights"
+          :recent-players="recentPlayers"
+          :recent-builds="recentBuilds"
+          :disabled="!aiEnabled || analyzing"
+          @analyze-fight="$emit('quickAnalyzeFight')"
+          @analyze-player="$emit('quickAnalyzePlayer')"
+          @analyze-team="$emit('quickAnalyzeTeam')"
+        />
       </div>
       <div class="lg:col-span-4 bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiSystemStatus :config="aiConfig" :stats="aiStats" :testing-connection="testingConnection" @test-connection="$emit('testConnection')" />
+        <AiSystemStatus
+          :config="aiConfig"
+          :stats="aiStats"
+          :testing-connection="testingConnection"
+          @test-connection="$emit('testConnection')"
+        />
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
       <div class="bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiSuggestionsPanel :data="suggestionsData" :loading="loadingSuggestions" @refresh="$emit('refreshSuggestions')" />
+        <AiSuggestionsPanel
+          :data="suggestionsData"
+          :loading="loadingSuggestions"
+          @refresh="$emit('refreshSuggestions')"
+        />
       </div>
       <div class="bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiTrendPanel :data="trendData" :loading="loadingTrend" :time-range="trendTimeRange" @refresh="$emit('refreshTrend')" @time-range-change="$emit('timeRangeChange', $event)" />
+        <AiTrendPanel
+          :data="trendData"
+          :loading="loadingTrend"
+          :time-range="trendTimeRange"
+          @refresh="$emit('refreshTrend')"
+          @time-range-change="$emit('timeRangeChange', $event)"
+        />
       </div>
     </div>
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <div class="lg:col-span-4 bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiAnalysisToolsPanel :recent-fights="recentFights" :recent-players="recentPlayers" :recent-builds="recentBuilds" :disabled="!aiEnabled" @analyze="(type, id) => $emit('analyze', type, id)" />
+        <AiAnalysisToolsPanel
+          :recent-fights="recentFights"
+          :recent-players="recentPlayers"
+          :recent-builds="recentBuilds"
+          :disabled="!aiEnabled"
+          @analyze="(type, id) => $emit('analyze', type, id)"
+        />
       </div>
       <div class="lg:col-span-8 bg-neutral-card/80 backdrop-blur-sm rounded-2xl p-6 border border-neutral-border">
-        <AiReportPanel :reports="filteredReports" :loading="loading" :has-more="hasMore" :filter="reportFilter" @refresh="$emit('refreshReports')" @load-more="$emit('loadMoreReports')" @view="$emit('viewReport', $event)" @delete="$emit('deleteReport', $event)" @filter-change="$emit('filterChange', $event)" />
+        <AiReportPanel
+          :reports="filteredReports"
+          :loading="loading"
+          :has-more="hasMore"
+          :filter="reportFilter"
+          @refresh="$emit('refreshReports')"
+          @load-more="$emit('loadMoreReports')"
+          @view="$emit('viewReport', $event)"
+          @delete="$emit('deleteReport', $event)"
+          @filter-change="$emit('filterChange', $event)"
+        />
       </div>
     </div>
   </div>

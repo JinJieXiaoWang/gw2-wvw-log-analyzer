@@ -2,8 +2,16 @@
   <div>
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-3">
-        <div class="p-2 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl"><SvgIcon icon="file-text" :size="24" class="text-purple-400" /></div>
-        <h2 class="text-xl font-bold text-white">分析报告</h2>
+        <div class="p-2 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-xl">
+          <SvgIcon
+            icon="file-text"
+            :size="24"
+            class="text-purple-400"
+          />
+        </div>
+        <h2 class="text-xl font-bold text-white">
+          分析报告
+        </h2>
       </div>
       <div class="flex items-center gap-3">
         <BaseSelect
@@ -25,14 +33,37 @@
         </BaseButton>
       </div>
     </div>
-    <div v-if="loading && !reports.length" class="space-y-3"><div v-for="i in 3" :key="i" class="h-20 bg-neutral-card-active/50 rounded-xl animate-pulse" /></div>
-    <div v-else-if="reports.length" class="space-y-3">
-      <div v-for="report in reports" :key="report.id" class="p-4 bg-neutral-card-active/50 rounded-xl hover:bg-neutral-card-active transition-all cursor-pointer" @click="$emit('view', String(report.id))">
+    <div
+      v-if="loading && !reports.length"
+      class="space-y-3"
+    >
+      <div
+        v-for="i in 3"
+        :key="i"
+        class="h-20 bg-neutral-card-active/50 rounded-xl animate-pulse"
+      />
+    </div>
+    <div
+      v-else-if="reports.length"
+      class="space-y-3"
+    >
+      <div
+        v-for="report in reports"
+        :key="report.id"
+        class="p-4 bg-neutral-card-active/50 rounded-xl hover:bg-neutral-card-active transition-all cursor-pointer"
+        @click="$emit('view', String(report.id))"
+      >
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm font-medium text-white">{{ getReportTypeName(report.report_type) }}</span>
-          <span v-if="report.ai_score" class="text-sm font-semibold" :class="getScoreClass(report.ai_score)">{{ report.ai_score.toFixed(0) }}</span>
+          <span
+            v-if="report.ai_score"
+            class="text-sm font-semibold"
+            :class="getScoreClass(report.ai_score)"
+          >{{ report.ai_score.toFixed(0) }}</span>
         </div>
-        <p class="text-sm text-neutral-text-secondary truncate mb-2">{{ report.summary || '无摘要' }}</p>
+        <p class="text-sm text-neutral-text-secondary truncate mb-2">
+          {{ report.summary || '无摘要' }}
+        </p>
         <div class="flex items-center justify-between">
           <span class="text-xs text-neutral-text-tertiary">{{ formatDate(report.created_at) }}</span>
           <BaseButton
@@ -55,7 +86,14 @@
         <span class="text-sm text-neutral-text-secondary">{{ loading ? '加载中...' : '加载更多' }}</span>
       </BaseButton>
     </div>
-    <div v-else class="text-center py-12"><p class="text-neutral-text-tertiary">暂无报告</p></div>
+    <div
+      v-else
+      class="text-center py-12"
+    >
+      <p class="text-neutral-text-tertiary">
+        暂无报告
+      </p>
+    </div>
   </div>
 </template>
 

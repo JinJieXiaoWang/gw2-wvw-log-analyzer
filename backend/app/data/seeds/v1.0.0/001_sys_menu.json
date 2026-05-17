@@ -119,7 +119,7 @@
     },
     {
       "menu_name": "系统设置",
-      "parent_id": 7,
+      "parent_id": 8,
       "order_num": 1,
       "path": "/settings",
       "component": "settings/index",
@@ -133,7 +133,7 @@
     },
     {
       "menu_name": "评分规则",
-      "parent_id": 7,
+      "parent_id": 8,
       "order_num": 2,
       "path": "/scoring-rules",
       "component": "settings/scoring",
@@ -147,7 +147,7 @@
     },
     {
       "menu_name": "字典管理",
-      "parent_id": 7,
+      "parent_id": 8,
       "order_num": 3,
       "path": "/dictionary",
       "component": "system/dictionary",
@@ -161,7 +161,7 @@
     },
     {
       "menu_name": "职业管理",
-      "parent_id": 7,
+      "parent_id": 8,
       "order_num": 4,
       "path": "/professions",
       "component": "system/professions",

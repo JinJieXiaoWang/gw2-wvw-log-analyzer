@@ -6,7 +6,10 @@
     />
 
     <div class="graph-container card">
-      <DpsGraphLegend :title="graphTitle" :players="displayPlayers" />
+      <DpsGraphLegend
+        :title="graphTitle"
+        :players="displayPlayers"
+      />
       <DpsGraphChart
         :lines="chartLines"
         :y-axis-ticks="yAxisTicks"

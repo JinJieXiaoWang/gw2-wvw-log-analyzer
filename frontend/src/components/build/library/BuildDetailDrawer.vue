@@ -20,7 +20,11 @@
             {{ build.title }}
           </h2>
           <p class="text-sm text-surface-400 mt-1">
-            <DictTag dict-type="role" :value="build.role" variant="text" /> ·
+            <DictTag
+              dict-type="role"
+              :value="build.role"
+              variant="text"
+            /> ·
             {{ build.eliteSpec ? getProfessionName(build.eliteSpec) : '核心职业' }}
           </p>
           <div class="flex flex-wrap gap-2 mt-3">
@@ -234,8 +238,8 @@
 </template>
 
 <script setup lang="ts">
-import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import type { BuildEntry } from '@/types/buildLibrary'
 import { formatFullDate, professionInitial, subRoleLabel } from '@/utils/build/buildUtils'
 import { getProfessionName } from '@/utils/profession/professionUtils'

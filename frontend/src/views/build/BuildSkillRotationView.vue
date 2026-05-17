@@ -38,6 +38,8 @@ const {
 const {
   performAnalysis,
   setViewMode,
+  setCompareMode,
+  setTimeRange,
   selectLog,
   selectMember
 } = rotationStore
@@ -63,6 +65,14 @@ function handleViewModeUpdate(value: string) {
   setViewMode(value as any)
 }
 
+function handleCompareModeUpdate(value: string) {
+  setCompareMode(value as any)
+}
+
+function handleTimeRangeUpdate(value: string) {
+  setTimeRange(value as any)
+}
+
 function handleShowImportDialog() {
   showImportDialog.value = true
 }
@@ -79,17 +89,33 @@ async function handleExportReport() {
   }
 
   try {
-    const blob = await skillRotationService.exportReport(selectedLogId.value, selectedMemberId.value)
-    if (blob) {
+    const reportData = await skillRotationService.exportReport(selectedLogId.value, selectedMemberId.value)
+    if (reportData) {
+      // 根据后端返回的格式选择导出类型，默认为JSON
+      const format = reportData.format || 'json'
+      let blob: Blob
+      let filename: string
+
+      if (format === 'json') {
+        const jsonStr = JSON.stringify(reportData, null, 2)
+        blob = new Blob([jsonStr], { type: 'application/json' })
+        filename = `skill-rotation-report-${Date.now()}.json`
+      } else {
+        // PDF等其他格式暂不支持，回退到JSON
+        const jsonStr = JSON.stringify(reportData, null, 2)
+        blob = new Blob([jsonStr], { type: 'application/json' })
+        filename = `skill-rotation-report-${Date.now()}.json`
+      }
+
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `skill-rotation-report-${Date.now()}.pdf`
+      a.download = filename
       document.body.appendChild(a)
       a.click()
       window.URL.revokeObjectURL(url)
       document.body.removeChild(a)
-      
+
       toast.add({
         severity: 'success',
         summary: '成功',
@@ -109,7 +135,7 @@ async function handleExportReport() {
 }
 
 function handleImportRotation(data: { ideal: string; actual: string }) {
-  console.log('导入循环对比数据:', data)
+  // TODO: 实现导入对比功能
   toast.add({
     severity: 'info',
     summary: '提示',
@@ -154,6 +180,8 @@ function handleImportRotation(data: { ideal: string; actual: string }) {
           :disabled="!isReady"
           @update:selected-log-id="handleLogIdUpdate"
           @update:selected-member-id="handleMemberIdUpdate"
+          @update:compare-mode="handleCompareModeUpdate"
+          @update:time-range="handleTimeRangeUpdate"
           @analyze="performAnalysis"
         />
 
@@ -165,8 +193,25 @@ function handleImportRotation(data: { ideal: string; actual: string }) {
           {{ error }}
         </div>
 
+        <!-- 空数据提示 -->
+        <div
+          v-else-if="hasResult && analysisResult && (!filteredEvents || filteredEvents.length === 0)"
+          class="bg-neutral-bg-secondary border border-neutral-border/30 rounded-lg p-8 text-center"
+        >
+          <i class="pi pi-info-circle text-4xl text-neutral-text-secondary mb-4" />
+          <p class="text-neutral-text font-medium mb-2">
+            暂无技能循环数据
+          </p>
+          <p class="text-neutral-text-secondary text-sm mb-4">
+            可能的原因：EI解析器版本过旧、该日志未包含技能循环信息、或所选职业无技能数据。
+          </p>
+          <p class="text-neutral-text-secondary text-xs">
+            建议尝试重新解析日志，或选择其他玩家查看。
+          </p>
+        </div>
+
         <!-- 分析结果 -->
-        <template v-if="hasResult && analysisResult">
+        <template v-if="hasResult && analysisResult && filteredEvents && filteredEvents.length > 0">
           <!-- 统计概览 -->
           <StatsOverview :stats="safeStats" />
 

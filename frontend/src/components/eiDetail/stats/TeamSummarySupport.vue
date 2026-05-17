@@ -4,7 +4,9 @@
       <i class="pi pi-sparkles" />
     </div>
     <div class="stat-content">
-      <div class="stat-label">辅助数据</div>
+      <div class="stat-label">
+        辅助数据
+      </div>
       <div class="stat-values">
         <span class="cleanse">
           <i class="pi pi-star" />

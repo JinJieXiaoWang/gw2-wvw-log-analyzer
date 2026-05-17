@@ -24,6 +24,7 @@ export function useAttendanceDetail(dataSource: () => any) {
   const summary = computed(() => dataSource()?.summary || {})
   const characters = computed(() => dataSource()?.characters || [])
   const recentFights = computed(() => dataSource()?.recent_fights || [])
+  const dailyFights = computed(() => dataSource()?.daily_fights || [])
 
   // 使用后端返回的综合能力评分，缺失项使用默认值补齐
   const abilities = computed(() => {
@@ -123,7 +124,7 @@ export function useAttendanceDetail(dataSource: () => any) {
   }
 
   return {
-    summary, characters, recentFights, abilities, abilityEntries,
+    summary, characters, recentFights, dailyFights, abilities, abilityEntries,
     chartPoints, chartLinePath, chartAreaPath,
     radarPolygonPoints, radarCirclePoints, radarLabels,
     getHexagonPoints, getAxisPoint,

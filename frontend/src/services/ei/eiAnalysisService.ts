@@ -74,6 +74,12 @@ export interface EiAnalysisPlayer {
   alacrity_uptime: number
   protection_uptime: number
   stability_uptime: number
+  regeneration_uptime: number
+  swiftness_uptime: number
+  vigor_uptime: number
+  aegis_uptime: number
+  resistance_uptime: number
+  resolution_uptime: number
   // 技能效率与位置
   wasted: number
   saved: number
@@ -183,6 +189,7 @@ export interface EiAnalysisResponse {
   buff_leaders: Record<string, EiAnalysisPlayer[]>
   support_leaders: Record<string, EiAnalysisPlayer[]>
   defense_leaders: Record<string, EiAnalysisPlayer[]>
+  leader_labels?: Record<string, string>
   dps_report_permalink?: string
   // v2.2 预计算衍生字段
   groups: EiAnalysisGroup[]

@@ -59,14 +59,93 @@ class FightStatsBase(BaseModel):
     # 功能：战斗统计基础模型
     model_config = ConfigDict(from_attributes=True)
 
+    # === DPS / 伤害 / 治疗 ===
     damage: int = 0
     dps: int = 0
+    power_damage: int = 0
+    condi_damage: int = 0
+    breakbar_damage: int = 0
     healing: int = 0
+
+    # === 命中质量 ===
+    critical_rate: int = 0
+    flanking_rate: int = 0
+    glance_rate: int = 0
+    missed: int = 0
+    interrupts: int = 0
+    swap_count: int = 0
+
+    # === 击杀 / 控制 ===
     killed: int = 0
-    dead_count: int = 0
+    downed: int = 0
+
+    # === 防御 / 生存 ===
     damage_taken: int = 0
+    blocked_count: int = 0
+    evaded_count: int = 0
+    dodge_count: int = 0
     down_count: int = 0
+    dead_count: int = 0
+    boon_strips: int = 0
+    condition_cleanses: int = 0
+    downed_damage_taken: int = 0
+    interrupted_count: int = 0
+
+    # === 支援 ===
     resurrects: int = 0
+    condi_cleanse_ally: int = 0
+    boon_strips_ally: int = 0
+    stun_break: int = 0
+    removed_stun_duration: float = 0.0
+
+    # === 关键 Buff 覆盖率 ===
+    might_uptime: float = 0.0
+    fury_uptime: float = 0.0
+    quickness_uptime: float = 0.0
+    alacrity_uptime: float = 0.0
+    protection_uptime: float = 0.0
+    stability_uptime: float = 0.0
+    regeneration_uptime: float = 0.0
+    swiftness_uptime: float = 0.0
+    vigor_uptime: float = 0.0
+    aegis_uptime: float = 0.0
+    resistance_uptime: float = 0.0
+    resolution_uptime: float = 0.0
+
+    # === 高级战斗指标 ===
+    down_contribution: int = 0
+    against_downed_damage: int = 0
+    applied_cc_duration: int = 0
+    applied_cc_count: int = 0
+    barrier_damage_absorbed: int = 0
+    condition_damage_taken: int = 0
+    power_damage_taken: int = 0
+    received_cc_duration: int = 0
+    might_uptime_active: float = 0.0
+    quickness_uptime_active: float = 0.0
+    alacrity_uptime_active: float = 0.0
+    avg_boons: float = 0.0
+    avg_conditions: float = 0.0
+
+    # === 技能效率与位置 ===
+    wasted: int = 0
+    saved: int = 0
+    skill_cast_uptime: float = 0.0
+    stack_dist: float = 0.0
+    dist_to_com: float = 0.0
+
+    # === 倒地/死亡详情 ===
+    down_duration: int = 0
+    dead_duration: int = 0
+    dc_count: int = 0
+    dc_duration: int = 0
+
+    # === AI 评分 ===
+    ai_score: float = 0.0
+    score_grade: str = ""
+    role_type: Optional[str] = None
+    rule_version: int = 0
+    scoring_profession_rule: Optional[str] = None
 
 
 class FightStatsCreate(FightStatsBase):
@@ -84,7 +163,9 @@ class FightStatsResponse(FightStatsBase):
     character_name: Optional[str] = None
     profession: Optional[str] = None
     group_id: int = 0
+    team_id: int = 0
     has_commander_tag: bool = False
+    score_breakdown: Optional[dict] = None
 
 
 class FightListResponse(BaseModel):

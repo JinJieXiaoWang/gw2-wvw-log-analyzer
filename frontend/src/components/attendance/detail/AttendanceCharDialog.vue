@@ -8,7 +8,7 @@
   >
     <div class="p-4">
       <div class="grid grid-cols-2 gap-6">
-        <div>
+        <div class="space-y-4">
           <h4 class="font-semibold text-neutral-text mb-3">
             角色信息
           </h4>
@@ -48,6 +48,10 @@
               >{{ character.kd_ratio }}</span>
             </div>
           </div>
+          <AttendanceRadarChart
+            v-if="character?.comprehensive_abilities"
+            :detail-data="{ comprehensive_abilities: character.comprehensive_abilities }"
+          />
         </div>
         <div>
           <h4 class="font-semibold text-neutral-text mb-3">
@@ -79,6 +83,7 @@
 
 <script setup lang="ts">
 import BaseDialog from '@/components/common/ui/feedback/BaseDialog.vue'
+import AttendanceRadarChart from '@/components/attendance/detail/AttendanceRadarChart.vue'
 import { getProfessionColor } from '@/utils/profession/professionUtils'
 import { getProfessionLabel, getScoreColor, formatNumber, formatDps, formatDateTime } from '@/utils/common/attendanceFormatters'
 

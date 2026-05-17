@@ -254,6 +254,7 @@ async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True
     # 功能：后台解析日志文件
     # 参数：log_id - 日志ID；db_url - 数据库连接URL；save_to_db - 是否保存到数据库
     # 返回：无
+    import asyncio
     from sqlalchemy import create_engine
     from sqlalchemy.orm import sessionmaker
 
@@ -275,7 +276,8 @@ async def parse_log_background(log_id: int, db_url: str, save_to_db: bool = True
             
             if save_to_db:
                 import_service = LogImportService(db)
-                result = import_service.import_log(log_id, log.file_path)
+                # 使用线程池执行同步的 import_log，避免阻塞事件循环
+                result = await asyncio.to_thread(import_service.import_log, log_id, log.file_path)
                 
                 if result.get("success", False):
                     update_parse_status(db, log_id, ParseStatus.COMPLETED)

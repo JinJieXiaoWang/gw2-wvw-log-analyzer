@@ -17,6 +17,7 @@ from app.models.auth.member import Member
 from app.models.log.fight import Fight
 from app.models.log.fight_stats import FightStats
 from app.models.log.log import Log
+from app.models.game.game_static_data import GwBuff
 from app.constants.dict_values import GRADE_THRESHOLDS, ParseStatus
 from app.utils.logger import logger
 
@@ -558,35 +559,80 @@ def get_ai_score_distribution(db: Session, days: int = 30) -> Dict[str, Any]:
 # =====================================================================
 
 
+# 预设颜色池（循环分配给关键 buff，保持视觉区分度）
+_BUFF_COLOR_POOL = [
+    {"colorClass": "bg-status-error", "textClass": "text-status-error"},
+    {"colorClass": "bg-status-warning", "textClass": "text-status-warning"},
+    {"colorClass": "bg-primary", "textClass": "text-primary"},
+    {"colorClass": "bg-secondary", "textClass": "text-secondary"},
+    {"colorClass": "bg-status-success", "textClass": "text-status-success"},
+    {"colorClass": "bg-status-info", "textClass": "text-blue-400"},
+]
+
+
 def get_buff_overview(db: Session, days: int = 30) -> Dict[str, Any]:
-    """获取平均 Buff 覆盖率概览"""
+    """获取平均 Buff 覆盖率概览（动态从 gw_buff 表读取关键 buff 配置）
+
+    返回结构：
+    {
+        "period_days": 30,
+        "buffs": {"might": 21.3, ...},
+        "config": [
+            {"key": "might", "label": "威能", "icon": "Might.png",
+             "colorClass": "bg-status-error", "textClass": "text-status-error"},
+            ...
+        ]
+    }
+    """
     start_date, end_date = _get_date_range(days)
 
-    query = (
-        db.query(
-            func.avg(FightStats.might_uptime).label("might"),
-            func.avg(FightStats.fury_uptime).label("fury"),
-            func.avg(FightStats.quickness_uptime).label("quickness"),
-            func.avg(FightStats.alacrity_uptime).label("alacrity"),
-            func.avg(FightStats.protection_uptime).label("protection"),
-            func.avg(FightStats.stability_uptime).label("stability"),
-        )
-        .join(Fight, FightStats.fight_id == Fight.id)
+    # 1. 从 gw_buff 表读取所有关键 buff（按 id 排序保证顺序稳定）
+    key_buffs = (
+        db.query(GwBuff)
+        .filter(GwBuff.is_key_buff == True)
+        .order_by(GwBuff.id)
+        .all()
     )
-    query = _apply_time_filter(query, start_date, end_date)
-    r = query.first()
 
-    def _f(v):
-        return round(float(v or 0), 2)
+    # 2. 动态构建 SQL 查询列：只包含 FightStats 中实际存在的字段
+    #    FightStats 字段名为小写（如 might_uptime），而 gw_buff.name 首字母大写
+    columns = []
+    valid_buffs: list[GwBuff] = []
+    for buff in key_buffs:
+        key = buff.name.lower()
+        attr_name = f"{key}_uptime"
+        column = getattr(FightStats, attr_name, None)
+        if column is not None:
+            columns.append(func.avg(column).label(key))
+            valid_buffs.append(buff)
+
+    # 3. 执行聚合查询
+    buffs_data: Dict[str, float] = {}
+    if columns:
+        query = db.query(*columns).join(Fight, FightStats.fight_id == Fight.id)
+        query = _apply_time_filter(query, start_date, end_date)
+        r = query.first()
+        if r:
+            for buff in valid_buffs:
+                key = buff.name.lower()
+                val = getattr(r, key, None)
+                buffs_data[key] = round(float(val or 0), 2)
+
+    # 4. 组装前端配置（颜色循环分配）
+    config = []
+    for i, buff in enumerate(valid_buffs):
+        color = _BUFF_COLOR_POOL[i % len(_BUFF_COLOR_POOL)]
+        key = buff.name.lower()
+        config.append({
+            "key": key,
+            "label": buff.name_cn or buff.name,
+            "icon": buff.icon or f"{buff.name.title()}.png",
+            "colorClass": color["colorClass"],
+            "textClass": color["textClass"],
+        })
 
     return {
         "period_days": days,
-        "buffs": {
-            "might": _f(r.might),
-            "fury": _f(r.fury),
-            "quickness": _f(r.quickness),
-            "alacrity": _f(r.alacrity),
-            "protection": _f(r.protection),
-            "stability": _f(r.stability),
-        },
+        "buffs": buffs_data,
+        "config": config,
     }

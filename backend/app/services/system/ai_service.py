@@ -748,14 +748,15 @@ def get_trend_analysis(db: Session, days: int = 30) -> dict:
         for day, vals in sorted(daily.items())
     ]
 
+    from app.utils.db.dict_utils import get_dict_label
     if kd_ratio > 1.5:
-        trend = "上升"
+        trend = get_dict_label("trend_status", TrendStatus.IMPROVING.value)
         insights = ["团队表现呈上升趋势", f"击杀/死亡比 {kd_ratio:.2f} 表现优秀"]
     elif kd_ratio > 1.0:
-        trend = "稳定"
+        trend = get_dict_label("trend_status", TrendStatus.STABLE.value)
         insights = ["团队表现稳定", f"击杀/死亡比 {kd_ratio:.2f}"]
     else:
-        trend = "下降"
+        trend = get_dict_label("trend_status", TrendStatus.DECLINING.value)
         insights = ["团队表现有下降趋势", f"击杀/死亡比 {kd_ratio:.2f} 需要改善"]
 
     if damage_per_day > 10000000:

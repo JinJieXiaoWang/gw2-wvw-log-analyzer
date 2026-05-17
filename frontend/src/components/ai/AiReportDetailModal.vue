@@ -16,10 +16,16 @@
                     class="p-2 rounded-lg"
                     :class="getTypeBg(report.report_type)"
                   >
-                    <SvgIcon :icon="getTypeIcon(report.report_type)" :size="ICON_SIZE_LARGE" :class="getTypeText(report.report_type)" />
+                    <SvgIcon
+                      :icon="getTypeIcon(report.report_type)"
+                      :size="ICON_SIZE_LARGE"
+                      :class="getTypeText(report.report_type)"
+                    />
                   </div>
                   <div>
-                    <h2 class="text-xl font-bold text-white">{{ report.summary || REPORT_TITLE_PLACEHOLDER }}</h2>
+                    <h2 class="text-xl font-bold text-white">
+                      {{ report.summary || REPORT_TITLE_PLACEHOLDER }}
+                    </h2>
                     <span
                       class="text-xs px-2 py-0.5 rounded-full"
                       :class="getTypeBadge(report.report_type)"
@@ -28,13 +34,19 @@
                     </span>
                   </div>
                 </div>
-                <p class="text-sm text-gray-400">{{ report.created_at }}</p>
+                <p class="text-sm text-gray-400">
+                  {{ report.created_at }}
+                </p>
               </div>
               <button
-                @click="$emit('close')"
                 class="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                @click="$emit('close')"
               >
-                <SvgIcon icon="x" :size="ICON_SIZE_LARGE" class="text-gray-400 hover:text-white" />
+                <SvgIcon
+                  icon="x"
+                  :size="ICON_SIZE_LARGE"
+                  class="text-gray-400 hover:text-white"
+                />
               </button>
             </div>
           </div>
@@ -44,59 +56,112 @@
             <!-- 报告摘要 -->
             <div class="bg-gray-700/50 rounded-xl p-4 mb-6">
               <div class="flex items-center gap-2 mb-3">
-                <SvgIcon icon="file-text" :size="ICON_SIZE_MEDIUM" class="text-blue-400" />
-                <h3 class="text-sm font-semibold text-gray-200">{{ SECTION_TITLE_SUMMARY }}</h3>
+                <SvgIcon
+                  icon="file-text"
+                  :size="ICON_SIZE_MEDIUM"
+                  class="text-blue-400"
+                />
+                <h3 class="text-sm font-semibold text-gray-200">
+                  {{ SECTION_TITLE_SUMMARY }}
+                </h3>
               </div>
-              <p class="text-gray-300 text-sm leading-relaxed">{{ report.summary || SUMMARY_EMPTY_TEXT }}</p>
+              <p class="text-gray-300 text-sm leading-relaxed">
+                {{ report.summary || SUMMARY_EMPTY_TEXT }}
+              </p>
             </div>
 
             <!-- 分析指标 -->
-            <div v-if="report.ai_score !== undefined" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div
+              v-if="report.ai_score !== undefined"
+              class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+            >
               <div class="bg-gradient-to-br from-gray-700/50 to-gray-800/50 rounded-xl p-4 border border-gray-600/50">
-                <p class="text-xs text-gray-400 mb-1">{{ METRIC_LABEL_AI_SCORE }}</p>
-                <p class="text-xl font-bold text-white">{{ report.ai_score }}</p>
+                <p class="text-xs text-gray-400 mb-1">
+                  {{ METRIC_LABEL_AI_SCORE }}
+                </p>
+                <p class="text-xl font-bold text-white">
+                  {{ report.ai_score }}
+                </p>
               </div>
             </div>
 
             <!-- 详细分析 -->
             <div class="space-y-4">
               <div class="flex items-center gap-2 mb-3">
-                <SvgIcon icon="bar-chart-2" :size="ICON_SIZE_MEDIUM" class="text-green-400" />
-                <h3 class="text-sm font-semibold text-gray-200">{{ SECTION_TITLE_DETAIL }}</h3>
+                <SvgIcon
+                  icon="bar-chart-2"
+                  :size="ICON_SIZE_MEDIUM"
+                  class="text-green-400"
+                />
+                <h3 class="text-sm font-semibold text-gray-200">
+                  {{ SECTION_TITLE_DETAIL }}
+                </h3>
               </div>
 
-              <div v-if="parseContent(report)?.detailedAnalysis" class="space-y-3">
+              <div
+                v-if="parseContent(report)?.detailedAnalysis"
+                class="space-y-3"
+              >
                 <div
                   v-for="(section, index) in parseContent(report)?.detailedAnalysis"
                   :key="index"
                   class="bg-gray-700/30 rounded-xl p-4 border border-gray-600/30"
                 >
                   <div class="flex items-center gap-2 mb-2">
-                    <SvgIcon icon="chevron-right" :size="ICON_SIZE_SMALL" class="text-blue-400" />
+                    <SvgIcon
+                      icon="chevron-right"
+                      :size="ICON_SIZE_SMALL"
+                      class="text-blue-400"
+                    />
                     <span class="text-sm font-medium text-gray-200">{{ section.title }}</span>
                   </div>
-                  <p class="text-sm text-gray-400 pl-6">{{ section.content }}</p>
+                  <p class="text-sm text-gray-400 pl-6">
+                    {{ section.content }}
+                  </p>
                 </div>
               </div>
-              <div v-else-if="report.content" class="space-y-3">
+              <div
+                v-else-if="report.content"
+                class="space-y-3"
+              >
                 <div class="bg-gray-700/30 rounded-xl p-4 border border-gray-600/30">
-                  <p class="text-sm text-gray-300 whitespace-pre-wrap">{{ report.content }}</p>
+                  <p class="text-sm text-gray-300 whitespace-pre-wrap">
+                    {{ report.content }}
+                  </p>
                 </div>
               </div>
 
-              <div v-else class="text-center py-8">
+              <div
+                v-else
+                class="text-center py-8"
+              >
                 <div class="inline-flex items-center justify-center p-4 bg-gray-700/50 rounded-xl mb-4">
-                  <SvgIcon icon="file-text" :size="ICON_SIZE_XLARGE" class="text-gray-500" />
+                  <SvgIcon
+                    icon="file-text"
+                    :size="ICON_SIZE_XLARGE"
+                    class="text-gray-500"
+                  />
                 </div>
-                <p class="text-gray-400">{{ DETAIL_EMPTY_TEXT }}</p>
+                <p class="text-gray-400">
+                  {{ DETAIL_EMPTY_TEXT }}
+                </p>
               </div>
             </div>
 
             <!-- 优化建议 -->
-            <div v-if="parseContent(report)?.suggestions?.length" class="mt-6 space-y-4">
+            <div
+              v-if="parseContent(report)?.suggestions?.length"
+              class="mt-6 space-y-4"
+            >
               <div class="flex items-center gap-2 mb-3">
-                <SvgIcon icon="lightbulb" :size="ICON_SIZE_MEDIUM" class="text-yellow-400" />
-                <h3 class="text-sm font-semibold text-gray-200">{{ SECTION_TITLE_SUGGESTIONS }}</h3>
+                <SvgIcon
+                  icon="lightbulb"
+                  :size="ICON_SIZE_MEDIUM"
+                  class="text-yellow-400"
+                />
+                <h3 class="text-sm font-semibold text-gray-200">
+                  {{ SECTION_TITLE_SUGGESTIONS }}
+                </h3>
               </div>
 
               <div class="space-y-2">
@@ -106,9 +171,15 @@
                   class="flex items-start gap-3 bg-gradient-to-r from-yellow-900/20 to-orange-900/20 rounded-xl p-4 border border-yellow-700/30"
                 >
                   <div class="p-1.5 bg-yellow-500/20 rounded-lg flex-shrink-0">
-                    <SvgIcon icon="sparkles" :size="ICON_SIZE_SMALL" class="text-yellow-400" />
+                    <SvgIcon
+                      icon="sparkles"
+                      :size="ICON_SIZE_SMALL"
+                      class="text-yellow-400"
+                    />
                   </div>
-                  <p class="text-sm text-gray-300">{{ suggestion }}</p>
+                  <p class="text-sm text-gray-300">
+                    {{ suggestion }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -117,22 +188,33 @@
           <!-- 底部操作 -->
           <div class="bg-gray-700/50 px-6 py-4 border-t border-gray-700 flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <SvgIcon icon="download" :size="ICON_SIZE_MEDIUM" class="text-gray-400" />
+              <SvgIcon
+                icon="download"
+                :size="ICON_SIZE_MEDIUM"
+                class="text-gray-400"
+              />
               <span class="text-sm text-gray-400">{{ REPORT_ID_PREFIX }}{{ report.id }}</span>
             </div>
             <div class="flex items-center gap-3">
               <button
-                @click="exportReport"
                 class="flex items-center gap-2 px-4 py-2 bg-gray-600 hover:bg-gray-500 rounded-lg transition-colors"
+                @click="exportReport"
               >
-                <SvgIcon icon="download" :size="ICON_SIZE_MEDIUM" class="text-gray-300" />
+                <SvgIcon
+                  icon="download"
+                  :size="ICON_SIZE_MEDIUM"
+                  class="text-gray-300"
+                />
                 <span class="text-sm text-gray-300">导出报告</span>
               </button>
               <button
-                @click="$emit('close')"
                 class="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition-colors"
+                @click="$emit('close')"
               >
-                <SvgIcon icon="x" :size="ICON_SIZE_MEDIUM" />
+                <SvgIcon
+                  icon="x"
+                  :size="ICON_SIZE_MEDIUM"
+                />
                 <span class="text-sm">关闭</span>
               </button>
             </div>

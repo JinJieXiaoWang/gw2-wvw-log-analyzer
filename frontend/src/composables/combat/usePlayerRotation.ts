@@ -1,14 +1,23 @@
-import { computed } from 'vue'
-import type { ComputedRef, Ref } from 'vue'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import type { PlayerRotationData, EiAnalysisFight } from '@/services/ei/eiAnalysisService'
 import { getSkillIconUrl } from '@/utils/skillIcons'
-import { generateTimelineData, generateHeatmapData, generateCycleData } from '@/utils/combat/rotation'
-import type { TimelineTick, SkillTrack, HeatmapRow, SkillCycle } from '@/utils/combat/rotationTypes'
+
+// 全局技能图标URL缓存，避免重复生成
+const iconUrlCache = new Map<string, string>()
+function getCachedSkillIconUrl(name: string, iconUrl: string): string {
+  const key = `${name}::${iconUrl}`
+  if (!iconUrlCache.has(key)) {
+    iconUrlCache.set(key, getSkillIconUrl(name, iconUrl))
+  }
+  return iconUrlCache.get(key)!
+}
 
 export function usePlayerRotation(
   playerRotation: Ref<PlayerRotationData | null>,
-  fightSummary: ComputedRef<EiAnalysisFight>
+  fightSummary: ComputedRef<EiAnalysisFight>,
 ) {
+  // ========== 基础数据（所有视图共享）==========
+
   const sortedSkillCasts = computed(() => {
     if (!playerRotation.value?.skill_casts) return []
     const map = playerRotation.value.skill_map || {}
@@ -20,7 +29,7 @@ export function usePlayerRotation(
           skillId,
           count,
           name,
-          icon: getSkillIconUrl(name, iconUrl),
+          icon: getCachedSkillIconUrl(name, iconUrl),
         }
       })
       .sort((a, b) => b.count - a.count)
@@ -36,24 +45,40 @@ export function usePlayerRotation(
       const skillId = (r.id as number) ?? 0
       const name = map[String(skillId)]?.name || `技能 #${skillId}`
       const iconUrl = map[String(skillId)]?.icon || ''
-      const icon = getSkillIconUrl(name, iconUrl)
+      const icon = getCachedSkillIconUrl(name, iconUrl)
+      const duration = (r.duration as number) ?? 0
+      const timeGained = (r.timeGained as number) ?? 0
+      const quickness = (r.quickness as number) ?? 0
       ;((r.skills as Record<string, unknown>[]) || []).forEach((cast: Record<string, unknown>) => {
+        const castDuration = (cast.duration as number) ?? 0
+        const castTime = (cast.castTime as number) ?? 0
+        const isInterrupted = !!(cast.interrupted || (castDuration < 150 && castDuration > 0))
+        const isInstant = !!(cast.instant || castDuration === 0)
+        const isSwap = !!(cast.isSwap || (map[String(skillId)]?.is_swap))
+        const isTraitProc = !!(cast.isTraitProc || (map[String(skillId)]?.is_trait_proc))
+        const autoAttack = !!(cast.autoAttack || (map[String(skillId)]?.auto_attack))
+        const state = isInterrupted ? 'interrupted'
+          : isSwap ? 'swap'
+          : isTraitProc ? 'trait'
+          : isInstant ? 'instant'
+          : 'full'
         events.push({
-          time: ((cast.castTime as number) ?? 0) / 1000,
+          castTime,
           skillId,
-          duration: cast.duration ?? 0,
-          casts: 1,
+          duration: castDuration,
+          timeGained: (cast.timeGained as number) ?? timeGained,
+          quickness: (cast.quickness as number) ?? quickness,
           name,
           icon,
-          state: cast.interrupted ? 'interrupted' : cast.instant ? 'instant' : cast.isSwap ? 'swap' : cast.isTraitProc ? 'trait' : 'full',
-          autoAttack: cast.autoAttack,
-          isSwap: cast.isSwap,
-          isInstant: cast.instant,
-          isTraitProc: cast.isTraitProc,
+          state,
+          autoAttack,
+          isSwap,
+          isInstant,
+          isTraitProc,
         })
       })
     })
-    return events.slice(0, 100)
+    return events
   })
 
   const top10SkillCasts = computed(() => sortedSkillCasts.value.slice(0, 10))
@@ -61,22 +86,22 @@ export function usePlayerRotation(
   const autoAttackRatio = computed(() => {
     const total = rotationEvents.value.length
     if (!total) return 0
-    const aaCount = rotationEvents.value.filter(e => e.autoAttack === true).length
+    const aaCount = rotationEvents.value.filter((e: any) => e.autoAttack === true).length
     return Math.round((aaCount / total) * 100)
   })
 
   const weaponSwapCount = computed(() => {
-    return rotationEvents.value.filter(e => e.isSwap === true).length
+    return rotationEvents.value.filter((e: any) => e.isSwap === true).length
   })
 
   const weaponSwapIntervals = computed(() => {
     const swapTimes = rotationEvents.value
-      .filter(e => e.isSwap === true)
-      .map(e => e.time as number)
+      .filter((e: any) => e.isSwap === true)
+      .map((e: any) => e.castTime as number)
     if (swapTimes.length < 2) return null
     const intervals: number[] = []
     for (let i = 1; i < swapTimes.length; i++) {
-      intervals.push(Math.round((swapTimes[i] - swapTimes[i - 1]) * 10) / 10)
+      intervals.push(Math.round((swapTimes[i] - swapTimes[i - 1]) / 1000 * 10) / 10)
     }
     const avg = intervals.reduce((a, b) => a + b, 0) / intervals.length
     return {
@@ -101,24 +126,6 @@ export function usePlayerRotation(
     )
   })
 
-  const timelineTicks = computed<TimelineTick[]>(() => {
-    const duration = fightSummary.value.duration_sec || 120
-    return generateTimelineData(rotationEvents.value, duration).ticks
-  })
-
-  const timelineTracks = computed<SkillTrack[]>(() => {
-    const duration = fightSummary.value.duration_sec || 120
-    return generateTimelineData(rotationEvents.value, duration).tracks
-  })
-
-  const heatmapRows = computed<HeatmapRow[]>(() => {
-    return generateHeatmapData(sortedSkillCasts.value, rotationEvents.value)
-  })
-
-  const skillCycles = computed<SkillCycle[]>(() => {
-    return generateCycleData(rotationEvents.value)
-  })
-
   return {
     sortedSkillCasts,
     top10SkillCasts,
@@ -127,9 +134,5 @@ export function usePlayerRotation(
     weaponSwapCount,
     weaponSwapIntervals,
     hasPlayerDetailData,
-    timelineTicks,
-    timelineTracks,
-    heatmapRows,
-    skillCycles,
   }
 }

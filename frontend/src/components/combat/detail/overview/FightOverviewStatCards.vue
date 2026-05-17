@@ -108,35 +108,38 @@ import type { EiAnalysisAggregate } from '@/services/ei/eiAnalysisService'
 import { type StatCategory } from '@/utils/combat/combatStats'
 import { formatCompactNumber as fmtCompact } from '@/utils/core/helpers'
 import { computed } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const SECTION_TITLES = {
-  COMBAT_STATS: '战斗属性统计',
+  COMBAT_STATS: t('tactical.stats.title'),
 } as const
 
 const STAT_LABELS = {
-  DAMAGE_OUTPUT: '输出伤害',
-  PROTECTION: '保护',
-  STABILITY: '稳固',
-  CLEANSES: '清症',
-  BOON_STRIPS: '削增益',
-  DAMAGE_TAKEN: '承伤',
-  HIT_RATE: '命中率',
-  CONTROL: '击倒',
-  EFFICIENCY: '施法占比',
-  POSITION: '堆叠距离',
+  DAMAGE_OUTPUT: t('tactical.stats.damageComp'),
+  PROTECTION: t('tactical.stats.protection'),
+  STABILITY: t('tactical.stats.stability'),
+  CLEANSES: t('tactical.stats.condiCleanse'),
+  BOON_STRIPS: t('tactical.stats.boonStrip'),
+  DAMAGE_TAKEN: t('tactical.stats.damageTaken'),
+  HIT_RATE: t('tactical.stats.hitRate'),
+  CONTROL: t('tactical.stats.downed'),
+  EFFICIENCY: t('tactical.stats.castUptime'),
+  POSITION: t('tactical.stats.stackDist'),
 } as const
 
 const DIALOG_TITLES = {
-  DAMAGE_OUTPUT: '输出伤害统计',
-  PROTECTION: '保护覆盖率',
-  STABILITY: '稳固覆盖率',
-  CLEANSES: '清症统计',
-  BOON_STRIPS: '削增益统计',
-  DAMAGE_TAKEN: '承伤统计',
-  HIT_RATE: '命中率统计',
-  CONTROL: '击倒与控制能力统计',
-  EFFICIENCY: '技能效率统计',
-  POSITION: '位置协同统计',
+  DAMAGE_OUTPUT: t('tactical.stats.damageComp'),
+  PROTECTION: t('tactical.stats.protection'),
+  STABILITY: t('tactical.stats.stability'),
+  CLEANSES: t('tactical.stats.condiCleanse'),
+  BOON_STRIPS: t('tactical.stats.boonStrip'),
+  DAMAGE_TAKEN: t('tactical.stats.damageTaken'),
+  HIT_RATE: t('tactical.stats.hitRate'),
+  CONTROL: t('tactical.stats.downed'),
+  EFFICIENCY: t('tactical.stats.castUptime'),
+  POSITION: t('tactical.stats.stackDist'),
 } as const
 
 const SVG_CONFIG = {

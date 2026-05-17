@@ -7,7 +7,10 @@
       :avg-hps="avgHps"
       :overheal-percent="overhealPercent"
     />
-    <HealingDistribution :players="sortedHealers" :all-players="props.players" />
+    <HealingDistribution
+      :players="sortedHealers"
+      :all-players="props.players"
+    />
     <HealingSkills :skills="healingSkills" />
     <HealingPlayerTable
       :players="sortedHealers"

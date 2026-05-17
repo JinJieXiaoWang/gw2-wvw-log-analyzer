@@ -21,8 +21,12 @@
           <i class="pi pi-calculator text-primary-500" />
         </div>
         <div class="min-w-0">
-          <div class="text-sm font-medium text-color">当前评分模式：{{ scoringModeLabel }}</div>
-          <div class="text-xs text-color-secondary mt-0.5">{{ scoringModeDesc }}</div>
+          <div class="text-sm font-medium text-color">
+            当前评分模式：{{ scoringModeLabel }}
+          </div>
+          <div class="text-xs text-color-secondary mt-0.5">
+            {{ scoringModeDesc }}
+          </div>
         </div>
       </div>
 
@@ -37,6 +41,60 @@
         :progress="weightProgress"
         @switch="switchRole"
       />
+
+      <!-- 职业特定规则选择器（仅 profession_based 模式） -->
+      <div
+        v-if="scoringMode === 'profession_based'"
+        class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4"
+      >
+        <div class="flex items-center gap-2 text-sm text-color-secondary mb-3">
+          <i class="pi pi-briefcase" />
+          <span>职业特定规则</span>
+        </div>
+        <div class="flex flex-wrap items-center gap-4">
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-color">规则范围：</span>
+            <div class="flex gap-1 p-0.5 bg-surface-100 dark:bg-surface-800 rounded-lg">
+              <button
+                class="px-3 py-1.5 rounded-md text-sm font-medium transition-all"
+                :class="ruleScope === 'generic' ? 'bg-surface-0 dark:bg-surface-700 text-color shadow-sm' : 'text-color-secondary hover:text-color'"
+                @click="switchScope('generic')"
+              >
+                通用规则
+              </button>
+              <button
+                class="px-3 py-1.5 rounded-md text-sm font-medium transition-all"
+                :class="ruleScope === 'profession' ? 'bg-surface-0 dark:bg-surface-700 text-color shadow-sm' : 'text-color-secondary hover:text-color'"
+                @click="switchScope('profession')"
+              >
+                职业特定
+              </button>
+            </div>
+          </div>
+          <div
+            v-if="ruleScope === 'profession'"
+            class="flex items-center gap-2"
+          >
+            <span class="text-sm text-color">选择职业：</span>
+            <Dropdown
+              v-model="selectedProfession"
+              :options="professionOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="选择精英特长"
+              class="w-56"
+              @change="onProfessionChange"
+            />
+          </div>
+        </div>
+        <div
+          v-if="ruleScope === 'profession' && selectedProfession && !currentProfessionHasRules"
+          class="mt-3 text-xs text-color-secondary bg-surface-100 dark:bg-surface-800 rounded-lg p-2.5"
+        >
+          <i class="pi pi-info-circle mr-1" />
+          该职业暂无特定规则，将自动继承 {{ activeRoleLabel }} 的通用规则。编辑后保存即可创建职业特定规则。
+        </div>
+      </div>
 
       <!-- 当前角色下的精英特长 -->
       <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl p-4">
@@ -53,20 +111,24 @@
           >
             {{ spec.profession }}
           </span>
-          <span v-if="currentRoleSpecs.length === 0" class="text-xs text-color-secondary">暂无对应精英特长</span>
+          <span
+            v-if="currentRoleSpecs.length === 0"
+            class="text-xs text-color-secondary"
+          >暂无对应精英特长</span>
         </div>
       </div>
 
       <!-- 规则编辑器 -->
       <ScoringRulesEditor
         v-bind="editorData"
-        :has-unsaved-changes="hasUnsavedChanges(activeRole)"
+        :has-unsaved-changes="hasUnsavedChanges()"
         :get-dimension-icon="getDimensionIcon"
         :get-dimension-color="getDimensionColor"
         :get-dimension-label="getDimensionLabel"
         @recalculate="confirmRecalculate"
         @reset="confirmReset"
         @save="saveChanges"
+        @delete-profession="confirmDeleteProfessionRules"
         @move-up="moveUp"
         @move-down="moveDown"
         @mark-changed="markChanged"
@@ -76,11 +138,20 @@
 
       <!-- 高级设置（默认折叠） -->
       <div class="bg-surface-0 dark:bg-surface-900 border border-surface-200 dark:border-surface-700 rounded-xl overflow-hidden">
-        <button class="w-full flex items-center justify-between p-4 text-sm font-medium text-color hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors" @click="showAdvanced = !showAdvanced">
+        <button
+          class="w-full flex items-center justify-between p-4 text-sm font-medium text-color hover:bg-surface-50 dark:hover:bg-surface-800 transition-colors"
+          @click="showAdvanced = !showAdvanced"
+        >
           <span class="flex items-center gap-2"><i class="pi pi-cog text-color-secondary" />高级设置（职业定位 / 评分等级 / 历史重算 / 版本）</span>
-          <i :class="showAdvanced ? 'pi-chevron-up' : 'pi-chevron-down'" class="pi text-color-secondary" />
+          <i
+            :class="showAdvanced ? 'pi-chevron-up' : 'pi-chevron-down'"
+            class="pi text-color-secondary"
+          />
         </button>
-        <div v-show="showAdvanced" class="p-4 border-t border-surface-200 dark:border-surface-700 flex flex-col gap-4">
+        <div
+          v-show="showAdvanced"
+          class="p-4 border-t border-surface-200 dark:border-surface-700 flex flex-col gap-4"
+        >
           <ProfessionRoleEditor
             :role-types="roleTypes"
             :profession-role-mapping="professionRoleMapping"
@@ -92,8 +163,15 @@
             @profession-change="updateProfessionRole"
           />
           <ScoringGradeCards :grades="gradeList" />
-          <RecalcTaskPanel :task="recalcTask" :severity="recalcStatusSeverity" @close="recalcTask = null" />
-          <VersionHistoryTable :versions="versionHistory" :format-date="formatDate" />
+          <RecalcTaskPanel
+            :task="recalcTask"
+            :severity="recalcStatusSeverity"
+            @close="recalcTask = null"
+          />
+          <VersionHistoryTable
+            :versions="versionHistory"
+            :format-date="formatDate"
+          />
         </div>
       </div>
     </div>
@@ -107,6 +185,7 @@
 import PageHeader from '@/layout/components/PageHeader.vue'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
+import Dropdown from 'primevue/dropdown'
 import ProfessionRoleEditor from '@/components/settings/scoring/ProfessionRoleEditor.vue'
 import ScoringRulesEditor from '@/components/settings/scoring/ScoringRulesEditor.vue'
 import ScoringRoleCards from '@/components/settings/scoring/ScoringRoleCards.vue'
@@ -134,15 +213,17 @@ const {
   roleTypes, activeRole, loading, saving, resetting, currentRules, editableRules,
   changedRoles, allDimensions, newRuleDimension, newRuleWeight, newRuleDesc,
   recalculating, recalcTask, versionHistory,
+  ruleScope, selectedProfession, professionOptions,
+  deletingProfession, currentProfessionHasRules,
   roleColors, roleGradients, activeRoleLabel, activeRoleIcon,
   canRecalculate, recalcStatusSeverity,
   totalWeight, availableDimensions, weightStatusClass, gradeList,
   hasUnsavedChanges, getWeightProgress, getDimensionIcon, getDimensionColor, getDimensionLabel,
-  switchRole, markChanged, moveUp, moveDown, removeRule, addRule,
-  saveChanges, confirmReset,
+  switchRole, switchScope, markChanged, moveUp, moveDown, removeRule, addRule,
+  saveChanges, confirmReset, onProfessionChange, confirmDeleteProfessionRules,
   fetchVersions, confirmRecalculate,
   formatDate,
-} = useScoringRules()
+} = useScoringRules({ enableProfessionRules: true, enableRecalculation: true, enableVersionHistory: true })
 
 const ruleCounts = computed(() => {
   const map: Record<string, number> = {}
@@ -172,16 +253,16 @@ const editorData = computed(() => ({
   activeRoleIcon: activeRoleIcon.value,
   roleColors: roleColors.value,
   roleGradients: roleGradients.value,
-  ruleScope: 'generic',
-  selectedProfession: '',
+  ruleScope: ruleScope.value,
+  selectedProfession: selectedProfession.value,
   editableRules: editableRules.value,
   loading: loading.value,
   saving: saving.value,
   resetting: resetting.value,
   recalculating: recalculating.value,
   canRecalculate: canRecalculate.value,
-  currentProfessionHasRules: false,
-  deletingProfession: false,
+  currentProfessionHasRules: currentProfessionHasRules.value,
+  deletingProfession: deletingProfession.value,
   totalWeight: totalWeight.value,
   weightStatusClass: weightStatusClass.value,
   canWrite,

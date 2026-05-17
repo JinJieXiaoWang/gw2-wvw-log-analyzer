@@ -47,6 +47,7 @@
       </div>
       <BuffOverview
         :buffs="buffData"
+        :config="buffConfig"
         :is-loading="isLoadingBuffs"
       />
     </div>
@@ -146,6 +147,7 @@ const trendData = ref<any>(null)
 const professionItems = ref<any[]>([])
 const mapItems = ref<any[]>([])
 const buffData = ref<Record<string, number> | null>(null)
+const buffConfig = ref<any[]>([])
 const topPlayerSort = ref('damage')
 const topPlayerItems = ref<any[]>([])
 const recentFights = ref<any[]>([])
@@ -231,6 +233,7 @@ const fetchBuffs = async () => {
     )
     if (result.success && result.data) {
       buffData.value = result.data.buffs || null
+      buffConfig.value = result.data.config || []
     }
   } catch (e) {
     console.error(ERROR_MESSAGES.BUFFS, e)

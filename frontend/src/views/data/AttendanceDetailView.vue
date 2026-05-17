@@ -122,19 +122,6 @@
                     </p>
                   </div>
                 </div>
-                <div class="flex items-center gap-2 group cursor-pointer transition-colors hover:text-status-success">
-                  <div class="p-2 rounded-lg transition-colors bg-status-success/10 group-hover:bg-status-success/20">
-                    <i class="pi pi-trophy text-status-success" />
-                  </div>
-                  <div>
-                    <p class="text-xs text-neutral-text-secondary">
-                      {{ LABELS.AVG_SCORE }}
-                    </p>
-                    <p class="text-sm font-semibold text-neutral-text">
-                      {{ summary.avg_score || 0 }}
-                    </p>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -166,30 +153,72 @@
                 :value="summary.kd_ratio || '0.0'"
                 v-bind="kdCardStyle"
               />
-              <StatCard
-                icon="pi pi-trophy"
-                :label="LABELS.AVG_SCORE"
-                :value="summary.avg_score || 0"
-                v-bind="scoreCardStyle"
-              />
             </div>
           </div>
 
-          <!-- 图表 -->
-          <AttendanceCharts
-            :detail-data="detailData"
-            @time-range-change="handleTimeRangeChange"
-          />
-
-          <!-- 角色和战斗 -->
-          <div class="container mx-auto px-4 py-6">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <AttendanceCharactersPanel
-                :characters="characters"
-                @select="showCharDetail"
-              />
-              <AttendanceFightsPanel :fights="recentFights" />
+          <!-- 角色评分卡片 -->
+          <div
+            v-if="characters.length > 0"
+            class="container mx-auto px-4 py-4"
+          >
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div
+                v-for="char in characters"
+                :key="char.character_name"
+                class="card p-4 rounded-xl border border-neutral-border/50 bg-gradient-to-br from-neutral-card to-neutral-bg-secondary cursor-pointer hover:border-primary/40 transition-all"
+                @click="showCharDetail(char)"
+              >
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center text-white text-sm font-bold">
+                      {{ char.character_name?.charAt(0) || '?' }}
+                    </div>
+                    <div>
+                      <p class="text-sm font-semibold text-neutral-text">
+                        {{ char.character_name }}
+                      </p>
+                      <p class="text-xs text-neutral-text-secondary">
+                        {{ char.profession }}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    class="flex flex-col items-end cursor-pointer"
+                    @click.stop="openScoreBreakdown(char)"
+                  >
+                    <span
+                      :class="{
+                        'text-status-success font-bold': char.avg_score >= 85,
+                        'text-primary font-semibold': char.avg_score >= 70 && char.avg_score < 85,
+                        'text-status-warning': char.avg_score >= 60 && char.avg_score < 70,
+                        'text-status-error': char.avg_score < 60
+                      }"
+                    >
+                      {{ char.score_grade }}
+                    </span>
+                    <span class="text-xs text-neutral-text-secondary">{{ char.avg_score }}分</span>
+                  </div>
+                </div>
+                <div class="mt-3 flex items-center gap-4 text-xs text-neutral-text-secondary">
+                  <span>出勤{{ char.attendance_count }}天</span>
+                  <span>伤害{{ formatNumber(char.total_damage) }}</span>
+                  <span>K/D {{ char.kd_ratio }}</span>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <!-- 角色列表 -->
+          <div class="container mx-auto px-4 py-6">
+            <AttendanceCharactersPanel
+              :characters="characters"
+              @select="showCharDetail"
+            />
+          </div>
+
+          <!-- 每日战斗日志 -->
+          <div class="container mx-auto px-4 py-6">
+            <DailyFightTimeline :daily-fights="dailyFights" />
           </div>
         </template>
 
@@ -206,6 +235,13 @@
           :character="selectedCharacter"
           :fights="characterFights"
         />
+        <ScoreBreakdownDialog
+          v-model:visible="showScoreBreakdownModal"
+          :account="account"
+          :profession="scoreBreakdownData?.most_used_profession_cn || selectedCharacter?.profession"
+          :loading="scoreBreakdownLoading"
+          :data="scoreBreakdownData"
+        />
         <Toast />
       </div>
     </div>
@@ -220,14 +256,16 @@ import ProgressSpinner from 'primevue/progressspinner'
 import Toast from 'primevue/toast'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import StatCard from '@/components/attendance/detail/StatCard.vue'
-import AttendanceCharts from '@/components/attendance/detail/AttendanceCharts.vue'
+
 import AttendanceCharactersPanel from '@/components/attendance/detail/AttendanceCharactersPanel.vue'
-import AttendanceFightsPanel from '@/components/attendance/detail/AttendanceFightsPanel.vue'
+import DailyFightTimeline from '@/components/attendance/detail/DailyFightTimeline.vue'
 import AttendanceCharDialog from '@/components/attendance/detail/AttendanceCharDialog.vue'
 import ScoringRulesDialog from '@/components/attendance/ScoringRulesDialog.vue'
+import ScoreBreakdownDialog from '@/components/attendance/ScoreBreakdownDialog.vue'
 import { useAttendanceDetail } from '@/composables/attendance/useAttendanceDetail'
 import { attendanceService } from '@/services'
 import { scoringRulesService } from '@/services/core/scoringRulesService'
+import { ApiResponseWrapper } from '@/services/core/errorHandler'
 import { formatNumber, formatDuration, formatDateParam } from '@/utils/common/attendanceFormatters'
 
 // === 常量定义 ===
@@ -240,7 +278,6 @@ const LABELS = {
   ATTENDANCE_DAYS: '出勤天数',
   TOTAL_DURATION: '总时长',
   TOTAL_DAMAGE: '总伤害',
-  AVG_SCORE: '平均评分',
 } as const
 
 const TOAST_MESSAGES = {
@@ -257,12 +294,6 @@ const TOAST_MESSAGES = {
 const LIFE_TIME = {
   NORMAL: 3000,
   LONG: 5000,
-} as const
-
-const SCORE_THRESHOLDS = {
-  EXCELLENT: 85,
-  GOOD: 70,
-  PASS: 50,
 } as const
 
 const KD_THRESHOLDS = {
@@ -282,6 +313,9 @@ const loading = ref(false)
 const detailData = ref<any>(null)
 const showCharModal = ref(false)
 const showScoringModal = ref(false)
+const showScoreBreakdownModal = ref(false)
+const scoreBreakdownLoading = ref(false)
+const scoreBreakdownData = ref<any>(null)
 const selectedCharacter = ref<any>(null)
 const dateRange = ref<[Date | null, Date | null]>([null, null])
 const scoringRulesActiveTab = ref(0)
@@ -289,7 +323,7 @@ const scoringRulesLoading = ref(false)
 const scoringRulesData = ref<Record<string, any>>({})
 const currentRuleVersion = ref(0)
 
-const { summary, characters, recentFights } = useAttendanceDetail(() => detailData.value)
+const { summary, characters, recentFights, dailyFights } = useAttendanceDetail(() => detailData.value)
 
 const characterFights = computed(() => {
   if (!selectedCharacter.value) return []
@@ -316,17 +350,34 @@ const kdCardStyle = computed(() => {
   return getCardStyle('error')
 })
 
-const scoreCardStyle = computed(() => {
-  const s = summary.value.avg_score
-  if (s >= SCORE_THRESHOLDS.EXCELLENT) return getCardStyle('success')
-  if (s >= SCORE_THRESHOLDS.GOOD) return getCardStyle('primary')
-  if (s >= SCORE_THRESHOLDS.PASS) return getCardStyle('warning')
-  return getCardStyle('error')
-})
-
 function showCharDetail(char: any) {
   selectedCharacter.value = char
   showCharModal.value = true
+}
+
+async function openScoreBreakdown(char: any) {
+  showScoreBreakdownModal.value = true
+  scoreBreakdownLoading.value = true
+  scoreBreakdownData.value = null
+  try {
+    const startDate = dateRange.value?.[0] ? formatDateParam(dateRange.value[0]) : null
+    const endDate = dateRange.value?.[1] ? formatDateParam(dateRange.value[1]) : null
+    // 从 profession_service 获取英文职业名（后端需要英文 key）
+    const professionEn = char.profession_en || char.profession
+    const result = await ApiResponseWrapper.wrap(
+      attendanceService.getAccountScoreBreakdown(account.value, professionEn, startDate, endDate),
+      { showErrorMessage: true }
+    )
+    if (result.success && result.data) {
+      scoreBreakdownData.value = result.data
+    } else {
+      toast.add({ severity: 'warn', summary: '提示', detail: '暂无该角色的评分数据', life: 3000 })
+    }
+  } catch (e: unknown) {
+    toast.add({ severity: 'error', summary: '错误', detail: e instanceof Error ? e.message : '获取评分维度详情失败', life: 5000 })
+  } finally {
+    scoreBreakdownLoading.value = false
+  }
 }
 
 function openScoringRules() {
@@ -346,10 +397,6 @@ async function fetchScoringRules() {
   } finally {
     scoringRulesLoading.value = false
   }
-}
-
-function handleTimeRangeChange(val: string) {
-  toast.add({ severity: 'info', summary: TOAST_MESSAGES.TIME_RANGE_UPDATED, detail: `${TOAST_MESSAGES.TIME_RANGE_DETAIL_PREFIX}${val}`, life: LIFE_TIME.NORMAL })
 }
 
 async function exportExcel() {

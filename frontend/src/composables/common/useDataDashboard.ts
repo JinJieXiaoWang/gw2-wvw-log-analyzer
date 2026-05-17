@@ -32,6 +32,7 @@ export function useDataDashboard() {
   const professionItems = ref<any[]>([])
   const mapItems = ref<any[]>([])
   const buffData = ref<Record<string, number> | null>(null)
+  const buffConfig = ref<any[]>([])
   const topPlayerSort = ref('damage')
   const topPlayerItems = ref<Record<string, unknown>[]>([])
   const recentFights = ref<Record<string, unknown>[]>([])
@@ -49,7 +50,10 @@ export function useDataDashboard() {
   const fetchTrends = () => fetchData(() => dashboardService.getTrends(daysFromRange(timeRange.value), trendMetric.value), loadings.trends, '趋势数据加载失败', d => trendData.value = d)
   const fetchProfessions = () => fetchData(() => dashboardService.getProfessionDistribution(daysFromRange(timeRange.value)), loadings.professions, '职业分布加载失败', d => professionItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
   const fetchMaps = () => fetchData(() => dashboardService.getMapStatistics(daysFromRange(timeRange.value)), loadings.maps, '地图统计加载失败', d => mapItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
-  const fetchBuffs = () => fetchData(() => dashboardService.getBuffOverview(daysFromRange(timeRange.value)), loadings.buffs, 'Buff概览加载失败', d => buffData.value = (d as Record<string, unknown>).buffs as Record<string, number> | null || null)
+  const fetchBuffs = () => fetchData(() => dashboardService.getBuffOverview(daysFromRange(timeRange.value)), loadings.buffs, 'Buff概览加载失败', d => {
+    buffData.value = (d as Record<string, unknown>).buffs as Record<string, number> | null || null
+    buffConfig.value = (d as Record<string, unknown>).config as any[] || []
+  })
   const fetchTopPlayers = () => fetchData(() => dashboardService.getTopPlayers(daysFromRange(timeRange.value), topPlayerSort.value, 20), loadings.topPlayers, '玩家排行加载失败', d => topPlayerItems.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
   const fetchRecentFights = () => fetchData(() => dashboardService.getRecentFights(10), loadings.recentFights, '最近战斗加载失败', d => recentFights.value = (d as Record<string, unknown>).items as Record<string, unknown>[] || [])
 
@@ -70,7 +74,7 @@ export function useDataDashboard() {
     isLoadingProfessions: loadings.professions, isLoadingMaps: loadings.maps,
     isLoadingBuffs: loadings.buffs, isLoadingTopPlayers: loadings.topPlayers,
     isLoadingRecentFights: loadings.recentFights,
-    overviewData, trendMetric, trendData, professionItems, mapItems, buffData,
+    overviewData, trendMetric, trendData, professionItems, mapItems, buffData, buffConfig,
     topPlayerSort, topPlayerItems, recentFights
   }
 }

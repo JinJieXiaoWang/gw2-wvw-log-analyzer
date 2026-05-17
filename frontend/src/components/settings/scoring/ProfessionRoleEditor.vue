@@ -82,6 +82,12 @@
                   :style="{ color: role.color }"
                 />
                 <span class="font-medium">{{ prof.profession }}</span>
+                <!-- 角色定位冲突警告 -->
+                <i
+                  v-if="getRoleConflict(prof.profession, isEditMode ? prof.currentRole : prof.role)"
+                  class="pi pi-exclamation-circle text-warning text-xs"
+                  :title="getRoleConflict(prof.profession, isEditMode ? prof.currentRole : prof.role)?.message"
+                />
               </div>
               <BaseSelect
                 v-if="isEditMode"
@@ -134,6 +140,7 @@
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import BaseSelect from '@/components/common/ui/input/BaseSelect.vue'
+import { checkRoleConflict } from '@/config/professionRoleValidation'
 
 export interface RoleType {
   type: string
@@ -187,6 +194,10 @@ const professionByRole = computed(() => {
 
 function onProfessionRoleChange(prof: any) {
   emit('profession-change', { ...prof, currentRole: prof.currentRole })
+}
+
+function getRoleConflict(profession: string, currentRole: string) {
+  return checkRoleConflict(profession, currentRole)
 }
 </script>
 

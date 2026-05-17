@@ -108,15 +108,14 @@ import LogTable from '@/components/log/LogTable.vue'
 import LogUploadDialog from '@/components/log/LogUploadDialog.vue'
 import StatCards from '@/components/log/StatCards.vue'
 import { useCombatLogList } from '@/composables/combat/useCombatLogList'
-import { authStore } from '@/composables/system/usePermission'
+import { useAuthGuard } from '@/composables/useAuthGuard'
 import PageHeader from '@/layout/components/PageHeader.vue'
 import ConfirmDialog from 'primevue/confirmdialog'
 import Toast from 'primevue/toast'
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const logTableRef = ref()
+const { requireAuth } = useAuthGuard()
 
 const {
   isLoading,
@@ -142,31 +141,20 @@ const {
 } = useCombatLogList()
 
 /**
- * 前置校验登录状态
- * 未登录则保存当前路径并跳转登录页
- */
-const checkAuthAndRedirect = (): boolean => {
-  if (!authStore.isAuthenticated) {
-    sessionStorage.setItem('auth_redirect', router.currentRoute.value.fullPath)
-    router.push('/login')
-    return false
-  }
-  return true
-}
-
-/**
  * 处理上传按钮点击事件
+ * 前置校验登录状态，Token 过期立即跳转登录页
  */
 const handleUploadClick = () => {
-  if (!checkAuthAndRedirect()) return
+  if (!requireAuth()) return
   showUploadDialog.value = true
 }
 
 /**
  * 处理批量解析按钮点击事件
+ * 前置校验登录状态，Token 过期立即跳转登录页
  */
 const handleBatchParseClick = () => {
-  if (!checkAuthAndRedirect()) return
+  if (!requireAuth()) return
   showBatchParseDialog.value = true
 }
 

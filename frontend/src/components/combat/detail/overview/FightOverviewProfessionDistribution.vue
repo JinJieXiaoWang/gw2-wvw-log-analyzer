@@ -29,14 +29,17 @@
 
 <script setup lang="ts">
 import { getProfessionColor, getProfessionName } from '@/utils/profession/professionUtils'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const SECTION_TITLES = {
-  PROFESSION_DISTRIBUTION: '职业分布',
+  PROFESSION_DISTRIBUTION: t('tactical.overview.professionDist'),
 } as const
 
 const UI_LABELS = {
-  PLAYERS_COUNT_UNIT: '人',
-  IN_BATTLE: '参战',
+  PLAYERS_COUNT_UNIT: t('tactical.units.person'),
+  IN_BATTLE: t('tactical.overview.playersInBattle'),
 } as const
 
 defineProps<{

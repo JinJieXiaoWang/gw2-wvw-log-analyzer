@@ -149,6 +149,13 @@ const progressBarClass = computed(() => {
 const onVisibleChange = (val: boolean) => {
   if (!val && isUploading.value) return
   visible.value = val
+  if (!val) {
+    // 对话框关闭时重置所有状态
+    setTimeout(() => reset(), 300)
+  } else {
+    // 对话框打开时确保 fileInput 已清空，避免显示上次选中的文件
+    if (fileInput.value) fileInput.value.value = ''
+  }
 }
 
 const closeDialog = () => {

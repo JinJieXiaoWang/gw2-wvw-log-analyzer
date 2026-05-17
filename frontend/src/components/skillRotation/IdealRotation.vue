@@ -102,7 +102,6 @@ const props = defineProps<{
 }>()
 
 // 确保props被使用
-console.log(props.rotation)
 
 // Emits
 const emit = defineEmits([

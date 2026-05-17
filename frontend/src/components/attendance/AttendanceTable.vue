@@ -138,23 +138,28 @@
       </Column>
 
       <Column
-        field="avg_score"
-        header="平均评分"
+        field="score_grade"
+        header="评分"
         sortable
       >
         <template #body="{ data }">
-          <span
-            :class="{
-              'game-badge game-badge-legendary cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.LEGENDARY,
-              'game-badge game-badge-exotic cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.EXOTIC && data.avg_score < SCORE_THRESHOLDS.LEGENDARY,
-              'game-badge game-badge-rare cursor-pointer hover:scale-110 transition-transform': data.avg_score >= SCORE_THRESHOLDS.RARE && data.avg_score < SCORE_THRESHOLDS.EXOTIC,
-              'game-badge cursor-pointer hover:scale-110 transition-transform': data.avg_score < SCORE_THRESHOLDS.RARE
-            }"
+          <div
+            class="flex items-center gap-2 cursor-pointer hover:scale-105 transition-transform"
             :title="SCORE_TOOLTIP"
             @click="handleScoreClick(data.account)"
           >
-            {{ data.avg_score }}
-          </span>
+            <span class="text-xs text-neutral-text-secondary">{{ data.primary_profession || '-' }}</span>
+            <span
+              :class="{
+                'game-badge game-badge-legendary text-yellow-400': data.avg_score >= SCORE_THRESHOLDS.LEGENDARY,
+                'game-badge game-badge-exotic text-purple-300': data.avg_score >= SCORE_THRESHOLDS.EXOTIC && data.avg_score < SCORE_THRESHOLDS.LEGENDARY,
+                'game-badge game-badge-rare text-blue-300': data.avg_score >= SCORE_THRESHOLDS.RARE && data.avg_score < SCORE_THRESHOLDS.EXOTIC,
+                'game-badge text-neutral-text': data.avg_score < SCORE_THRESHOLDS.RARE
+              }"
+            >
+              {{ data.score_grade }}
+            </span>
+          </div>
         </template>
       </Column>
 
@@ -249,6 +254,8 @@ export interface AccountItem {
   total_deaths: number
   kd_ratio: number
   avg_score: number
+  score_grade: string
+  primary_profession: string | null
   last_attendance: string | null
 }
 

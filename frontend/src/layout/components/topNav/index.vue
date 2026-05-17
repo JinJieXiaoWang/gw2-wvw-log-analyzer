@@ -1,8 +1,9 @@
 <template>
   <header
-    class="h-16 backdrop-blur-md border-b flex items-center justify-between px-4 lg:px-6 flex-shrink-0 sticky top-0 z-50 transition-all duration-300"
-    :style="{ backgroundColor: 'var(--color-card)', borderColor: 'var(--color-border)', boxShadow: '0 1px 3px var(--color-shadow)' }"
+    class="h-16 backdrop-blur-xl bg-neutral-card/60 border-b border-neutral-border/50 flex items-center justify-between px-4 lg:px-6 flex-shrink-0 sticky top-0 z-50 transition-all duration-300"
   >
+    <!-- 底部主题色渐变线 -->
+    <div class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/40 to-transparent pointer-events-none" />
     <div class="flex items-center gap-6">
       <!-- Logo -->
       <router-link
@@ -28,56 +29,37 @@
       </router-link>
 
       <!-- 主导航 -->
-      <nav class="hidden lg:flex items-center gap-1">
-        <router-link
-          v-for="item in visibleMenuItems"
-          :key="item.path"
-          :to="item.path"
-          class="nav-item group relative px-4 py-2 rounded-lg transition-all duration-200 flex items-center gap-2"
-          :class="{ 'nav-item-active': isActive(item.path) }"
-        >
-          <i :class="item.icon" />
-          <span class="text-base font-medium">{{ item.label }}</span>
-          <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-300 group-hover:w-3/4" />
-          <div
-            v-if="isActive(item.path)"
-            class="absolute bottom-0 left-1/2 -translate-x-1/2 w-3/4 h-0.5 bg-gradient-to-r from-primary to-secondary rounded-full"
-          />
-        </router-link>
-      </nav>
+      <BaseMenubar
+        v-model:mobile-open="mobileMenuOpen"
+        :model="menuData"
+        :active-route="currentPath"
+        @navigate="handleNavigate"
+      />
     </div>
 
     <!-- 右侧功能区 -->
     <div class="flex items-center gap-2 sm:gap-3">
       <!-- 搜索框 -->
-      <div class="hidden xl:flex items-center">
-        <div class="relative group">
-          <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="搜索日志、玩家..."
-            class="w-72 pl-11 pr-12 py-2.5 bg-neutral-bg/50 border border-neutral-border rounded-xl text-base text-neutral-text placeholder-neutral-text-disabled focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all group-hover:bg-neutral-bg"
-            @keyup.enter="handleSearch"
-          >
-          <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-neutral-text-disabled group-hover:text-primary transition-colors" />
-          <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-bg border border-neutral-border rounded text-xs text-neutral-text-disabled hidden group-hover:flex items-center gap-1"><span>⌘</span><span>K</span></kbd>
-        </div>
+      <div class="hidden xl:flex items-center relative group">
+        <BaseInput
+          v-model="searchQuery"
+          placeholder="搜索日志、玩家..."
+          class="w-72 pl-11"
+          @keyup.enter="handleSearch"
+        />
+        <i class="pi pi-search absolute left-4 top-1/2 -translate-y-1/2 text-neutral-text-disabled group-hover:text-primary transition-colors pointer-events-none" />
+        <kbd class="absolute right-3 top-1/2 -translate-y-1/2 px-2 py-1 bg-neutral-bg border border-neutral-border rounded text-xs text-neutral-text-disabled hidden group-hover:flex items-center gap-1"><span>⌘</span><span>K</span></kbd>
       </div>
 
       <ThemeSwitcher />
 
-      <button class="xl:hidden p-2.5 hover:bg-neutral-bg rounded-xl transition-colors">
-        <i class="pi pi-search text-neutral-text-secondary text-lg" />
-      </button>
-      <button
-        class="lg:hidden p-2.5 hover:bg-neutral-bg rounded-xl transition-colors"
-        @click="mobileMenuOpen = !mobileMenuOpen"
-      >
-        <i
-          :class="mobileMenuOpen ? 'pi pi-times' : 'pi pi-bars'"
-          class="text-neutral-text-secondary text-lg"
-        />
-      </button>
+      <BaseButton
+        class="xl:hidden p-2.5"
+        severity="secondary"
+        variant="text"
+        icon="pi pi-search"
+        @click="handleSearch"
+      />
 
       <NavNotifications
         v-if="isOperator"
@@ -89,8 +71,10 @@
 
       <!-- 用户菜单 -->
       <div class="relative">
-        <button
-          class="flex items-center gap-2 p-1.5 pr-3 hover:bg-neutral-bg rounded-xl transition-all hover:scale-[1.02] user-menu-trigger"
+        <BaseButton
+          class="user-menu-trigger flex items-center gap-2 p-1.5 pr-3 hover:scale-[1.02]"
+          severity="secondary"
+          variant="text"
           @click="showUserMenu = !showUserMenu"
         >
           <div class="relative">
@@ -109,7 +93,7 @@
             >{{ isAuthenticated ? '操作员' : '浏览模式' }}</span>
           </div>
           <i class="pi pi-chevron-down text-sm text-neutral-text-disabled hidden sm:block" />
-        </button>
+        </BaseButton>
         <UserDropdownMenu
           :visible="showUserMenu"
           :is-authenticated="isAuthenticated"
@@ -128,116 +112,34 @@
     :is-logging-out="isLoggingOut"
     @confirm="handleLogout"
   />
-  <MobileNavMenu
-    v-model:visible="mobileMenuOpen"
-    :items="visibleMenuItems"
-  />
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useToast } from 'primevue/usetoast'
-import { authStore, usePermission } from '@/composables/system/usePermission'
+import { authStore } from '@/composables/system/usePermission'
 import { noticeService } from '@/services/system/noticeService'
 import type { NoticeItem } from '@/services/system/noticeService'
 import ThemeSwitcher from '@/components/common/theme/ThemeSwitcher.vue'
 import LogoutConfirmDialog from '@/layout/components/LogoutConfirmDialog.vue'
-import MobileNavMenu from '@/layout/components/MobileNavMenu.vue'
 import NavNotifications from '@/layout/components/NavNotifications.vue'
 import UserDropdownMenu from './UserDropdownMenu.vue'
-import { menuItems as fallbackMenuItems } from './menuConfig'
+import BaseMenubar from '@/components/common/ui/navigation/BaseMenubar.vue'
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import BaseInput from '@/components/common/ui/input/BaseInput.vue'
+import { useTopNav } from '@/composables/layout/useTopNav'
 
 const router = useRouter()
-const toast = useToast()
-const { can } = usePermission()
+const {
+  searchQuery, showUserMenu, showLogoutConfirmDialog, isLoggingOut,
+  isAuthenticated, isOperator, user, userInitial, canWrite,
+  currentPath, menuData, handleSearch, handleLogout, handleNavigate, handleClickOutside,
+} = useTopNav()
 
-const searchQuery = ref('')
-const showUserMenu = ref(false)
-const mobileMenuOpen = ref(false)
-const showLogoutConfirmDialog = ref(false)
-const isLoggingOut = ref(false)
-
-// 展平树形菜单结构，只保留可直接访问的菜单项
-function flattenMenus(menus: any[]): any[] {
-  let result: any[] = []
-  menus.forEach(menu => {
-    if (menu.menu_type === 'C' && menu.path) {
-      result.push({
-        path: menu.path || '',
-        label: menu.menu_name || '',
-        icon: menu.icon ? `pi pi-${menu.icon}` : 'pi pi-circle',
-        description: menu.remark || '',
-        requireAuth: !!menu.perms,
-        perms: menu.perms
-      })
-    }
-    if (menu.children && menu.children.length > 0) {
-      result = result.concat(flattenMenus(menu.children))
-    }
-  })
-  return result
-}
-
-// 使用后端API获取的菜单数据，如果没有则使用硬编码的备用菜单
-const backendMenuItems = computed(() => {
-  const menus = authStore.menus || []
-  if (menus.length === 0) {
-    return fallbackMenuItems
-  }
-  
-  // 展平树形菜单
-  return flattenMenus(menus)
-})
-
-const visibleMenuItems = computed(() => {
-  return backendMenuItems.value.filter(item => {
-    if (!item.requireAuth) {
-      return true
-    }
-    if (!can('write')) {
-      return false
-    }
-    // 检查具体权限，系统设置需要manage_users权限
-    if (item.perms) {
-      const requiredPerms = item.perms.split(',')
-      return requiredPerms.some(p => can(p as any))
-    }
-    return true
-  })
-})
-
+// === 通知状态（保留在组件层，避免 composable 过大） ===
 const notifications = ref<NoticeItem[]>([])
 const unreadCount = ref(0)
-
-const isAuthenticated = computed(() => authStore.isAuthenticated)
-const isOperator = computed(() => authStore.currentRole === 'operator' || authStore.currentRole === 'super_admin')
-const user = computed(() => authStore.currentUser)
-const userInitial = computed(() => user.value?.username?.charAt(0).toUpperCase() || 'A')
-const canWrite = computed(() => can('write'))
-
-const currentPath = computed(() => router.currentRoute.value.path)
-const isActive = (path: string) => path === '/' ? (currentPath.value === '/' || currentPath.value === '/dashboard') : currentPath.value.startsWith(path)
-
-const handleSearch = () => {
-  if (searchQuery.value.trim()) {
-    toast.add({ severity: 'info', summary: '搜索功能', detail: `正在搜索: ${searchQuery.value}`, life: 3000 })
-  }
-}
-
-const handleLogout = async () => {
-  isLoggingOut.value = true
-  try {
-    await authStore.logout()
-    toast.add({ severity: 'success', summary: '登出成功', detail: '您已成功退出登录', life: 3000 })
-    router.push('/')
-  } catch {
-    toast.add({ severity: 'error', summary: '登出失败', detail: '请稍后重试', life: 3000 })
-  } finally {
-    isLoggingOut.value = false
-    showLogoutConfirmDialog.value = false
-  }
-}
+const mobileMenuOpen = ref(false)
 
 async function loadNotifications() {
   if (!isAuthenticated.value) return
@@ -261,7 +163,6 @@ async function markAllAsRead() {
     if (result.success) {
       notifications.value.forEach(n => n.is_read = true)
       unreadCount.value = 0
-      toast.add({ severity: 'success', summary: '操作成功', detail: '已全部标记为已读', life: 2000 })
     }
   } catch (e) { console.error('标记全部已读失败', e) }
 }
@@ -275,13 +176,6 @@ async function handleNotificationClick(notification: NoticeItem) {
     } catch (e) { console.error('标记已读失败', e) }
   }
   if (notification.source_type === 'parse_failed') router.push('/logs')
-}
-
-const handleClickOutside = (event: MouseEvent) => {
-  const target = event.target as HTMLElement
-  if (!target.closest('.user-dropdown') && !target.closest('.user-menu-trigger')) {
-    showUserMenu.value = false
-  }
 }
 
 onMounted(() => {
@@ -298,5 +192,3 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
-
-<style scoped>@import './topNav.css';</style>

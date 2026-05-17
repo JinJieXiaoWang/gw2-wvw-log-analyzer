@@ -75,30 +75,30 @@
       <div class="flex items-center justify-between pt-3 border-t border-neutral-border/50">
         <span class="text-xs text-neutral-text-disabled">{{ formatDate(build.updatedAt) }}</span>
         <div class="flex items-center gap-1">
-          <button
+          <BaseButton
             v-if="build.bdCode"
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
             title="复制Build代码"
             @click.stop="$emit('copy-code', build)"
           >
             <i class="pi pi-copy text-xs" />
-          </button>
-          <button
+          </BaseButton>
+          <BaseButton
             v-permission="'write'"
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
             title="编辑配置"
             @click.stop="$emit('edit', build)"
           >
             <i class="pi pi-pencil text-xs" />
-          </button>
-          <button
+          </BaseButton>
+          <BaseButton
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-primary hover:bg-primary/10 transition-all"
             title="查看详情"
             @click.stop="$emit('select', build)"
           >
             <i class="pi pi-eye text-xs" />
-          </button>
-          <button
+          </BaseButton>
+          <BaseButton
             v-if="showDelete"
             v-permission="'delete'"
             class="w-8 h-8 rounded-lg flex items-center justify-center text-neutral-text-secondary hover:text-red-500 hover:bg-red-500/10 transition-all"
@@ -106,7 +106,7 @@
             @click.stop="$emit('delete', build.id)"
           >
             <i class="pi pi-trash text-xs" />
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -122,8 +122,9 @@
  * 更新日期：2026-05-10（合并两套BuildCard）
  */
 
+import BaseButton from '@/components/common/ui/input/BaseButton.vue'
+import { getProfessionColor, getProfessionName } from '@/services/professionService'
 import type { BuildEntry } from '@/types/buildLibrary'
-import { getProfessionName, getProfessionColor } from '@/services/professionService'
 import { computed } from 'vue'
 
 interface Props {

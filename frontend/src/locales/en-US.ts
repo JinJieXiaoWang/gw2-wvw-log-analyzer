@@ -184,6 +184,150 @@ export default {
     conditions: 'Conditions',
     noFights: 'No fight data'
   },
+  tactical: {
+    panelTitle: 'Tactical Analysis Panel',
+    layers: {
+      team: 'Team Portrait',
+      damage: 'Damage Analysis',
+      buff: 'Boon Coverage',
+      survival: 'Survival Stats'
+    },
+    labels: {
+      might: 'Might',
+      fury: 'Fury',
+      quickness: 'Quickness',
+      alacrity: 'Alacrity',
+      protection: 'Protection',
+      stability: 'Stability',
+      boonStrip: 'Boon Strip',
+      condiCleanse: 'Condi Cleanse',
+      resurrect: 'Resurrect',
+      damageTaken: 'Damage Taken',
+      dodgeCount: 'Dodge Count',
+      playerCount: 'Players',
+      commander: 'Commander',
+      noCommander: 'None',
+      avgSkillCast: 'Avg Skill Cast',
+      weaponSwapCount: 'Weapon Swaps',
+      totalDamage: 'Total Damage',
+      damageBreakdown: 'Power / Condi / Breakbar',
+      topDps: 'Top DPS',
+      deathDowned: 'Death / Downed',
+      avgDodge: 'Avg Dodge',
+      totalHealingRes: 'Healing / Resurrect'
+    },
+    kpi: {
+      totalDamage: 'Total Damage',
+      totalDamageTaken: 'Damage Taken',
+      kills: 'Kills',
+      deaths: 'Deaths',
+      downed: 'Downed',
+      avgDps: 'Avg DPS',
+      score: 'Score'
+    },
+    tabs: {
+      overview: 'Overview',
+      players: 'Players & Squad'
+    },
+    units: {
+      person: '',
+      times: '',
+      percent: '%'
+    },
+    stats: {
+      title: 'Combat Stats',
+      damageComp: 'Damage Comp',
+      protection: 'Protection',
+      stability: 'Stability',
+      condiCleanse: 'Cleanse',
+      boonStrip: 'Strip',
+      damageTaken: 'Taken',
+      hitRate: 'Hit Rate',
+      downed: 'Downed',
+      castUptime: 'Cast Uptime',
+      stackDist: 'Stack Dist',
+      comDist: 'Com Dist'
+    },
+    table: {
+      player: 'Player',
+      damage: 'Damage',
+      dps: 'DPS',
+      powerDamage: 'Power',
+      condiDamage: 'Condi',
+      breakbar: 'Breakbar',
+      flanking: 'Flank',
+      glance: 'Glance',
+      missed: 'Miss',
+      interrupt: 'Interrupt',
+      swap: 'Swap',
+      block: 'Block',
+      evade: 'Evade',
+      dodge: 'Dodge',
+      boonStrip: 'Strip',
+      condiCleanse: 'Cleanse',
+      downed: 'Downed',
+      stunBreak: 'Break'
+    },
+    overview: {
+      professionDist: 'Profession Distribution',
+      playersInBattle: ' players',
+      squadCompare: 'Squad Comparison',
+      squadPrefix: 'Squad',
+      avgDps: 'Avg DPS',
+      death: 'Death',
+      downed: 'Downed'
+    },
+    ranking: {
+      title: 'Player Ranking & Squad',
+      enemyTarget: 'Enemy Target',
+      unknown: 'Unknown',
+      more: 'more'
+    },
+    quickInfo: {
+      duration: 'Duration',
+      playerCount: 'Players',
+      map: 'Map',
+      uploadTime: 'Upload Time',
+      eiReport: 'EI Report',
+      kills: 'Kills',
+      deaths: 'Deaths',
+      avgDps: 'Avg DPS'
+    },
+    team: {
+      dpsTop10: 'DPS TOP10',
+      commander: 'Cmdr',
+      dps: 'DPS',
+      squadStats: 'Squad Stats',
+      ungrouped: 'Ungrouped'
+    },
+    statOverview: {
+      title: 'Team Stats Overview',
+      protection: 'Protection',
+      stability: 'Stability',
+      hitRate: 'Hit Rate',
+      skillCast: 'Skill Cast',
+      stackDist: 'Stack Dist',
+      comDist: 'Com Dist'
+    },
+    combatAnalysis: {
+      title: 'Combat Stats',
+      expand: 'Expand',
+      collapse: 'Collapse',
+      powerDamage: 'Power Damage',
+      condiDamage: 'Condi Damage',
+      breakbarDamage: 'Breakbar Damage'
+    },
+    ai: {
+      analyzing: 'AI Analyzing',
+      processing: 'Processing your data...',
+      fightAnalysis: 'Fight Analysis',
+      aiAnalyzingFight: 'AI is analyzing selected fight data...',
+      playerAnalysis: 'Player Analysis',
+      aiAnalyzingPlayer: 'AI is analyzing selected player data...',
+      buildAnalysis: 'Build Analysis',
+      aiAnalyzingBuild: 'AI is evaluating Build configuration...'
+    }
+  },
   navigation: {
     home: 'Home',
     logs: 'Logs',

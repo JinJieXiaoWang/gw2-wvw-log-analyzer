@@ -142,7 +142,7 @@ export function useAttendancePage() {
     router.push({ name: 'attendance-detail', params: { account } })
   }
 
-  const openScoreBreakdown = async (account: string) => {
+  const openScoreBreakdown = async (account: string, profession?: string) => {
     scoreBreakdownAccount.value = account
     scoreBreakdownVisible.value = true
     scoreBreakdownLoading.value = true
@@ -155,7 +155,7 @@ export function useAttendancePage() {
         if (dateRange.value[1]) endDate = formatDateParam(dateRange.value[1])
       }
       const result = await ApiResponseWrapper.wrap(
-        attendanceService.getAccountScoreBreakdown(account, startDate, endDate),
+        attendanceService.getAccountScoreBreakdown(account, profession || null, startDate, endDate),
         { showErrorMessage: true }
       )
       if (result.success && result.data) {

@@ -19,6 +19,7 @@ from app.services.ai_analysis.data_aggregator import (
     FightStatsAggregator,
 )
 from app.constants.dict_values import AiBuildType, CheckStatus
+from app.utils.db.dict_utils import get_dict_label
 from app.utils.logger import logger
 
 
@@ -26,25 +27,22 @@ class BuildExecutionAnalyzer:
     """Build执行效能验证分析器"""
 
     # Build类型与期望指标的映射（启发式基准）
+    # label 从 AiBuildType Enum 读取，不硬编码中文
     BUILD_EXPECTATIONS = {
         AiBuildType.POWER.value: {
-            "label": "直伤Build",
             "expected_power_ratio": 0.7,  # 直伤应占总伤害70%+
             "expected_crit_rate": 0.6,  # 暴击率60%+
             "expected_dps_per_1k_stats": 800,  # 每1k攻击力对应800DPS
         },
         AiBuildType.CONDI.value: {
-            "label": "症状Build",
             "expected_condi_ratio": 0.7,  # 症状应占总伤害70%+
             "expected_avg_conditions": 10,  # 平均症状层数
         },
         AiBuildType.SUPPORT.value: {
-            "label": "辅助Build",
             "expected_healing_per_min": 500000,  # 每分钟治疗量
             "expected_boon_uptime": 0.6,  # 增益覆盖率60%+
         },
         AiBuildType.TANK.value: {
-            "label": "坦克Build",
             "expected_damage_taken_per_min": 800000,  # 每分钟承伤（拉仇恨）
             "expected_block_evade_rate": 0.3,  # 格挡/闪避率
         },
@@ -187,7 +185,7 @@ class BuildExecutionAnalyzer:
             expected = expectations.get("expected_power_ratio", 0.7)
             checks.append({
                 "check": "power_damage_ratio",
-                "label": "直伤占比",
+                "label": get_dict_label("ai_check_item", "power_damage_ratio"),
                 "actual": round(power_ratio * 100, 1),
                 "expected": round(expected * 100, 1),
                 "status": CheckStatus.PASS.value if power_ratio >= expected * 0.8 else CheckStatus.FAIL.value,
@@ -199,7 +197,7 @@ class BuildExecutionAnalyzer:
             expected_crit = expectations.get("expected_crit_rate", 0.6)
             checks.append({
                 "check": "critical_rate",
-                "label": "暴击率",
+                "label": get_dict_label("ai_check_item", "critical_rate"),
                 "actual": round(crit_rate * 100, 1),
                 "expected": round(expected_crit * 100, 1),
                 "status": CheckStatus.PASS.value if crit_rate >= expected_crit * 0.8 else CheckStatus.FAIL.value,
@@ -212,7 +210,7 @@ class BuildExecutionAnalyzer:
             expected = expectations.get("expected_condi_ratio", 0.7)
             checks.append({
                 "check": "condi_damage_ratio",
-                "label": "症状占比",
+                "label": get_dict_label("ai_check_item", "condi_damage_ratio"),
                 "actual": round(condi_ratio * 100, 1),
                 "expected": round(expected * 100, 1),
                 "status": CheckStatus.PASS.value if condi_ratio >= expected * 0.8 else CheckStatus.FAIL.value,
@@ -225,7 +223,7 @@ class BuildExecutionAnalyzer:
             expected = expectations.get("expected_healing_per_min", 500000)
             checks.append({
                 "check": "healing_output",
-                "label": "每分钟治疗",
+                "label": get_dict_label("ai_check_item", "healing_output"),
                 "actual": round(healing_per_min, 0),
                 "expected": expected,
                 "status": CheckStatus.PASS.value if healing_per_min >= expected * 0.6 else CheckStatus.FAIL.value,
@@ -237,7 +235,7 @@ class BuildExecutionAnalyzer:
             expected_boon = expectations.get("expected_boon_uptime", 0.6)
             checks.append({
                 "check": "boon_uptime",
-                "label": "增益覆盖",
+                "label": get_dict_label("ai_check_item", "boon_uptime"),
                 "actual": round(boon_uptime, 1),
                 "expected": round(expected_boon * 100, 1),
                 "status": CheckStatus.PASS.value if boon_uptime >= expected_boon * 80 else CheckStatus.FAIL.value,
@@ -248,7 +246,7 @@ class BuildExecutionAnalyzer:
         dps = latest.get("dps", 0)
         checks.append({
             "check": "dps_efficiency",
-            "label": "DPS效率",
+            "label": get_dict_label("ai_check_item", "dps_efficiency"),
             "actual": dps,
             "expected": "根据Build类型而异",
             "status": "info",
@@ -259,7 +257,7 @@ class BuildExecutionAnalyzer:
         skill_uptime = latest.get("skill_cast_uptime", 0)
         checks.append({
             "check": "skill_engagement",
-            "label": "技能参与度",
+            "label": get_dict_label("ai_check_item", "skill_engagement"),
             "actual": f"武器切换{swaps}次, 技能施放率{round(skill_uptime, 1)}%",
             "expected": "高活跃度",
             "status": CheckStatus.PASS.value if skill_uptime > 60 else CheckStatus.WARN.value,
@@ -332,7 +330,7 @@ class BuildExecutionAnalyzer:
         has_weapons = bool(weapons and (isinstance(weapons, list) and len(weapons) > 0))
         checks.append({
             "check": "weapon_presence",
-            "label": "武器配置",
+            "label": get_dict_label("ai_check_item", "weapon_presence"),
             "actual": "已装备" if has_weapons else "未获取",
             "expected": "主副手武器齐全",
             "status": CheckStatus.PASS.value if has_weapons else CheckStatus.WARN.value,
@@ -342,7 +340,7 @@ class BuildExecutionAnalyzer:
         has_food = equipment_check.get("has_food", False)
         checks.append({
             "check": "food_consumable",
-            "label": "食物增益",
+            "label": get_dict_label("ai_check_item", "food_consumable"),
             "actual": "已使用" if has_food else "未检测",
             "expected": "使用WvW食物",
             "status": CheckStatus.PASS.value if has_food else CheckStatus.WARN.value,
@@ -352,7 +350,7 @@ class BuildExecutionAnalyzer:
         has_util = equipment_check.get("has_utility", False)
         checks.append({
             "check": "utility_consumable",
-            "label": "增强道具",
+            "label": get_dict_label("ai_check_item", "utility_consumable"),
             "actual": "已使用" if has_util else "未检测",
             "expected": "使用磨刀石/油/调谐",
             "status": CheckStatus.PASS.value if has_util else CheckStatus.WARN.value,
@@ -365,7 +363,7 @@ class BuildExecutionAnalyzer:
             prof_match = actual_prof.lower() == expected_prof.lower() if expected_prof else True
             checks.append({
                 "check": "profession_match",
-                "label": "职业匹配",
+                "label": get_dict_label("ai_check_item", "profession_match"),
                 "actual": actual_prof,
                 "expected": expected_prof or "任意",
                 "status": CheckStatus.PASS.value if prof_match else CheckStatus.FAIL.value,

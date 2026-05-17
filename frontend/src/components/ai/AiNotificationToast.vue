@@ -1,13 +1,32 @@
 <template>
   <Transition name="slide-up">
-    <div v-if="show" :class="notificationClass" class="fixed bottom-8 right-8 px-6 py-4 rounded-2xl shadow-2xl z-50 flex items-center gap-4 min-w-[280px]">
-      <SvgIcon :icon="notificationIcon" :size="24" class="text-white flex-shrink-0" />
+    <div
+      v-if="show"
+      :class="notificationClass"
+      class="fixed bottom-8 right-8 px-6 py-4 rounded-2xl shadow-2xl z-50 flex items-center gap-4 min-w-[280px]"
+    >
+      <SvgIcon
+        :icon="notificationIcon"
+        :size="24"
+        class="text-white flex-shrink-0"
+      />
       <div>
-        <p class="text-white font-medium">{{ title }}</p>
-        <p class="text-white/80 text-sm">{{ message }}</p>
+        <p class="text-white font-medium">
+          {{ title }}
+        </p>
+        <p class="text-white/80 text-sm">
+          {{ message }}
+        </p>
       </div>
-      <button @click="$emit('close')" class="ml-auto">
-        <SvgIcon icon="x" :size="18" class="text-white/80 hover:text-white" />
+      <button
+        class="ml-auto"
+        @click="$emit('close')"
+      >
+        <SvgIcon
+          icon="x"
+          :size="18"
+          class="text-white/80 hover:text-white"
+        />
       </button>
     </div>
   </Transition>

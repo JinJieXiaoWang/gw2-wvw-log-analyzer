@@ -27,7 +27,7 @@
             icon="pi pi-refresh"
             :loading="parsing"
             class="transition-all duration-200 hover:shadow-lg hover:shadow-secondary/20"
-            @click="reparseLog"
+            @click="handleReparseLog"
           />
         </div>
       </div>
@@ -178,15 +178,15 @@
     v-model:visible="dialogVisible"
     v-model:rotation-view-mode="rotationViewMode"
     :player="selectedPlayer"
+    :player-rotation="playerRotation"
+    :rotation-loading="rotationLoading"
     :has-player-detail-data="hasPlayerDetailData"
-    :rotation-data="{ playerRotation, rotationLoading, sortedSkillCasts, top10SkillCasts, autoAttackRatio, weaponSwapCount, weaponSwapIntervals }"
-    :timeline-data="{ timelineTicks, timelineTracks }"
-    :heatmap-data="{ heatmapRows }"
-    :cycle-data="{ skillCycles }"
-    :tooltip-data="{ hoveredSkill, tooltipPosition }"
-    @hover-skill="handleHoverSkill"
-    @leave-skill="handleLeaveSkill"
-    @mousemove="handleMouseMove"
+    :sorted-skill-casts="sortedSkillCasts"
+    :top10-skill-casts="top10SkillCasts"
+    :auto-attack-ratio="autoAttackRatio"
+    :weapon-swap-count="weaponSwapCount"
+    :weapon-swap-intervals="weaponSwapIntervals"
+    :rotation-events="rotationEvents"
   />
 
   <ConfirmDialog />
@@ -197,8 +197,9 @@
 import { ref, computed, defineAsyncComponent } from 'vue'
 import { fmtCompact } from '@/composables/combat/useCombatHelpers'
 import { useStatDetail, CATEGORY_FIELDS, type StatCategory } from '@/composables/combat/useStatDetail'
-import { usePlayerRotation } from '@/composables/combat/usePlayerRotation'
+// ECharts 组件已移除，玩家详情弹窗使用 PrimeVue/HTML 列表展示
 import { useCombatLogData } from '@/composables/combat/useCombatLogData'
+import { useAuthGuard } from '@/composables/useAuthGuard'
 import BaseButton from '@/components/common/ui/input/BaseButton.vue'
 import BaseTag from '@/components/common/ui/display/BaseTag.vue'
 import TabMenu from 'primevue/tabmenu'
@@ -243,9 +244,7 @@ const TOOLTIP_DIMENSIONS = {
 const activeTab = ref(0)
 const showDamageDetailDialog = ref(false)
 const showStatDetailDialog = ref(false)
-const rotationViewMode = ref<'stats' | 'timeline' | 'heatmap' | 'cycle'>('stats')
-const hoveredSkill = ref<any>(null)
-const tooltipPosition = ref<{ x: number; y: number } | null>(null)
+// 玩家详情弹窗状态
 const currentStatType = ref<StatCategory>('protection')
 const currentStatCategory = ref<string[]>([])
 const statDetailTitle = ref('')
@@ -253,15 +252,25 @@ const statDetailTitle = ref('')
 const {
   loading, parsing, error, logDetail, summary, selectedPlayer, playerRotation, rotationLoading, dialogVisible,
   fightSummary, agg, players, topDpsPlayers, commanders, groups, ungroupedPlayers, sortedPlayerList, quickInfoItems,
-  reparseLog, openPlayerDialog
+  hasPlayerDetailData, rotationViewMode, sortedSkillCasts, top10SkillCasts, rotationEvents,
+  autoAttackRatio, weaponSwapCount, weaponSwapIntervals,
+  reparseLog, openPlayerDialog,
 } = useCombatLogData()
+
+const { requireAuth } = useAuthGuard()
 
 const statAverages = computed(() => summary.value?.stat_averages || { protection: 0, stability: 0, hitRate: 100, skillCastUptime: 0, stackDist: 0, distToCom: 0 })
 const donut = computed(() => summary.value?.donut || { pd: '0 264', cd: '0 264', bd: '0 264', co: 0, bo: 0, total: 0, p: 0, c: 0, b: 0 })
 const breakbarPct = computed(() => summary.value?.percentages?.breakbar || 0)
 
 const { statDetailList, statDetailAverage } = useStatDetail(players, currentStatType, currentStatCategory)
-const { sortedSkillCasts, top10SkillCasts, autoAttackRatio, weaponSwapCount, weaponSwapIntervals, hasPlayerDetailData, timelineTicks, timelineTracks, heatmapRows, skillCycles } = usePlayerRotation(playerRotation, fightSummary)
+
+
+
+const handleReparseLog = () => {
+  if (!requireAuth()) return
+  reparseLog()
+}
 
 const openStatDetailDialog = (type: string, title: string) => {
   currentStatType.value = type as StatCategory
@@ -276,18 +285,5 @@ const onRowClick = (event: any) => {
   if (player) openPlayerDialog(player)
 }
 
-const handleHoverSkill = (skill: any) => { hoveredSkill.value = skill }
-const handleLeaveSkill = () => { hoveredSkill.value = null; tooltipPosition.value = null }
 
-const handleMouseMove = (event: MouseEvent) => {
-  const tooltipWidth = TOOLTIP_DIMENSIONS.WIDTH
-  const tooltipHeight = TOOLTIP_DIMENSIONS.HEIGHT
-  let x = event.clientX + TOOLTIP_DIMENSIONS.OFFSET
-  let y = event.clientY + TOOLTIP_DIMENSIONS.OFFSET
-  const maxX = window.innerWidth - tooltipWidth - TOOLTIP_DIMENSIONS.OFFSET
-  const maxY = window.innerHeight - tooltipHeight - TOOLTIP_DIMENSIONS.OFFSET
-  if (x > maxX) x = event.clientX - tooltipWidth - TOOLTIP_DIMENSIONS.FLIP_OFFSET
-  if (y > maxY) y = event.clientY - tooltipHeight - TOOLTIP_DIMENSIONS.FLIP_OFFSET
-  tooltipPosition.value = { x: Math.max(TOOLTIP_DIMENSIONS.MIN_POSITION, Math.min(x, maxX)), y: Math.max(TOOLTIP_DIMENSIONS.MIN_POSITION, Math.min(y, maxY)) }
-}
 </script>

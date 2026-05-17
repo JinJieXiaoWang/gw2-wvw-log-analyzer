@@ -5,10 +5,10 @@
         <div class="p-1.5 rounded-lg bg-secondary/10">
           <i class="pi pi-sliders-h text-secondary" />
         </div>
-        详细战斗统计
+        {{ t('tactical.stats.title') }}
       </h3>
       <BaseButton
-        :label="showDetailStats ? '收起' : '展开'"
+        :label="showDetailStats ? t('tactical.combatAnalysis.collapse') : t('tactical.combatAnalysis.expand')"
         :icon="showDetailStats ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
         variant="secondary"
         size="small"
@@ -23,7 +23,7 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div class="card p-4 rounded-xl bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">直伤总量</span>
+            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">{{ t('tactical.combatAnalysis.powerDamage') }}</span>
             <div class="p-1.5 rounded-lg bg-primary/20">
               <i class="pi pi-bolt text-primary text-sm" />
             </div>
@@ -45,7 +45,7 @@
         </div>
         <div class="card p-4 rounded-xl bg-gradient-to-br from-success/10 to-transparent border-success/20">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">症状总量</span>
+            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">{{ t('tactical.combatAnalysis.condiDamage') }}</span>
             <div class="p-1.5 rounded-lg bg-success/20">
               <i class="pi pi-flame text-success text-sm" />
             </div>
@@ -67,7 +67,7 @@
         </div>
         <div class="card p-4 rounded-xl bg-gradient-to-br from-secondary/10 to-transparent border-secondary/20">
           <div class="flex items-center justify-between mb-3">
-            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">破甲总量</span>
+            <span class="text-xs font-medium text-neutral-text-secondary uppercase tracking-wider">{{ t('tactical.combatAnalysis.breakbarDamage') }}</span>
             <div class="p-1.5 rounded-lg bg-secondary/20">
               <i class="pi pi-hammer text-secondary text-sm" />
             </div>
@@ -100,7 +100,7 @@
       >
         <Column
           field="character_name"
-          header="玩家"
+          :header="t('tactical.table.player')"
           style="min-width: 140px"
         >
           <template #body="{ data }">
@@ -128,7 +128,7 @@
         </Column>
         <Column
           field="damage"
-          header="伤害"
+          :header="t('tactical.table.damage')"
           style="min-width: 90px"
         >
           <template #body="{ data }">
@@ -137,7 +137,7 @@
         </Column>
         <Column
           field="dps"
-          header="DPS"
+          :header="t('tactical.table.dps')"
           style="min-width: 80px"
         >
           <template #body="{ data }">
@@ -146,7 +146,7 @@
         </Column>
         <Column
           field="power_damage"
-          header="直伤"
+          :header="t('tactical.table.powerDamage')"
           style="min-width: 90px"
         >
           <template #body="{ data }">
@@ -155,7 +155,7 @@
         </Column>
         <Column
           field="condi_damage"
-          header="症状"
+          :header="t('tactical.table.condiDamage')"
           style="min-width: 90px"
         >
           <template #body="{ data }">
@@ -164,7 +164,7 @@
         </Column>
         <Column
           field="breakbar_damage"
-          header="破甲"
+          :header="t('tactical.table.breakbar')"
           style="min-width: 90px"
         >
           <template #body="{ data }">
@@ -173,7 +173,7 @@
         </Column>
         <Column
           field="flanking_rate"
-          header="侧身率"
+          :header="t('tactical.table.flanking')"
           style="min-width: 80px"
         >
           <template #body="{ data }">
@@ -182,7 +182,7 @@
         </Column>
         <Column
           field="glance_rate"
-          header="擦过率"
+          :header="t('tactical.table.glance')"
           style="min-width: 80px"
         >
           <template #body="{ data }">
@@ -191,47 +191,47 @@
         </Column>
         <Column
           field="missed"
-          header="未命中"
+          :header="t('tactical.table.missed')"
           style="min-width: 80px"
         />
         <Column
           field="interrupts"
-          header="打断"
+          :header="t('tactical.table.interrupt')"
           style="min-width: 70px"
         />
         <Column
           field="swap_count"
-          header="换武器"
+          :header="t('tactical.table.swap')"
           style="min-width: 80px"
         />
         <Column
           field="blocked_count"
-          header="格挡"
+          :header="t('tactical.table.block')"
           style="min-width: 70px"
         />
         <Column
           field="evaded_count"
-          header="闪避"
+          :header="t('tactical.table.evade')"
           style="min-width: 70px"
         />
         <Column
           field="dodge_count"
-          header="翻滚"
+          :header="t('tactical.table.dodge')"
           style="min-width: 70px"
         />
         <Column
           field="boon_strips"
-          header="剥增益"
+          :header="t('tactical.table.boonStrip')"
           style="min-width: 85px"
         />
         <Column
           field="condition_cleanses"
-          header="清症"
+          :header="t('tactical.table.condiCleanse')"
           style="min-width: 70px"
         />
         <Column
           field="downed"
-          header="击倒"
+          :header="t('tactical.table.downed')"
           style="min-width: 70px"
         >
           <template #body="{ data }">
@@ -240,7 +240,7 @@
         </Column>
         <Column
           field="stun_break"
-          header="解控"
+          :header="t('tactical.table.stunBreak')"
           style="min-width: 70px"
         >
           <template #body="{ data }">
@@ -258,6 +258,7 @@ import { fmtCompact, getProfessionIconUrl, getProfessionName } from '@/composabl
 import Column from 'primevue/column'
 import DataTable from 'primevue/datatable'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { players, agg, powerPct, condiPct, breakbarPct } = defineProps<{
   players: any[]
@@ -267,5 +268,6 @@ const { players, agg, powerPct, condiPct, breakbarPct } = defineProps<{
   breakbarPct: number
 }>()
 
+const { t } = useI18n()
 const showDetailStats = ref(false)
 </script>

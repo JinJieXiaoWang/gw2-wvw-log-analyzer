@@ -20,6 +20,8 @@ import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useI18n } from 'vue-i18n'
+import { usePlayerRotation } from './usePlayerRotation'
 
 /** KPI条目类型 */
 export interface KpiItem {
@@ -62,12 +64,6 @@ export interface GroupData {
   players: EiAnalysisPlayer[]
 }
 
-/** Tab 配置常量 */
-const TAB_ITEMS = [
-  { label: '战斗概况', icon: 'pi pi-chart-bar' },
-  { label: '玩家 & 小队', icon: 'pi pi-users' },
-]
-
 /** KPI 参考阈值常量 */
 const KPI_THRESHOLDS = {
   maxDamage: 5_000_000,
@@ -80,6 +76,13 @@ export function useCombatLogDetail() {
   const route = useRoute()
   const toast = useToast()
   const confirm = useConfirm()
+  const { t } = useI18n()
+
+  /** Tab 配置常量 */
+  const TAB_ITEMS = [
+    { label: t('tactical.tabs.overview'), icon: 'pi pi-chart-bar' },
+    { label: t('tactical.tabs.players'), icon: 'pi pi-users' },
+  ]
 
   // ========== State ==========
   const activeTab = ref(0)
@@ -99,6 +102,7 @@ export function useCombatLogDetail() {
   const selectedTeamId = ref<number | null>(null)
   const logDetail = ref<Record<string, any>>({})
   const summary = ref<EiAnalysisResponse | null>(null)
+  const rotationViewMode = ref<'stats' | 'rotation'>('stats')
 
   // 解析进度轮询定时器
   let parseProgressInterval: ReturnType<typeof setInterval> | null = null
@@ -121,12 +125,12 @@ export function useCombatLogDetail() {
     const { maxDamage, maxDowned, maxDeaths, maxDps } = KPI_THRESHOLDS
     const a = agg.value
     return [
-      { icon: 'pi pi-bolt', label: '总伤害', value: fmtCompact(a.total_damage), color: 'text-primary', bg: 'from-primary/20 to-primary/5', barColor: 'bg-primary', unit: '', percent: Math.min((a.total_damage / maxDamage) * 100, 100) },
-      { icon: 'pi pi-shield', label: '总承伤', value: fmtCompact(a.total_damage_taken), color: 'text-secondary', bg: 'from-secondary/20 to-secondary/5', barColor: 'bg-secondary', unit: '', percent: Math.min((a.total_damage_taken / maxDamage) * 100, 100) },
-      { icon: 'pi pi-star', label: '击杀', value: String(a.total_kills || 0), color: 'text-success', bg: 'from-success/20 to-success/5', barColor: 'bg-success', unit: '次', percent: Math.min((a.total_kills / maxDeaths) * 100, 100) },
-      { icon: 'pi pi-times-circle', label: '死亡', value: String(a.total_deaths || 0), color: 'text-error', bg: 'from-error/20 to-error/5', barColor: 'bg-error', unit: '次', percent: Math.min((a.total_deaths / maxDeaths) * 100, 100) },
-      { icon: 'pi pi-arrow-down', label: '倒地', value: String(a.total_downed || 0), color: 'text-warning', bg: 'from-warning/20 to-warning/5', barColor: 'bg-warning', unit: '次', percent: Math.min((a.total_downed / maxDowned) * 100, 100) },
-      { icon: 'pi pi-chart-line', label: '平均DPS', value: fmtCompact(a.avg_dps), color: 'text-primary', bg: 'from-primary/20 to-primary/5', barColor: 'bg-primary', unit: '', percent: Math.min((a.avg_dps / maxDps) * 100, 100) },
+      { icon: 'pi pi-bolt', label: t('tactical.kpi.totalDamage'), value: fmtCompact(a.total_damage), color: 'text-primary', bg: 'from-primary/20 to-primary/5', barColor: 'bg-primary', unit: '', percent: Math.min((a.total_damage / maxDamage) * 100, 100) },
+      { icon: 'pi pi-shield', label: t('tactical.kpi.totalDamageTaken'), value: fmtCompact(a.total_damage_taken), color: 'text-secondary', bg: 'from-secondary/20 to-secondary/5', barColor: 'bg-secondary', unit: '', percent: Math.min((a.total_damage_taken / maxDamage) * 100, 100) },
+      { icon: 'pi pi-star', label: t('tactical.kpi.kills'), value: String(a.total_kills || 0), color: 'text-success', bg: 'from-success/20 to-success/5', barColor: 'bg-success', unit: t('tactical.units.times'), percent: Math.min((a.total_kills / maxDeaths) * 100, 100) },
+      { icon: 'pi pi-times-circle', label: t('tactical.kpi.deaths'), value: String(a.total_deaths || 0), color: 'text-error', bg: 'from-error/20 to-error/5', barColor: 'bg-error', unit: t('tactical.units.times'), percent: Math.min((a.total_deaths / maxDeaths) * 100, 100) },
+      { icon: 'pi pi-arrow-down', label: t('tactical.kpi.downed'), value: String(a.total_downed || 0), color: 'text-warning', bg: 'from-warning/20 to-warning/5', barColor: 'bg-warning', unit: t('tactical.units.times'), percent: Math.min((a.total_downed / maxDowned) * 100, 100) },
+      { icon: 'pi pi-chart-line', label: t('tactical.kpi.avgDps'), value: fmtCompact(a.avg_dps), color: 'text-primary', bg: 'from-primary/20 to-primary/5', barColor: 'bg-primary', unit: '', percent: Math.min((a.avg_dps / maxDps) * 100, 100) },
     ]
   })
 
@@ -201,11 +205,22 @@ export function useCombatLogDetail() {
     return [...players.value].sort((a, b) => (b.damage || 0) - (a.damage || 0))
   })
 
+  // 技能循环数据计算
+  const {
+    sortedSkillCasts,
+    top10SkillCasts,
+    rotationEvents,
+    autoAttackRatio,
+    weaponSwapCount,
+    weaponSwapIntervals,
+    hasPlayerDetailData,
+  } = usePlayerRotation(playerRotation, fightSummary)
+
   const quickInfoItems = computed(() => [
-    { label: '战斗时长', value: fmtDuration(fightSummary.value.duration_sec || 0), iconClass: 'pi pi-clock text-primary', iconBg: 'bg-primary/10 group-hover:bg-primary/20' },
-    { label: '参战人数', value: `${summary.value?.total_players || 0} 人`, iconClass: 'pi pi-users text-success', iconBg: 'bg-success/10 group-hover:bg-success/20' },
-    { label: '地图', value: fightSummary.value.map_name || '-', iconClass: 'pi pi-map text-info', iconBg: 'bg-info/10 group-hover:bg-info/20' },
-    { label: '上传时间', value: fmtDate(logDetail.value.upload_time), iconClass: 'pi pi-calendar text-secondary', iconBg: 'bg-secondary/10 group-hover:bg-secondary/20' },
+    { label: t('tactical.quickInfo.duration'), value: fmtDuration(fightSummary.value.duration_sec || 0), iconClass: 'pi pi-clock text-primary', iconBg: 'bg-primary/10 group-hover:bg-primary/20' },
+    { label: t('tactical.quickInfo.playerCount'), value: `${summary.value?.total_players || 0} ${t('tactical.units.person')}`, iconClass: 'pi pi-users text-success', iconBg: 'bg-success/10 group-hover:bg-success/20' },
+    { label: t('tactical.quickInfo.map'), value: fightSummary.value.map_name || '-', iconClass: 'pi pi-map text-info', iconBg: 'bg-info/10 group-hover:bg-info/20' },
+    { label: t('tactical.quickInfo.uploadTime'), value: fmtDate(logDetail.value.upload_time), iconClass: 'pi pi-calendar text-secondary', iconBg: 'bg-secondary/10 group-hover:bg-secondary/20' },
   ])
 
   const powerPct = computed(() => {
@@ -219,38 +234,6 @@ export function useCombatLogDetail() {
   const breakbarPct = computed(() => {
     const t = agg.value.total_damage
     return t ? Math.round((agg.value.total_breakbar_damage / t) * 100) : 0
-  })
-
-  const rotationEvents = computed(() => {
-    if (!playerRotation.value?.rotation) return []
-    const map = playerRotation.value.skill_map || {}
-    const events: Record<string, unknown>[] = []
-    for (const rot of playerRotation.value.rotation) {
-      if (!rot || typeof rot !== 'object') continue
-      const rawSkillId = rot.id ?? 0
-      const lookupId = rawSkillId === -2 ? 0 : rawSkillId
-      const skillInfo = map[String(lookupId)] || {}
-      const name = skillInfo.name || `技能#${rawSkillId}`
-      const iconUrl = skillInfo.icon || ''
-      const icon = getSkillIconUrl(name, iconUrl)
-      for (const cast of rot.skills || []) {
-        events.push({
-          castTime: cast.castTime ?? 0,
-          skillId: rawSkillId,
-          duration: cast.duration ?? 0,
-          timeGained: cast.timeGained ?? 0,
-          quickness: cast.quickness ?? 0,
-          name,
-          icon,
-          autoAttack: skillInfo.auto_attack || false,
-          isSwap: skillInfo.is_swap || false,
-          isInstant: skillInfo.is_instant_cast || false,
-          isTraitProc: skillInfo.is_trait_proc || false,
-          gw2Id: skillInfo.gw2_id || rawSkillId,
-        })
-      }
-    }
-    return events
   })
 
   // ========== Methods ==========
@@ -367,7 +350,9 @@ export function useCombatLogDetail() {
   const openPlayerDialog = async (player: EiAnalysisPlayer) => {
     selectedPlayer.value = player
     dialogVisible.value = true
-    await loadPlayerRotation(player)
+    rotationViewMode.value = 'stats'
+    // 并行加载技能数据，不阻塞弹窗打开
+    loadPlayerRotation(player)
   }
 
   /** 加载玩家技能循环数据 */
@@ -419,7 +404,7 @@ export function useCombatLogDetail() {
     selectedPlayer,
     playerRotation,
     rotationLoading,
-    rotationEvents,
+    rotationViewMode,
     selectedTeamId,
     logDetail,
     summary,
@@ -447,6 +432,15 @@ export function useCombatLogDetail() {
     // Constants
     tabItems: TAB_ITEMS,
 
+    // Rotation computed
+    sortedSkillCasts,
+    top10SkillCasts,
+    rotationEvents,
+    autoAttackRatio,
+    weaponSwapCount,
+    weaponSwapIntervals,
+    hasPlayerDetailData,
+
     // Actions
     loadData,
     reparseLog,
@@ -454,5 +448,6 @@ export function useCombatLogDetail() {
     openPlayerDialog,
     loadPlayerRotation,
     onRowClick,
+
   }
 }

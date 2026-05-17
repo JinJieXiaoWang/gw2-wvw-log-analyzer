@@ -180,6 +180,46 @@
       "sort_order": 22,
       "remark": "评分规则版本处理状态",
       "is_system": 1
+    },
+    {
+      "dict_type": "ai_build_type",
+      "dict_name": "AI Build类型",
+      "status": 0,
+      "sort_order": 23,
+      "remark": "AI Build执行分析类型",
+      "is_system": 1
+    },
+    {
+      "dict_type": "death_category",
+      "dict_name": "死亡归因分类",
+      "status": 0,
+      "sort_order": 24,
+      "remark": "AI死亡归因分析分类",
+      "is_system": 1
+    },
+    {
+      "dict_type": "trend_status",
+      "dict_name": "趋势状态",
+      "status": 0,
+      "sort_order": 25,
+      "remark": "AI趋势分析状态",
+      "is_system": 1
+    },
+    {
+      "dict_type": "ai_check_item",
+      "dict_name": "AI检查项",
+      "status": 0,
+      "sort_order": 26,
+      "remark": "AI Build执行效能检查项",
+      "is_system": 1
+    },
+    {
+      "dict_type": "parse_stage",
+      "dict_name": "解析阶段",
+      "status": 0,
+      "sort_order": 27,
+      "remark": "日志解析进度阶段",
+      "is_system": 1
     }
   ]
 }
